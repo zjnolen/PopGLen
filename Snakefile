@@ -15,7 +15,7 @@ rule all:
     Collect the main outputs of the workflow.
     """
     input:
-        expand("data/fastq_adaptrem/{sample_id}.collapsed.gz",
+        expand("data/fastq_adaptrem/{sample_id}.pair1.truncated.gz",
             sample_id = sample_list)
 
 rule remove_adapters:
@@ -23,7 +23,7 @@ rule remove_adapters:
     Remove adapters and trim low quality bases at the ends of reads
     """
     output:
-        "data/fastq_adaptrem/{sample_id}.collapsed.gz"
+        "data/fastq_adaptrem/{sample_id}.pair1.truncated.gz"
     params:
         ngi_id = lambda wildcards: samples_df['ngi_id'][wildcards.sample_id]
     log:

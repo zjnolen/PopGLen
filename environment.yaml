@@ -1,0 +1,9 @@
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+dependencies:
+  - snakemake-minimal >=6.2.1
+  - adapterremoval =2.3.2
+  - python =3.8
+  - pandas =1.2.4

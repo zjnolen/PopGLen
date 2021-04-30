@@ -38,5 +38,5 @@ rule remove_adapters:
         AdapterRemoval --file1 data/fastq_raw/{params.ngi_id}*_R1_001.fastq.gz \
         --file2 data/fastq_raw/{params.ngi_id}*_R2_001.fastq.gz --gzip \
         --basename data/fastq_adaptrem/{wildcards.sample_id} --trimns \
-        --trimquals --threads {threads}
+        --trimqualities --threads {threads}
         """

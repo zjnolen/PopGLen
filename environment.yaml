@@ -7,3 +7,5 @@ dependencies:
   - adapterremoval =2.3.2
   - python =3.8
   - pandas =1.2.4
+  - bwa =0.7.17
+  - samtools =1.12

@@ -18,19 +18,50 @@ rule all:
         expand("data/fastq_adaptrem/{sample_id}.pair1.truncated",
             sample_id = sample_list)
 
+rule prep_reference:
+    """
+    Downloads reference genome and indexes with samtools and bwa
+    """
+    output:
+        "data/reference/20200120.hicanu.purge.prim.fasta.gz",
+        "data/reference/20200120.hicanu.purge.prim.fasta.gz.amb",
+        "data/reference/20200120.hicanu.purge.prim.fasta.gz.ann",
+        "data/reference/20200120.hicanu.purge.prim.fasta.gz.bwt",
+        "data/reference/20200120.hicanu.purge.prim.fasta.gz.pac",
+        "data/reference/20200120.hicanu.purge.prim.fasta.gz.sa",
+        "data/reference/20200120.hicanu.purge.prim.fasta.gz.fai",
+        "data/reference/20200120.hicanu.purge.prim.fasta.gz.gzi"
+    log:
+        "results/logs/prep_reference.log"
+    resources:
+        runtime = 60
+        output = "results/logs/prep_reference.out"
+    thread: 1
+    shell:
+        """
+        mkdir -p data/reference
+        cd data/reference
+
+        wget https://darwin.cog.sanger.ac.uk/insects/Polyommatus_icarus/ilPolIcar1/assemblies/working/20200120.hicanu.purge/20200120.hicanu.purge.prim.fasta.gz
+
+        bwa index 20200120.hicanu.purge.prim.fasta.gz
+        samtools faidx 20200120.hicanu.purge.prim.fasta.gz
+        """
+
 rule remove_adapters:
     """
     Remove adapters and trim low quality bases at the ends of reads
     """
     output:
-        "data/fastq_adaptrem/{sample_id}.pair1.truncated",
-        "data/fastq_adaptrem/{sample_id}.pair2.truncated"
+        temp("data/fastq_adaptrem/{sample_id}.pair1.truncated"),
+        temp("data/fastq_adaptrem/{sample_id}.pair2.truncated")
     params:
         ngi_id = lambda wildcards: samples_df['ngi_id'][wildcards.sample_id]
     log:
         "results/logs/remove_adapters/{sample_id}.log"
     resources:
         runtime = lambda wildcards, attempt: attempt*60
+        output = "results/logs/remove_adapters/{sample_id}.out"
     threads: 5
     shell:
         """
@@ -40,4 +71,28 @@ rule remove_adapters:
         --file2 data/fastq_raw/{params.ngi_id}*_R2_001.fastq.gz \
         --basename data/fastq_adaptrem/{wildcards.sample_id} --trimns \
         --trimqualities --threads {threads}
+        """
+
+rule zip_adaprem_fastq:
+    """
+    gzips fastq files created by AdapterRemoval
+    """
+    input:
+        "data/fastq_adaptrem/{sample_id}.pair1.truncated",
+        "data/fastq_adaptrem/{sample_id}.pair2.truncated"
+    output:
+        "data/fastq_adaptrem/{sample_id}.pair1.truncated.gz",
+        "data/fastq_adaptrem/{sample_id}.pair2.truncated.gz"
+    log:
+        "results/logs/remove_adapters/{sample_id}_gzip.log"
+    resources:
+        runtime = lambda wildcards, attempt: attempt*1440
+        output = "results/logs/remove_adapters/{sample_id}_gzip.log"
+    threads: 1
+    shell:
+        """
+        gzip -c data/fastq_adaptrem/{sample_id}.pair1.truncated >
+            data/fastq_adaptrem/{sample_id}.pair1.truncated.gz
+        gzip -c data/fastq_adaptrem/{sample_id}.pair2.truncated >
+            data/fastq_adaptrem/{sample_id}.pair2.truncated.gz
         """

@@ -15,7 +15,7 @@ rule all:
     Collect the main outputs of the workflow.
     """
     input:
-        expand("data/fastq_adaptrem/{sample_id}.pair1.truncated",
+        expand("data/fastq_adaptrem/{sample_id}.pair1.truncated.gz",
             sample_id = sample_list)
 
 rule prep_reference:
@@ -35,8 +35,7 @@ rule prep_reference:
         "results/logs/prep_reference.log"
     resources:
         runtime = 60
-        output = "results/logs/prep_reference.out"
-    thread: 1
+    threads: 1
     shell:
         """
         mkdir -p data/reference
@@ -61,7 +60,6 @@ rule remove_adapters:
         "results/logs/remove_adapters/{sample_id}.log"
     resources:
         runtime = lambda wildcards, attempt: attempt*60
-        output = "results/logs/remove_adapters/{sample_id}.out"
     threads: 5
     shell:
         """
@@ -86,13 +84,12 @@ rule zip_adaprem_fastq:
     log:
         "results/logs/remove_adapters/{sample_id}_gzip.log"
     resources:
-        runtime = lambda wildcards, attempt: attempt*1440
-        output = "results/logs/remove_adapters/{sample_id}_gzip.log"
+        runtime = lambda wildcards, attempt: attempt*120
     threads: 1
     shell:
         """
-        gzip -c data/fastq_adaptrem/{sample_id}.pair1.truncated >
-            data/fastq_adaptrem/{sample_id}.pair1.truncated.gz
-        gzip -c data/fastq_adaptrem/{sample_id}.pair2.truncated >
-            data/fastq_adaptrem/{sample_id}.pair2.truncated.gz
+        gzip -c data/fastq_adaptrem/{wildcards.sample_id}.pair1.truncated >
+            data/fastq_adaptrem/{wildcards.sample_id}.pair1.truncated.gz
+        gzip -c data/fastq_adaptrem/{wildcards.sample_id}.pair2.truncated >
+            data/fastq_adaptrem/{wildcards.sample_id}.pair2.truncated.gz
         """

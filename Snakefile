@@ -15,7 +15,7 @@ rule all:
     Collect the main outputs of the workflow.
     """
     input:
-        expand("data/fastq_adaptrem/{sample_id}.pair1.truncated.gz",
+        expand("data/fastq_adaptrem/{sample_id}.pair1.truncated",
             sample_id = sample_list)
 
 rule remove_adapters:
@@ -23,20 +23,21 @@ rule remove_adapters:
     Remove adapters and trim low quality bases at the ends of reads
     """
     output:
-        "data/fastq_adaptrem/{sample_id}.pair1.truncated.gz"
+        "data/fastq_adaptrem/{sample_id}.pair1.truncated",
+        "data/fastq_adaptrem/{sample_id}.pair2.truncated"
     params:
         ngi_id = lambda wildcards: samples_df['ngi_id'][wildcards.sample_id]
     log:
         "results/logs/remove_adapters/{sample_id}.log"
     resources:
-        runtime_min=60
-    threads: 4
+        runtime = lambda wildcards, attempt: attempt*60
+    threads: 5
     shell:
         """
         mkdir -p data/fastq_adaptrem
 
         AdapterRemoval --file1 data/fastq_raw/{params.ngi_id}*_R1_001.fastq.gz \
-        --file2 data/fastq_raw/{params.ngi_id}*_R2_001.fastq.gz --gzip \
+        --file2 data/fastq_raw/{params.ngi_id}*_R2_001.fastq.gz \
         --basename data/fastq_adaptrem/{wildcards.sample_id} --trimns \
         --trimqualities --threads {threads}
         """

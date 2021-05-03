@@ -15,7 +15,7 @@ rule all:
     Collect the main outputs of the workflow.
     """
     input:
-        expand("data/fastq_adaptrem/{sample_id}.pair1.truncated.gz",
+        expand("data/bams/{sample_id}.sorted.bam",
             sample_id = sample_list),
 
 rule prep_reference:
@@ -91,7 +91,7 @@ rule bwa_map:
     input:
         reads=["data/fastq_adaptrem/{sample_id}.pair1.truncated.gz", "data/fastq_adaptrem/{sample_id}.pair2.truncated.gz"]
     output:
-        temp("data/bams/{sample_id}.sorted.bam")
+        "data/bams/{sample_id}.sorted.bam"
     log:
         "results/logs/bwa_mem/{sample_id}.log"
     params:

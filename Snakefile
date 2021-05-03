@@ -101,11 +101,12 @@ rule bwa_map:
         sort_order="coordinates",
         sort_extra=""
     resources:
-        runtime = 1440
-    threads: 10
+        runtime = 1
+    threads: 1
     shell:
         """
-        (bwa mem -t {threads} {params.index} {input.reads} | samtools sort -o {output[0]}) > {log}
-        (samtools index -@ {threads} output[0]) >> {log}
-        (echo $SLURM_JOB_ID) >> {log}
+        (echo $SLURM_JOB_ID) > {log}
+        (bwa) >> {log}
+        # (bwa mem -t {threads} {params.index} {input.reads} | samtools sort -o {output[0]}) >> {log}
+        # (samtools index -@ {threads} {output[0]}) >> {log}
         """

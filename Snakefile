@@ -16,7 +16,7 @@ rule all:
     """
     input:
         expand("data/fastq_adaptrem/{sample_id}.pair1.truncated.gz",
-            sample_id = sample_list)
+            sample_id = sample_list),
 
 rule prep_reference:
     """
@@ -52,44 +52,25 @@ rule remove_adapters:
     Remove adapters and trim low quality bases at the ends of reads
     """
     output:
-        temp("data/fastq_adaptrem/{sample_id}.pair1.truncated"),
-        temp("data/fastq_adaptrem/{sample_id}.pair2.truncated")
+        protected("data/fastq_adaptrem/{sample_id}.pair1.truncated.gz"),
+        protected("data/fastq_adaptrem/{sample_id}.pair2.truncated.gz"),
+        protected("data/fastq_adaptrem/{sample_id}.settings),
+        protected("data/fastq_adaptrem/{sample_id}.discarded.gz),
+        protected("data/fastq_adaptrem/{sample_id}.singleton.truncated.gz)
     params:
         ngi_id = lambda wildcards: samples_df['ngi_id'][wildcards.sample_id]
     log:
         "results/logs/remove_adapters/{sample_id}.log"
     resources:
-        runtime = lambda wildcards, attempt: attempt*60
-    threads: 5
+        runtime = lambda wildcards, attempt: attempt*240
+    threads: 4
     shell:
         """
         mkdir -p data/fastq_adaptrem
 
         AdapterRemoval --file1 data/fastq_raw/{params.ngi_id}*_R1_001.fastq.gz \
-        --file2 data/fastq_raw/{params.ngi_id}*_R2_001.fastq.gz \
+        --file2 data/fastq_raw/{params.ngi_id}*_R2_001.fastq.gz --gzip \
         --basename data/fastq_adaptrem/{wildcards.sample_id} --trimns \
         --trimqualities --threads {threads}
         """
 
-rule zip_adaprem_fastq:
-    """
-    gzips fastq files created by AdapterRemoval
-    """
-    input:
-        "data/fastq_adaptrem/{sample_id}.pair1.truncated",
-        "data/fastq_adaptrem/{sample_id}.pair2.truncated"
-    output:
-        "data/fastq_adaptrem/{sample_id}.pair1.truncated.gz",
-        "data/fastq_adaptrem/{sample_id}.pair2.truncated.gz"
-    log:
-        "results/logs/remove_adapters/{sample_id}_gzip.log"
-    resources:
-        runtime = lambda wildcards, attempt: attempt*120
-    threads: 1
-    shell:
-        """
-        gzip -c data/fastq_adaptrem/{wildcards.sample_id}.pair1.truncated >
-            data/fastq_adaptrem/{wildcards.sample_id}.pair1.truncated.gz
-        gzip -c data/fastq_adaptrem/{wildcards.sample_id}.pair2.truncated >
-            data/fastq_adaptrem/{wildcards.sample_id}.pair2.truncated.gz
-        """

@@ -23,14 +23,14 @@ rule prep_reference:
     Downloads reference genome and indexes with samtools and bwa
     """
     output:
-        "data/reference/20200120.hicanu.purge.prim.fasta.gz",
-        "data/reference/20200120.hicanu.purge.prim.fasta.gz.amb",
-        "data/reference/20200120.hicanu.purge.prim.fasta.gz.ann",
-        "data/reference/20200120.hicanu.purge.prim.fasta.gz.bwt",
-        "data/reference/20200120.hicanu.purge.prim.fasta.gz.pac",
-        "data/reference/20200120.hicanu.purge.prim.fasta.gz.sa",
-        "data/reference/20200120.hicanu.purge.prim.fasta.gz.fai",
-        "data/reference/20200120.hicanu.purge.prim.fasta.gz.gzi"
+        protected("data/reference/20200120.hicanu.purge.prim.fasta.gz"),
+        protected("data/reference/20200120.hicanu.purge.prim.fasta.gz.amb"),
+        protected("data/reference/20200120.hicanu.purge.prim.fasta.gz.ann"),
+        protected("data/reference/20200120.hicanu.purge.prim.fasta.gz.bwt"),
+        protected("data/reference/20200120.hicanu.purge.prim.fasta.gz.pac"),
+        protected("data/reference/20200120.hicanu.purge.prim.fasta.gz.sa"),
+        protected("data/reference/20200120.hicanu.purge.prim.fasta.gz.fai"),
+        protected("data/reference/20200120.hicanu.purge.prim.fasta.gz.gzi")
     log:
         "results/logs/prep_reference.log"
     resources:
@@ -73,4 +73,3 @@ rule remove_adapters:
         --basename data/fastq_adaptrem/{wildcards.sample_id} --trimns \
         --trimqualities --threads {threads}
         """
-

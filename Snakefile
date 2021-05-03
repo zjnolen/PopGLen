@@ -47,6 +47,16 @@ rule prep_reference:
         samtools faidx 20200120.hicanu.purge.prim.fasta.gz
         """
 
+# rule fastqc_raw:
+#     """
+    # Creates fastqc file for raw reads
+    # """
+    # output:
+    #     "results/fastqc_raw/{sample_id}_R1.html",
+    #     "results/fastqc_raw/{sample_id}_R2.html",
+    #     "results/fastqc_raw/{sample_id}_R1_fastqc.zip",
+    #     "results/fastqc_raw/{sample_id}_R2_fastqc.zip",
+
 rule remove_adapters:
     """
     Remove adapters and trim low quality bases at the ends of reads
@@ -73,3 +83,23 @@ rule remove_adapters:
         --basename data/fastq_adaptrem/{wildcards.sample_id} --trimns \
         --trimqualities --threads {threads}
         """
+
+rule bwa_map:
+    """
+    Maps reads to reference using bwa-mem
+    """
+    input:
+        reads=["data/fastq_adaptrem/{sample_id}.pair1.truncated.gz", "data/fastq_adaptrem/{sample_id}.pair2.truncated.gz"]
+    output:
+        temp("data/bams/{sample_id}.sorted.bam")
+    log:
+        "results/logs/bwa_mem/{sample_id}.log"
+    params:
+        index="data/reference/20200120.hicanu.purge.prim.fasta.gz",
+        extra=r"-R '@RG\tID:2020-01\tSM:{sample_id}\tPL:ILLUMINA'",
+        sort="samtools",
+        sort_order="coordinates"
+        sort_extra=""
+    threads: 10
+    wrapper:
+        "0.74.0/bio/bwa/mem"

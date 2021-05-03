@@ -64,9 +64,9 @@ rule remove_adapters:
     output:
         protected("data/fastq_adaptrem/{sample_id}.pair1.truncated.gz"),
         protected("data/fastq_adaptrem/{sample_id}.pair2.truncated.gz"),
-        protected("data/fastq_adaptrem/{sample_id}.settings),
-        protected("data/fastq_adaptrem/{sample_id}.discarded.gz),
-        protected("data/fastq_adaptrem/{sample_id}.singleton.truncated.gz)
+        protected("data/fastq_adaptrem/{sample_id}.settings"),
+        protected("data/fastq_adaptrem/{sample_id}.discarded.gz"),
+        protected("data/fastq_adaptrem/{sample_id}.singleton.truncated.gz")
     params:
         ngi_id = lambda wildcards: samples_df['ngi_id'][wildcards.sample_id]
     log:
@@ -98,8 +98,14 @@ rule bwa_map:
         index="data/reference/20200120.hicanu.purge.prim.fasta.gz",
         extra=r"-R '@RG\tID:2020-01\tSM:{sample_id}\tPL:ILLUMINA'",
         sort="samtools",
-        sort_order="coordinates"
+        sort_order="coordinates",
         sort_extra=""
+    resources:
+        runtime = 1440
     threads: 10
-    wrapper:
-        "0.74.0/bio/bwa/mem"
+    shell:
+        """
+        (bwa mem -t {threads} {params.index} {input.reads} | samtools sort -o {output[0]}) > {log}
+        (samtools index -@ {threads} output[0]) >> {log}
+        (echo $SLURM_JOB_ID) >> {log}
+        """

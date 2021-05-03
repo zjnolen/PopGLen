@@ -89,23 +89,23 @@ rule bwa_map:
     Maps reads to reference using bwa-mem
     """
     input:
-        reads=["data/fastq_adaptrem/{sample_id}.pair1.truncated.gz", "data/fastq_adaptrem/{sample_id}.pair2.truncated.gz"]
+        reads=["data/fastq_adaptrem/{sample_id}.pair1.truncated.gz", "data/fastq_adaptrem/{sample_id}.pair2.truncated.gz"],
+        "data/reference/20200120.hicanu.purge.prim.fasta.gz",
+        "data/reference/20200120.hicanu.purge.prim.fasta.gz.bwt"
     output:
         "data/bams/{sample_id}.sorted.bam"
     log:
-        "results/logs/bwa_mem/{sample_id}_stdout.log"
+        "results/logs/{rule}/stdout.{rule}.{wildcards}.log"
     params:
         index="data/reference/20200120.hicanu.purge.prim.fasta.gz",
         extra=r"-R '@RG\tID:2020-01\tSM:{sample_id}\tPL:ILLUMINA'",
         sort="samtools",
-        sort_order="coordinates",
-        sort_extra=""
+        sort_order="coordinates"
     resources:
         runtime = 1440
     threads: 20
     shell:
         """
-        (echo $SLURM_JOB_ID) > {log}
-        (bwa mem -t {threads} {params.index} {input.reads} | samtools sort -o {output[0]}) >> {log}
+        (bwa mem -t {threads} {params.index} {input.reads} | samtools sort -o {output[0]}) > {log}
         (samtools index -@ {threads} {output[0]}) >> {log}
         """

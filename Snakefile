@@ -93,7 +93,7 @@ rule bwa_map:
     output:
         "data/bams/{sample_id}.sorted.bam"
     log:
-        "results/logs/bwa_mem/{sample_id}.log"
+        "results/logs/bwa_mem/{sample_id}_stdout.log"
     params:
         index="data/reference/20200120.hicanu.purge.prim.fasta.gz",
         extra=r"-R '@RG\tID:2020-01\tSM:{sample_id}\tPL:ILLUMINA'",
@@ -101,12 +101,11 @@ rule bwa_map:
         sort_order="coordinates",
         sort_extra=""
     resources:
-        runtime = 1
-    threads: 1
+        runtime = 1440
+    threads: 20
     shell:
         """
         (echo $SLURM_JOB_ID) > {log}
-        (bwa) >> {log}
-        # (bwa mem -t {threads} {params.index} {input.reads} | samtools sort -o {output[0]}) >> {log}
-        # (samtools index -@ {threads} {output[0]}) >> {log}
+        (bwa mem -t {threads} {params.index} {input.reads} | samtools sort -o {output[0]}) >> {log}
+        (samtools index -@ {threads} {output[0]}) >> {log}
         """

@@ -15,8 +15,7 @@ rule all:
     Collect the main outputs of the workflow.
     """
     input:
-        expand("data/bams/{sample_id}.sorted.dedup.bam.bai",
-            sample_id = sample_list),
+        "2020modern.beagle.gz"
 
 rule download_index_ref:
     """
@@ -108,6 +107,8 @@ rule picard_dedup:
         metrics=protected("data/bams/{sample_id}.sorted.dedup.metrics.txt")
     log:
         "results/logs/picard_dedup/stdout.picard_dedup.{sample_id}.log"
+    resources:
+        runtime = 120
     shell:
         """
         (picard MarkDuplicates REMOVE_DUPLICATES=true I={input[0]} O={output.bam} \
@@ -124,7 +125,48 @@ rule samtools_index_bam:
         "data/bams/{sample_id}.sorted.dedup.bam.bai"
     log:
         "results/logs/samtools_index_bam/stdout.samtools_index_bam.{sample_id}.log"
+    resources:
+        runtime = 10
     shell:
         """
         (samtools index {input[0]}) > {log}
+        """
+
+rule bamlist_all:
+    """
+    Make bamlist containing all individuals
+    """
+    input:
+        expand("data/bams/{sample_id}.sorted.dedup.bam",
+            sample_id = sample_list)
+    output:
+        protected("data/bams/2020modern.bamlist")
+    resources:
+        runtime = 5
+    shell:
+        """
+        (readlink -f {input} | perl -pe 'chomp if eof') > {output}
+        """
+
+rule angsd_beagle_all:
+    """
+    Make a beagle file from all samples
+    """
+    input:
+        "data/bams/2020modern.bamlist"
+    output:
+        "{params.outpre}.beagle.gz"
+    log:
+        "results/logs/angsd_beagle_all/stdout.angsd_beagle_all.{params.outpre}.log"
+    params:
+        outpre="2020modern"
+    resources:
+        runtime = 900
+    threads: 20
+    shell:
+        """
+        (angsd -GL 1 -out -nThreads {threads} -doGlf 2 -doMajorMinor 1 \
+            -c 50 -uniqueOnly 1 -minQ 20 -baq 1 -doMaf 2 -SNP_pval 2e-6 \
+            -remove_bads 1 -minInd 36 -bam {input} -out {params.outpre}) > \
+            {log}
         """

@@ -15,7 +15,7 @@ rule all:
     Collect the main outputs of the workflow.
     """
     input:
-        "2020modern.beagle.gz"
+        "data/beagle/2020modern.beagle.gz"
 
 rule download_index_ref:
     """
@@ -108,7 +108,7 @@ rule picard_dedup:
     log:
         "results/logs/picard_dedup/stdout.picard_dedup.{sample_id}.log"
     resources:
-        runtime = 120
+        runtime = 240
     shell:
         """
         (picard MarkDuplicates REMOVE_DUPLICATES=true I={input[0]} O={output.bam} \
@@ -137,7 +137,9 @@ rule bamlist_all:
     Make bamlist containing all individuals
     """
     input:
-        expand("data/bams/{sample_id}.sorted.dedup.bam",
+        bams=expand("data/bams/{sample_id}.sorted.dedup.bam",
+            sample_id = sample_list),
+        bais=expand("data/bams/{sample_id}.sorted.dedup.bam.bai",
             sample_id = sample_list)
     output:
         protected("data/bams/2020modern.bamlist")
@@ -145,7 +147,7 @@ rule bamlist_all:
         runtime = 5
     shell:
         """
-        (readlink -f {input} | perl -pe 'chomp if eof') > {output}
+        (readlink -f {input.bams} | perl -pe 'chomp if eof') > {output}
         """
 
 rule angsd_beagle_all:
@@ -153,20 +155,22 @@ rule angsd_beagle_all:
     Make a beagle file from all samples
     """
     input:
-        "data/bams/2020modern.bamlist"
+        "data/bams/2020modern.bamlist",
+        "data/reference/20200120.hicanu.purge.prim.fasta.gz"
     output:
-        "{params.outpre}.beagle.gz"
-    log:
-        "results/logs/angsd_beagle_all/stdout.angsd_beagle_all.{params.outpre}.log"
+        "data/beagle/2020modern.beagle.gz"
     params:
-        outpre="2020modern"
+        outpre="data/beagle/2020modern"
+    log:
+        "results/logs/angsd_beagle_all/stdout.angsd_beagle_all.log"
     resources:
-        runtime = 600
-    threads: 20
+        runtime = 720
+    threads: 4
     shell:
         """
-        (angsd -GL 1 -out -nThreads {threads} -doGlf 2 -doMajorMinor 1 \
+        (angsd -GL 1 -nThreads {threads} -doGlf 2 -doMajorMinor 1 \
             -c 50 -uniqueOnly 1 -minQ 20 -baq 1 -doMaf 1 -SNP_pval 2e-6 \
-            -remove_bads 1 -minInd 36 -bam {input} -out {params.outpre}) > \
+            -remove_bads 1 -minInd 36 -bam {input[0]} -out {params.outpre} \
+            -ref data/reference/20200120.hicanu.purge.prim.fasta.gz) > \
             {log}
         """

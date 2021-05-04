@@ -11,3 +11,4 @@ dependencies:
   - samtools =1.12
   - fastqc =0.11.9
   - picard =2.20.1
+  - angsd =0.935

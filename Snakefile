@@ -166,7 +166,7 @@ rule angsd_beagle_all:
     shell:
         """
         (angsd -GL 1 -out -nThreads {threads} -doGlf 2 -doMajorMinor 1 \
-            -c 50 -uniqueOnly 1 -minQ 20 -baq 1 -doMaf 2 -SNP_pval 2e-6 \
+            -c 50 -uniqueOnly 1 -minQ 20 -baq 1 -doMaf 1 -SNP_pval 2e-6 \
             -remove_bads 1 -minInd 36 -bam {input} -out {params.outpre}) > \
             {log}
         """

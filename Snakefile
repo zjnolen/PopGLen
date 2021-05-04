@@ -83,7 +83,7 @@ rule bwa_map:
     output:
         "data/bams/{sample_id}.sorted.bam"
     log:
-        "results/logs/{rule}/stdout.{rule}.{wildcards}.log"
+        "results/logs/bwa_map/stdout.bwa_map.{sample_ID}.log"
     params:
         extra=r"-R '@RG\tID:2020-01\tSM:{sample_id}\tPL:ILLUMINA'",
         sort="samtools",
@@ -107,7 +107,7 @@ rule picard_dedup:
         bam=protected("data/bams/{sample_id}.sorted.dedup.bam"),
         metrics=protected("data/bams/{sample_id}.sorted.dedup.metrics.txt")
     log:
-        "results/logs/{rule}/stdout.{rule}.{wildcards}.log"
+        "results/logs/picard_dedup/stdout.picard_dedup.{sample_id}.log"
     shell:
         """
         (picard MarkDuplicates REMOVE_DUPLICATES=true I={input[0]} O={output.bam} \
@@ -123,7 +123,7 @@ rule samtools_index_bam:
     output:
         "data/bams/{sample_id}.sorted.dedup.bam.bai"
     log:
-        "results/logs/{rule}/stdout.{rule}.{wildcards}.log"
+        "results/logs/samtools_index_bam/stdout.samtools_index_bam.{sample_id}.log"
     shell:
         """
         (samtools index {input[0]}) > {log}

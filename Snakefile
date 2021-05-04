@@ -18,7 +18,7 @@ rule all:
         expand("data/bams/{sample_id}.sorted.bam",
             sample_id = sample_list),
 
-rule prep_reference:
+rule download_index_ref:
     """
     Downloads reference genome and indexes with samtools and bwa
     """
@@ -33,9 +33,6 @@ rule prep_reference:
         protected("data/reference/20200120.hicanu.purge.prim.fasta.gz.gzi")
     log:
         "results/logs/prep_reference.log"
-    resources:
-        runtime = 60
-    threads: 1
     shell:
         """
         mkdir -p data/reference
@@ -47,17 +44,7 @@ rule prep_reference:
         samtools faidx 20200120.hicanu.purge.prim.fasta.gz
         """
 
-# rule fastqc_raw:
-#     """
-    # Creates fastqc file for raw reads
-    # """
-    # output:
-    #     "results/fastqc_raw/{sample_id}_R1.html",
-    #     "results/fastqc_raw/{sample_id}_R2.html",
-    #     "results/fastqc_raw/{sample_id}_R1_fastqc.zip",
-    #     "results/fastqc_raw/{sample_id}_R2_fastqc.zip",
-
-rule remove_adapters:
+rule adapterremoval:
     """
     Remove adapters and trim low quality bases at the ends of reads
     """
@@ -89,7 +76,8 @@ rule bwa_map:
     Maps reads to reference using bwa-mem
     """
     input:
-        reads=["data/fastq_adaptrem/{sample_id}.pair1.truncated.gz", "data/fastq_adaptrem/{sample_id}.pair2.truncated.gz"],
+        reads=["data/fastq_adaptrem/{sample_id}.pair1.truncated.gz",
+            "data/fastq_adaptrem/{sample_id}.pair2.truncated.gz"],
         "data/reference/20200120.hicanu.purge.prim.fasta.gz",
         "data/reference/20200120.hicanu.purge.prim.fasta.gz.bwt"
     output:
@@ -106,6 +94,38 @@ rule bwa_map:
     threads: 20
     shell:
         """
-        (bwa mem -t {threads} {params.index} {input.reads} | samtools sort -o {output[0]}) > {log}
-        (samtools index -@ {threads} {output[0]}) >> {log}
+        (bwa mem -t {threads} {params.index} {input.reads} | samtools sort \
+            -o {output[0]}) > {log}
+        """
+
+rule picard_dedup:
+    """
+    Removes duplicate reads from bam files
+    """
+    input:
+        "data/bams/{sample_id}.sorted.bam"
+    output:
+        bam=protected("data/bams/{sample_id}.sorted.dedup.bam"),
+        metrics=protected("data/bams/{sample_id}.sorted.dedup.metrics.txt")
+    log:
+        "results/logs/{rule}/stdout.{rule}.{wildcards}.log"
+    shell:
+        """
+        (picard MarkDuplicates REMOVE_DUPLICATES=true I={input[0]} O={output.bam} \
+            M={output.metrics}) > {log}
+        """
+
+rule samtools_index_bam:
+    """
+    Indexes bam file after sorting and duplicate removal
+    """
+    input:
+        "data/bams/{sample_id}.sorted.dedup.bam"
+    output:
+        "data/bams/{sample_id}.sorted.dedup.bam.bai"
+    log:
+        "results/logs/{rule}/stdout.{rule}.{wildcards}.log"
+    shell:
+        """
+        (samtools index {input[0]}) > {log}
         """

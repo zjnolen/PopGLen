@@ -161,7 +161,7 @@ rule angsd_beagle_all:
     params:
         outpre="2020modern"
     resources:
-        runtime = 900
+        runtime = 600
     threads: 20
     shell:
         """

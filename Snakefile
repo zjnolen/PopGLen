@@ -15,7 +15,7 @@ rule all:
     Collect the main outputs of the workflow.
     """
     input:
-        expand("data/bams/{sample_id}.sorted.bam",
+        expand("data/bams/{sample_id}.sorted.dedup.bam.bai",
             sample_id = sample_list),
 
 rule download_index_ref:
@@ -83,7 +83,7 @@ rule bwa_map:
     output:
         "data/bams/{sample_id}.sorted.bam"
     log:
-        "results/logs/bwa_map/stdout.bwa_map.{sample_ID}.log"
+        "results/logs/bwa_map/stdout.bwa_map.{sample_id}.log"
     params:
         extra=r"-R '@RG\tID:2020-01\tSM:{sample_id}\tPL:ILLUMINA'",
         sort="samtools",

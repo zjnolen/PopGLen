@@ -166,15 +166,36 @@ rule angsd_beagle_all:
     log:
         "results/logs/angsd_beagle_all/stdout.angsd_beagle_all.log"
     resources:
-        runtime = 720
-    threads: 4
+        runtime = 14400
+    threads: 10
     shell:
         """
-        (angsd -GL 1 -nThreads {threads} -doGlf 2 -doMajorMinor 1 \
+        (angsd -GL 1 -nThreads {threads} -doGlf 2 -doMajorMinor 1 -minMapQ 30 \
             -c 50 -uniqueOnly 1 -minQ 20 -baq 1 -doMaf 1 -SNP_pval 2e-6 \
             -remove_bads 1 -minInd 36 -bam {input[0]} -out {params.outpre} \
             -ref data/reference/20200120.hicanu.purge.prim.fasta.gz) > \
             {log}
+        """
+
+def population2samples(wildcards):
+    return expand(
+        "data/bams/{sample_id}.sorted.dedup.bam", sample_id =
+            samples_df.index[samples_df.population == wildcards.population]
+    )
+
+rule bamlist_perpop:
+    """
+    Make a bamlist from all samples in each population
+    """
+    input:
+        bams = population2samples
+    output:
+        "data/bams/{population}.bamlist"
+    resources:
+        runtime = 5
+    shell:
+        """
+        (readlink -f {input.bams} | perl -pe 'chomp if eof') > {output}
         """
 
 rule angsd_perpop_saf:
@@ -182,12 +203,21 @@ rule angsd_perpop_saf:
     Make a saf file from all samples in each population
     """
     input:
-        "data/bams/{params.sample_id}.sorted.dedup.bam"
+        "data/bams/{population}.bamlist",
+        "data/reference/20200120.hicanu.purge.prim.fasta.gz"
     output:
-        "data/bams/{population}.bamlist"
+        "data/saf/{population}.saf.gz"
     params:
-        sample_id = lambda wildcards: sample_df.index[sample_df.population == {wildcards.population}]
+        outpre="data/saf/{population}"
+    log:
+        "results/logs/angsd_perpop_saf/stdout.angsd_perpop_saf.{population}.log"
+    resources:
+        runtime = 14400
+    threads: 10
     shell:
         """
-        echo hello there {input}
+        (angsd -GL 1 -nThreads {threads} -dosaf 1 -doMajorMinor 1 \
+            -c 50 -uniqueOnly 1 -minQ 20 -baq 1 -doMaf 1 -SNP_pval 2e-6 \
+            -remove_bads 1 -minInd 7 -bam {input[0]} -out {params.outpre} \
+            -ref data/reference/20200120.hicanu.purge.prim.fasta.gz) > {log}
         """

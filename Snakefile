@@ -182,10 +182,12 @@ rule angsd_perpop_saf:
     Make a saf file from all samples in each population
     """
     input:
-        "data/bams/{lambda wildcards: sample_df.index[sample_df.population == {wildcards.population}]}.sorted.dedup.bam"
+        "data/bams/{params.sample_id}.sorted.dedup.bam"
     output:
         "data/bams/{population}.bamlist"
+    params:
+        sample_id = lambda wildcards: sample_df.index[sample_df.population == {wildcards.population}]
     shell:
-    """
-    echo hello there {input}
-    """
+        """
+        echo hello there {input}
+        """

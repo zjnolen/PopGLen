@@ -9,13 +9,15 @@ configfile: "config.yaml"
 
 samples_df = pd.read_table(config["samples"]).set_index("sample", drop=False)
 sample_list = list(samples_df['sample'])
+pop_list = list(set(samples_df['population']))
 
 rule all:
     """
     Collect the main outputs of the workflow.
     """
     input:
-        "data/beagle/2020modern.beagle.gz"
+        "data/beagle/2020modern.beagle.gz",
+        expand("data/bams/{population}.bamlist", population=pop_list)
 
 rule download_index_ref:
     """
@@ -174,3 +176,16 @@ rule angsd_beagle_all:
             -ref data/reference/20200120.hicanu.purge.prim.fasta.gz) > \
             {log}
         """
+
+rule angsd_perpop_saf:
+    """
+    Make a saf file from all samples in each population
+    """
+    input:
+        "data/bams/{lambda wildcards: sample_df.index[sample_df.population == {wildcards.population}]}.sorted.dedup.bam"
+    output:
+        "data/bams/{population}.bamlist"
+    shell:
+    """
+    echo hello there {input}
+    """

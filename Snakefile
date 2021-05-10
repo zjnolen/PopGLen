@@ -17,7 +17,7 @@ rule all:
     """
     input:
         "data/beagle/2020modern.beagle.gz",
-        expand("data/bams/{population}.bamlist", population=pop_list)
+        expand("data/saf/{population}.saf.gz", population=pop_list)
 
 rule download_index_ref:
     """
@@ -167,9 +167,11 @@ rule angsd_beagle_all:
         "results/logs/angsd_beagle_all/stdout.angsd_beagle_all.log"
     resources:
         runtime = 14400
-    threads: 10
+    threads: 6
     shell:
         """
+        mkdir -p data/beagle
+        
         (angsd -GL 1 -nThreads {threads} -doGlf 2 -doMajorMinor 1 -minMapQ 30 \
             -c 50 -uniqueOnly 1 -minQ 20 -baq 1 -doMaf 1 -SNP_pval 2e-6 \
             -remove_bads 1 -minInd 36 -bam {input[0]} -out {params.outpre} \
@@ -213,11 +215,14 @@ rule angsd_perpop_saf:
         "results/logs/angsd_perpop_saf/stdout.angsd_perpop_saf.{population}.log"
     resources:
         runtime = 14400
-    threads: 10
+    threads: 4
     shell:
         """
+        mkdir -p data/saf
+        
         (angsd -GL 1 -nThreads {threads} -dosaf 1 -doMajorMinor 1 \
             -c 50 -uniqueOnly 1 -minQ 20 -baq 1 -doMaf 1 -SNP_pval 2e-6 \
             -remove_bads 1 -minInd 7 -bam {input[0]} -out {params.outpre} \
-            -ref data/reference/20200120.hicanu.purge.prim.fasta.gz) > {log}
+            -ref data/reference/20200120.hicanu.purge.prim.fasta.gz \
+            -anc data/reference/20200120.hicanu.purge.prim.fasta.gz) > {log}
         """

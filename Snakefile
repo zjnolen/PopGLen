@@ -45,32 +45,74 @@ rule download_index_ref:
         samtools faidx 20200120.hicanu.purge.prim.fasta.gz
         """
 
-rule adapterremoval:
+# rule raw_fastqc:
+#     """
+#     Creates a fastqc report for all raw sequencing files
+#     """
+#     output:
+#         html=protected("results/fastqc_raw/{sample_id}.html),
+#         zip=protected("results/fastqc_raw/{sample_id}_fastqc.zip")
+#     params:
+#         ngi_id = lambda wildcards: samples_df['ngi_id'][wildcards.sample_id]
+#     threads: 1
+#     shell:
+#         """
+#         mkdir -p data/raw_fastqc
+#
+#         fastqc data/fastq_raw/{params.ngi_id}*_R1_001.fastq.gz \
+#             -o results/fastqc_raw/{wildcards.sample_id}
+#         """
+
+rule fastp_filter:
     """
-    Remove adapters and trim low quality bases at the ends of reads
+    Removes adapters, poly-G tails, and low quality bases at the ends of reads.
+    Additionally merges paired-end reads when possible.
     """
     output:
-        protected("data/fastq_adaptrem/{sample_id}.pair1.truncated.gz"),
-        protected("data/fastq_adaptrem/{sample_id}.pair2.truncated.gz"),
-        protected("data/fastq_adaptrem/{sample_id}.settings"),
-        protected("data/fastq_adaptrem/{sample_id}.discarded.gz"),
-        protected("data/fastq_adaptrem/{sample_id}.singleton.truncated.gz")
+        protected("data/fastq_fastpclean/{sample_id}.merged.fastq.gz")
     params:
         ngi_id = lambda wildcards: samples_df['ngi_id'][wildcards.sample_id]
-    log:
-        "results/logs/remove_adapters/{sample_id}.log"
     resources:
         runtime = lambda wildcards, attempt: attempt*240
     threads: 4
     shell:
         """
-        mkdir -p data/fastq_adaptrem
+        mkdir -p data/fastq_fastpclean
+        mkdir -p results/fastp_report
 
-        AdapterRemoval --file1 data/fastq_raw/{params.ngi_id}*_R1_001.fastq.gz \
-        --file2 data/fastq_raw/{params.ngi_id}*_R2_001.fastq.gz --gzip \
-        --basename data/fastq_adaptrem/{wildcards.sample_id} --trimns \
-        --trimqualities --threads {threads}
+        fastp -i data/fastq_raw/{params.ngi_id}*_R1_001.fastq.gz \
+            -I data/fastq_raw/{params.ngi_id}*_R2_001.fastq.gz -g -p -m \
+            -merged_out data/fastq_fastpclean/{sample_id}.merged.fastq.gz \
+            -h results/fastp_report/{sample_id}.fastp.html \
+            -j results/fastp_report/{sample_id}.fastp.json -w {threads}
         """
+
+# rule adapterremoval:
+#     """
+#     Remove adapters and trim low quality bases at the ends of reads
+#     """
+#     output:
+#         protected("data/fastq_adaptrem/{sample_id}.pair1.truncated.gz"),
+#         protected("data/fastq_adaptrem/{sample_id}.pair2.truncated.gz"),
+#         protected("data/fastq_adaptrem/{sample_id}.settings"),
+#         protected("data/fastq_adaptrem/{sample_id}.discarded.gz"),
+#         protected("data/fastq_adaptrem/{sample_id}.singleton.truncated.gz")
+#     params:
+#         ngi_id = lambda wildcards: samples_df['ngi_id'][wildcards.sample_id]
+#     log:
+#         "results/logs/remove_adapters/{sample_id}.log"
+#     resources:
+#         runtime = lambda wildcards, attempt: attempt*240
+#     threads: 4
+#     shell:
+#         """
+#         mkdir -p data/fastq_adaptrem
+#
+#         AdapterRemoval --file1 data/fastq_raw/{params.ngi_id}*_R1_001.fastq.gz \
+#         --file2 data/fastq_raw/{params.ngi_id}*_R2_001.fastq.gz --gzip \
+#         --basename data/fastq_adaptrem/{wildcards.sample_id} --trimns \
+#         --trimqualities --threads {threads}
+#         """
 
 rule bwa_map:
     """

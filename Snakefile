@@ -16,8 +16,7 @@ rule all:
     Collect the main outputs of the workflow.
     """
     input:
-        "data/beagle/2020modern.beagle.gz",
-        expand("data/saf/{population}.saf.gz", population=pop_list)
+        expand("data/fastq_fastpclean/{sample_id}.merged.fastq.gz", sample_id=sample_list)
 
 rule download_index_ref:
     """
@@ -69,7 +68,7 @@ rule fastp_filter:
     Additionally merges paired-end reads when possible.
     """
     output:
-        protected("data/fastq_fastpclean/{sample_id}.merged.fastq.gz")
+        expand("data/fastq_fastpclean/{sample_id}.merged.fastq.gz", sample_id=sample_list)
     params:
         ngi_id = lambda wildcards: samples_df['ngi_id'][wildcards.sample_id]
     resources:
@@ -82,7 +81,7 @@ rule fastp_filter:
 
         fastp -i data/fastq_raw/{params.ngi_id}*_R1_001.fastq.gz \
             -I data/fastq_raw/{params.ngi_id}*_R2_001.fastq.gz -g -p -m \
-            -merged_out data/fastq_fastpclean/{sample_id}.merged.fastq.gz \
+            -merged_out data/fastq_fastpclean/{wildcards.sample_id}.merged.fastq.gz \
             -h results/fastp_report/{sample_id}.fastp.html \
             -j results/fastp_report/{sample_id}.fastp.json -w {threads}
         """

@@ -1,0 +1,14 @@
+# sample and unit information sheet in TSV format
+samples: config/samples.tsv
+
+units: config/units.tsv
+
+paths:
+  # main base folder for results
+  results: "results"
+
+# path with filename where reference will be downloaded to and url it will be
+# downloaded from. url should be a direct link to the reference fasta.
+reference:
+  fasta_url: "https://darwin.cog.sanger.ac.uk/insects/Polyommatus_icarus/ilPolIcar1/assemblies/working/20200120.hicanu.purge/20200120.hicanu.purge.prim.fasta.gz"
+  fasta_path:

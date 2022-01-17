@@ -21,11 +21,11 @@ rule bwa_index:
     input:
         genome_file()
     output:
-        "resources/reference/genome.amb",
-        "resources/reference/genome.ann",
-        "resources/reference/genome.bwt",
-        "resources/reference/genome.pac",
-        "resources/reference/genome.sa"
+        genome_file()+".amb",
+        genome_file()+".ann",
+        genome_file()+".bwt",
+        genome_file()+".pac",
+        genome_file()+".sa"
     log:
         "logs/bwa_index/genome.log"
     resources:

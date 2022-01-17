@@ -1,14 +1,14 @@
+name: landscape-genomics
+
 channels:
   - conda-forge
   - bioconda
   - defaults
+
 dependencies:
-  - snakemake-minimal >=6.2.1
-  - adapterremoval =2.3.2
-  - python =3.8
-  - pandas =1.2.4
-  - bwa =0.7.17
-  - samtools =1.12
-  - fastqc =0.11.9
-  - picard =2.20.1
-  - angsd =0.935
+  # core packages for workflow
+  - python >=3.7
+  - snakemake-minimal >=6.13.1
+  - mamba
+  - pandas
+  - graphviz

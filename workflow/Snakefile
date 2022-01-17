@@ -1,0 +1,25 @@
+# Snakemake workflow for performing several population genomic comparisons of population replicates across two different
+# habitat categories and two different time periods. These units however can be changed to any categorical variable with
+# two different types.
+
+report: "report/workflow.rst"
+
+include: "rules/common.smk"
+
+include: "rules/ref.smk"
+include: "rules/preprocessing.smk"
+include: "rules/mapping.smk"
+include: "rules/qc.smk"
+
+def all_input(wildcards):
+    """
+    Function defining all requested inputs for the all rule below.
+    """
+    wanted_input = expand(results+"/mapping/mapdamage/{sample}/Runtime_log.txt", sample=["EB1"])
+
+    return wanted_input
+
+
+# master target rule
+rule all:
+    input: all_input

@@ -1,0 +1,18 @@
+description: sample entries in sample input tsv
+properties:
+  sample:
+    type: string
+    description: sample name
+  fq1:
+    type: string
+    description: >
+      file path of the input sequencing data file (absolute or relative to the
+      project directory)
+  fq2:
+    type: string
+    description: >
+      file path to the paired sequencing file for paired end reads
+
+required:
+  - sample
+  - fq1

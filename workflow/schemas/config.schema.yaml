@@ -1,0 +1,32 @@
+description: snakemake configuration file
+
+type: object
+
+properties:
+  sample_list:
+    type: string
+    description: path to a sample tsv
+    default: "config/samples.tsv"
+
+  paths:
+    type: object
+    properties:
+      results:
+        type: string
+        description: main base folder for results
+      temp:
+        type: string
+        description: path for temporary files during jobs
+    default:
+      results: "results"
+      temp: "$TMPDIR"
+  
+  reference:
+    type: object
+    properties:
+      fasta_url:
+        type: string
+        description: direct link to reference genome fasta for download
+      fasta_path:
+        type: string
+        description: path to local location of reference genome fasta

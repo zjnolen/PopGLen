@@ -9,7 +9,7 @@ rule bwa_mem:
     params:
         index=genome_file(),
         extra=get_read_group,
-        sort="samtools",
+        sorting="samtools",
         sort_order="coordinate"
     threads: 8
     resources:

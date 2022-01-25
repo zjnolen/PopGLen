@@ -11,6 +11,9 @@ if os.path.exists("config/config.yaml"):
 # set results directory
 results = config["paths"]["results"]
 
+# set intermediate directory
+intermediate = config["paths"]["intermediate"]
+
 # load and validate sample sheet
 samples = pd.read_table(config["samples"]).set_index("sample", drop=False)
 # validate(df, schema="../schemas/samples.schema.yaml")
@@ -37,8 +40,8 @@ def get_raw_fastq(wildcards):
     unit = units.loc[wildcards.sample, ["fq1", "fq2"]]
     return [unit.fq1,unit.fq2]
 
-def get_trimmed_reads(wildcards):
-    return rules.fastp_pe.output.merged
+def get_fastp_reads(wildcards):
+    return [rules.fastp_pe.output.merged, rules.fastp_pe.output.trimmed[0], rules.fastp_pe.output.trimmed[1]]
 
 def get_read_group(wildcards):
     return r"-R '@RG\tID:{unit}\tSM:{sample}\tPL:{platform}'".format(

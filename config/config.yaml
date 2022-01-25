@@ -6,6 +6,8 @@ units: config/units.tsv
 paths:
   # main base folder for results
   results: "results"
+  # folder where intermediate files will be stored
+  intermediate: "intermediate"
 
 # path with filename where reference will be downloaded to and url it will be
 # downloaded from. url should be a direct link to the reference fasta.

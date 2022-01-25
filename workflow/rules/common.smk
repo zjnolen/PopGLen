@@ -1,6 +1,7 @@
 from snakemake.utils import validate
 import pandas as pd
 import os
+import urllib
 
 # load and validate config file
 if os.path.exists("config/config.yaml"):
@@ -20,14 +21,15 @@ units = pd.read_table(config["units"]).set_index("sample", drop=False)
 ##### Helper functions #####
 
 def genome_file():
-    if pd.isna(config['reference']['fasta_path']):
-        fasta = config['reference']['fasta_url']
+    fasta = config['reference']
+
+    if os.path.isfile(fasta):
+        fasta = fasta
     else:
-        fasta = config['reference']['fasta_path']
+        fasta = "resources/reference/"+os.path.basename(fasta)
+    
     if fasta.endswith('.gz'):
-        return "resources/reference/genome.fa.gz"
-    else:
-        return "resources/reference/genome.fa"
+        return os.path.splitext(fasta)[0]
 
 def get_raw_fastq(wildcards):
     # checks if raw sequencing data is specified locally and sets fastp input

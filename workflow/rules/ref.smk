@@ -2,20 +2,26 @@ localrules: get_genome
 
 rule get_genome:
     output:
-        genome_file()
+        "resources/reference/"+os.path.basename(config['reference'])
     log:
         "logs/reference/get_genome.log"
-    run:
-        if pd.isna(config['reference']['fasta_path']):
-            # Download reference to resources folder
-            import urllib.request
-            fasta_url = config['reference']['fasta_url']
-            urllib.request.urlretrieve(fasta_url, genome_file())
-        else:
-            # Link specified genome file to expected location
-            src = os.path.abspath(config['reference']['fasta_path'])
-            dst = os.path.abspath(genome_file())
-            os.symlink(src, dst)
+    params:
+        fasta_url=config['reference']
+    shell:
+        """
+        mkdir -p resources/reference
+        cd resources/reference
+
+        wget {params.fasta_url}
+        """
+
+rule gunzip_genome:
+    input:
+        genome_file()+".gz"
+    output:
+        genome_file()
+    shell:
+        "gunzip {input}"
 
 rule bwa_index:
     input:

@@ -10,3 +10,5 @@ data
 results
 # ignore mac filesystem file
 .DS_Store
+# ignore run logs
+logs

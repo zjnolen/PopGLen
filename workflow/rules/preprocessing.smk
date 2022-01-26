@@ -6,8 +6,9 @@ rule fastp_pe:
     output:
         trimmed=temp(expand(intermediate+"/fastp/{{sample}}.{read}.fastq.gz", read=["R1","R2"])),
         merged=temp(intermediate+"/fastp/{sample}.merged.fastq.gz"),
-        html=results+"/fastp_reports/{sample}_paired.html",
-        json=results+"/fastp_reports/{sample}_paired.json"
+        unpaired=temp(intermediate+"/fastp/{sample}.singletons.fastq.gz"),
+        html=results+"/fastp/{sample}_paired.html",
+        json=results+"/fastp/{sample}_paired.json"
     log:
         "logs/fastp/{sample}.log"
     params:

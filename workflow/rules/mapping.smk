@@ -1,11 +1,13 @@
 rule bwa_mem:
     input:
-        reads=get_fastp_reads,
+        merged=rules.fastp_pe.output.merged,
+        unpaired=rules.fastp_pe.output.unpaired,
+        paired=rules.fastp_pe.output.trimmed,
         idx=rules.bwa_index.output
     output:
-        mergebam=temp(intermediate+"/mapped/{sample}.merge.mem.bam"),
-        trimbam=temp(intermediate+"/mapped/{sample}.trim.mem.bam"),
-        allbam=temp(intermediate+"/mapped/{sample}.mem.bam")
+        singlebam=temp(intermediate+"/mapping/{sample}.singles.mem.bam"),
+        pairbam=temp(intermediate+"/mapping/{sample}.pairs.mem.bam"),
+        allbam=temp(intermediate+"/mapping/{sample}.mem.bam")
     log:
         "logs/bwa_mem/{sample}.log"
     params:
@@ -18,43 +20,45 @@ rule bwa_mem:
         time="24:00:00"
     shell:
         """
-        # Maps merged (SE) and trimmed (PE) reads separately, then merges them
-        # into a single bam file. Will later be updated to do all three stages
-        # in parallel, and to be able to request only merged or trimmed reads
-        $ to be used.
+        # Maps merged, unpaired (SE) and trimmed (PE) reads separately, then 
+        # merges them into a single bam file. Will maybe be updated to do all 
+        # in parallel, and to be able to request only certain read types to be
+        # used.
 
-        # map merged reads
-            
+        # Combine merged and unpaired reads (all single ended now) to map them 
+        # in one step.
+        cat {input.merged} {input.unpaired} > \
+            {resources.tmpdir}/{wildcards.sample}.SE.fastq.gz
+
+        # Map SE reads
         bwa mem \
             -t {threads} \
             {params.rg} \
             {params.index} \
-            {input.reads[0]} | \
-        \
-        samtools sort -o {output.mergebam}
+            {resources.tmpdir}/{wildcards.sample}.SE.fastq.gz | \
+        samtools sort -o {output.singlebam}
 
-        # map paired reads
+        # Map paired reads
         bwa mem \
             -t {threads} \
             {params.rg} \
             {params.index} \
-            {input.reads[1]} {input.reads[2]} | \
-        \
-        samtools sort -o {output.trimbam}
+            {input.paired} | \
+        samtools sort -o {output.pairbam}
 
-        # merge bam files
+        # Merge bam files for final output
         samtools merge \
             -@ {threads} \
             -o {output.allbam} \
-            {output.mergebam} {output.trimbam}
+            {output.singlebam} {output.pairbam}
         """
 
 rule mark_duplicates:
     input:
-        intermediate+"/mapped/{sample}.mem.bam"
+        intermediate+"/mapping/{sample}.mem.bam"
     output:
-        bam=protected(results+"/bam_dedup/{sample}.mem.bam"),
-        metrics=results+"/mapping/dedup/{sample}.mem.metrics.txt"
+        bam=protected(results+"/dedup/{sample}.mem.bam"),
+        metrics=results+"/dedup/{sample}.mem.metrics.txt"
     log:
         "logs/picard/dedup/{sample}.log"
     params:

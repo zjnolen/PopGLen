@@ -40,11 +40,8 @@ def get_raw_fastq(wildcards):
     unit = units.loc[wildcards.sample, ["fq1", "fq2"]]
     return [unit.fq1,unit.fq2]
 
-def get_fastp_reads(wildcards):
-    return [rules.fastp_pe.output.merged, rules.fastp_pe.output.trimmed[0], rules.fastp_pe.output.trimmed[1]]
-
 def get_read_group(wildcards):
-    return r"-R '@RG\tID:{unit}\tSM:{sample}\tPL:{platform}'".format(
+    return r"-R '@RG\tID:{unit}\tSM:{sample}\tLB:{sample}\tPL:{platform}'".format(
         unit=units.loc[wildcards.sample, "unit"],
         sample=wildcards.sample,
         platform=units.loc[wildcards.sample, "platform"]

@@ -62,7 +62,7 @@ rule mark_duplicates:
     log:
         "logs/picard/dedup/{sample}.log"
     params:
-#        config["params"]["picard"]["MarkDuplicates"]
+        extra=config["params"]["picard"]["MarkDuplicates"]
     resources:
         time="12:00:00"
     wrapper:

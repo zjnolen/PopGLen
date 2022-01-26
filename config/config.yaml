@@ -12,3 +12,9 @@ paths:
 # path with filename where reference will be downloaded to and url it will be
 # downloaded from. url should be a direct link to the reference fasta.
 reference: "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/905/404/155/GCA_905404155.1_ilPleArgu1.1/GCA_905404155.1_ilPleArgu1.1_genomic.fna.gz"
+
+params:
+  # By default we set Picard to remove duplicate reads, change to false to flag
+  # only.
+  picard:
+    MarkDuplicates: "REMOVE_DUPLICATES=true"

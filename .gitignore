@@ -1,5 +1,6 @@
 # ignore file versions no longer used, but backed up
 backup
+*.bak
 # ignore data inputs
 data
 # ignore snakemake files

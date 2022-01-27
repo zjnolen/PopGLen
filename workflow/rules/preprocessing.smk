@@ -12,7 +12,7 @@ rule fastp_pe:
     log:
         "logs/fastp/{sample}.log"
     params:
-        extra="--merge"
+        extra="--merge -p -g"
     threads: 2
     resources:
         time="04:00:00"

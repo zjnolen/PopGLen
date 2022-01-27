@@ -5,9 +5,9 @@ rule bwa_mem:
         paired=rules.fastp_pe.output.trimmed,
         idx=rules.bwa_index.output
     output:
-        singlebam=temp(intermediate+"/mapping/{sample}.singles.mem.bam"),
-        pairbam=temp(intermediate+"/mapping/{sample}.pairs.mem.bam"),
-        allbam=temp(intermediate+"/mapping/{sample}.mem.bam")
+        singlebam=intermediate+"/mapping/{sample}.singles.mem.bam",
+        pairbam=intermediate+"/mapping/{sample}.pairs.mem.bam",
+        allbam=intermediate+"/mapping/{sample}.mem.bam"
     log:
         "logs/bwa_mem/{sample}.log"
     params:

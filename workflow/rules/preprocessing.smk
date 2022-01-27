@@ -4,9 +4,9 @@ rule fastp_pe:
     input:
         sample=get_raw_fastq
     output:
-        trimmed=temp(expand(intermediate+"/fastp/{{sample}}.{read}.fastq.gz", read=["R1","R2"])),
-        merged=temp(intermediate+"/fastp/{sample}.merged.fastq.gz"),
-        unpaired=temp(intermediate+"/fastp/{sample}.singletons.fastq.gz"),
+        trimmed=expand(intermediate+"/fastp/{{sample}}.{read}.fastq.gz", read=["R1","R2"]),
+        merged=intermediate+"/fastp/{sample}.merged.fastq.gz",
+        unpaired=intermediate+"/fastp/{sample}.singletons.fastq.gz",
         html=results+"/fastp/{sample}_paired.html",
         json=results+"/fastp/{sample}_paired.json"
     log:

@@ -14,7 +14,7 @@ rule bwa_mem:
         index=genome_file(),
         rg=get_read_group
     conda:
-        "envs/mapping.yaml"
+        "../envs/mapping.yaml"
     threads: 4
     resources:
         time="24:00:00"
@@ -28,7 +28,7 @@ rule bwa_mem:
         # Combine merged and unpaired reads (all single ended now) to map them 
         # in one step.
         cat {input.merged} {input.unpaired} > \
-            {resources.tmpdir}/{wildcards.sample}.SE.fastq.gz
+            {resources.tmpdir}/{wildcards.sample}.SE.fastq.gz 2> {log}
 
         # Map SE reads
         bwa mem \
@@ -36,7 +36,7 @@ rule bwa_mem:
             {params.rg} \
             {params.index} \
             {resources.tmpdir}/{wildcards.sample}.SE.fastq.gz | \
-        samtools sort -o {output.singlebam}
+        samtools sort -o {output.singlebam} 2>> {log}
 
         # Map paired reads
         bwa mem \
@@ -44,13 +44,13 @@ rule bwa_mem:
             {params.rg} \
             {params.index} \
             {input.paired} | \
-        samtools sort -o {output.pairbam}
+        samtools sort -o {output.pairbam} 2>> {log}
 
         # Merge bam files for final output
         samtools merge \
             -@ {threads} \
             -o {output.allbam} \
-            {output.singlebam} {output.pairbam}
+            {output.singlebam} {output.pairbam} 2>> {log}
         """
 
 rule mark_duplicates:

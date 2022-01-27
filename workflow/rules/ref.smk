@@ -4,15 +4,12 @@ rule get_genome:
     output:
         "resources/reference/"+os.path.basename(config['reference'])
     log:
-        "logs/reference/get_genome.log"
+        "logs/get_genome/get_genome.log"
     params:
         fasta_url=config['reference']
     shell:
         """
-        mkdir -p resources/reference
-        cd resources/reference
-
-        wget {params.fasta_url}
+        wget -P resources/reference -o {log} {params.fasta_url}
         """
 
 rule gunzip_genome:

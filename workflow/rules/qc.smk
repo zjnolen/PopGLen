@@ -1,15 +1,3 @@
-rule qualimap:
-    input:
-        results+"/bam_dedup/{sample}.mem.bam"
-    output:
-        results+"/mapping/qualimap/{sample}_mem/qualimapReport.html"
-    params:
-        outdir = results+"/mapping/qualimap/{sample}_mem"
-    shell:
-        "qualimap bamqc "
-        "-bam {input} "
-        "-outdir {params.outdir}"
-        
 rule mapdamage:
     input:
         ref=genome_file(),
@@ -49,3 +37,21 @@ rule endorspy:
         "../envs/endorspy.yaml"
     shell:
         "endorspy -o json -n {params.outprefix} {input}"
+
+rule qualimap:
+    input:
+        results+"/dedup/{sample}.mem.bam"
+    output:
+        results+"/qualimap/{sample}_mem_dedup/qualimapReport.html",
+        results+"/qualimap/{sample}_mem_dedup/genome_results.txt"
+    params:
+        outdir=results+"/qualimap/{sample}_mem_dedup"
+    conda:
+        "../envs/qualimap.yaml"
+    log:
+        "logs/qualimap/{sample}_mem_dedup.log"
+    resources:
+        time="06:00:00",
+        mem_mb=5120
+    shell:
+        "qualimap bamqc --java-mem-size={resources.mem_mb}M -bam {input} -outdir {params.outdir} 2> {log}"

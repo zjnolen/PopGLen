@@ -9,10 +9,10 @@ if os.path.exists("config/config.yaml"):
 #validate(config, schema="../schemas/config.schema.yaml", set_default=True)
 
 # set results directory
-results = config["paths"]["results"]
+results = config["paths"]["results"]+"/"+config["dataset"]
 
 # set intermediate directory
-intermediate = config["paths"]["intermediate"]
+intermediate = config["paths"]["intermediate"]+"/"+config["dataset"]
 
 # load and validate sample sheet
 samples = pd.read_table(config["samples"]).set_index("sample", drop=False)

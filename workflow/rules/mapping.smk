@@ -63,8 +63,10 @@ rule mark_duplicates:
         "logs/picard/dedup/{sample}.log"
     params:
         extra=config["params"]["picard"]["MarkDuplicates"]
+    threads: 2
     resources:
-        time="12:00:00"
+        time="12:00:00",
+        mem_mb=10240
     wrapper:
         "0.84.0/bio/picard/markduplicates"
 

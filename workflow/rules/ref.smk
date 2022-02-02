@@ -2,7 +2,7 @@ localrules: get_genome
 
 rule get_genome:
     output:
-        "resources/reference/"+os.path.basename(config['reference'])
+        "resources/reference/" + os.path.basename(config['reference'])
     log:
         "logs/get_genome/get_genome.log"
     params:
@@ -14,7 +14,7 @@ rule get_genome:
 
 rule gunzip_genome:
     input:
-        genome_file()+".gz"
+        genome_file() + ".gz"
     output:
         genome_file()
     shell:
@@ -24,14 +24,22 @@ rule bwa_index:
     input:
         genome_file()
     output:
-        genome_file()+".amb",
-        genome_file()+".ann",
-        genome_file()+".bwt",
-        genome_file()+".pac",
-        genome_file()+".sa"
+        genome_file() + ".amb",
+        genome_file() + ".ann",
+        genome_file() + ".bwt",
+        genome_file() + ".pac",
+        genome_file() + ".sa"
     log:
         "logs/bwa_index/genome.log"
     resources:
         time="02:00:00"
     wrapper:
         "0.84.0/bio/bwa/index"
+
+rule samtools_faidx:
+    input:
+        genome_file()
+    output:
+        genome_file() + ".fai"
+    wrapper:
+        "v1.0.0/bio/samtools/faidx"

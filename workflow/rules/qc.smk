@@ -54,4 +54,7 @@ rule qualimap:
         time="06:00:00",
         mem_mb=5120
     shell:
-        "qualimap bamqc --java-mem-size={resources.mem_mb}M -bam {input} -outdir {params.outdir} 2> {log}"
+        """
+        qualimap bamqc --java-mem-size={resources.mem_mb}M -bam {input} \
+            -outdir {params.outdir} 2> {log}
+        """

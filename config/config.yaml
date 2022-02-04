@@ -1,9 +1,9 @@
 # sample and unit information sheet in TSV format
-samples: config/samples.tsv
+samples: config/samples_pargus.tsv
 
 units: config/units.tsv
 
-dataset: "picarus"
+dataset: "pargus"
 
 paths:
   # main base folder for results - dataset will be appended to end
@@ -13,11 +13,34 @@ paths:
 
 # path with filename where reference will be downloaded to and url it will be
 # downloaded from. url should be a direct link to the reference fasta.
-#reference: "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/905/404/155/GCA_905404155.1_ilPleArgu1.1/GCA_905404155.1_ilPleArgu1.1_genomic.fna.gz"
-reference: "https://darwin.cog.sanger.ac.uk/insects/Polyommatus_icarus/ilPolIcar1/assemblies/working/20200120.hicanu.purge/20200120.hicanu.purge.prim.fasta.gz"
+reference: "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/905/404/155/GCA_905404155.1_ilPleArgu1.1/GCA_905404155.1_ilPleArgu1.1_genomic.fna.gz"
+#reference: "https://darwin.cog.sanger.ac.uk/insects/Polyommatus_icarus/ilPolIcar1/assemblies/working/20200120.hicanu.purge/20200120.hicanu.purge.prim.fasta.gz"
 
 params:
-  # By default we set Picard to remove duplicate reads, change to false to flag
-  # only.
+  # By default we set Picard to remove duplicate reads, change to false 
+  # to flag only.
   picard:
     MarkDuplicates: "REMOVE_DUPLICATES=true"
+  angsd:
+    # gl_model - 1=SAMtools, 2=GATK, 3=SOAPsnp, 4=SYK; default is 1
+    gl_model: 1
+    # max_missing - Exclude sites based on missing data in individuals 
+    # where 0.0 allows sites with completely missing data and 1.0 
+    # permits no missing data. We set the default to 0.2 (20% missing 
+    # data).
+    max_missing: 0.2
+    # extra - any additional filtering parameters to be used across all 
+    # analyses with angsd. By default, we use -C 50 to correct for 
+    # excessive mismatches, set a min mapping quality of 30, a minimum 
+    # base quality of 20, permit both paired reads and singletons 
+    # (needed since we mapped both merged and unmerged reads), remove 
+    # reads with multiple best hits, and reducing base quality scores 
+    # based on baq (penalizes mapping around indels)
+    extra: "-C 50 -minMapQ 30 -minQ 20 -only_proper_pairs 0 -uniqueOnly 1 -baq 1"
+    # fold - Define if SFS should be folded when made. If you don't 
+    # have ancestral states to assign to -anc, it is best to set to 1. 
+    # We set the default to 1.
+    fold: 1
+    # sfsboot - Define number of bootstrap SFS to produce, we default 
+    # to 100.
+    sfsboot: 1000

@@ -7,4 +7,5 @@ max-status-checks-per-second: 10
 local-cores: 1
 latency-wait: 60
 use-conda: True
+use-singularity: True
 jobs: 999

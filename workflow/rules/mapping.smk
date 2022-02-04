@@ -5,6 +5,7 @@ rule bwa_mem:
         paired=rules.fastp_pe.output.trimmed,
         idx=rules.bwa_index.output
     output:
+        SEfastq=intermediate+"/mapping/{sample}.SE.fastq.gz",
         singlebam=intermediate+"/mapping/{sample}.singles.mem.bam",
         pairbam=intermediate+"/mapping/{sample}.pairs.mem.bam",
         allbam=intermediate+"/mapping/{sample}.mem.bam"
@@ -27,8 +28,7 @@ rule bwa_mem:
 
         # Combine merged and unpaired reads (all single ended now) to map them 
         # in one step.
-        cat {input.merged} {input.unpaired} > \
-            {resources.tmpdir}/{wildcards.sample}.SE.fastq.gz 2> {log}
+        cat {input.merged} {input.unpaired} > {output.SEfastq} 2> {log}
 
         # Map SE reads
         bwa mem \

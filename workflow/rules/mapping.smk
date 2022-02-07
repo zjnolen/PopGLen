@@ -1,3 +1,5 @@
+ruleorder: samtools_subsample > mark_duplicates
+
 rule bwa_mem:
     input:
         merged=rules.fastp_pe.output.merged,
@@ -6,9 +8,9 @@ rule bwa_mem:
         idx=rules.bwa_index.output
     output:
         SEfastq=intermediate+"/mapping/{sample}.SE.fastq.gz",
-        singlebam=intermediate+"/mapping/{sample}.singles.mem.bam",
-        pairbam=intermediate+"/mapping/{sample}.pairs.mem.bam",
-        allbam=intermediate+"/mapping/{sample}.mem.bam"
+        singlebam=intermediate+"/mapping/{sample}.singles.bam",
+        pairbam=intermediate+"/mapping/{sample}.pairs.bam",
+        allbam=intermediate+"/mapping/{sample}.bam"
     log:
         "logs/bwa_mem/{sample}.log"
     params:
@@ -55,10 +57,10 @@ rule bwa_mem:
 
 rule mark_duplicates:
     input:
-        intermediate+"/mapping/{sample}.mem.bam"
+        intermediate+"/mapping/{sample}.bam"
     output:
-        bam=protected(results+"/dedup/{sample}.mem.bam"),
-        metrics=results+"/dedup/{sample}.mem.metrics.txt"
+        bam=protected(results+"/dedup/{sample}.bam"),
+        metrics=results+"/dedup/{sample}.metrics.txt"
     log:
         "logs/picard/dedup/{sample}.log"
     params:
@@ -79,3 +81,24 @@ rule samtools_index:
         "logs/samtools/index/{prefix}.bam"
     wrapper:
         "0.84.0/bio/samtools/index"
+
+rule samtools_subsample:
+    input:
+        results + "/dedup/{sample}.bam"
+    output:
+        results + "/dedup/{sample}_subcov{cov}x.bam"
+    log:
+        "logs/samtools/subsample/{sample}_subcov{cov}.log"
+    conda:
+        "../envs/samtools.yaml"
+    resources:
+        time="06:00:00"
+    shell:
+        """
+        cov=$(samtools depth -a {input} | awk '{{sum+=$3}} END \
+            {{print sum/NR}}')
+        
+        propcov=$(echo "$cov {wildcards.cov}" | awk '{{print 1 / ($1 / $2)}}')
+        
+        samtools view -s $propcov -b {input} > {output}
+        """

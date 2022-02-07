@@ -2,6 +2,7 @@ from snakemake.utils import validate
 import pandas as pd
 import os
 import urllib
+import re
 
 # load and validate config file
 if os.path.exists("config/config.yaml"):
@@ -51,28 +52,51 @@ def get_read_group(wildcards):
             platform=units.loc[wildcards.sample, "platform"]
         )
 
+def get_subsample_prop(wildcards):
+    cov_histo = pd.read_table(results + \
+        "/qualimap/{wildcards.sample}_mem_dedup/raw_data_qualimapReport/"\
+        "coverage_histogram.txt")
+
+    cov = sum(cov_histo["#Coverage"] \
+            * cov_histo["Number of genomic locations"]) \
+        / sum(cov_histo["Number of genomic locations"])
+    
+    return "-s " + str(1 / (cov / float({wildcards.cov})))
+
 ########## ANGSD ###########
 
 def get_bamlist_bams(wildcards):
     # Checks if rule is looking for a population or a sample by 
     # comparing wildcard value with population list
     pop = wildcards.population
-    if pop in samples.population.values and pop not in samples.index:
-        return expand(results+"/dedup/{sample}.mem.bam", sample
+    if re.search("subcov", pop):
+        rawpop = pop.rsplit('_', 1)[0]
+        suffix = "_" + pop.split('_')[-1]
+    else:
+        rawpop = pop
+        suffix = ""
+    if rawpop in samples.population.values and pop not in samples.index:
+        return expand(results + "/dedup/{sample}" + suffix + ".bam", sample
             = samples.index[samples.population == wildcards.population])
-    elif pop in samples.index and pop not in samples.population.values:
-        return results+"/dedup/{population}.mem.bam"
-    elif pop in samples.index and pop in samples.population.values:
+    elif rawpop in samples.index and pop not in samples.population.values:
+        return results + "/dedup/{population}.bam"
+    elif rawpop in samples.index and pop in samples.population.values:
         print("ERROR: Please ensure sample names do not match population " \
             "names")
 
 def get_bamlist_bais(wildcards):
     pop = wildcards.population
-    if pop in samples.population.values and pop not in samples.index:
-        return expand(results+"/dedup/{sample}.mem.bam.bai", sample
+    if re.search("subcov", pop):
+        rawpop = pop.rsplit('_', 1)[0]
+        suffix = "_" + pop.split('_')[-1]
+    else:
+        rawpop = pop
+        suffix = ""
+    if rawpop in samples.population.values and pop not in samples.index:
+        return expand(results + "/dedup/{sample}" + suffix + ".bam.bai", sample
             = samples.index[samples.population == wildcards.population])
-    elif pop in samples.index and pop not in samples.population.values:
-        return results+"/dedup/{population}.mem.bam.bai"
-    elif pop in samples.index and pop in samples.population.values:
+    elif rawpop in samples.index and pop not in samples.population.values:
+        return results + "/dedup/{population}.bam.bai"
+    elif rawpop in samples.index and pop in samples.population.values:
         print("ERROR: Please ensure sample names do not match population " \
             "names")

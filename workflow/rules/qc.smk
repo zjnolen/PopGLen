@@ -20,19 +20,19 @@ rule mapdamage:
 
 rule samtools_flagstat:
     input:
-        intermediate+"/mapping/{sample}.mem.bam"
+        intermediate+"/mapping/{sample}.bam"
     output:
-        results+"/samtools/stats/{sample}.mem.flagstat"
+        results+"/samtools/stats/{sample}.flagstat"
     wrapper:
         "v1.0.0/bio/samtools/flagstat"
 
 rule endorspy:
     input:
-        results+"/samtools/stats/{sample}.mem.flagstat"
+        results+"/samtools/stats/{sample}.flagstat"
     output:
-        results+"/endorspy/{sample}_mem_endogenous_dna_mqc.json"
+        results+"/endorspy/{sample}_endogenous_dna_mqc.json"
     params:
-        outprefix=results+"/endorspy/{sample}_mem"
+        outprefix=results+"/endorspy/{sample}"
     conda:
         "../envs/endorspy.yaml"
     shell:
@@ -40,16 +40,16 @@ rule endorspy:
 
 rule qualimap:
     input:
-        results+"/dedup/{sample}.mem.bam"
+        results+"/dedup/{sample}.bam"
     output:
-        results+"/qualimap/{sample}_mem_dedup/qualimapReport.html",
-        results+"/qualimap/{sample}_mem_dedup/genome_results.txt"
+        results+"/qualimap/{sample}/qualimapReport.html",
+        results+"/qualimap/{sample}/genome_results.txt"
     params:
-        outdir=results+"/qualimap/{sample}_mem_dedup"
+        outdir=results+"/qualimap/{sample}"
     conda:
         "../envs/qualimap.yaml"
     log:
-        "logs/qualimap/{sample}_mem_dedup.log"
+        "logs/qualimap/{sample}_dedup.log"
     resources:
         time="06:00:00",
         mem_mb=5120

@@ -9,3 +9,4 @@ latency-wait: 60
 use-conda: True
 use-singularity: True
 jobs: 999
+default-resources: 'mem_mb=(threads*5570)'

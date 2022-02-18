@@ -7,10 +7,10 @@ rule bwa_mem:
         paired=rules.fastp_pe.output.trimmed,
         idx=rules.bwa_index.output
     output:
-        SEfastq=intermediate+"/mapping/{sample}.SE.fastq.gz",
-        singlebam=intermediate+"/mapping/{sample}.singles.bam",
-        pairbam=intermediate+"/mapping/{sample}.pairs.bam",
-        allbam=intermediate+"/mapping/{sample}.bam"
+        SEfastq=intermediate+"/mapped/{sample}.SE.fastq.gz",
+        singlebam=intermediate+"/mapped/{sample}.singles.bam",
+        pairbam=intermediate+"/mapped/{sample}.pairs.bam",
+        allbam=results + "/mapped/{sample}.bam"
     log:
         "logs/bwa_mem/{sample}.log"
     params:
@@ -37,7 +37,7 @@ rule bwa_mem:
             -t {threads} \
             {params.rg} \
             {params.index} \
-            {resources.tmpdir}/{wildcards.sample}.SE.fastq.gz | \
+            {output.SEfastq} | \
         samtools sort -o {output.singlebam} 2>> {log}
 
         # Map paired reads
@@ -57,7 +57,7 @@ rule bwa_mem:
 
 rule mark_duplicates:
     input:
-        intermediate+"/mapping/{sample}.bam"
+        results + "/mapped/{sample}.bam"
     output:
         bam=protected(results+"/dedup/{sample}.bam"),
         metrics=results+"/dedup/{sample}.metrics.txt"
@@ -84,11 +84,11 @@ rule samtools_index:
 
 rule samtools_subsample:
     input:
-        results + "/dedup/{sample}.bam"
+        results + "{prefix}.bam"
     output:
-        results + "/dedup/{sample}_subcov{cov}x.bam"
+        results + "{prefix}_subcov{cov}x.bam"
     log:
-        "logs/samtools/subsample/{sample}_subcov{cov}.log"
+        "logs/samtools/subsample/{prefix}_subcov{cov}.log"
     conda:
         "../envs/samtools.yaml"
     resources:

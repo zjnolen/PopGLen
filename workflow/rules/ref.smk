@@ -1,8 +1,8 @@
-localrules: get_genome
+localrules: get_genome, chromosome_list
 
 rule get_genome:
     output:
-        "resources/reference/" + os.path.basename(config['reference'])
+        "resources/reference/" + os.path.basename(config['reference']['fasta'])
     log:
         "logs/get_genome/get_genome.log"
     params:
@@ -16,7 +16,7 @@ rule gunzip_genome:
     input:
         genome_file() + ".gz"
     output:
-        genome_file()
+        protected(genome_file())
     shell:
         "gunzip {input}"
 
@@ -24,11 +24,7 @@ rule bwa_index:
     input:
         genome_file()
     output:
-        genome_file() + ".amb",
-        genome_file() + ".ann",
-        genome_file() + ".bwt",
-        genome_file() + ".pac",
-        genome_file() + ".sa"
+        protected(multiext(genome_file(),".amb",".ann",".bwt",".pac",".sa"))
     log:
         "logs/bwa_index/genome.log"
     resources:
@@ -40,6 +36,16 @@ rule samtools_faidx:
     input:
         genome_file()
     output:
-        genome_file() + ".fai"
+        protected(genome_file() + ".fai")
     wrapper:
         "v1.0.0/bio/samtools/faidx"
+
+checkpoint chromosome_list:
+    input:
+        genome_file()
+    output:
+        protected(genome_file() + ".chromlist")
+    shell:
+        """
+        grep ">" {input} | awk '{{print $1}}' | cut -c2- > {output}
+        """

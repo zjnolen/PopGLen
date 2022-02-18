@@ -28,7 +28,7 @@ units = pd.read_table(config["units"]).set_index("sample", drop=False)
 
 def genome_file():
     # Returns path and name of reference after processing
-    fasta = config['reference']
+    fasta = config['reference']['fasta']
 
     if os.path.isfile(fasta):
         fasta = fasta
@@ -75,7 +75,10 @@ def get_bamlist_bams(wildcards):
     else:
         rawpop = pop
         suffix = ""
-    if rawpop in samples.population.values and pop not in samples.index:
+    if rawpop == config["dataset"]:
+        return expand(results + "/dedup/{sample}" + suffix + ".bam", sample
+            = samples.index)
+    elif rawpop in samples.population.values and pop not in samples.index:
         return expand(results + "/dedup/{sample}" + suffix + ".bam", sample
             = samples.index[samples.population == wildcards.population])
     elif rawpop in samples.index and pop not in samples.population.values:
@@ -92,7 +95,10 @@ def get_bamlist_bais(wildcards):
     else:
         rawpop = pop
         suffix = ""
-    if rawpop in samples.population.values and pop not in samples.index:
+    if rawpop == config["dataset"]:
+        return expand(results + "/dedup/{sample}" + suffix + ".bam.bai", sample
+            = samples.index)
+    elif rawpop in samples.population.values and pop not in samples.index:
         return expand(results + "/dedup/{sample}" + suffix + ".bam.bai", sample
             = samples.index[samples.population == wildcards.population])
     elif rawpop in samples.index and pop not in samples.population.values:
@@ -100,3 +106,19 @@ def get_bamlist_bais(wildcards):
     elif rawpop in samples.index and pop in samples.population.values:
         print("ERROR: Please ensure sample names do not match population " \
             "names")
+
+def aggregate_beagles(wildcards):
+    checkpoint_output = checkpoints.chromosome_list.get(**wildcards).output[0]
+    chroms = pd.read_table(checkpoint_output, header=None)
+    excl_chr = [config["reference"]["mito"]] + config["reference"]["excl_chr"]
+    chroms = chroms[~chroms[0].isin(excl_chr)]
+    return expand(results + "/angsd/beagle/" + wildcards.population + 
+                "_{chrom}_md" + wildcards.miss + ".beagle.gz", chrom=chroms[0])
+
+def aggregate_ngsLD(wildcards):
+    checkpoint_output = checkpoints.chromosome_list.get(**wildcards).output[0]
+    chroms = pd.read_table(checkpoint_output, header=None)
+    excl_chr = [config["reference"]["mito"]] + config["reference"]["excl_chr"]
+    chroms = chroms[~chroms[0].isin(excl_chr)]
+    return expand(results + "/ngsLD/" + wildcards.population + "_{chrom}_md"
+                + wildcards.miss + "_pruned.sites", chrom=chroms[0])

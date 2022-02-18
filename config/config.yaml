@@ -1,25 +1,49 @@
-# sample and unit information sheet in TSV format
+#=====================Dataset Configuration============================#
+
 samples: config/samples_pargus.tsv
 
 units: config/units.tsv
 
 dataset: "pargus"
 
+#===================== Output Configuration ===========================#
+
 paths:
   # main base folder for results - dataset will be appended to end
   results: "results"
-  # folder where intermediate files will be stored - dataset will be appended to end
+  # folder where intermediate files will be stored - dataset will be 
+  # appended to end
   intermediate: "intermediate"
 
-# path with filename where reference will be downloaded to and url it will be
-# downloaded from. url should be a direct link to the reference fasta.
-reference: "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/905/404/155/GCA_905404155.1_ilPleArgu1.1/GCA_905404155.1_ilPleArgu1.1_genomic.fna.gz"
-#reference: "https://darwin.cog.sanger.ac.uk/insects/Polyommatus_icarus/ilPolIcar1/assemblies/working/20200120.hicanu.purge/20200120.hicanu.purge.prim.fasta.gz"
+#===================== Reference Configuration ========================#
+
+# `fasta` should be a string with the absolute or relative path to a
+# local copy of the fasta or a URL to a online location it will be 
+# downloaded from.
+# `mito` should be the ID (string format) of the mitochondria in the 
+# reference to be isolated for mitochondrial analyses and removed in 
+# nuclear ones
+# `excl_chr` should be a list of strings referring to chromosome IDs 
+# that you want excluded from autosomal analyses - these may be sex 
+# chromosomes, unidentified contigs, etc.
+reference: 
+#: "https://darwin.cog.sanger.ac.uk/insects/Polyommatus_icarus/ilPolIcar1/assemblies/working/20200120.hicanu.purge/20200120.hicanu.purge.prim.fasta.gz"
+  fasta: "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/905/404/155/GCA_905404155.1_ilPleArgu1.1/GCA_905404155.1_ilPleArgu1.1_genomic.fna.gz"
+  mito: "FR989949.1"
+  excl_chr: ["FR989932.1","CAJQEX010000004.1","CAJQEX010000013.1","CAJQEX010000014.1","CAJQEX010000015.1","CAJQEX010000002.1","CAJQEX010000005.1","CAJQEX010000006.1","CAJQEX010000009.1","CAJQEX010000007.1","CAJQEX010000003.1","CAJQEX010000008.1","CAJQEX010000010.1","CAJQEX010000001.1","CAJQEX010000011.1","CAJQEX010000012.1"]
+
+#==================== Downsampling Configuration ======================#
+
+downsample_cov: 
+
+#===================== Software Configuration =========================#
 
 params:
   # By default we set Picard to remove duplicate reads, change to false 
   # to flag only.
   picard:
+    # By default we set Picard to remove duplicate reads, change to 
+    # false to flag only.
     MarkDuplicates: "REMOVE_DUPLICATES=true"
   angsd:
     # gl_model - 1=SAMtools, 2=GATK, 3=SOAPsnp, 4=SYK; default is 1
@@ -43,4 +67,6 @@ params:
     fold: 1
     # sfsboot - Define number of bootstrap SFS to produce, we default 
     # to 100.
-    sfsboot: 1000
+    sfsboot: 100
+    snp_pval: "1e-6"
+    min_maf: 0.05

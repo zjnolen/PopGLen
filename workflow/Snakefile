@@ -11,13 +11,15 @@ include: "rules/preprocessing.smk"
 include: "rules/qc.smk"
 include: "rules/mapping.smk"
 include: "rules/angsd.smk"
+include: "rules/popgen.smk"
 
 def all_input(wildcards):
     """
     Function defining all requested inputs for the all rule below.
     """
-    #wanted_input = expand([results+"/angsd/glf/{sample}_mem.glf.gz", results+"/endorspy/{sample}_mem_endogenous_dna_mqc.json", results+"/qualimap/{sample}_mem_dedup/genome_results.txt"], sample=samples.index)
-    wanted_input = expand([results+"/angsd/sfs/{sample}_fold1.sfs", results+"/angsd/sfs/{sample}_fold1.bootsfs", results+"/qualimap/{sample}_mem_dedup/genome_results.txt", results+"/endorspy/{sample}_mem_endogenous_dna_mqc.json"], sample=samples.index)
+    #wanted_input = expand([results+"/angsd/sfs/{sample}_fold1.sfs", results+"/angsd/sfs/{sample}_fold1.bootsfs", results+"/qualimap/{sample}_mem_dedup/genome_results.txt", results+"/endorspy/{sample}_mem_endogenous_dna_mqc.json"], sample=samples.index)
+    wanted_input = "test.pargus.md10.txt"
+
     return wanted_input
 
 

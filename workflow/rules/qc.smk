@@ -1,26 +1,8 @@
-rule mapdamage:
-    input:
-        ref=genome_file(),
-        bam=results+"/bam_dedup/{sample}.mem.bam"
-    output:
-        log=results+"/mapping/mapdamage/{sample}/Runtime_log.txt",  # output folder is infered from this file, so it needs to be the same folder for all output files
-        GtoA3p=results+"/mapping/mapdamage/{sample}/3pGtoA_freq.txt",
-        CtoT5p=results+"/mapping/mapdamage/{sample}/5pCtoT_freq.txt",
-        dnacomp=results+"/mapping/mapdamage/{sample}/dnacomp.txt",
-        frag_misincorp=results+"/mapping/mapdamage/{sample}/Fragmisincorporation_plot.pdf",
-        len=results+"/mapping/mapdamage/{sample}/Length_plot.pdf",
-        lg_dist=results+"/mapping/mapdamage/{sample}/lgdistribution.txt",
-        misincorp=results+"/mapping/mapdamage/{sample}/misincorporation.txt"
-    log:
-        "logs/mapdamage/{sample}.log"
-    resources:
-        time="04:00:00"
-    wrapper:
-        "0.84.0/bio/mapdamage2"
+localrules: pop_meanDepth
 
 rule samtools_flagstat:
     input:
-        intermediate+"/mapping/{sample}.bam"
+        results+"/mapped/{sample}.bam"
     output:
         results+"/samtools/stats/{sample}.flagstat"
     wrapper:
@@ -49,12 +31,41 @@ rule qualimap:
     conda:
         "../envs/qualimap.yaml"
     log:
-        "logs/qualimap/{sample}_dedup.log"
+        logs + "/qualimap/{sample}_dedup.log"
     resources:
-        time="06:00:00",
-        mem_mb=5120
+        time="06:00:00"
     shell:
         """
         qualimap bamqc --java-mem-size={resources.mem_mb}M -bam {input} \
             -outdir {params.outdir} 2> {log}
+        """
+
+rule angsd_doDepth:
+    input:
+        results+"/angsd/bamlists/{population}.bamlist"
+    output:
+        depthSample=results+"/depth/{population}_chr{chrom}.depthSample",
+        depthGlobal=results+"/depth/{population}_chr{chrom}.depthGlobal"
+    params:
+        out_prefix=results+"/depth/{population}_chr{chrom}"
+    log:
+        logs + "angsd/depth/{population}_chr{chrom}.log"
+    conda:
+        "../envs/angsd.yaml"
+    resources:
+        time=lambda wildcards, attempt: attempt*360
+    shell:
+        """
+        angsd -bam {input} -doDepth 1 -doCounts 1 -r {wildcards.chrom} \
+            -maxDepth 200 -out {params.out_prefix} &> {log}
+        """
+
+rule pop_meanDepth:
+    input:
+        lambda w: expand(results+"/depth/{{population}}_chr{chrom}.depthGlobal", chrom=get_contigs())
+    output:
+        results+"/depth/{population}.depthMean"
+    shell:
+        """
+        cat {input} | workflow/scripts/pop_depth.py > {output}
         """

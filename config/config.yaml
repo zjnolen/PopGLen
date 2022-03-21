@@ -14,6 +14,9 @@ paths:
   # folder where intermediate files will be stored - dataset will be 
   # appended to end
   intermediate: "intermediate"
+  # folder where log files will be stored - dataset will be appended to 
+  # end
+  logs: "logs"
 
 #===================== Reference Configuration ========================#
 
@@ -34,13 +37,28 @@ reference:
 
 #==================== Downsampling Configuration ======================#
 
-downsample_cov: 
+downsample_cov:
+
+#====================== Analysis Selection ============================#
+# Here you select what steps in the pipeline you would like to perform.
+
+analyses:
+  # raw data and mapping quality control
+  pretrim_fastqc: true
+  posttrim_fastqc: true
+  endoCont_endorspy: true
+  qualimap: true
+  # population genomic analyses
+  pca_pcangsd: true
+  thetas_angsd: true
+  heterozygosity_angsd: true
+  inbreedingCoeff_ngsf-hmm: true
+  ROH_ngsf-hmm: true
+  pastNe_gone: true
 
 #===================== Software Configuration =========================#
 
 params:
-  # By default we set Picard to remove duplicate reads, change to false 
-  # to flag only.
   picard:
     # By default we set Picard to remove duplicate reads, change to 
     # false to flag only.
@@ -50,9 +68,13 @@ params:
     gl_model: 1
     # max_missing - Exclude sites based on missing data in individuals 
     # where 0.0 allows sites with completely missing data and 1.0 
-    # permits no missing data. We set the default to 0.2 (20% missing 
-    # data).
-    max_missing: 0.2
+    # permits no missing data. You have the option to set different 
+    # values for the dataset as a whole (such as for making a PCA) and 
+    # for individual populations (calculating thetas, F, ROH, etc.). We 
+    # set the default to 0.2 (20% missing data) for populations and 0.0 
+    # for the whole dataset.
+    max_missing_pop: 0.2
+    max_missing_dataset: 0.0
     # extra - any additional filtering parameters to be used across all 
     # analyses with angsd. By default, we use -C 50 to correct for 
     # excessive mismatches, set a min mapping quality of 30, a minimum 

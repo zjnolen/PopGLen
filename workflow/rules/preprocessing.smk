@@ -4,7 +4,8 @@ rule fastp_pe:
     input:
         sample=get_raw_fastq
     output:
-        trimmed=expand(intermediate+"/fastp/{{sample}}.{read}.fastq.gz", read=["R1","R2"]),
+        trimmed=expand(intermediate+"/fastp/{{sample}}.{read}.fastq.gz",
+            read=["R1","R2"]),
         merged=intermediate+"/fastp/{sample}.merged.fastq.gz",
         unpaired=intermediate+"/fastp/{sample}.singletons.fastq.gz",
         html=results+"/fastp/{sample}_paired.html",

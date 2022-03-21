@@ -12,7 +12,7 @@ rule bwa_mem:
         pairbam=intermediate+"/mapped/{sample}.pairs.bam",
         allbam=results + "/mapped/{sample}.bam"
     log:
-        "logs/bwa_mem/{sample}.log"
+        logs + "bwa_mem/{sample}.log"
     params:
         index=genome_file(),
         rg=get_read_group
@@ -20,10 +20,10 @@ rule bwa_mem:
         "../envs/mapping.yaml"
     threads: 4
     resources:
-        time="24:00:00"
+        time="12:00:00"
     shell:
         """
-        # Maps merged, unpaired (SE) and trimmed (PE) reads separately, then 
+        # Maps merged + unpaired (SE) and trimmed (PE) reads separately, then 
         # merges them into a single bam file. Will maybe be updated to do all 
         # in parallel, and to be able to request only certain read types to be
         # used.
@@ -62,13 +62,12 @@ rule mark_duplicates:
         bam=protected(results+"/dedup/{sample}.bam"),
         metrics=results+"/dedup/{sample}.metrics.txt"
     log:
-        "logs/picard/dedup/{sample}.log"
+        logs + "/picard/dedup/{sample}.log"
     params:
         extra=config["params"]["picard"]["MarkDuplicates"]
     threads: 2
     resources:
-        time="12:00:00",
-        mem_mb=10240
+        time="12:00:00"
     wrapper:
         "0.84.0/bio/picard/markduplicates"
 
@@ -78,17 +77,17 @@ rule samtools_index:
     output:
         "{prefix}.bam.bai"
     log:
-        "logs/samtools/index/{prefix}.bam"
+        logs + "samtools/index/{prefix}.bam"
     wrapper:
         "0.84.0/bio/samtools/index"
 
 rule samtools_subsample:
     input:
-        results + "{prefix}.bam"
+        results + "/dedup/{prefix}.bam"
     output:
-        results + "{prefix}_subcov{cov}x.bam"
+        results + "/dedup/{prefix}_dp{cov}x.bam"
     log:
-        "logs/samtools/subsample/{prefix}_subcov{cov}.log"
+        logs + "samtools/subsample/{prefix}_dp{cov}x.log"
     conda:
         "../envs/samtools.yaml"
     resources:
@@ -100,5 +99,9 @@ rule samtools_subsample:
         
         propcov=$(echo "$cov {wildcards.cov}" | awk '{{print 1 / ($1 / $2)}}')
         
-        samtools view -s $propcov -b {input} > {output}
+        if (( $(echo "$propcov > 1" | bc -l) )); then
+            ln -s {wildcards.prefix}.bam {output}
+        else
+            samtools view -s $propcov -b {input} > {output}
+        fi
         """

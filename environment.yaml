@@ -12,3 +12,5 @@ dependencies:
   - mamba
   - pandas
   - graphviz
+  - perl
+  - gzip

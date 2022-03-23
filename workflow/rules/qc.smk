@@ -49,7 +49,7 @@ rule angsd_doDepth:
     params:
         out_prefix=results+"/depth/{population}_chr{chrom}"
     log:
-        logs + "angsd/depth/{population}_chr{chrom}.log"
+        logs + "/angsd/depth/{population}_chr{chrom}.log"
     conda:
         "../envs/angsd.yaml"
     resources:

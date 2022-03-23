@@ -14,6 +14,7 @@ include: "rules/angsd.smk"
 include: "rules/thetas.smk"
 include: "rules/linkage.smk"
 include: "rules/pca.smk"
+include: "rules/inbreeding.smk"
 
 # Accumulate desired output files from config file
 all_outputs = []
@@ -31,6 +32,14 @@ if config["analyses"]["heterozygosity_angsd"]:
 	all_outputs.append(expand(
 		results+"/angsd/thetas/{population}.thetaWindows.pestPG",
 		population=samples.index))
+
+if config["analyses"]["inbreedingCoeff_ngsf-hmm"]:
+	all_outputs.append(expand(
+		results+"/inbreeding/{population}.indF", population=pop_list))
+
+if config["analyses"]["ROH_ngsf-hmm"]:
+	all_outputs.append(expand(
+		results+"/inbreeding/{population}.ibd", population=pop_list))
 
 # master target rule
 rule all:

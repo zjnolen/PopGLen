@@ -1,4 +1,4 @@
-localrules: angsd_makeBamlist, angsd_merge_beagle
+localrules: angsd_makeBamlist
 
 rule angsd_makeBamlist:
 	input:
@@ -41,12 +41,13 @@ rule angsd_doSaf:
 			| awk '{{print $1*(1-{params.miss})}}' \
 			| awk '{{print int($1) + ( $1!=int($1) && $1>=0 )}}')
 		minDP=$(echo $nInd | awk '{{print $1*2}}')
-		maxDP=$(cat {input.popDP} | awk '{{print 2*$1}}')
+		maxDP=$(cat {input.popDP} | awk '{{print 3*$1}}')
 
 		angsd -doSaf 1 -bam {input.bamlist} -GL {params.gl_model} \
 			-anc {input.anc} -ref {input.ref} -nThreads {threads} \
 			{params.extra} -out {params.out_prefix} -doCounts 1 \
-			-setMinDepth $minDP -setMaxDepth $maxDP -minInd $minInd &> {log}
+			-setMinDepth $minDP -setMaxDepth $maxDP -minInd $minInd \
+			-setMinDepthInd 3 &> {log}
 		"""
 
 rule angsd_realSFS:
@@ -116,13 +117,13 @@ rule angsd_chrom_beagle:
 			| awk '{{print $1*(1-{params.miss})}}' \
 			| awk '{{print int($1) + ( $1!=int($1) && $1>=0 )}}')
 		minDP=$(echo $nInd | awk '{{print $1*2}}')
-		maxDP=$(cat {input.popDP} | awk '{{print 2*$1}}')
+		maxDP=$(cat {input.popDP} | awk '{{print 3*$1}}')
 
 		angsd -GL {params.gl_model} -doGlf 2 -doMaf 1 -SNP_pval {params.pval} \
 			-bam {input.bamlist} -nThreads {threads} -out {params.out_prefix} \
 			-doMajorMinor 1 -r {wildcards.chrom} -ref {input.ref} \
 			-minInd $minInd {params.extra} -doCounts 1 -minMaf 0.05 \
-			-setMinDepth $minDP -setMaxDepth $maxDP &> {log}
+			-setMinDepth $minDP -setMinDepthInd 3 -setMaxDepth $maxDP &> {log}
 		"""
 
 rule angsd_merge_beagle:
@@ -134,6 +135,7 @@ rule angsd_merge_beagle:
 		logs + "/angsd/beagle/aggregate_{population}.log"
 	shell:
 		r"""
+		set +o pipefail;
 		zcat {input[0]} | head -n 1 | gzip > {output} 2> {log}
 
 		for f in {input}; do

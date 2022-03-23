@@ -38,13 +38,13 @@ rule ngsLD_prune_sites:
 		logs + "/ngsLD/prune_sites/{population}_chr{chrom}.log"
 	conda:
 		"../envs/pruning.yaml"
-	threads: lambda wildcards, attempt: attempt*2
+	threads: lambda wildcards, attempt: attempt*4
 	resources:
 		time="24:00:00"
 	shell:
 		"""
-		workflow/scripts/prune_ngsLD.py --input {input.ld} > {output.sites} \
-			2> {log}
+		workflow/scripts/prune_ngsLD.py --input {input.ld} \
+			--output {output.sites} 2> {log}
 		"""
 
 rule prune_chrom_beagle:
@@ -52,33 +52,32 @@ rule prune_chrom_beagle:
 		beagle=rules.angsd_chrom_beagle.output.beagle,
 		sites=rules.ngsLD_prune_sites.output.sites
 	output:
-		pruned=results+"/angsd/beagle/pruned/chrom/{population}_chr{chrom}_pruned.beagle.gz",
-		sites=temp(results+"/ngsLD/prune_sites/{population}_chr{chrom}_pruned.sites.tab")
+		pruned=temp(results+"/angsd/beagle/pruned/chrom/{population}_chr{chrom}_pruned.beagle"),
+		prunedgz=results+"/angsd/beagle/pruned/chrom/{population}_chr{chrom}_pruned.beagle.gz"
 	log:
 		logs + "/ngsLD/prune_beagle/{population}_chr{chrom}.log"
-	threads: lambda wildcards, attempt: attempt*2
+	threads: lambda wildcards, attempt: attempt
+	resources:
+		time="04:00:00"
 	shell:
 		r"""
-		echo "The beagle file produced by this will have no header." > {log}
-		echo "It will be added in when the files are cat together." >> {log}
+		set +o pipefail;
+		zcat {input.beagle} | head -n 1 > {output.pruned} 2> {log}
 
-		# Add trailing tab to sites file ensuring only exact matches are
-		# kept.
-		sed "s/$/\t/g" {input.sites} > {output.sites} 2>> {log}
+		while read pos; do
+			zcat {input.beagle} | grep "$pos	" >> {output.pruned} 2>> {log}
+		done < {input.sites}
 
-		zgrep -f {output.sites} {input.beagle} | gzip > {output.pruned} \
-			2>> {log}
-		
-		Nsites=$(cat {input.sites} | wc -l) &>> {log}
-		NsitesB=$(zcat {output.pruned} | wc -l) &>> {log}
+		gzip -c {output.pruned} > {output.prunedgz} 2> {log}
+
+		Nsites=$(cat {input.sites} | wc -l | awk '{{print $1+1}}') &>> {log}
+		NsitesB=$(zcat {output.prunedgz} | wc -l) &>> {log}
 
 		if [ $Nsites = $NsitesB ]; then
 			echo "Pruning successful!" &>> {log}
 		else
 			echo "Number of sites in pruned beagle differ from sites file." \
 				&>> {log}
-			echo "Please check to make sure sites file has format" \
-				"chrom_position\t for each site, one per line." &>> {log}
 			exit 1
 		fi
 		"""
@@ -102,6 +101,7 @@ rule merge_pruned_beagles:
 		zcat {input.full} | head -n 1 | gzip > {output.beagle}
 
 		echo "Adding requested chromosomes to beagle..."
-
-		cat {input.pruned} >> {output.beagle}
+		for f in {input.pruned}; do
+			zcat $f | tail -n +2 | gzip | cat >> {output.beagle} 2>> {log}
+		done
 		"""

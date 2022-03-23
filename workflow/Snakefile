@@ -14,6 +14,7 @@ include: "rules/angsd.smk"
 include: "rules/thetas.smk"
 include: "rules/linkage.smk"
 include: "rules/pca.smk"
+include: "rules/admixture.smk"
 include: "rules/inbreeding.smk"
 
 # Accumulate desired output files from config file
@@ -22,6 +23,15 @@ all_outputs = []
 if config["analyses"]["pca_pcangsd"]:
 	all_outputs.append(expand(results + "/pcangsd/{population}.cov",
 		population=config["dataset"]))
+
+if config["analyses"]["admix_ngsadmix"]:
+	all_outputs.append(
+		expand(
+			results+"/ngsadmix/{population}_K{kvalue}.qopt",
+			population=config["dataset"],
+			kvalue=config["params"]["ngsadmix"]["kvalues"]
+			)
+		)
 
 if config["analyses"]["thetas_angsd"]:
 	all_outputs.append(expand(

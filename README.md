@@ -24,6 +24,8 @@ analyses added first.
 #### Analyses
 
 - PCA with PCAngsd (only on Rackham for now)
+- NGSadmix (needs publishable wrapper, GitHub version won't work until this is 
+  done)
 - Estimation of thetas (pi, Watterson's, Tajima's D) with ANGSD
 - Estimation of per individual heterozygosity with ANGSD (estimates SFS, but
   full estimation of values not ready)
@@ -32,7 +34,6 @@ analyses added first.
 
 ### Planned updates
 
-- NGSadmix
 - GONE (not GL based)
 
 ### Current organization

@@ -50,6 +50,7 @@ analyses:
   qualimap: true
   # population genomic analyses
   pca_pcangsd: true
+  admix_ngsadmix: true
   thetas_angsd: true
   heterozygosity_angsd: true
   inbreedingCoeff_ngsf-hmm: true
@@ -92,3 +93,5 @@ params:
     sfsboot: 100
     snp_pval: "1e-6"
     min_maf: 0.05
+  ngsadmix:
+    kvalues: [2,3,4,5]

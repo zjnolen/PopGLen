@@ -5,13 +5,12 @@ rule pca_pcangsd:
 		cov=results + "/pcangsd/{population}.cov"
 	log:
 		logs + "/pcangsd/{population}.log"
-	envmodules:
-		# avail on rackham, should be replaced with conda/singul one day
-		"bioinfo-tools",
-		"PCAngsd/0.982"
 	params:
 		prefix=results + "/pcangsd/{population}"
 	shell:
 		"""
+		module load bioinfo-tools
+		module load PCAngsd/0.982
+
 		pcangsd.py -b {input.pruned_beagle} -o {params.prefix} &> {log}
 		"""

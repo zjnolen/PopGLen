@@ -65,7 +65,12 @@ rule pop_meanDepth:
         lambda w: expand(results+"/depth/{{population}}_chr{chrom}.depthGlobal", chrom=get_contigs())
     output:
         results+"/depth/{population}.depthMean"
+    params:
+        min_mult=config["params"]["angsd"]["min_depth_mult"]
+        max_mult=config["params"]["angsd"]["max_depth_mult"]
     shell:
         """
-        cat {input} | workflow/scripts/pop_depth.py > {output}
+        cat {input} | workflow/scripts/pop_depth.py \
+            --min_mult {params.min_mult} --max_mult {params.max_mult} \
+            > {output}
         """

@@ -76,6 +76,13 @@ params:
     # for the whole dataset.
     max_missing_pop: 0.2
     max_missing_dataset: 0.0
+    # min_depth_mult - A multiplier to define the minimum depth to include a 
+    # site in an analysis, it is multiplied by the average depth. A hard coded 
+    # minimum depth of 3 per individual is always included.
+    min_depth_mult: 0.33
+    # max_depth_mult - A multiplier to define the maximum depth to include a 
+    # site in an analysis, it is multiplied by the average depth.
+    max_depth_mult: 5
     # extra - any additional filtering parameters to be used across all 
     # analyses with angsd. By default, we use -C 50 to correct for 
     # excessive mismatches, set a min mapping quality of 30, a minimum 

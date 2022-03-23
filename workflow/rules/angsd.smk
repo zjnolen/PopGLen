@@ -40,8 +40,8 @@ rule angsd_doSaf:
 		minInd=$(echo $nInd \
 			| awk '{{print $1*(1-{params.miss})}}' \
 			| awk '{{print int($1) + ( $1!=int($1) && $1>=0 )}}')
-		minDP=$(echo $nInd | awk '{{print $1*2}}')
-		maxDP=$(cat {input.popDP} | awk '{{print 3*$1}}')
+		minDP=$(awk '{{print $2}}' {input.popDP})
+		maxDP=$(awk '{{print $3}}' {input.popDP})
 
 		angsd -doSaf 1 -bam {input.bamlist} -GL {params.gl_model} \
 			-anc {input.anc} -ref {input.ref} -nThreads {threads} \
@@ -116,8 +116,8 @@ rule angsd_chrom_beagle:
 		minInd=$(echo $nInd \
 			| awk '{{print $1*(1-{params.miss})}}' \
 			| awk '{{print int($1) + ( $1!=int($1) && $1>=0 )}}')
-		minDP=$(echo $nInd | awk '{{print $1*2}}')
-		maxDP=$(cat {input.popDP} | awk '{{print 3*$1}}')
+		minDP=$(awk '{{print $2}}' {input.popDP})
+		maxDP=$(awk '{{print $3}}' {input.popDP})
 
 		angsd -GL {params.gl_model} -doGlf 2 -doMaf 1 -SNP_pval {params.pval} \
 			-bam {input.bamlist} -nThreads {threads} -out {params.out_prefix} \

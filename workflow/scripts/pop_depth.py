@@ -18,7 +18,8 @@ df.columns = ['sites']
 df["depth"] = df.index
 df["scale_cov"] = df["sites"] * df["depth"]
 avg_cov = np.nansum(df["scale_cov"]) / np.nansum(df["sites"])
-avg_cov = int(math.ceil(avg_cov))
-min_cov = int(math.floor(float(args.min_mult) * avg_cov))
-max_cov = int(args.max_mult) * avg_cov
+min_cov = int(float(args.min_mult) * avg_cov)
+max_cov = int(float(args.max_mult) * avg_cov)
+avg_cov = float(avg_cov)
+
 print(avg_cov, min_cov, max_cov, sep = "\t", file = sys.stdout)

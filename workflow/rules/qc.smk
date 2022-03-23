@@ -66,7 +66,7 @@ rule pop_meanDepth:
     output:
         results+"/depth/{population}.depthMean"
     params:
-        min_mult=config["params"]["angsd"]["min_depth_mult"]
+        min_mult=config["params"]["angsd"]["min_depth_mult"],
         max_mult=config["params"]["angsd"]["max_depth_mult"]
     shell:
         """

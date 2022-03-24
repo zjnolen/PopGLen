@@ -6,7 +6,7 @@ rule get_genome:
     log:
         logs + "/get_genome/get_genome.log"
     params:
-        fasta_url=config['reference']
+        fasta_url=config['reference']['fasta']
     shell:
         """
         wget -P resources/reference -o {log} {params.fasta_url}

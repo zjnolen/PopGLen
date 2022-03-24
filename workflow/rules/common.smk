@@ -26,7 +26,10 @@ samples = pd.read_table(config["samples"]).set_index("sample", drop=False)
 units = pd.read_table(config["units"]).set_index("sample", drop=False)
 
 # get a list of all the populations
-pop_list = samples.population.unique().tolist()
+if config["populations"]:
+    pop_list = config["populations"]
+else:
+    pop_list = samples.population.unique().tolist()
 
 ##### Helper functions #####
 

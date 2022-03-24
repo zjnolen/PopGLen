@@ -68,6 +68,14 @@ downsample_cov:
 
 #====================== Analysis Selection ============================#
 # Here you select what steps in the pipeline you would like to perform.
+# Individual and dataset level analyses are performed for all 
+# individuals in the dataset. 'populations' option can take a list of 
+# populations to perform population level analyses on. If this is left
+# empty, population level analyses will be performed for each unique
+# population name in the sample list.
+
+populations: ["Hjelmseryd","Oland","Gosslunda","Branthalla","Falsterbo",
+              "Aspo","Jordtorpasen","Gotafors","RismalaW"]
 
 analyses:
   # raw data and mapping quality control
@@ -80,7 +88,7 @@ analyses:
   admix_ngsadmix: false
   thetas_angsd: false
   heterozygosity_angsd: false
-  inbreedingCoeff_ngsf-hmm: false
+  inbreedingCoeff_ngsf-hmm: true
   ROH_ngsf-hmm: false
   pastNe_gone: false
 

@@ -5,6 +5,7 @@ rule ngsf_hmm:
 	output:
 		#indf=results + "/inbreeding/{population}.indF",
 		idb=results + "/inbreeding/{population}.ibd",
+		indF=results + "/inbreeding/{population}.indF",
 		pos=results + "/inbreeding/{population}.pos"
 	log:
 		logs + "/ngsF-HMM/{population}.log"

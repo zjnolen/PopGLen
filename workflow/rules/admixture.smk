@@ -12,5 +12,5 @@ rule ngsAdmix:
 	shell:
 		"""
 		workflow/scripts/wrapper_ngsAdmix.sh -likes {input.beagle} \
-			-K ${wildcards.kvalue} -P {threads} -o {params.prefix}
+			-K {wildcards.kvalue} -P {threads} -o {params.prefix}
 		"""

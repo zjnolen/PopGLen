@@ -128,7 +128,7 @@ rule angsd_chrom_beagle:
 
 rule angsd_merge_beagle:
 	input:
-		lambda w: expand(results+"/angsd/beagle/chrom/{{population}}_chr{chrom}.beagle.gz", chrom=get_contigs())
+		lambda w: expand(results+"/angsd/beagle/chrom/{{population}}_chr{chrom}.beagle.gz", chrom=get_autos())
 	output:
 		beagle=results + "/angsd/beagle/{population}_genome.beagle.gz"
 	log:

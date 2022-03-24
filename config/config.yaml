@@ -20,20 +20,47 @@ paths:
 
 #===================== Reference Configuration ========================#
 
-# `fasta` should be a string with the absolute or relative path to a
-# local copy of the fasta or a URL to a online location it will be 
-# downloaded from.
-# `mito` should be the ID (string format) of the mitochondria in the 
-# reference to be isolated for mitochondrial analyses and removed in 
-# nuclear ones
-# `excl_chr` should be a list of strings referring to chromosome IDs 
-# that you want excluded from autosomal analyses - these may be sex 
-# chromosomes, unidentified contigs, etc.
+# fasta - A string with the absolute or relative path to a local copy of
+# the fasta or a URL to a online location it will be downloaded from.
+#
+# mito - Contig containing mitochondria, will automatically be excluded 
+# from autosomal analyses. Leave blank if not present in reference or 
+# cannot be identified.
+#
+# sex - Contig(s) containing sex chromosomes, will automatically be 
+# excluded from autosomal analyses. Leave blank if not present in 
+# reference or cannot be identified.
+# 
+# The remaining sections define how autosomes are defined, fill in one 
+# with your preferred way of defining them. If more than one are entered
+# they they will be used with priority: autosome_file > autosome_list >
+# exclude_file > exclude_list > min_size
+# 
+# autosome_file - a file with a list of contigs that will be used in 
+# autosomal analyses, ignores min_size
+# autosome_list - python list containing contigs that will be used in 
+# autosomal analyses, ignores min_size
+# exclude_file - a file with one contig per line to exclude, all others 
+# except if defined as mito, sex, or below min_size will be used as 
+# autosomes
+# exclude_list - a python list containing contigs to exclude, all others
+# except if defined as mito, sex, or below min_size will be used as 
+# autosomes
+# min_size - if autosome_file or autosome_list are not defined, all 
+# contigs of length greater than this value will be included, with the 
+# exception of mito, sex, or excluded contigs if defined. Set to 0 to 
+# include all contigs, but be warned it may add some overhead to the 
+# pipeline. 
 reference: 
 #: "https://darwin.cog.sanger.ac.uk/insects/Polyommatus_icarus/ilPolIcar1/assemblies/working/20200120.hicanu.purge/20200120.hicanu.purge.prim.fasta.gz"
   fasta: "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/905/404/155/GCA_905404155.1_ilPleArgu1.1/GCA_905404155.1_ilPleArgu1.1_genomic.fna.gz"
-  mito: "FR989949.1"
-  excl_chr: ["FR989932.1","CAJQEX010000004.1","CAJQEX010000013.1","CAJQEX010000014.1","CAJQEX010000015.1","CAJQEX010000002.1","CAJQEX010000005.1","CAJQEX010000006.1","CAJQEX010000009.1","CAJQEX010000007.1","CAJQEX010000003.1","CAJQEX010000008.1","CAJQEX010000010.1","CAJQEX010000001.1","CAJQEX010000011.1","CAJQEX010000012.1"]
+  mito: ["FR989949.1"]
+  sex: ["FR989932.1"]
+  autosome_file:
+  autosome_list:
+  exclude_file:
+  exclude_list: ["CAJQEX010000004.1","CAJQEX010000013.1","CAJQEX010000014.1","CAJQEX010000015.1","CAJQEX010000002.1","CAJQEX010000005.1","CAJQEX010000006.1","CAJQEX010000009.1","CAJQEX010000007.1","CAJQEX010000003.1","CAJQEX010000008.1","CAJQEX010000010.1","CAJQEX010000001.1","CAJQEX010000011.1","CAJQEX010000012.1"]
+  min_size: 10000
 
 #==================== Downsampling Configuration ======================#
 
@@ -50,12 +77,12 @@ analyses:
   qualimap: true
   # population genomic analyses
   pca_pcangsd: true
-  admix_ngsadmix: true
-  thetas_angsd: true
-  heterozygosity_angsd: true
-  inbreedingCoeff_ngsf-hmm: true
-  ROH_ngsf-hmm: true
-  pastNe_gone: true
+  admix_ngsadmix: false
+  thetas_angsd: false
+  heterozygosity_angsd: false
+  inbreedingCoeff_ngsf-hmm: false
+  ROH_ngsf-hmm: false
+  pastNe_gone: false
 
 #===================== Software Configuration =========================#
 

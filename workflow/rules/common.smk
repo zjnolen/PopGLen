@@ -71,13 +71,46 @@ def get_subsample_prop(wildcards):
     
     return "-s " + str(1 / (cov / float({wildcards.cov})))
 
-def get_contigs():
-    with checkpoints.samtools_faidx.get().output[0].open() as fai:
-        contigs = pd.read_table(fai, header = None, usecols=[0], 
-            squeeze=True, dtype=str)
-        excl = [config["reference"]["mito"]] + config["reference"]["excl_chr"]
+def get_autos():
+    #set up variables for contig filtering
+    mito_sex = config["reference"]["mito"] + config["reference"]["sex"]
+    if config["reference"]["min_size"] > 0:
+        min_size = config["reference"]["min_size"]
+    else:
+        min_size = 0
+    
+    #get autosomes from method specified in config
+    if config["reference"]["autosome_file"]:
+        auto_list = pd.read_table(
+                        config["reference"]["autosome_file"],
+                        header=None, squeeze=True
+                        )
+        auto_list = auto_list[~auto_list.isin(mito_sex)]
+        autosomes = auto_list.tolist()
+    elif config["reference"]["autosome_list"]:
+        auto_list = pd.Series(config["reference"]["autosome_list"])
+        auto_list = auto_list[~auto_list.isin(mito_sex)]
+        autosomes = auto_list.tolist()
+    else:
+        with checkpoints.samtools_faidx.get().output[0].open() as fai:
+            contigs = pd.read_table(
+                            fai, header = None, usecols=[0,1]
+                            )
+        if config["reference"]["exclude_file"]:
+            excl = pd.read_table(
+                        config["reference"]["exclude_file"],
+                        header=None, squeeze=True
+                        ).tolist()
+        elif config["reference"]["exclude_list"]:
+            excl = config["reference"]["exclude_list"]
+        else:
+            excl = []
+        excl = excl + mito_sex
+        contigs = pd.Series(contigs[contigs[1] > min_size][0])
         contigs = contigs[~contigs.isin(excl)]
-        return contigs
+        autosomes = contigs.tolist()
+    
+    return autosomes
 
 def get_samples_from_pop(population):
     print(population)

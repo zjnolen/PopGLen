@@ -62,7 +62,7 @@ rule angsd_doDepth:
 
 rule pop_meanDepth:
     input:
-        lambda w: expand(results+"/depth/{{population}}_chr{chrom}.depthGlobal", chrom=get_contigs())
+        lambda w: expand(results+"/depth/{{population}}_chr{chrom}.depthGlobal", chrom=get_autos())
     output:
         results+"/depth/{population}.depthMean"
     params:

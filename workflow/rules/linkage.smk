@@ -85,7 +85,7 @@ rule prune_chrom_beagle:
 rule merge_pruned_beagles:
 	input:
 		pruned=lambda w: expand(results+"/angsd/beagle/pruned/chrom/" \
-			"{{population}}_chr{chrom}_pruned.beagle.gz", chrom=get_contigs()),
+			"{{population}}_chr{chrom}_pruned.beagle.gz", chrom=get_autos()),
 		full=results+"/angsd/beagle/{population}_genome.beagle.gz"
 	output:
 		beagle=results+"/angsd/beagle/pruned/{population}_genome_pruned.beagle.gz"

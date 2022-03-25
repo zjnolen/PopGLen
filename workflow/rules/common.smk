@@ -33,7 +33,7 @@ else:
 
 ##### Helper functions #####
 
-######### Mapping ##########
+#### Mapping & Reference ###
 
 def genome_file():
     # Returns path and name of reference after processing
@@ -115,6 +115,17 @@ def get_autos():
     
     return autosomes
 
+########## ANGSD ###########
+
+def get_miss_data_prop(wildcards):
+    pop = wildcards.population
+    if pop == config["dataset"]:
+        return config["params"]["angsd"]["max_missing_dataset"]
+    elif pop in samples.population.values:
+        return config["params"]["angsd"]["max_missing_pop"]
+    elif pop in samples.index:
+        return 0.0
+
 def get_samples_from_pop(population):
     pop = population
     if pop == config["dataset"]:
@@ -128,79 +139,12 @@ def get_samples_from_pop(population):
     else:
         print("ERROR: Population queried does not exist in dataset.")
 
-    # checkpoint_output = checkpoints.chromosome_list.get(**wildcards).output[0]
-    # chroms = pd.read_table(checkpoint_output, header=None)
-    # excl_chr = [config["reference"]["mito"]] + config["reference"]["excl_chr"]
-    # chroms = chroms[~chroms[0].isin(excl_chr)]
-    # return expand(results + "/angsd/beagle/" + wildcards.population + 
-    #             "_{chrom}_md" + wildcards.miss + ".beagle.gz", chrom=chroms[0])
-
-########## ANGSD ###########
-
-def get_miss_data_prop(wildcards):
-    pop = wildcards.population
-    if pop == config["dataset"]:
-        return config["params"]["angsd"]["max_missing_dataset"]
-    elif pop in samples.population.values:
-        return config["params"]["angsd"]["max_missing_pop"]
-    elif pop in samples.index:
-        return 0.0
-
 def get_bamlist_bams(wildcards):
-    # Checks if rule is looking for a population or a sample by 
-    # comparing wildcard value with population list
     pop = wildcards.population
-    if re.search("subcov", pop):
-        rawpop = pop.rsplit('_', 1)[0]
-        suffix = "_" + pop.split('_')[-1]
-    else:
-        rawpop = pop
-        suffix = ""
-    if rawpop == config["dataset"]:
-        return expand(results + "/dedup/{sample}" + suffix + ".bam", sample
-            = samples.index)
-    elif rawpop in samples.population.values and pop not in samples.index:
-        return expand(results + "/dedup/{sample}" + suffix + ".bam", sample
-            = samples.index[samples.population == rawpop])
-    elif rawpop in samples.index and pop not in samples.population.values:
-        return results + "/dedup/{population}.bam"
-    elif rawpop in samples.index and pop in samples.population.values:
-        print("ERROR: Please ensure sample names do not match population " \
-            "names")
+    return expand(results + "/dedup/{sample}.bam", 
+                sample = get_samples_from_pop(pop))
 
 def get_bamlist_bais(wildcards):
     pop = wildcards.population
-    if re.search("subcov", pop):
-        rawpop = pop.rsplit('_', 1)[0]
-        suffix = "_" + pop.split('_')[-1]
-    else:
-        rawpop = pop
-        suffix = ""
-    if rawpop == config["dataset"]:
-        return expand(results + "/dedup/{sample}" + suffix + ".bam.bai", sample
-            = samples.index)
-    elif rawpop in samples.population.values and pop not in samples.index:
-        return expand(results + "/dedup/{sample}" + suffix + ".bam.bai", sample
-            = samples.index[samples.population == rawpop])
-    elif rawpop in samples.index and pop not in samples.population.values:
-        return results + "/dedup/{population}.bam.bai"
-    elif rawpop in samples.index and pop in samples.population.values:
-        print("ERROR: Please ensure sample names do not match population " \
-            "names")
-
-def aggregate_beagles(wildcards):
-    checkpoint_output = checkpoints.chromosome_list.get(**wildcards).output[0]
-    chroms = pd.read_table(checkpoint_output, header=None)
-    excl_chr = [config["reference"]["mito"]] + config["reference"]["excl_chr"]
-    chroms = chroms[~chroms[0].isin(excl_chr)]
-    return expand(results + "/angsd/beagle/" + wildcards.population + 
-                "_{chrom}_md" + wildcards.miss + ".beagle.gz", chrom=chroms[0])
-
-def aggregate_pruned_beagles(wildcards):
-    checkpoint_output = checkpoints.chromosome_list.get(**wildcards).output[0]
-    chroms = pd.read_table(checkpoint_output, header=None)
-    excl_chr = [config["reference"]["mito"]] + config["reference"]["excl_chr"]
-    chroms = chroms[~chroms[0].isin(excl_chr)]
-    return expand(results + "/angsd/beagle/" + wildcards.population + 
-            "_{chrom}_md" + wildcards.miss + "_pruned.beagle.gz", 
-            chrom=chroms[0])
+    return expand(results + "/dedup/{sample}.bam.bai", 
+                sample = get_samples_from_pop(pop))

@@ -116,16 +116,17 @@ def get_autos():
     return autosomes
 
 def get_samples_from_pop(population):
-    print(population)
     pop = population
     if pop == config["dataset"]:
-        return samples.index
+        return samples.index.values.tolist()
     elif pop in samples.population.values and pop not in samples.index:
-        return samples.index[samples.population == pop]
+        return samples.index[samples.population == pop].values.tolist()
     elif pop in samples.index and pop not in samples.population.values:
-        return pop
+        return [pop]
     elif pop in samples.index and pop in samples.population.values:
         print("ERROR: Ensure no sample shares a name with a population.")
+    else:
+        print("ERROR: Population queried does not exist in dataset.")
 
     # checkpoint_output = checkpoints.chromosome_list.get(**wildcards).output[0]
     # chroms = pd.read_table(checkpoint_output, header=None)

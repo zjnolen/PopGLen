@@ -1,4 +1,14 @@
-localrules: angsd_makeBamlist
+localrules: angsd_makeBamlist, popfile
+
+rule popfile:
+	output:
+		inds=results + "/pop_lists/{population}.indiv.list"
+	run:
+		inds = get_samples_from_pop(wildcards.population)
+		with open(output.inds, "w") as out:
+			for item in inds:
+				out.write("%s\n" % item)
+		out.close()
 
 rule angsd_makeBamlist:
 	input:

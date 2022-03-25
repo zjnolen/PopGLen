@@ -1,10 +1,12 @@
+localrules: convert_ibd
+
 rule ngsf_hmm:
 	input:
 		beagle=rules.merge_pruned_beagles.output.beagle,
 		bamlist=rules.angsd_makeBamlist.output
 	output:
 		#indf=results + "/inbreeding/{population}.indF",
-		idb=results + "/inbreeding/{population}.ibd",
+		ibd=results + "/inbreeding/{population}.ibd",
 		indF=results + "/inbreeding/{population}.indF",
 		pos=results + "/inbreeding/{population}.pos"
 	log:
@@ -31,3 +33,18 @@ rule ngsf_hmm:
 			--out {params.out_prefix} &>> {log}
 		"""
 
+rule convert_ibd:
+	input:
+		ibd=rules.ngsf_hmm.output.ibd,
+		pos=rules.ngsf_hmm.output.pos,
+		inds=rules.popfile.output.inds
+	output:
+		roh=results + "/inbreeding/{population}.roh"
+	log:
+		logs + "/ngsF-HMM/{population}_convert_ibd.log"
+	shell:
+		"""
+		perl workflow/scripts/convert_ibd_mod.pl --ind_file {input.inds} \
+			--pos_file {input.pos} --ibd_pos_file {input.ibd} > {output.roh} \
+			2> {log}
+		"""

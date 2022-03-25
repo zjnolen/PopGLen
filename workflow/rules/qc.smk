@@ -56,8 +56,8 @@ rule angsd_doDepth:
         time=lambda wildcards, attempt: attempt*360
     shell:
         """
-        nInd=$(cat {input.bamlist} | wc -l | awk '{{print $1+1}}')
-        maxDP=$(echo 200 $nInd | awk '{print $1 * $2}')
+        nInd=$(cat {input} | wc -l | awk '{{print $1+1}}')
+        maxDP=$(echo 200 $nInd | awk '{{print $1 * $2}}')
 
         angsd -bam {input} -doDepth 1 -doCounts 1 -r {wildcards.chrom} \
             -maxDepth $maxDP -out {params.out_prefix} &> {log}

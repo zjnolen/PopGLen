@@ -38,7 +38,7 @@ rule ngsLD_prune_sites:
 		logs + "/ngsLD/prune_sites/{population}_chr{chrom}.log"
 	conda:
 		"../envs/pruning.yaml"
-	threads: lambda wildcards, attempt: attempt*4
+	threads: lambda wildcards, attempt: attempt*10
 	resources:
 		time="24:00:00"
 	shell:

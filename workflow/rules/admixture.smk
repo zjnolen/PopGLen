@@ -9,6 +9,9 @@ rule ngsAdmix:
 		"../envs/angsd.yaml"
 	params:
 		prefix=results + "/ngsadmix/{population}_K{kvalue}"
+	threads: 4
+	resources:
+		time="24:00:00"
 	shell:
 		"""
 		workflow/scripts/wrapper_ngsAdmix.sh -likes {input.beagle} \

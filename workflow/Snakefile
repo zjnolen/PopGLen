@@ -41,14 +41,24 @@ if config["analyses"]["admix_ngsadmix"]:
 		)
 
 if config["analyses"]["thetas_angsd"]:
+	intersect = []
+	if config["analyses"]["thetas_angsd"]["all_sites"]:
+		intersect.append("")
+	if config["analyses"]["thetas_angsd"]["intersect_sites"]:
+		intersect.append(".intersect")
 	all_outputs.append(expand(
-		results+"/angsd/thetas/{population}.intersect.thetaWindows.pestPG",
-		population=pop_list))
+		results+"/angsd/thetas/{population}{intersect}.thetaWindows.pestPG",
+		population=pop_list, intersect=intersect))
 
 if config["analyses"]["heterozygosity_angsd"]:
+	intersect = []
+	if config["analyses"]["heterozygosity_angsd"]["all_sites"]:
+		intersect.append("")
+	if config["analyses"]["heterozygosity_angsd"]["intersect_sites"]:
+		intersect.append(".intersect")
 	all_outputs.append(expand(
-		results+"/angsd/thetas/{population}.intersect.thetaWindows.pestPG",
-		population=samples.index))
+		results+"/angsd/thetas/{population}{intersect}.thetaWindows.pestPG",
+		population=samples.index, intersect=intersect))
 
 if config["analyses"]["inbreedingCoeff_ngsf-hmm"]:
 	all_outputs.append(expand(

@@ -57,14 +57,14 @@ reference:
   mito: ["FR989949.1"]
   sex: ["FR989932.1"]
   autosome_file:
-  autosome_list:
+  autosome_list: #["FR989947.1","FR989948.1"]
   exclude_file:
   exclude_list: ["CAJQEX010000004.1","CAJQEX010000013.1","CAJQEX010000014.1","CAJQEX010000015.1","CAJQEX010000002.1","CAJQEX010000005.1","CAJQEX010000006.1","CAJQEX010000009.1","CAJQEX010000007.1","CAJQEX010000003.1","CAJQEX010000008.1","CAJQEX010000010.1","CAJQEX010000001.1","CAJQEX010000011.1","CAJQEX010000012.1"]
   min_size: 10000
 
 #==================== Downsampling Configuration ======================#
 
-downsample_cov:
+downsample_cov: 5
 
 #====================== Analysis Selection ============================#
 # Here you select what steps in the pipeline you would like to perform.
@@ -75,7 +75,7 @@ downsample_cov:
 # population name in the sample list.
 
 populations: ["Hjelmseryd","Oland","Gosslunda","Branthalla","Falsterbo",
-              "Aspo","Jordtorpasen","Gotafors","RismalaW"]
+              "Jordtorpasen","Gotafors","Aspo"]
 
 analyses:
   # raw data and mapping quality control
@@ -84,12 +84,18 @@ analyses:
   endoCont_endorspy: true
   qualimap: true
   # population genomic analyses
-  pca_pcangsd: true
+  pca_pcangsd: false
   admix_ngsadmix: false
-  thetas_angsd: false
-  heterozygosity_angsd: false
-  inbreedingCoeff_ngsf-hmm: true
+  thetas_angsd:
+    all_sites: false
+    intersect_sites: false
+  heterozygosity_angsd:
+    all_sites: false
+    intersect_sites: false 
+  inbreedingCoeff_ngsf-hmm: false
   ROH_ngsf-hmm: false
+  # note - the following analyses will be performed with genotype calls
+  # so may be less reliable for lower coverage populations
   pastNe_gone: false
 
 #===================== Software Configuration =========================#

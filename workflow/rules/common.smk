@@ -148,3 +148,33 @@ def get_bamlist_bais(wildcards):
     pop = wildcards.population
     return expand(results + "/dedup/{sample}.bam.bai", 
                 sample = get_samples_from_pop(pop))
+
+def get_intersect_inputs(wildcards):
+    if wildcards.type == "population":
+        return expand(results+"/sites/{group}_chr{chrom}_filtautos.bed", group=pop_list, chrom=wildcards.chrom)
+    elif wildcards.type == "sample":
+        return expand(results+"/sites/{group}_chr{chrom}_filtautos.bed", group=samples.index, chrom=wildcards.chrom)
+
+def get_sites_file(wildcards):
+    if wildcards.sites == ".intersect":
+        pop = wildcards.population
+        if pop in samples.population.values and pop not in samples.index:
+            return results+"/sites/population_autos_intersect.sites.idx"
+        elif pop in samples.index and pop not in samples.population.values:
+            return results+"/sites/sample_autos_intersect.sites.idx"
+        elif pop in samples.index and pop in samples.population.values:
+            print("ERROR: Ensure no sample shares a name with a population.")
+        else:
+            print("ERROR: Population queried does not exist in dataset.")
+
+def get_sites_option(wildcards):
+    if wildcards.sites == ".intersect":
+        pop = wildcards.population
+        if pop in samples.population.values and pop not in samples.index:
+            return "-sites "+results+"/sites/population_autos_intersect.sites"
+        elif pop in samples.index and pop not in samples.population.values:
+            return "-sites "+results+"/sites/sample_autos_intersect.sites"
+        elif pop in samples.index and pop in samples.population.values:
+            print("ERROR: Ensure no sample shares a name with a population.")
+        else:
+            print("ERROR: Population queried does not exist in dataset.")

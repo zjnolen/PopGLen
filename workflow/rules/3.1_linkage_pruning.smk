@@ -1,20 +1,19 @@
-ruleorder: merge_pruned_beagles > prune_chrom_beagle
-localrules: merge_pruned_beagles
-
 rule ngsLD_estLD:
 	input:
-		beagle=rules.angsd_chrom_beagle.output.beagle,
+		beagle=rules.angsd_doGlf2.output.beagle,
 		bamlist=rules.angsd_makeBamlist.output
 	output:
-		ld=results+"/ngsLD/{population}_chr{chrom}.ld.gz",
-		pos=results+"/ngsLD/{population}_chr{chrom}.pos"
+		ld=results+"/genotyping/pruned_beagle/ngsLD/"+dataset+
+			"_{population}{dp}_chunk{chunk}.ld.gz",
+		pos=results+"/genotyping/pruned_beagle/ngsLD/"+dataset+
+			"_{population}{dp}_chunk{chunk}.pos"
 	log:
-		logs + "/ngsLD/estLD/{population}_chr{chrom}.log"
+		logs + "/ngsLD/estLD/"+dataset+"_{population}{dp}_chunk{chunk}.log"
 	container:
 		"library://james-s-santangelo/ngsld/ngsld:1.1.1"
 	threads: lambda wildcards, attempt: attempt
 	resources:
-		time="12:00:00"
+		time=lambda wildcards, attempt: attempt*240
 	shell:
 		r"""
 		zcat {input.beagle} | awk '{{print $1}}' | sed 's/\(.*\)_/\1\t/' \
@@ -22,7 +21,7 @@ rule ngsLD_estLD:
 		
 		nsites=$(cat {output.pos} | wc -l)
 
-		nind=$(cat {input.bamlist} | wc -l | awk '{{print $1 + 1}}')
+		nind=$(cat {input.bamlist} | wc -l | awk '{{print $1+1}}')
 
 		ngsLD --geno {input.beagle} --n_ind $nind --n_sites $nsites \
 			--pos {output.pos} --probs --n_threads {threads} \
@@ -33,32 +32,35 @@ rule ngsLD_prune_sites:
 	input:
 		ld=rules.ngsLD_estLD.output.ld
 	output:
-		sites=results+"/ngsLD/{population}_chr{chrom}_pruned.sites"
+		sites=results+"/genotyping/pruned_beagle/ngsLD/"+dataset+
+			"{population}{dp}_chunk{chunk}_pruned.sites"
 	log:
-		logs + "/ngsLD/prune_sites/{population}_chr{chrom}.log"
+		logs + "/ngsLD/prune_sites/"+dataset+"_{population}{dp}_chunk{chunk}.log"
 	conda:
 		"../envs/pruning.yaml"
 	threads: lambda wildcards, attempt: attempt*10
 	resources:
-		time="24:00:00"
+		time=lambda wildcards, attempt: attempt*1440
 	shell:
 		"""
-		workflow/scripts/prune_ngsLD.py --input {input.ld} \
-			--output {output.sites} 2> {log}
+		workflow/scripts/prune_ngsLD.py --input {input.ld} --max_dist 50000 \
+			--min_weight 0.1 --output {output.sites} 2> {log}
 		"""
 
-rule prune_chrom_beagle:
+rule prune_chunk_beagle:
 	input:
-		beagle=rules.angsd_chrom_beagle.output.beagle,
+		beagle=rules.angsd_doGlf2.output.beagle,
 		sites=rules.ngsLD_prune_sites.output.sites
 	output:
-		pruned=temp(results+"/angsd/beagle/pruned/chrom/{population}_chr{chrom}_pruned.beagle"),
-		prunedgz=results+"/angsd/beagle/pruned/chrom/{population}_chr{chrom}_pruned.beagle.gz"
+		pruned=temp(results+"/genotyping/pruned_beagle/chunk/"+dataset+
+			"_{population}{dp}_chunk{chunk}_pruned.beagle"),
+		prunedgz=results+"/genotyping/pruned_beagle/chunk/"+dataset+
+			"_{population}{dp}_chunk{chunk}_pruned.beagle.gz"
 	log:
-		logs + "/ngsLD/prune_beagle/{population}_chr{chrom}.log"
+		logs + "/ngsLD/prune_beagle/"+dataset+"_{population}{dp}_chunk{chunk}.log"
 	threads: lambda wildcards, attempt: attempt
 	resources:
-		time="04:00:00"
+		time=lambda wildcards, attempt: attempt*240
 	shell:
 		r"""
 		set +o pipefail;
@@ -84,13 +86,18 @@ rule prune_chrom_beagle:
 
 rule merge_pruned_beagles:
 	input:
-		pruned=lambda w: expand(results+"/angsd/beagle/pruned/chrom/" \
-			"{{population}}_chr{chrom}_pruned.beagle.gz", chrom=get_autos()),
-		full=results+"/angsd/beagle/{population}_genome.beagle.gz"
+		pruned=lambda w: expand(results+"/genotyping/pruned_beagle/chunk/"+
+			dataset+"_{{population}}{{dp}}_chunk{chunk}_pruned.beagle.gz", 
+			chunk=chunklist),
+		full=results+"/genotyping/beagle/"+dataset+
+			"_{population}{dp}.beagle.gz"
 	output:
-		beagle=results+"/angsd/beagle/pruned/{population}_genome_pruned.beagle.gz"
+		beagle=results+"/genotyping/pruned_beagle/"+dataset+
+			"_{population}{dp}_pruned.beagle.gz"
 	log:
-		logs + "/ngsLD/{population}_genome_merge_pruned_beagle.log"
+		logs + "/ngsLD/{population}{dp}_merge_pruned.log"
+	resources:
+		time=lambda wildcards, attempt: attempt*60
 	shell:
 		r"""
 		echo "cat file order:"
@@ -100,7 +107,7 @@ rule merge_pruned_beagles:
 		set +o pipefail;
 		zcat {input.full} | head -n 1 | gzip > {output.beagle}
 
-		echo "Adding requested chromosomes to beagle..."
+		echo "Adding requested chunks to beagle..."
 		for f in {input.pruned}; do
 			zcat $f | tail -n +2 | gzip | cat >> {output.beagle} 2>> {log}
 		done

@@ -6,16 +6,20 @@ rule ngsf_hmm:
 		bamlist=rules.angsd_makeBamlist.output
 	output:
 		#indf=results + "/inbreeding/{population}.indF",
-		ibd=results + "/inbreeding/{population}.ibd",
-		indF=results + "/inbreeding/{population}.indF",
-		pos=results + "/inbreeding/{population}.pos"
+		ibd=results+"/analyses/ngsF-HMM/"+dataset+
+			"_{population}{dp}.ibd",
+		indF=results+"/analyses/ngsF-HMM/"+dataset+
+			"_{population}{dp}.indF",
+		pos=results+"/analyses/ngsF-HMM/"+dataset+
+			"_{population}{dp}.pos"
 	log:
-		logs + "/ngsF-HMM/{population}.log"
+		logs + "/ngsF-HMM/"+dataset+"_{population}{dp}.log"
 	params:
-		out_prefix=results + "/inbreeding/{population}"
+		out=results + "/analyses/ngsF-HMM/"+dataset+
+			"_{population}{dp}"
 	threads: lambda wildcards, attempt: attempt
 	resources:
-		time="06:00:00"
+		time=lambda wildcards, attempt: attempt*360
 	shell:
 		r"""
 		module load bioinfo-tools
@@ -26,11 +30,11 @@ rule ngsf_hmm:
 		
 		nsites=$(cat {output.pos} | wc -l)
 
-		nind=$(cat {input.bamlist} | wc -l | awk '{{print $1 + 1}}')
+		nind=$(cat {input.bamlist} | wc -l | awk '{{print $1+1}}')
 
 		ngsF-HMM.sh --geno {input.beagle} --n_ind $nind \
 			--n_sites $nsites --pos {output.pos} --lkl \
-			--out {params.out_prefix} &>> {log}
+			--out {params.out} &>> {log}
 		"""
 
 rule convert_ibd:
@@ -39,9 +43,9 @@ rule convert_ibd:
 		pos=rules.ngsf_hmm.output.pos,
 		inds=rules.popfile.output.inds
 	output:
-		roh=results + "/inbreeding/{population}.roh"
+		roh=results + "/analyses/ngsF-HMM/"+dataset+"_{population}{dp}.roh"
 	log:
-		logs + "/ngsF-HMM/{population}_convert_ibd.log"
+		logs + "/ngsF-HMM/"+dataset+"_{population}{dp}_convert_ibd.log"
 	shell:
 		"""
 		perl workflow/scripts/convert_ibd_mod.pl --ind_file {input.inds} \

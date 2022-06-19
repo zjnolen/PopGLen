@@ -6,77 +6,113 @@ report: "report/workflow.rst"
 
 include: "rules/common.smk"
 
-include: "rules/ref.smk"
-include: "rules/preprocessing.smk"
-include: "rules/qc.smk"
-include: "rules/mapping.smk"
-include: "rules/angsd.smk"
-include: "rules/thetas.smk"
-include: "rules/linkage.smk"
-include: "rules/pca.smk"
-include: "rules/admixture.smk"
-include: "rules/inbreeding.smk"
-include: "rules/plink.smk"
-include: "rules/gone.smk"
+include: "rules/0.1_ref_prep.smk"
+include: "rules/0.2_ref_filt.smk"
+include: "rules/1.0_preprocessing.smk"
+include: "rules/2.0_mapping.smk"
+include: "rules/2.1_mapping_qc.smk"
+include: "rules/2.2_dna_damage.smk"
+include: "rules/3.0_genotyping.smk"
+include: "rules/3.1_linkage_pruning.smk"
+include: "rules/3.2_sample_filt.smk"
+include: "rules/4_pca.smk"
+include: "rules/5_admixture.smk"
+include: "rules/6.0_SFS.smk"
+include: "rules/6.1_thetas.smk"
+include: "rules/6.2_fst.smk"
+include: "rules/7_inbreeding.smk"
 
 # Accumulate desired output files from config file
 
+if config["downsample_cov"]:
+	subsample = [".dp" + str(config["downsample_cov"]), ""]
+else:
+	subsample = [""]
+
 wildcard_constraints:
-	dataset=config["dataset"],
-	population="|".join(samples.index.tolist() + [config["dataset"]] + samples.population.values.tolist())
+	sample="|".join(
+		samples.index.tolist()
+	),
+	population="|".join(
+		["all"] + 
+		[i for i in samples.index.tolist()] +
+		[i for i in samples.population.values.tolist()] +
+		[i for i in samples.depth.values.tolist()]
+		),
+	set="|".join(
+		["all"]+
+		[i for i in samples.depth.values.tolist()]
+		),
+	dp=(subsample[0]+"|.*" if len(subsample)==2 else ".*"),
+	chunk="[0-9]+"
 
 all_outputs = []
 
+# results+"/genotyping/single-read-sampling/"+dataset+
+# 			"_all.ibsMat"
+
+if config["analyses"]["qualimap"]:
+	all_outputs.append(expand(results+
+			"/qc/qualimap/{sample}/genome_results.txt",
+			sample=samples.index))
+
+if config["analyses"]["damageprofiler"]:
+	all_outputs.append(expand(results+
+			"/qc/damageprofiler/{sample}/dmgprof.json",
+			sample=samples.index[samples['depth'] == 'low'].tolist()))
+
+if config["analyses"]["relatedness"]:
+	all_outputs.append(expand(
+		results+"/analyses/ngsrelate/"+dataset+"_all{dp}_relate.tsv",
+		dp=subsample))
+
 if config["analyses"]["pca_pcangsd"]:
-	all_outputs.append(expand(results + "/pcangsd/{population}.cov",
-		population=config["dataset"]))
+	all_outputs.append(expand(
+		results+"/analyses/pcangsd/"+dataset+"_all{dp}.cov",
+		dp=subsample))
+
+if config["analyses"]["thetas_angsd"]:
+	all_outputs.append(expand(
+		results+"/analyses/thetas/"+dataset+
+		"_{population}{subsample}.thetaWindows.pestPG",
+		population=pop_list, subsample=subsample))
+
+if config["analyses"]["fst_angsd"]["populations"]:
+	all_outputs.append(expand(results+
+			"/analyses/fst/"+dataset+"_poppairs{dp}.fst.sum",
+			dp=subsample))
+
+if config["analyses"]["fst_angsd"]["individuals"]:
+	all_outputs.append(expand(results+
+			"/analyses/fst/"+dataset+"_indpairs{dp}.fst.sum",
+			dp=subsample))
+
+if config["analyses"]["heterozygosity_angsd"]:
+	all_outputs.append(expand(
+		results+"/analyses/thetas/"+dataset+
+		"_{population}{subsample}.thetaWindows.pestPG",
+		population=samples.index, 
+		subsample=subsample)
+		)
+
+if config["analyses"]["inbreeding_ngsf-hmm"]:
+	all_outputs.append(expand(
+		results+"/analyses/ngsF-HMM/"+dataset+
+		"_{group}{subsample}.{ext}", 
+		group=pop_list,
+		subsample=subsample,
+		ext=["ibd","roh","indF"])
+		)
 
 if config["analyses"]["admix_ngsadmix"]:
 	all_outputs.append(
 		expand(
-			results+"/ngsadmix/{population}_K{kvalue}.qopt",
-			population=config["dataset"],
-			kvalue=config["params"]["ngsadmix"]["kvalues"]
+			results+"/analyses/ngsadmix/"+dataset+
+			"_all{dp}_K{kvalue}.corres",
+			kvalue=config["params"]["ngsadmix"]["kvalues"],
+			dp=subsample
 			)
 		)
-
-if config["analyses"]["thetas_angsd"]:
-	intersect = []
-	if config["analyses"]["thetas_angsd"]["all_sites"]:
-		intersect.append("")
-	if config["analyses"]["thetas_angsd"]["intersect_sites"]:
-		intersect.append(".intersect")
-	all_outputs.append(expand(
-		results+"/angsd/thetas/{population}{intersect}.thetaWindows.pestPG",
-		population=pop_list, intersect=intersect))
-
-if config["analyses"]["heterozygosity_angsd"]:
-	intersect = []
-	if config["analyses"]["heterozygosity_angsd"]["all_sites"]:
-		intersect.append("")
-	if config["analyses"]["heterozygosity_angsd"]["intersect_sites"]:
-		intersect.append(".intersect")
-	all_outputs.append(expand(
-		results+"/angsd/thetas/{population}{intersect}.thetaWindows.pestPG",
-		population=samples.index, intersect=intersect))
-
-if config["analyses"]["inbreedingCoeff_ngsf-hmm"]:
-	all_outputs.append(expand(
-		results+"/inbreeding/{population}.indF", population=pop_list))
-
-if config["analyses"]["ROH_ngsf-hmm"]:
-	all_outputs.append(expand(
-		results+"/inbreeding/{population}.ibd", population=pop_list))
-	all_outputs.append(expand(
-		results+"/inbreeding/{population}.roh", population=pop_list))
-
-if config["analyses"]["pastNe_gone"]:
-	all_outputs.append(expand(
-		results+"/GONE/OUTPUT_{population}_cMMb{rr}_hc{hc}",
-		population=pop_list,
-		rr=[1,3,5,6,7,9,10],
-		hc=[0.01,0.05,0.1,0.5]
-	))
 
 # master target rule
 rule all:

@@ -13,3 +13,5 @@ results
 .DS_Store
 # ignore run logs
 logs
+# ignore R temp files
+.Rhistory

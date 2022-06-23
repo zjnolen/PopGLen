@@ -3,8 +3,7 @@ rule pca_pcangsd:
 		beagle=results+"/genotyping/pruned_beagle/"+dataset+
 			"_{population}{dp}_pruned.beagle.gz"
 	output:
-		cov=results+"/analyses/pcangsd/"+dataset+"_{population}{dp}.cov",
-		kin=results+"/analyses/pcangsd/"+dataset+"_{population}{dp}.kinship.npy"
+		cov=results+"/analyses/pcangsd/"+dataset+"_{population}{dp}.cov"
 	log:
 		logs + "/pcangsd/"+dataset+"_{population}{dp}.log"
 	params:

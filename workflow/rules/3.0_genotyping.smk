@@ -1,4 +1,4 @@
-localrules: angsd_makeBamlist
+localrules: angsd_makeBamlist, popfile
 
 rule angsd_makeBamlist:
 	input:

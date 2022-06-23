@@ -1,7 +1,8 @@
 rule ngsrelate:
 	input:
 		beagle=rules.merge_beagle.output.beagle,
-		bamlist=rules.angsd_makeBamlist.output
+		bamlist=rules.angsd_makeBamlist.output,
+		inds=rules.popfile.output.inds
 	output:
 		results+"/analyses/ngsrelate/"+dataset+"_{population}{dp}_relate.tsv"
 	log:
@@ -21,6 +22,7 @@ rule ngsrelate:
 
 		echo $nsites $nind >> {log}
 
-		ngsrelate -G {input.beagle} -n $nind -L $nsites -O {output} 2>> {log}
+		ngsrelate -G {input.beagle} -n $nind -L $nsites -O {output} \
+			-z {input.inds} 2>> {log}
 		"""
 	

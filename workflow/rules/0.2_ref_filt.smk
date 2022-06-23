@@ -199,14 +199,14 @@ rule repeat_builddatabase:
 	input:
 		ref=REF
 	output:
-		multiext(REF_DIR+"/repeatmodeler/database/"+REF_NAME+".",
-				"nhr")
+		multiext(REF_DIR+"/repeatmodeler/"+REF_NAME+".",
+				"nhr","nin","nnd","nni","nog","nsq","translation")
 	conda:
 		"../envs/repeatmasker.yaml"
 	log:
 		"logs/reffilt/repeatmodeler/builddatabase/"+REF_NAME+".log"
 	params:
-		db=REF_DIR+"/repeatmodeler/database/"+REF_NAME
+		db=REF_DIR+"/repeatmodeler/"+REF_NAME
 	shell:
 		"""
 		BuildDatabase -name {params.db} {input.ref} &> {log}
@@ -216,25 +216,23 @@ rule repeatmodeler:
 	input:
 		database=rules.repeat_builddatabase.output
 	output:
-		fa=REF_DIR+"/repeatmodeler/library/"+REF_NAME+"-families.fa",
-		stk=REF_DIR+"/repeatmodeler/library/"+REF_NAME+"-families.stk"
+		fa=REF_DIR+"/repeatmodeler/"+REF_NAME+"-families.fa",
+		stk=REF_DIR+"/repeatmodeler/"+REF_NAME+"-families.stk",
+		log=REF_DIR+"/repeatmodeler/"+REF_NAME+"-rmod.log"
 	log:
 		"logs/reffilt/repeatmodeler/repeatmodeler/"+REF_NAME+".log"
 	conda:
 		"../envs/repeatmasker.yaml"
 	params:
 		db=rules.repeat_builddatabase.params.db,
-		libdir=REF_DIR+"/repeatmodeler/library/",
 		ref=REF_NAME
 	threads: 10
 	resources:
-		time="4-00:00:00"
-	shadow: "shallow"
+		time="7-00:00:00"
+	shadow: "copy-minimal"
 	shell:
 		"""
 		RepeatModeler -database {params.db} -pa {threads} &> {log}
-		mv {params.ref}-families.fa {output.fa} 2>> {log}
-		mv {params.ref}-families.stk {output.stk} 2>> {log}
 		"""
 
 ## Get repeatmasker inputs
@@ -263,7 +261,7 @@ rule repeatmasker:
 	threads: 5
 	resources:
 		time="12:00:00"
-	shadow: "shallow"
+	shadow: "copy-minimal"
 	shell:
 		"""
 		RepeatMasker -pa {threads} {params.lib} -gff -x -no_is \

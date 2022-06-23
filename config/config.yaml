@@ -1,70 +1,64 @@
 #=====================Dataset Configuration============================#
 
-samples: config/samples_pargus.tsv
+samples:
 
-units: config/units.tsv
+units:
 
-dataset: "pargus"
-
-#===================== Output Configuration ===========================#
-
-paths:
-  # main base folder for results - dataset will be appended to end
-  results: "results"
-  # folder where intermediate files will be stored - dataset will be 
-  # appended to end
-  intermediate: "intermediate"
-  # folder where log files will be stored - dataset will be appended to 
-  # end
-  logs: "logs"
+dataset:
 
 #===================== Reference Configuration ========================#
 
-# fasta - A string with the absolute or relative path to a local copy of
-# the fasta or a URL to a online location it will be downloaded from.
+# Before using your reference it is important it meets certain 
+# requirements for downstream analyses. The first is that it should be 
+# uncompressed, or, if compressed, only in bgzip format (from samtools).
+# The second is that scaffold names should be concise (10-15 char.) 
+# with only letters, numbers, and underscores.
 #
-# mito - Contig containing mitochondria, will automatically be excluded 
+# chunk_size - Most analyses can be run per scaffold and merged later
+# If a value is given, the genome will be broken into chunks of roughly
+# this size which will be analyzed in parallel when appropriate. In the 
+# current implementation, scaffolds will not be split if they roll over 
+# the chunk size, instead, it will fit however many whole scaffolds it 
+# can in that chunk. This may be improved later on.
+#
+# fasta - A string with the absolute or relative path to a local copy of
+# the fasta.
+#
+# mito - Scaffold containing mitochondria, will be excluded 
 # from autosomal analyses. Leave blank if not present in reference or 
 # cannot be identified.
 #
-# sex - Contig(s) containing sex chromosomes, will automatically be 
-# excluded from autosomal analyses. Leave blank if not present in 
-# reference or cannot be identified.
-# 
-# The remaining sections define how autosomes are defined, fill in one 
-# with your preferred way of defining them. If more than one are entered
-# they they will be used with priority: autosome_file > autosome_list >
-# exclude_file > exclude_list > min_size
-# 
-# autosome_file - a file with a list of contigs that will be used in 
-# autosomal analyses, ignores min_size
-# autosome_list - python list containing contigs that will be used in 
-# autosomal analyses, ignores min_size
-# exclude_file - a file with one contig per line to exclude, all others 
-# except if defined as mito, sex, or below min_size will be used as 
-# autosomes
-# exclude_list - a python list containing contigs to exclude, all others
-# except if defined as mito, sex, or below min_size will be used as 
-# autosomes
-# min_size - if autosome_file or autosome_list are not defined, all 
-# contigs of length greater than this value will be included, with the 
-# exception of mito, sex, or excluded contigs if defined. Set to 0 to 
-# include all contigs, but be warned it may add some overhead to the 
-# pipeline. 
-reference: 
-#: "https://darwin.cog.sanger.ac.uk/insects/Polyommatus_icarus/ilPolIcar1/assemblies/working/20200120.hicanu.purge/20200120.hicanu.purge.prim.fasta.gz"
-  fasta: "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/905/404/155/GCA_905404155.1_ilPleArgu1.1/GCA_905404155.1_ilPleArgu1.1_genomic.fna.gz"
-  mito: ["FR989949.1"]
-  sex: ["FR989932.1"]
-  autosome_file:
-  autosome_list: #["FR989947.1","FR989948.1"]
-  exclude_file:
-  exclude_list: ["CAJQEX010000004.1","CAJQEX010000013.1","CAJQEX010000014.1","CAJQEX010000015.1","CAJQEX010000002.1","CAJQEX010000005.1","CAJQEX010000006.1","CAJQEX010000009.1","CAJQEX010000007.1","CAJQEX010000003.1","CAJQEX010000008.1","CAJQEX010000010.1","CAJQEX010000001.1","CAJQEX010000011.1","CAJQEX010000012.1"]
-  min_size: 10000
+# XZ - Scaffold(s) that are a part of XZ chromosomes. Will be excluded 
+# from autosomal analyses and included in sex-chromosome analyses.
+#
+# exclude - Scaffold(s) to exclude (i.e. abnormally sex-linked, lower-
+# quality) from all analyses. Scaffolds smaller than the min_size 
+# option don't need to be specified here.
+#
+# min_size - Scaffolds shorter than this number (bp) will be excluded.
+
+chunk_size:
+
+reference:
+  name:
+  fasta:
+  mito: []
+  XZ: []
+  exclude: []
+  min_size:
+
+#===================== Sample Set Configuration =======================#
+
+# Sometimes you will want to exclude individuals from downstream 
+# analyses (too low coverage, relatives in dataset, duplicated), but do 
+# not want to remove them from the sample list. List these individuals 
+# here and they will be removed.
+
+exclude_ind: []
 
 #==================== Downsampling Configuration ======================#
 
-downsample_cov: 5
+downsample_cov:
 
 #====================== Analysis Selection ============================#
 # Here you select what steps in the pipeline you would like to perform.
@@ -72,42 +66,50 @@ downsample_cov: 5
 # individuals in the dataset. 'populations' option can take a list of 
 # populations to perform population level analyses on. If this is left
 # empty, population level analyses will be performed for each unique
-# population name in the sample list.
+# population name in the sample list, excluding single sample 
+# populations in analyses that are biased by or do not support them.
 
-populations: ["Hjelmseryd","Oland","Gosslunda","Branthalla","Falsterbo",
-              "Jordtorpasen","Gotafors","Aspo"]
+populations:
 
 analyses:
-  # raw data and mapping quality control
-  pretrim_fastqc: true
-  posttrim_fastqc: true
-  endoCont_endorspy: true
-  qualimap: true
+  # filtering
+  genmap:
+  repeatmasker:
+    local_lib:
+    dfam_lib:
+    build_lib:
+  extreme_depth:
+  # quality control
+  qualimap:
+  damageprofiler:
+  relatedness:
   # population genomic analyses
-  pca_pcangsd: false
-  admix_ngsadmix: false
+  pca_pcangsd:
+  admix_ngsadmix:
   thetas_angsd:
-    all_sites: false
-    intersect_sites: false
   heterozygosity_angsd:
-    all_sites: false
-    intersect_sites: false 
-  inbreedingCoeff_ngsf-hmm: false
-  ROH_ngsf-hmm: false
-  # note - the following analyses will be performed with genotype calls
-  # so may be less reliable for lower coverage populations
-  pastNe_gone: false
+  fst_angsd:
+    populations:
+    individuals:
+  inbreeding_ngsf-hmm:
 
 #===================== Software Configuration =========================#
 
+mapQ: 30
+baseQ: 30
+
 params:
+  genmap:
+    K: "100"
+    E: "2"
+    map_thresh: 1
   picard:
     # By default we set Picard to remove duplicate reads, change to 
     # false to flag only.
     MarkDuplicates: "REMOVE_DUPLICATES=true"
   angsd:
     # gl_model - 1=SAMtools, 2=GATK, 3=SOAPsnp, 4=SYK; default is 1
-    gl_model: 1
+    gl_model: 2
     # max_missing - Exclude sites based on missing data in individuals 
     # where 0.0 allows sites with completely missing data and 1.0 
     # permits no missing data. You have the option to set different 
@@ -116,7 +118,7 @@ params:
     # set the default to 0.2 (20% missing data) for populations and 0.0 
     # for the whole dataset.
     max_missing_pop: 0.2
-    max_missing_dataset: 0.0
+    max_missing_dataset: 0.1
     # min_depth_mult - A multiplier to define the minimum depth to include a 
     # site in an analysis, it is multiplied by the average depth. A hard coded 
     # minimum depth of 3 per individual is always included.
@@ -126,12 +128,10 @@ params:
     max_depth_mult: 3
     # extra - any additional filtering parameters to be used across all 
     # analyses with angsd. By default, we use -C 50 to correct for 
-    # excessive mismatches, set a min mapping quality of 30, a minimum 
-    # base quality of 20, permit both paired reads and singletons 
-    # (needed since we mapped both merged and unmerged reads), remove 
-    # reads with multiple best hits, and reducing base quality scores 
-    # based on baq (penalizes mapping around indels)
-    extra: "-C 50 -minMapQ 30 -minQ 20 -only_proper_pairs 0 -uniqueOnly 1 -baq 1"
+    # excessive mismatches, only include paired reads when both mates map,
+    # remove reads with multiple best hits, and reduce base quality scores 
+    # based on baq (penalizes bases around indels)
+    extra: "-C 50 -only_proper_pairs 1 -uniqueOnly 1 -baq 1"
     # fold - Define if SFS should be folded when made. If you don't 
     # have ancestral states to assign to -anc, it is best to set to 1. 
     # We set the default to 1.

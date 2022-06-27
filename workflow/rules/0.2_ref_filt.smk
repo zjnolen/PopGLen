@@ -5,9 +5,8 @@
 # adapted from Pečnerová et al. 2021 (Current Biology).
 
 localrules: genome_bed, smallscaff_bed, sexlink_bed, mito_bed, \
-genmap_filt_bed, excess_hetero_bed, genome_sum, smallscaff_sum, \
-depth_sum, genmap_filt_sum, repeat_sum, sexlink_sum, excess_hetero_sum, \
-excess_hetero_bed, combine_beds
+genmap_filt_bed, genome_sum, smallscaff_sum, depth_sum, genmap_filt_sum, \
+repeat_sum, sexlink_sum, combine_beds
 
 #################################################
 # Reference-based filters (dataset independent) #

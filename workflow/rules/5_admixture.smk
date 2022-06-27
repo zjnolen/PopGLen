@@ -23,6 +23,20 @@ rule ngsAdmix:
 			-K {wildcards.kvalue} -P {threads} -o {params.prefix} 2> {log}
 		"""
 
+rule plot_admix:
+	input:
+		rules.ngsAdmix.output.qopt,
+		rules.popfile.output.inds
+	output:
+		report(
+			results+"/plots/ngsadmix/"+dataset+
+				"_{population}{dp}_K{kvalue}.pdf",
+			category="Admixture")
+	conda:
+		"../envs/r.yaml"
+	script:
+		"../scripts/plot_admix.R"
+
 rule evalAdmix:
 	input:
 		beagle=rules.merge_pruned_beagles.output.beagle,

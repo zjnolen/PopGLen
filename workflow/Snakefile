@@ -106,8 +106,10 @@ if config["analyses"]["inbreeding_ngsf-hmm"]:
 if config["analyses"]["admix_ngsadmix"]:
 	all_outputs.append(
 		expand(
-			results+"/analyses/ngsadmix/"+dataset+
+			[results+"/analyses/ngsadmix/"+dataset+
 			"_all{dp}_K{kvalue}.corres",
+			results+"/plots/ngsadmix/"+dataset+
+			"_all{dp}_K{kvalue}.pdf"],
 			kvalue=config["params"]["ngsadmix"]["kvalues"],
 			dp=subsample
 			)

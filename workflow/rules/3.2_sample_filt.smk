@@ -4,7 +4,10 @@ rule ngsrelate:
 		bamlist=rules.angsd_makeBamlist.output,
 		inds=rules.popfile.output.inds
 	output:
-		results+"/analyses/ngsrelate/"+dataset+"_{population}{dp}_relate.tsv"
+		relate=results+"/analyses/ngsrelate/"+dataset+
+			"_{population}{dp}_relate.tsv",
+		samples=results+"/analyses/ngsrelate/"+dataset+
+			"_{population}{dp}_samples.list"
 	log:
 		logs + "/ngsrelate/"+dataset+"_{population}{dp}.log"
 	threads: lambda wildcards, attempt: attempt*4
@@ -22,7 +25,9 @@ rule ngsrelate:
 
 		echo $nsites $nind >> {log}
 
-		ngsrelate -G {input.beagle} -n $nind -L $nsites -O {output} \
-			-z {input.inds} 2>> {log}
+		cut -f1 {input.inds} | tail -n +2 > {output.samples} 2>> {log}
+
+		ngsrelate -G {input.beagle} -n $nind -L $nsites -O {output.relate} \
+			-z {output.samples} 2>> {log}
 		"""
 	

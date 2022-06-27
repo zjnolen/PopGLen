@@ -17,9 +17,8 @@ rule popfile:
 			"_{population}.indiv.list"
 	run:
 		inds = get_samples_from_pop(wildcards.population)
-		with open(output.inds, "w") as out:
-			for item in inds:
-				out.write("%s\n" % item)
+		samples.loc[inds].to_csv(output.inds, sep="\t", quoting=csv.QUOTE_NONE,
+			header = True, index = False)
 
 rule angsd_sites_index:
 	input:

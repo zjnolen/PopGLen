@@ -26,7 +26,10 @@ rule plot_pca:
 		rules.pca_pcangsd.output.cov,
 		rules.popfile.output.inds
 	output:
-		report(results+"/plots/pca/"+dataset+"_{population}{dp}_pc{xpc}-{ypc}.pdf",category="PCA")
+		report(
+			results+"/plots/pca/"+dataset+
+				"_{population}{dp}_pc{xpc}-{ypc}.pdf",
+			category="PCA")
 	conda:
 		"../envs/r.yaml"
 	script:

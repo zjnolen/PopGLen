@@ -18,3 +18,16 @@ rule pca_pcangsd:
 
 		pcangsd.py -b {input.beagle} -o {params.prefix} &> {log}
 		"""
+
+localrules: plot_pca
+
+rule plot_pca:
+	input:
+		rules.pca_pcangsd.output.cov,
+		rules.popfile.output.inds
+	output:
+		report(results+"/plots/pca/"+dataset+"_{population}{dp}_pc{xpc}-{ypc}.pdf",category="PCA")
+	conda:
+		"../envs/r.yaml"
+	script:
+		"../scripts/plot_PCA.R"

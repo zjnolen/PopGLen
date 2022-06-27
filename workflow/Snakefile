@@ -2,8 +2,6 @@
 # habitat categories and two different time periods. These units however can be changed to any categorical variable with
 # two different types.
 
-report: "report/workflow.rst"
-
 include: "rules/common.smk"
 
 include: "rules/0.1_ref_prep.smk"
@@ -43,7 +41,7 @@ wildcard_constraints:
 		["all"]+
 		[i for i in samples.depth.values.tolist()]
 		),
-	dp=(subsample[0]+"|.*" if len(subsample)==2 else ".*"),
+	dp=(subsample[0]+"|.{0}" if len(subsample)==2 else ".{0}"),
 	chunk="[0-9]+"
 
 all_outputs = []
@@ -68,7 +66,8 @@ if config["analyses"]["relatedness"]:
 
 if config["analyses"]["pca_pcangsd"]:
 	all_outputs.append(expand(
-		results+"/analyses/pcangsd/"+dataset+"_all{dp}.cov",
+		[results+"/plots/pca/"+dataset+"_all{dp}_pc1-2.pdf",
+		results+"/plots/pca/"+dataset+"_all{dp}_pc3-4.pdf"],
 		dp=subsample))
 
 if config["analyses"]["thetas_angsd"]:

@@ -84,8 +84,6 @@ rule samtools_subsample:
         results+"/mapping/dedup/{sample}{dp}.bam"
     log:
         logs+"/samtools/subsample/{sample}{dp}.log"
-    wildcard_constraints:
-        dp=".dp+"
     conda:
         "../envs/samtools.yaml"
     resources:
@@ -100,10 +98,12 @@ rule samtools_subsample:
         prop=$(echo "$dp $subdp" | awk '{{print 1 / ($1 / $2)}}')
 
         if [ `awk 'BEGIN {{print ('$prop' <= 1.0)}}'` = 1 ]; then
-            samtools view -h -s $prop -@ {threads} -b {input.bam} > \
-                {output} 2> {log}
+            propdec=$(echo $prop | awk -F "." '{{print $2}}')
+            samtools view -h -s ${{RANDOM}}.${{propdec}} -@ {threads} \
+                -b {input.bam} > {output} 2> {log}
         else
-            ln {wildcards.sample}.bam {output}
+            original=$(readlink -f {input.bam})
+            ln -sf $original {output}
         fi
 
         echo "Subsampled average depth:" >> {log}

@@ -60,7 +60,7 @@ rule prune_chunk_beagle:
 		logs + "/ngsLD/prune_beagle/"+dataset+"_{population}{dp}_chunk{chunk}.log"
 	threads: lambda wildcards, attempt: attempt
 	resources:
-		time=lambda wildcards, attempt: attempt*240
+		time=lambda wildcards, attempt: attempt*720
 	shell:
 		r"""
 		set +o pipefail;

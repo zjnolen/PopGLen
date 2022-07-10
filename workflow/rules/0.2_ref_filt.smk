@@ -289,24 +289,24 @@ rule repeat_sum:
 
 rule angsd_depth:
 	input:
-		bamlist=results+"/genotyping/bamlists/"+dataset+"_{set}.bamlist",
+		bamlist=results+"/genotyping/bamlists/"+dataset+"_{set}{dp}.bamlist",
 		regions=REF_DIR+"/beds/chunk{chunk}_"+str(config["chunk_size"])+"bp.rf",
 		ref=REF
 	output:
 		posgz=results+"/genotyping/filters/depthfilt/"+dataset+ \
-				"_{set}_chunk{chunk}.pos.gz",
+				"_{set}{dp}_chunk{chunk}.pos.gz",
 		hist=results+"/genotyping/filters/depthfilt/"+dataset+ \
-				"_{set}_chunk{chunk}.depthGlobal"
+				"_{set}{dp}_chunk{chunk}.depthGlobal"
 	log:
-		logs+ "/depthfilt/"+dataset+"_{set}_chunk{chunk}.log"
+		logs+ "/depthfilt/"+dataset+"_{set}{dp}_chunk{chunk}.log"
 	container:
 		"docker://zjnolen/angsd:0.937"
 	params:
 		out=results+
-			"/genotyping/filters/depthfilt/"+dataset+"_{set}_chunk{chunk}"
+			"/genotyping/filters/depthfilt/"+dataset+"_{set}{dp}_chunk{chunk}"
 	threads: lambda wildcards, attempt: attempt*2
 	resources:
-		time="04:00:00"
+		time=lambda wildcards, attempt: attempt*360
 	shell:
 		"""
 		nInd=$(cat {input.bamlist} | wc -l | awk '{{print $1+1}}')
@@ -320,11 +320,11 @@ rule angsd_depth:
 rule combine_depths:
 	input:
 		lambda w: expand(results+"/genotyping/filters/depthfilt/"+dataset+
-						"_{{set}}_chunk{chunk}.depthGlobal",
+						"_{{set}}{{dp}}_chunk{chunk}.depthGlobal",
 						chunk=chunklist)
 	output:
 		results+"/genotyping/filters/depthfilt/"+dataset+
-			"_{set}.depthGlobal"
+			"_{set}{dp}.depthGlobal"
 	shell:
 		"""
 		cat {input} > {output}
@@ -335,7 +335,7 @@ rule summarize_depths:
 		rules.combine_depths.output
 	output:
 		results+"/genotyping/filters/depthfilt/"+dataset+
-			"_{set}_depth.summary"
+			"_{set}{dp}_depth.summary"
 	conda:
 		"../envs/r.yaml"
 	params:
@@ -350,11 +350,11 @@ rule depth_bed:
 		genbed=rules.genome_bed.output.bed,
 		quants=rules.summarize_depths.output,
 		pos=lambda w: expand(results+"/genotyping/filters/depthfilt/"+dataset+\
-						"_{{set}}_chunk{chunk}.pos.gz",
+						"_{{set}}{{dp}}_chunk{chunk}.pos.gz",
 						chunk=chunklist)
 	output:
 		results+"/genotyping/filters/depthfilt/"+dataset+ \
-			"_{set}_depthextremes.bed"
+			"_{set}{dp}_depthextremes.bed"
 	conda:
 		"../envs/bedtools.yaml"
 	shell:
@@ -373,12 +373,12 @@ rule depth_bed:
 
 rule combine_depth_bed:
 	input:
-		expand(results+"/genotyping/filters/depthfilt/"+dataset+"_{set}" \
+		expand(results+"/genotyping/filters/depthfilt/"+dataset+"_{set}{{dp}}"\
 			"_depthextremes.bed",set=["all"]+list(set(samples.depth.values)))
 	output:
-		results+"/genotyping/filters/beds/"+dataset+"_depthfilt.bed"
+		results+"/genotyping/filters/beds/"+dataset+"{dp}_depthfilt.bed"
 	log:
-		logs+"/depthfilt/"+dataset+"_combinebed.log"
+		logs+"/depthfilt/"+dataset+"{dp}_combinebed.log"
 	conda:
 		"../envs/bedtools.yaml"
 	resources:
@@ -570,9 +570,9 @@ def get_bed_filts(wildcards):
 			".out.gff.sum")
 	if config["analyses"]["extreme_depth"]:
 		bedin.append(results+"/genotyping/filters/beds/"+dataset+
-					 "_depthfilt.bed")
+					 "{dp}_depthfilt.bed")
 		bedsum.append(results+"/genotyping/filters/beds/"+dataset+
-					 "_depthfilt.bed.sum")
+					 "{dp}_depthfilt.bed.sum")
 	# if config["analyses"]["excess_hetero"]:
 	# 	bedin.append(results+"/genotyping/filters/beds/"+dataset+
 	# 				 "_heterofilt.bed")
@@ -586,12 +586,12 @@ checkpoint combine_beds:
 	input:
 		unpack(get_bed_filts)
 	output:
-		bed=results+"/genotyping/filters/beds/"+dataset+"_filts.bed",
-		lis=results+"/genotyping/filters/beds/"+dataset+"_filts.list",
-		sit=results+"/genotyping/filters/beds/"+dataset+"_filts.sites",
-		sum=results+"/genotyping/filters/beds/"+dataset+"_filts.sum"
+		bed=results+"/genotyping/filters/beds/"+dataset+"{dp}_filts.bed",
+		lis=results+"/genotyping/filters/beds/"+dataset+"{dp}_filts.list",
+		sit=results+"/genotyping/filters/beds/"+dataset+"{dp}_filts.sites",
+		sum=results+"/genotyping/filters/beds/"+dataset+"{dp}_filts.sum"
 	log:
-		logs + "/reffilt/combine.log"
+		logs + "/reffilt/combine{dp}.log"
 	conda:
 		"../envs/bedtools.yaml"
 	threads: lambda wildcards, attempt: attempt*2

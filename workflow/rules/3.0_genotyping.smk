@@ -12,6 +12,9 @@ rule angsd_makeBamlist:
         """
 
 rule popfile:
+	input:
+		bamlist=results+"/genotyping/bamlists/"+dataset+
+			"_{population}.bamlist"
 	output:
 		inds=results+"/genotyping/pop_lists/"+dataset+
 			"_{population}.indiv.list"
@@ -40,8 +43,8 @@ rule angsd_doGlf2:
 		anc=REF,
 		ref=REF,
 		regions=REF_DIR+"/beds/chunk{chunk}_"+str(config["chunk_size"])+"bp.rf",
-		sites=results+"/genotyping/filters/beds/"+dataset+"_filts.sites",
-		idx=results+"/genotyping/filters/beds/"+dataset+"_filts.sites.idx"
+		sites=results+"/genotyping/filters/beds/"+dataset+"{dp}_filts.sites",
+		idx=results+"/genotyping/filters/beds/"+dataset+"{dp}_filts.sites.idx"
 	output:
 		beagle=results+"/genotyping/beagle/chunk/"+dataset+
 			"_{population}{dp}_chunk{chunk}.beagle.gz",
@@ -63,7 +66,7 @@ rule angsd_doGlf2:
 			"_{population}{dp}_chunk{chunk}"
 	threads: lambda wildcards, attempt: attempt
 	resources:
-		time=lambda wildcards, attempt: attempt*180
+		time=lambda wildcards, attempt: attempt*720
 	shell:
 		"""
 		nInd=$(cat {input.bamlist} | wc -l | awk '{{print $1+1}}')
@@ -130,8 +133,8 @@ rule angsd_doSaf:
 		anc=REF,
 		ref=REF,
 		regions=REF_DIR+"/beds/chunk{chunk}_"+str(config["chunk_size"])+"bp.rf",
-		sites=results+"/genotyping/filters/beds/"+dataset+"_filts.sites",
-		idx=results+"/genotyping/filters/beds/"+dataset+"_filts.sites.idx"
+		sites=results+"/genotyping/filters/beds/"+dataset+"{dp}_filts.sites",
+		idx=results+"/genotyping/filters/beds/"+dataset+"{dp}_filts.sites.idx"
 	output:
 		saf=results+"/genotyping/saf/chunk/"+dataset+
 			"_{population}{dp}_chunk{chunk}.saf.gz",
@@ -165,7 +168,7 @@ rule angsd_doSaf:
 			-ref {input.ref} -anc {input.anc} -nThreads {threads} \
 			{params.extra} -minMapQ {params.mapQ} -minQ {params.baseQ} \
 			-minInd $minInd -sites {input.sites} -rf {input.regions} \
-			-setMinDepthInd 5 -doCounts 1 -out {params.out} &> {log}
+			-doCounts 1 -out {params.out} &> {log}
 		"""
 
 rule realSFS_catsaf:
@@ -194,8 +197,8 @@ rule angsd_haplocall:
 		bamlist=rules.angsd_makeBamlist.output,
 		ref=REF,
 		regions=REF_DIR+"/beds/chunk{chunk}_"+str(config["chunk_size"])+"bp.rf",
-		sites=results+"/genotyping/filters/beds/"+dataset+"_filts.sites",
-		idx=results+"/genotyping/filters/beds/"+dataset+"_filts.sites.idx"
+		sites=results+"/genotyping/filters/beds/"+dataset+"{dp}_filts.sites",
+		idx=results+"/genotyping/filters/beds/"+dataset+"{dp}_filts.sites.idx"
 	output:
 		results+"/genotyping/haploid_calls/chunk/"+dataset+
 			"_{population}{dp}_chunk{chunk}.haplo.gz"
@@ -244,8 +247,8 @@ rule merge_haplocall:
 rule angsd_doIBS:
 	input:
 		bamlist=rules.angsd_makeBamlist.output,
-		sites=results+"/genotyping/filters/beds/"+dataset+"_filts.sites",
-		idx=results+"/genotyping/filters/beds/"+dataset+"_filts.sites.idx"
+		sites=results+"/genotyping/filters/beds/"+dataset+"{dp}_filts.sites",
+		idx=results+"/genotyping/filters/beds/"+dataset+"{dp}_filts.sites.idx"
 	output:
 		results+"/genotyping/single-read-sampling/"+dataset+
 			"_{population}{dp}.ibs.gz",

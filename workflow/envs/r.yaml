@@ -5,3 +5,4 @@ dependencies:
   - r-base
   - r-essentials
   - r-svglite
+  - r-hmisc

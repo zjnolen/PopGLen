@@ -41,3 +41,20 @@ rule realSFS_2dSFS:
 		realSFS {input.saf1} {input.saf2} -fold {params.fold} -P {threads} \
 			> {output.sfs} 2> {log}
 		"""
+
+localrules: plot_heterozygosity
+
+rule plot_heterozygosity:
+	input:
+		sfs=expand(results+
+			"/analyses/sfs/"+dataset+"_{sample}{{dp}}.sfs",
+			sample=samples.index),
+		popfile=results+"/genotyping/pop_lists/"+dataset+"_all.indiv.list"
+	output:
+		report(results+"/plots/heterozygosity/"+dataset+
+			"_all{dp}_heterozygosity.pdf",
+			category="Heterozygosity")
+	conda:
+		"../envs/r.yaml"
+	script:
+		"../scripts/plot_heterozygosity.R"

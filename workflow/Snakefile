@@ -72,13 +72,12 @@ if config["analyses"]["pca_pcangsd"]:
 
 if config["analyses"]["thetas_angsd"]:
 	all_outputs.append(expand(
-		results+"/analyses/thetas/"+dataset+
-		"_{population}{subsample}.thetaWindows.pestPG",
-		population=pop_list, subsample=subsample))
+		results+"/plots/thetas/"+dataset+"_all{subsample}.{stat}.pdf",
+		stat=["watterson","pi","tajima"], subsample=subsample))
 
 if config["analyses"]["fst_angsd"]["populations"]:
 	all_outputs.append(expand(results+
-			"/analyses/fst/"+dataset+"_poppairs{dp}.fst.sum",
+			"/plots/fst/"+dataset+"_poppairs{dp}_fst.pdf",
 			dp=subsample))
 
 if config["analyses"]["fst_angsd"]["individuals"]:
@@ -88,19 +87,19 @@ if config["analyses"]["fst_angsd"]["individuals"]:
 
 if config["analyses"]["heterozygosity_angsd"]:
 	all_outputs.append(expand(
-		results+"/analyses/thetas/"+dataset+
-		"_{population}{subsample}.thetaWindows.pestPG",
+		[
+		#results+"/analyses/thetas/"+dataset+"_{population}{subsample}.thetaWindows.pestPG",
+		results+"/plots/heterozygosity/"+dataset+
+		"_all{subsample}_heterozygosity.pdf"],
 		population=samples.index, 
 		subsample=subsample)
 		)
 
 if config["analyses"]["inbreeding_ngsf-hmm"]:
 	all_outputs.append(expand(
-		results+"/analyses/ngsF-HMM/"+dataset+
-		"_{group}{subsample}.{ext}", 
-		group=pop_list,
-		subsample=subsample,
-		ext=["ibd","roh","indF"])
+		results+"/plots/inbreeding/"+dataset+"_all{subsample}.{stat}.pdf",
+		stat=["froh","rohreg"],
+		subsample=subsample)
 		)
 
 if config["analyses"]["admix_ngsadmix"]:

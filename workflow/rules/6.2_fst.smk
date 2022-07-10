@@ -88,3 +88,16 @@ rule aggregate_global_fst:
 		echo "pop1\tpop2\tunweight.fst\tweight.fst" > {output} 2> {log}
 		cat {input} >> {output} 2>> {log}
 		"""
+
+localrules: plot_fst
+
+rule plot_fst:
+	input:
+		results+"/analyses/fst/"+dataset+"_{unit}pairs{dp}.fst.sum"
+	output:
+		report(results+"/plots/fst/"+dataset+"_{unit}pairs{dp}_fst.pdf",
+			category="Fst")
+	conda:
+		"../envs/r.yaml"
+	script:
+		"../scripts/plot_fst.R"

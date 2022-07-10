@@ -43,3 +43,22 @@ rule thetaStat:
 		thetaStat do_stat {input.thetas} -win 50000 -step 10000 \
 			-outnames {params.out}
 		"""
+
+localrules: plot_thetas
+
+rule plot_thetas:
+	input:
+		expand(results+"/analyses/thetas/"+dataset+
+			"_{population}{{dp}}.thetaWindows.pestPG",
+			population=pop_list)
+	output:
+		report(expand(results+"/plots/thetas/"+dataset+"_all{{dp}}.{stat}.pdf",
+			stat=["watterson","pi","tajima"]),
+			category="Thetas")
+	conda:
+		"../envs/r.yaml"
+	params:
+		popnames=pop_list,
+		outpre=results+"/plots/thetas/"+dataset+"_all{dp}"
+	script:
+		"../scripts/plot_thetas.R"

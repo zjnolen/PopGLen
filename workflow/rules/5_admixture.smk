@@ -23,6 +23,8 @@ rule ngsAdmix:
 			-K {wildcards.kvalue} -P {threads} -o {params.prefix} 2> {log}
 		"""
 
+localrules: plot_admix
+
 rule plot_admix:
 	input:
 		rules.ngsAdmix.output.qopt,

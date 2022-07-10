@@ -1,4 +1,4 @@
-localrules: convert_ibd
+localrules: convert_ibd, plot_froh
 
 rule ngsf_hmm:
 	input:
@@ -48,7 +48,29 @@ rule convert_ibd:
 		logs + "/ngsF-HMM/"+dataset+"_{population}{dp}_convert_ibd.log"
 	shell:
 		"""
-		perl workflow/scripts/convert_ibd_mod.pl --ind_file {input.inds} \
-			--pos_file {input.pos} --ibd_pos_file {input.ibd} > {output.roh} \
-			2> {log}
+		inds=$(basename {input.inds})
+		tail -n +2 {input.inds} > {resources.tmpdir}/$inds.tmp
+
+		perl workflow/scripts/convert_ibd_mod.pl --pos_file {input.pos} \
+			--ind_file {resources.tmpdir}/$inds.tmp \
+			--ibd_pos_file {input.ibd} > {output.roh} 2> {log}
 		"""
+
+rule plot_froh:
+	input:
+		roh=expand(results+"/analyses/ngsF-HMM/"+dataset+
+			"_{population}{{dp}}.roh", population=pop_list),
+		inds=results+"/genotyping/pop_lists/"+dataset+"_all.indiv.list",
+		autos=rules.sexlink_sum.output.sum
+	output:
+		report(expand(results+"/plots/inbreeding/"+dataset+
+			"_all{{dp}}.{stat}.pdf",
+			stat=["froh","rohreg"]),
+			category="Inbreeding")
+	conda:
+		"../envs/r.yaml"
+	params:
+		popnames=pop_list,
+		outpre=results+"/plots/inbreeding/"+dataset+"_all{dp}"
+	script:
+		"../scripts/plot_Froh.R"

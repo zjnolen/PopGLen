@@ -1,9 +1,8 @@
 from snakemake.utils import validate
 import pandas as pd
 import os
-import urllib
-import re
 import itertools
+import csv
 
 # load and validate config file
 # if os.path.exists("config/config.yaml"):

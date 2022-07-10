@@ -18,5 +18,3 @@ logs
 # ignore unique sample and config files
 config/config_*.yaml
 config/samples_*.tsv
-config/cluster.yaml
-config/units.tsv

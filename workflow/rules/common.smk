@@ -181,12 +181,12 @@ def get_samples_from_pop(population):
 
 def get_bamlist_bams(wildcards):
     pop = wildcards.population
-    return expand(results + "/mapping/dedup/{sample}{{dp}}.bam", 
+    return expand(results+"/mapping/{sample}{{dp}}.rmdup.realn.bam", 
                 sample = get_samples_from_pop(pop))
 
 def get_bamlist_bais(wildcards):
     pop = wildcards.population
-    return expand(results + "/mapping/dedup/{sample}{{dp}}.bam.bai", 
+    return expand(results+"/mapping/{sample}{{dp}}.rmdup.realn.bam.bai", 
                 sample = get_samples_from_pop(pop))
 
 # def get_intersect_inputs(wildcards):

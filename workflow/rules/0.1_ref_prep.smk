@@ -49,3 +49,16 @@ rule ref_chunking:
         contigs = lambda w: chunks[int(w.chunk) - 1].index.tolist()
     shell:
         r"""echo {params.contigs} | tr " " "\n" > {output}"""
+
+rule picard_dict:
+    input:
+        REF
+    output:
+        REF+".dict"
+    conda:
+        "../envs/picard.yaml"
+    shell:
+        """
+        picard CreateSequenceDictionary -Xmx{resources.mem_mb}m \
+            R={input} O={output} 2> {log}
+        """

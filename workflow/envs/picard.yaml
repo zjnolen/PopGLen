@@ -1,0 +1,6 @@
+channels:
+  - conda-forge
+  - bioconda
+
+dependencies:
+  - picard =2.27.4

@@ -40,6 +40,8 @@ rule angsd_sites_index:
 rule angsd_doGlf2:
 	input:
 		bamlist=rules.angsd_makeBamlist.output,
+		bams=get_bamlist_bams,
+		bais=get_bamlist_bais,
 		anc=REF,
 		ref=REF,
 		regions=REF_DIR+"/beds/chunk{chunk}_"+str(config["chunk_size"])+"bp.rf",
@@ -130,6 +132,8 @@ rule merge_maf:
 rule angsd_doSaf:
 	input:
 		bamlist=rules.angsd_makeBamlist.output,
+		bams=get_bamlist_bams,
+		bais=get_bamlist_bais,
 		anc=REF,
 		ref=REF,
 		regions=REF_DIR+"/beds/chunk{chunk}_"+str(config["chunk_size"])+"bp.rf",
@@ -195,6 +199,8 @@ rule realSFS_catsaf:
 rule angsd_haplocall:
 	input:
 		bamlist=rules.angsd_makeBamlist.output,
+		bams=get_bamlist_bams,
+		bais=get_bamlist_bais,
 		ref=REF,
 		regions=REF_DIR+"/beds/chunk{chunk}_"+str(config["chunk_size"])+"bp.rf",
 		sites=results+"/genotyping/filters/beds/"+dataset+"{dp}_filts.sites",
@@ -247,6 +253,8 @@ rule merge_haplocall:
 rule angsd_doIBS:
 	input:
 		bamlist=rules.angsd_makeBamlist.output,
+		bams=get_bamlist_bams,
+		bais=get_bamlist_bais,
 		sites=results+"/genotyping/filters/beds/"+dataset+"{dp}_filts.sites",
 		idx=results+"/genotyping/filters/beds/"+dataset+"{dp}_filts.sites.idx"
 	output:

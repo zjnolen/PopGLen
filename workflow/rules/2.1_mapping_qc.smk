@@ -25,7 +25,7 @@ rule samtools_idxstats:
 
 rule qualimap:
     input:
-        results+"/mapping/dedup/{sample}.bam"
+        results+"/mapping/{sample}.rmdup.realn.bam"
     output:
         results+"/qc/qualimap/{sample}/qualimapReport.html",
         results+"/qc/qualimap/{sample}/genome_results.txt"
@@ -39,6 +39,8 @@ rule qualimap:
         time="06:00:00"
     shell:
         """
+        unset DISPLAY
+
         qualimap bamqc --java-mem-size={resources.mem_mb}M -bam {input} \
             -outdir {params.out} 2> {log}
         """

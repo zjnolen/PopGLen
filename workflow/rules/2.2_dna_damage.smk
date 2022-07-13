@@ -1,6 +1,6 @@
 rule damageprofiler:
 	input:
-		bam=results+"/mapping/dedup/{sample}.bam",
+		bam=results+"/mapping/{sample}.rmdup.realn.bam",
 		ref=REF
 	output:
 		multiext(results+"/qc/damageprofiler/{sample}/",

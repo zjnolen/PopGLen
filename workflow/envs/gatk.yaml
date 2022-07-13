@@ -1,0 +1,6 @@
+channels:
+  - conda-forge
+  - bioconda
+
+dependencies:
+  - gatk =3.8

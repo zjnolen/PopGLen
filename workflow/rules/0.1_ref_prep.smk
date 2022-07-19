@@ -26,7 +26,7 @@ rule bwa_index:
         bwa index {params.extra} {input}
         """
 
-checkpoint samtools_faidx:
+rule samtools_faidx:
     input:
         REF
     output:
@@ -58,7 +58,7 @@ rule picard_dict:
     conda:
         "../envs/picard.yaml"
     shell:
-        """
+        r"""
         picard CreateSequenceDictionary -Xmx{resources.mem_mb}m \
-            R={input} O={output} 2> {log}
+            R={input} O={output}
         """

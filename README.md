@@ -1,5 +1,9 @@
 # Genotype likelihood population genomics pipeline
 
+**Under development - mostly works, but not on all systems. And certainly 
+needs some documentation... if you'd like to use in this early state, please 
+contact me.**
+
 This pipeline performs multiple common population genomic analyses within a 
 genotype likelihood framework primarily using ANGSD and related softwares. It 
 requires sequencing reads and a reference genome. Right now, it only works 

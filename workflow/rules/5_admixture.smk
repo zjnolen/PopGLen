@@ -15,7 +15,7 @@ rule ngsAdmix:
 			"_{population}{dp}_K{kvalue}"
 	threads: 4
 	resources:
-		time=lambda wildcards, attempt: attempt*1440
+		time=lambda wildcards, attempt: attempt*4320
 	shell:
 		"""
 		export TMPDIR={resources.tmpdir}

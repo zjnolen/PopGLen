@@ -37,6 +37,26 @@ rule angsd_sites_index:
 		angsd sites index {input} 2> {log}
 		"""
 
+def get_snpset(wildcards):
+	pop = wildcards.population
+	if pop == "all":
+		return [results+"/genotyping/filters/beds/"+dataset+"{dp}_filts.sites",
+				results+"/genotyping/filters/beds/"+dataset+
+					"{dp}_filts.sites.idx"]
+	else:
+		return [results+"/genotyping/filters/beds/"+dataset+"{dp}_snps.sites",
+				results+"/genotyping/filters/beds/"+dataset+
+					"{dp}_snps.sites.idx"]
+
+def get_popopts(wildcards):
+	pop = wildcards.population
+	if pop == "all":
+		return "-doMajorMinor 1 -minInd $minInd -SNP_pval "+ \
+				str(config["params"]["angsd"]["snp_pval"])+" -minMaf "+ \
+				str(config["params"]["angsd"]["min_maf"])
+	else:
+		return "-doMajorMinor 3"
+
 rule angsd_doGlf2:
 	input:
 		bamlist=rules.angsd_makeBamlist.output,
@@ -45,8 +65,7 @@ rule angsd_doGlf2:
 		anc=REF,
 		ref=REF,
 		regions=REF_DIR+"/beds/chunk{chunk}_"+str(config["chunk_size"])+"bp.rf",
-		sites=results+"/genotyping/filters/beds/"+dataset+"{dp}_filts.sites",
-		idx=results+"/genotyping/filters/beds/"+dataset+"{dp}_filts.sites.idx"
+		sites=get_snpset
 	output:
 		beagle=results+"/genotyping/beagle/chunk/"+dataset+
 			"_{population}{dp}_chunk{chunk}.beagle.gz",
@@ -62,8 +81,7 @@ rule angsd_doGlf2:
 		mapQ=config["mapQ"],
 		baseQ=config["baseQ"],
 		miss=get_miss_data_prop,
-		pval=config["params"]["angsd"]["snp_pval"],
-		maf=config["params"]["angsd"]["min_maf"],
+		popopts=get_popopts,
 		out=results + "/genotyping/beagle/chunk/"+dataset+
 			"_{population}{dp}_chunk{chunk}"
 	threads: lambda wildcards, attempt: attempt
@@ -77,10 +95,9 @@ rule angsd_doGlf2:
 			| awk '{{print int($1) + ( $1!=int($1) && $1>=0 )}}')
 
 		angsd -doGlf 2 -bam {input.bamlist} -GL {params.gl_model} \
-			-doMajorMinor 1 -doMaf 1 -SNP_pval {params.pval} \
-			-minMaf {params.maf} -ref {input.ref} -nThreads {threads}  \
+			{params.popopts} -doMaf 1 -ref {input.ref} -nThreads {threads}  \
 			{params.extra} -minMapQ {params.mapQ} -minQ {params.baseQ} \
-			-minInd $minInd -sites {input.sites} -rf {input.regions} \
+			-sites {input.sites[0]} -rf {input.regions} \
 			-out {params.out} &> {log}
 		"""
 
@@ -128,6 +145,15 @@ rule merge_maf:
 		done
 		"""
 
+rule snpset:
+	input:
+		results+"/genotyping/mafs/"+dataset+"_all{dp}.mafs.gz"
+	output:
+		results+"/genotyping/filters/beds/"+dataset+"{dp}_snps.sites"
+	shell:
+		"""
+		zcat {input} | tail -n +2 | cut -f1-4 > {output}
+		"""
 
 rule angsd_doSaf:
 	input:
@@ -171,8 +197,7 @@ rule angsd_doSaf:
 		angsd -doSaf 1 -bam {input.bamlist} -GL {params.gl_model} \
 			-ref {input.ref} -anc {input.anc} -nThreads {threads} \
 			{params.extra} -minMapQ {params.mapQ} -minQ {params.baseQ} \
-			-minInd $minInd -sites {input.sites} -rf {input.regions} \
-			-doCounts 1 -out {params.out} &> {log}
+			-sites {input.sites} -rf {input.regions} -out {params.out} &> {log}
 		"""
 
 rule realSFS_catsaf:

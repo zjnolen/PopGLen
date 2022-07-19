@@ -50,7 +50,9 @@ rule ngsLD_prune_sites:
 rule prune_chunk_beagle:
 	input:
 		beagle=rules.angsd_doGlf2.output.beagle,
-		sites=rules.ngsLD_prune_sites.output.sites
+		sites=expand(results+"/genotyping/pruned_beagle/ngsLD/"+dataset+
+			"{population}{{dp}}_chunk{{chunk}}_pruned.sites",
+			population="all")
 	output:
 		pruned=temp(results+"/genotyping/pruned_beagle/chunk/"+dataset+
 			"_{population}{dp}_chunk{chunk}_pruned.beagle"),
@@ -67,7 +69,11 @@ rule prune_chunk_beagle:
 		zcat {input.beagle} | head -n 1 > {output.pruned} 2> {log}
 
 		while read pos; do
-			zcat {input.beagle} | grep "$pos	" >> {output.pruned} 2>> {log}
+			zcat {input.beagle} | grep "$pos	" >> {output.pruned} 2>> {log}\
+				|| true
+			# || true is to prevent job fails when site isn't found (i.e
+			# missing in all inds in pop). This will happen occassionally
+			# in some datasets. Not sure if best solution, but here for now.
 		done < {input.sites}
 
 		gzip -c {output.pruned} > {output.prunedgz} 2> {log}
@@ -75,13 +81,19 @@ rule prune_chunk_beagle:
 		Nsites=$(cat {input.sites} | wc -l | awk '{{print $1+1}}') &>> {log}
 		NsitesB=$(zcat {output.prunedgz} | wc -l) &>> {log}
 
-		if [ $Nsites = $NsitesB ]; then
-			echo "Pruning successful!" &>> {log}
-		else
-			echo "Number of sites in pruned beagle differ from sites file." \
-				&>> {log}
-			exit 1
-		fi
+		echo "Sites searched for: $Nsites" &>> {log}
+		echo "Sites in pruned beagle: $NsitesB" &>> {log}
+
+		# No longer works since pruned site list isn't custom to population.
+		# Would fail for any population that happens to be missing a site in
+		# the pruned dataset in all individuals.
+		# if [ $Nsites = $NsitesB ]; then
+		# 	echo "Pruning successful!" &>> {log}
+		# else
+		# 	echo "Number of sites in pruned beagle differ from sites file." \
+		# 		&>> {log}
+		# 	exit 1
+		# fi
 		"""
 
 rule merge_pruned_beagles:

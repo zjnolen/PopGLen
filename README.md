@@ -23,19 +23,24 @@ Currently, the pipeline performs the following tasks:
 
 **Raw read preparation**
 
-- Trimming and collapsing of paired end reads
+- Trimming of paired reads from high quality libraries
+- Collapsing of paired reads from fragmented libraries
 
 **Read mapping**
 
-- Mapping prepared raw reads to reference using bwa-mem
-- Removal of PCR and sequencing duplicates
-- Indexing of deduplicated, mapped reads
+- Mapping prepared raw reads to reference using bwa-mem and clipping of 
+  overlapping reads
+- Removal of PCR and sequencing duplicates separately for high quality 
+  (Picard) and fragmented (DeDup) reads
+- Realignment around indels
+- Indexing of deduplicated, realigned, mapped reads
 
 **Sample quality control**
 
 - Assess post-mortem DNA damage with DamageProfiler
 - Assess mapping quality stats with Qualimap
-- Assess endogenous content before duplicate reads are removed
+- Assess endogenous content before duplicate reads are removed (need to 
+  re-implement)
 - Assess sample duplication and relatedness with ngsrelate
 
 **Data quality filtering**
@@ -47,6 +52,7 @@ Currently, the pipeline performs the following tasks:
 - Exclusion of low mappability regions with GenMap
 - Exclusion of sites with extreme global depth values (determined separately 
   for the entire dataset, low coverage, and high coverage subsets, then merged)
+- Exclusion of sites based on data missingness
 
 **GL based population genomic analyses**
 
@@ -55,6 +61,13 @@ genome at a time, then later merged. This is only done for analyses where
 possible and where the time saved is appreciable. These chunks are made to be 
 a user configured size to allow tuning of run-times (i.e. more jobs, shorter 
 runtimes vs fewer jobs, longer runtimes).
+
+SAF based analyses are done on variable and non-variable sites passing quality 
+filters. This set is the same across all populations in the dataset. Beagle 
+based analyses are done on a SNP set that is constant across all populations, 
+determined from the output of the Beagle file for the whole dataset. Pruning 
+is done on the whole dataset beagle file and the same pruned sites are used 
+for all populations.
 
 Additionally, all analyses can be repeated with samples subsampled to a lower 
 user configured depth. This helps to ensure results are not simply due to 
@@ -65,12 +78,20 @@ variance in depth between groups.
 - Admixture with NGSAdmix
 - 1D and 2D Site frequency spectrum production with ANGSD
 - Neutrality statistics per population (Watterson's theta, pairwise pi, 
-  Tajima's D) and per sample (analagous to heterozygosity) in user defined 
-  sliding windows with ANGSD
-- Pairwise Fst between all populations and samples with ANGSD
+  Tajima's D) in user defined sliding windows with ANGSD
+- Estimation of heterozygosity per sample from 1D SFS with ANGSD
+- Pairwise Fst between all populations with ANGSD
 - Inbreeding coefficients and runs of homozygosity per sample with ngsF-HMM 
   (**NOTE** This is currently only possible for samples that are within a 
   population sampling currently, not for lone samples)
+
+**Reporting of results**
+
+A Snakemake report can be generated after a successful run. The output is 
+rather rough for now, but has some improvements in mind:
+
+- Categorization of outputs
+- Summary tables of mapping and filtering stats
 
 ### Planned
 
@@ -84,15 +105,14 @@ roughly corresponding to priority:
   - PCAngsd
   - ngsF-HMM
   - ngsrelate
-- Production of data exploration plots for most analyses
-- Combine outputs into report upon successful completion of the workflow
-- Add options to include genotype calling based approaches for comparison
+- Add options to include genotype calling based approaches for comparison?
 
 ## Stages
 
 The pipeline is written to be performed in stages - points at which it can be 
 run to and then checked to ensure everything is working properly thus far and 
-settings adjusted as needed.
+settings adjusted as needed. **NOTE: This section was written awhile ago - it 
+is not up to date.**
 
 ### 1) Sequence data and reference processing
 

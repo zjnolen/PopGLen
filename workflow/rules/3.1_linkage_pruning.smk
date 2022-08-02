@@ -1,3 +1,5 @@
+localrules:
+
 rule ngsLD_estLD:
 	input:
 		beagle=rules.angsd_doGlf2.output.beagle,
@@ -13,7 +15,7 @@ rule ngsLD_estLD:
 		"library://james-s-santangelo/ngsld/ngsld:1.1.1"
 	threads: lambda wildcards, attempt: attempt
 	resources:
-		time=lambda wildcards, attempt: attempt*240
+		time=lambda wildcards, attempt: attempt*720
 	shell:
 		r"""
 		zcat {input.beagle} | awk '{{print $1}}' | sed 's/\(.*\)_/\1\t/' \
@@ -28,6 +30,7 @@ rule ngsLD_estLD:
 			| gzip > {output.ld} 2>> {log}
 		"""
 
+
 rule ngsLD_prune_sites:
 	input:
 		ld=rules.ngsLD_estLD.output.ld
@@ -38,7 +41,7 @@ rule ngsLD_prune_sites:
 		logs + "/ngsLD/prune_sites/"+dataset+"_{population}{dp}_chunk{chunk}.log"
 	conda:
 		"../envs/pruning.yaml"
-	threads: lambda wildcards, attempt: attempt*10
+	threads: lambda wildcards, attempt: attempt*5
 	resources:
 		time=lambda wildcards, attempt: attempt*1440
 	shell:
@@ -59,24 +62,20 @@ rule prune_chunk_beagle:
 		prunedgz=results+"/genotyping/pruned_beagle/chunk/"+dataset+
 			"_{population}{dp}_chunk{chunk}_pruned.beagle.gz"
 	log:
-		logs + "/ngsLD/prune_beagle/"+dataset+"_{population}{dp}_chunk{chunk}.log"
-	threads: lambda wildcards, attempt: attempt
+		logs+"/ngsLD/prune_beagle/"+dataset+"_{population}{dp}_chunk{chunk}.log"
+	threads: lambda wildcards, attempt: attempt*10
 	resources:
-		time=lambda wildcards, attempt: attempt*720
+		time=lambda wildcards, attempt: attempt*120
 	shell:
 		r"""
 		set +o pipefail;
 		zcat {input.beagle} | head -n 1 > {output.pruned} 2> {log}
+		
+		join -t $'\t' <(sort -k1,1 {input.sites}) <(zcat {input.beagle} | sort -k1,1) | \
+			sed 's/_/\t/' | sort -k1,1 -k2,2n | sed 's/\t/_/' \
+			>> {output.pruned} 2>> {log}
 
-		while read pos; do
-			zcat {input.beagle} | grep "$pos	" >> {output.pruned} 2>> {log}\
-				|| true
-			# || true is to prevent job fails when site isn't found (i.e
-			# missing in all inds in pop). This will happen occassionally
-			# in some datasets. Not sure if best solution, but here for now.
-		done < {input.sites}
-
-		gzip -c {output.pruned} > {output.prunedgz} 2> {log}
+		gzip -c {output.pruned} > {output.prunedgz} 2>> {log}
 
 		Nsites=$(cat {input.sites} | wc -l | awk '{{print $1+1}}') &>> {log}
 		NsitesB=$(zcat {output.prunedgz} | wc -l) &>> {log}

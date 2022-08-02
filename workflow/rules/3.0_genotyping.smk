@@ -31,7 +31,7 @@ rule angsd_sites_index:
 	log:
 		logs + "/angsd_sites_index/{prefix}.log"
 	container:
-		"docker://zjnolen/angsd:0.937"
+		angsd_container
 	shell:
 		"""
 		angsd sites index {input} 2> {log}
@@ -74,7 +74,7 @@ rule angsd_doGlf2:
 	log:
 		logs + "/angsd/doGlf2/"+dataset+"_{population}{dp}_chunk{chunk}.log"
 	container:
-		"docker://zjnolen/angsd:0.937"
+		angsd_container
 	params:
 		gl_model=config["params"]["angsd"]["gl_model"],
 		extra=config["params"]["angsd"]["extra"],
@@ -175,7 +175,7 @@ rule angsd_doSaf:
 	log:
 		logs + "/angsd/doSaf/"+dataset+"_{population}{dp}_chunk{chunk}.log"
 	container:
-		"docker://zjnolen/angsd:0.937"
+		angsd_container
 	params:
 		gl_model=config["params"]["angsd"]["gl_model"],
 		extra=config["params"]["angsd"]["extra"],
@@ -211,7 +211,7 @@ rule realSFS_catsaf:
 	log:
 		logs+"/realSFS/cat/"+dataset+"_{population}{dp}.log"
 	container:
-		"docker://zjnolen/angsd:0.937"
+		angsd_container
 	params:
 		out=results+"/genotyping/saf/"+dataset+"_{population}{dp}"
 	resources:
@@ -236,7 +236,7 @@ rule angsd_haplocall:
 	log:
 		logs+"/angsd/doHaploCall/"+dataset+"_{population}{dp}_chunk{chunk}.log"
 	container:
-		"docker://zjnolen/angsd:0.937"
+		angsd_container
 	params:
 		extra=config["params"]["angsd"]["extra"],
 		mapQ=config["mapQ"],
@@ -290,7 +290,7 @@ rule angsd_doIBS:
 	log:
 		logs+"/angsd/doIBS/"+dataset+"_{population}{dp}.log"
 	container:
-		"docker://zjnolen/angsd:0.937"
+		angsd_container
 	params:
 		mapQ=config["mapQ"],
 		baseQ=config["baseQ"],
@@ -319,7 +319,7 @@ rule angsd_doIBS:
 # 	log:
 # 		logs + "/genotyping/doGlf4/"+dataset+"_{population}{dp}_chr{chr}.log"
 # 	container:
-# 		"docker://zjnolen/angsd:0.937"
+# 		angsd_container
 # 	params:
 # 		gl_model=config["params"]["angsd"]["gl_model"],
 # 		extra=config["params"]["angsd"]["extra"],
@@ -356,7 +356,7 @@ rule angsd_doIBS:
 # 	log:
 # 		logs + "/angsd/doGlf2/"+dataset+"_{population}{dp}_chr{chr}.log"
 # 	container:
-# 		"docker://zjnolen/angsd:0.937"
+# 		angsd_container
 # 	params:
 # 		pval=config["params"]["angsd"]["snp_pval"],
 # 		maf=config["params"]["angsd"]["min_maf"],
@@ -427,7 +427,7 @@ rule angsd_doIBS:
 # 	log:
 # 	 	logs + "/angsd/doIBS/"+dataset+"_{population}{dp}.log"
 # 	container:
-# 		"docker://zjnolen/angsd:0.937"
+# 		angsd_container
 # 	params:
 # 		extra=config["params"]["angsd"]["extra"],
 # 		mapQ=config["mapQ"],

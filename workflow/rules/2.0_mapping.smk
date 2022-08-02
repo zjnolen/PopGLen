@@ -66,9 +66,10 @@ rule bwa_mem_merged:
         rg=get_read_group
     conda:
         "../envs/mapping.yaml"
-    threads: lambda wildcards, attempt: attempt*4
+    shadow: "copy-minimal"
+    threads: lambda wildcards, attempt: attempt*8
     resources:
-        time=lambda wildcards, attempt: attempt*720
+        time=lambda wildcards, attempt: attempt*10080
     shell:
         """
         bwa mem \
@@ -92,9 +93,10 @@ rule bwa_mem_paired:
         rg=get_read_group
     conda:
         "../envs/mapping.yaml"
-    threads: lambda wildcards, attempt: attempt*4
+    shadow: "copy-minimal"
+    threads: lambda wildcards, attempt: attempt*20
     resources:
-        time=lambda wildcards, attempt: attempt*720
+        time=lambda wildcards, attempt: attempt*10080
     shell:
         """
         bwa mem \
@@ -115,9 +117,10 @@ rule mark_duplicates:
         logs + "/picard/dedup/{sample}.paired.log"
     params:
         extra=config["params"]["picard"]["MarkDuplicates"]
+    shadow: "copy-minimal"
     threads: lambda wildcards, attempt: attempt*2
     resources:
-        time=lambda wildcards, attempt: attempt*720
+        time=lambda wildcards, attempt: attempt*1440
     wrapper:
         "0.84.0/bio/picard/markduplicates"
 
@@ -135,7 +138,7 @@ rule bam_clipoverlap:
         "../envs/fgbio.yaml"
     shadow: "copy-minimal"
     resources:
-        time=lambda wildcards, attempt: attempt*240
+        time=lambda wildcards, attempt: attempt*1440
     shell:
         """
         samtools sort -n -u {input.bam} | fgbio ClipBam -i /dev/stdin \
@@ -156,10 +159,11 @@ rule dedup_merged:
         logs + "/dedup/{sample}.merged.log"
     conda:
         "../envs/dedup.yaml"
+    shadow: "copy-minimal"
     params:
         outdir=results+"/mapping/dedup"
     resources:
-        time=lambda wildcards, attempt: attempt*240
+        time=lambda wildcards, attempt: attempt*1440
     shell:
         """
         dedup -i {input} -m -u -o {params.outdir} 2> {log}
@@ -197,9 +201,10 @@ rule realignertargetcreator:
         logs+"/gatk/realignertargetcreator/{sample}.log"
     conda:
         "../envs/gatk.yaml"
+    shadow: "copy-minimal"
     threads: lambda wildcards, attempt: attempt*2
     resources:
-        time=lambda wildcards, attempt: attempt*240
+        time=lambda wildcards, attempt: attempt*720
     shell:
         """
         gatk3 -T RealignerTargetCreator -nt {threads} -I {input.bam} \
@@ -220,9 +225,10 @@ rule indelrealigner:
         logs+"/gatk/indelrealigner/{sample}.log"
     conda:
         "../envs/gatk.yaml"
+    shadow: "copy-minimal"
     threads: lambda wildcards, attempt: attempt*4
     resources:
-        time=lambda wildcards, attempt: attempt*360
+        time=lambda wildcards, attempt: attempt*1440
     shell:
         """
         gatk3 -T IndelRealigner -R {input.ref} -I {input.bam} \
@@ -238,6 +244,7 @@ rule samtools_index_temp:
         "{prefix}.bam.bai"
     log:
         results+"/samtools/index_temp/{prefix}.log"
+    shadow: "copy-minimal"
     wrapper:
         "0.84.0/bio/samtools/index"
 
@@ -248,6 +255,7 @@ rule samtools_index:
         results+"/mapping/{sample}{dp}.rmdup.realn.bam.bai"
     log:
         results+"/samtools/index/{sample}{dp}.log"
+    shadow: "copy-minimal"
     wrapper:
         "0.84.0/bio/samtools/index"
 
@@ -260,8 +268,9 @@ rule samtools_subsample:
         logs+"/samtools/subsample/{sample}{dp}.log"
     conda:
         "../envs/samtools.yaml"
+    shadow: "copy-minimal"
     resources:
-        time="06:00:00"
+        time=lambda wildcards, attempt: attempt*720
     shell:
         """
         dp=$(samtools depth -a {input.bam} | awk '{{sum+=$3}} END \
@@ -276,8 +285,7 @@ rule samtools_subsample:
             samtools view -h -s ${{RANDOM}}.${{propdec}} -@ {threads} \
                 -b {input.bam} > {output} 2> {log}
         else
-            original=$(readlink -f {input.bam})
-            ln -sf $original {output}
+            ln -sf $(basename {input.bam}) {output}
         fi
 
         echo "Subsampled average depth:" >> {log}

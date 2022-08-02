@@ -9,7 +9,7 @@ rule ngsAdmix:
 	log:
 		logs+"/ngsadmix/"+dataset+"_{population}{dp}_K{kvalue}.log"
 	container:
-		"docker://zjnolen/angsd:0.937"
+		angsd_container
 	params:
 		prefix=results+"/analyses/ngsadmix/"+dataset+
 			"_{population}{dp}_K{kvalue}"

@@ -7,7 +7,7 @@ rule realSFS_fst_index:
 		fstidx=results+"/analyses/fst/"+dataset+
 			"_{population1}-{population2}{dp}.fst.idx"
 	container:
-		"docker://zjnolen/angsd:0.937"
+		angsd_container
 	log:
 		logs+"/realSFS/fst/index/"+dataset+
 			"_{population1}-{population2}{dp}.log"
@@ -28,7 +28,7 @@ rule realSFS_fst_stats:
 		fstglob=results+"/analyses/fst/"+dataset+
 			"_{population1}-{population2}{dp}.fst.global"
 	container:
-		"docker://zjnolen/angsd:0.937"
+		angsd_container
 	log:
 		logs+"/realSFS/fst/stats/"+dataset+
 			"_{population1}-{population2}{dp}.log"
@@ -48,7 +48,7 @@ rule realSFS_fst_stats2:
 		fstwin=results+"/analyses/fst/"+dataset+
 			"_{population1}-{population2}{dp}.fst.window"
 	container:
-		"docker://zjnolen/angsd:0.937"
+		angsd_container
 	log:
 		logs+"/realSFS/fst/stats2/"+dataset+
 			"_{population1}-{population2}{dp}.log"

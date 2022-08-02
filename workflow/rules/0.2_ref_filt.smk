@@ -303,7 +303,7 @@ rule angsd_depth:
 	log:
 		logs+ "/depthfilt/"+dataset+"_{population}{dp}_chunk{chunk}.log"
 	container:
-		"docker://zjnolen/angsd:0.937"
+		angsd_container
 	params:
 		out=results+
 			"/genotyping/filters/depthfilt/"+dataset+"_{population}{dp}_chunk{chunk}"
@@ -427,7 +427,7 @@ rule angsd_missdata:
 	log:
 		logs+ "/missdata/"+dataset+"_{population}{dp}_chunk{chunk}_over{miss}.log"
 	container:
-		"docker://zjnolen/angsd:0.937"
+		angsd_container
 	params:
 		extra=config["params"]["angsd"]["extra"],
 		mapQ=config["mapQ"],

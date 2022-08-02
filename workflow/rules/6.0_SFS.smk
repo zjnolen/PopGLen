@@ -4,7 +4,7 @@ rule realSFS_1dSFS:
 	output:
 		sfs=results + "/analyses/sfs/"+dataset+"_{population}{dp}.sfs"
 	container:
-		"docker://zjnolen/angsd:0.937"
+		angsd_container
 	log:
 		logs + "/realSFS/1dSFS/"+dataset+"_{population}{dp}.log"
 	params:
@@ -28,7 +28,7 @@ rule realSFS_2dSFS:
 		sfs=results + "/analyses/sfs/"+dataset+
 			"_{population1}-{population2}{dp}.sfs"
 	container:
-		"docker://zjnolen/angsd:0.937"
+		angsd_container
 	log:
 		logs + "/realSFS/2dSFS/"+dataset+"_{population1}-{population2}{dp}.log"
 	params:

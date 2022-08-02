@@ -8,7 +8,7 @@ rule realSFS_saf2theta:
 		thetas=results+"/analyses/thetas/"+dataset+
 			"_{population}{dp}.thetas.gz"
 	container:
-		"docker://zjnolen/angsd:0.937"
+		angsd_container
 	log:
 		logs+"/realSFS/saf2theta/"+dataset+"_{population}{dp}.log"
 	params:
@@ -30,7 +30,7 @@ rule thetaStat:
 		thetas=results+"/analyses/thetas/"+dataset+
 			"_{population}{dp}.thetaWindows.pestPG"
 	container:
-		"docker://zjnolen/angsd:0.937"
+		angsd_container
 	log:
 		logs + "/thetaStat/"+dataset+"_{population}{dp}.log"
 	params:

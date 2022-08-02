@@ -4,6 +4,9 @@ import os
 import itertools
 import csv
 
+# Set up software containers (for easier version updating)
+angsd_container="docker://zjnolen/angsd:0.938"
+
 # load and validate config file
 # if os.path.exists("config/config.yaml"):
 #     configfile: "config/config.yaml"

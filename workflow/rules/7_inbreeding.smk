@@ -32,6 +32,8 @@ rule ngsf_hmm:
 
 		nind=$(cat {input.bamlist} | wc -l | awk '{{print $1+1}}')
 
+		export TMP_DIR={resources.tmpdir}
+
 		ngsF-HMM.sh --geno {input.beagle} --n_ind $nind \
 			--n_sites $nsites --pos {output.pos} --lkl \
 			--out {params.out} &>> {log}

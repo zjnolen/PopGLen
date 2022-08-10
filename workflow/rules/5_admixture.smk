@@ -12,14 +12,17 @@ rule ngsAdmix:
 		angsd_container
 	params:
 		prefix=results+"/analyses/ngsadmix/"+dataset+
-			"_{population}{dp}_K{kvalue}"
+			"_{population}{dp}_K{kvalue}",
+		extra=config["params"]["ngsadmix"]["extra"],
+		reps=config["params"]["ngsadmix"]["extra"]
 	threads: 4
 	resources:
-		time=lambda wildcards, attempt: attempt*4320
+		time=lambda wildcards, attempt: attempt*10080
 	shell:
 		"""
 		export TMPDIR={resources.tmpdir}
-		workflow/scripts/ngsadmix.sh -likes {input.beagle} \
+		export reps={params.reps}
+		workflow/scripts/ngsadmix.sh -likes {input.beagle} {params.extra} \
 			-K {wildcards.kvalue} -P {threads} -o {params.prefix} 2> {log}
 		"""
 

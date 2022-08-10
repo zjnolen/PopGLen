@@ -12,7 +12,7 @@ aggregate_roh <- function(rohlist,poplist,samplelist,lenautos) {
       }
       for (s in samples$sample[samples$population==poplist[i]]) {
         sampleroh <- (subset(roh, roh[,4] == s))
-        nroh <- nrow(sampleroh)
+        nroh <- nrow(sampleroh[sampleroh[,5]>l,])
         sumroh <- sum(sampleroh[,5][sampleroh[,5] > l])
         Fsample <- sumroh/lenautos
         row <- c(s,sumroh,Fsample,nroh,poplist[i],l)

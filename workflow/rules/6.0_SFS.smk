@@ -51,6 +51,8 @@ rule plot_heterozygosity:
 			sample=samples.index),
 		popfile=results+"/genotyping/pop_lists/"+dataset+"_all.indiv.list"
 	output:
+		results+"/analyses/heterozygosity/"+dataset+
+			"_all{dp}_heterozygosity.tsv",
 		report(results+"/plots/heterozygosity/"+dataset+
 			"_all{dp}_heterozygosity.pdf",
 			category="Heterozygosity")

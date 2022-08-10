@@ -17,9 +17,9 @@ rule ngsf_hmm:
 	params:
 		out=results + "/analyses/ngsF-HMM/"+dataset+
 			"_{population}{dp}"
-	threads: lambda wildcards, attempt: attempt
+	threads: lambda wildcards, attempt: attempt*10
 	resources:
-		time=lambda wildcards, attempt: attempt*360
+		time=lambda wildcards, attempt: attempt*2880
 	shell:
 		r"""
 		module load bioinfo-tools
@@ -32,11 +32,11 @@ rule ngsf_hmm:
 
 		nind=$(cat {input.bamlist} | wc -l | awk '{{print $1+1}}')
 
-		export TMP_DIR={resources.tmpdir}
+		export TMPDIR={resources.tmpdir}
 
-		ngsF-HMM.sh --geno {input.beagle} --n_ind $nind \
+		workflow/scripts/ngsF-HMM.sh --geno {input.beagle} --n_ind $nind \
 			--n_sites $nsites --pos {output.pos} --lkl \
-			--out {params.out} &>> {log}
+			--out {params.out} --n_threads {threads} &>> {log}
 		"""
 
 rule convert_ibd:

@@ -182,7 +182,7 @@ mkdir -p $temp/bestrep
 # run replicates of ngsadmix until we hit either convergence or $reps
 for i in $(seq 1 $reps); do
 	# check if loop should break when convergence is reached
-	if (( "$i" > "3" )); then
+	if (( "$i" > "10" )); then
 		# sort likelihoods, see if top three are within $thresh of each other
 		# and break if so
 		diff=$(sort -k2gr $templog | head -n 3 | awk '{print $2}' | \
@@ -216,6 +216,9 @@ for i in $(seq 1 $reps); do
 	rm -r $reptemp
 
 done
+
+diff=$(sort -k2gr $permlog | head -n 3 | awk '{print $2}' | tr '\n' ' ' | \
+	awk '{print $1-$3}')
 
 if (( $(echo $diff $thresh | awk '{print $1 <= $2}') )); then
 	echoerr

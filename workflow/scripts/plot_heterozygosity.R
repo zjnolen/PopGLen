@@ -36,4 +36,7 @@ plot_heterozygosity <- function(agghz, plotout) {
 agghz <- aggregate_heterozygosity(
   snakemake@input[["sfs"]],snakemake@input[["popfile"]])
 
-plot_heterozygosity(agghz,snakemake@output[[1]])
+write.table(agghz, file = snakemake@output[[1]], row.names=FALSE, sep = "\t",
+              quote=FALSE)
+
+plot_heterozygosity(agghz,snakemake@output[[2]])

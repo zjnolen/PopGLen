@@ -19,6 +19,8 @@ Currently, the pipeline performs the following tasks:
 
 **Reference genome preparation**
 
+- Before starting, please clean up scaffold names in reference, preferably 
+  they contain only 10-15 alphanumeric characters.
 - Indexing of reference for subsequent analyses
 
 **Raw read preparation**
@@ -64,7 +66,8 @@ runtimes vs fewer jobs, longer runtimes).
 
 SAF based analyses are done on variable and non-variable sites passing quality 
 filters. This set is the same across all populations in the dataset and is 
-based on the positions passing all the requested filters. Beagle (SNP) based analyses are done on a SNP set that is constant across all populations, 
+based on the positions passing all the requested filters. Beagle (SNP) based 
+analyses are done on a SNP set that is constant across all populations, 
 determined from the output of the Beagle file for the whole dataset. When 
 relevant, pruned SNPs are used. Pruning is done on the whole dataset beagle 
 file and the same pruned sites are used for all populations.
@@ -126,7 +129,8 @@ troubleshooting and also prevents needless computation time on downstream
 analyses in the event of a mistake earlier in the pipeline. How much of the 
 pipeline you run is largely decided by the `analyses` section of the config 
 file. After each successful run, you can create a report with the results thus 
-far, helping you to decide if you wish to add more. I suggest starting with everything as `false` and adding analyses in the following order:
+far, helping you to decide if you wish to add more. I suggest starting with 
+everything as `false` and adding analyses in the following order:
 
 ### 1) Sequence data and reference processing, quality control
 
@@ -145,7 +149,8 @@ result to look at and see if anything might be off.
 After this initial run, check out the filtering summary in the 
 `results/{dataset}/genotyping/filters/beds/{dataset}_filts.sum` file. This 
 shows how many sites pass each filter and what percent of the genome that 
-covers. If this seems off, take a look at the settings for your filtering and adjust.
+covers. If this seems off, take a look at the settings for your filtering and 
+adjust.
 
 Next, check out the quality reports of individual samples. Should any related 
 individuals be removed based on the NgsRelate output? Individuals with 

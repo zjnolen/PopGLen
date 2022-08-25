@@ -16,6 +16,12 @@ analyses added first.
 
 ## Features
 
+Here is a rough graph of the workflow with some rules removed for readability. 
+It will at some point get a readability improvement when the workflow is 
+finalized!
+
+![](dag.svg)
+
 Currently, the pipeline performs the following tasks:
 
 **Reference genome preparation**

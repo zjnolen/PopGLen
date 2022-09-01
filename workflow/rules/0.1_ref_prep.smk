@@ -20,7 +20,7 @@ rule bwa_index:
     params:
         extra=""
     resources:
-        time="02:00:00"
+        time=120
     shell:
         """
         bwa index {params.extra} {input}

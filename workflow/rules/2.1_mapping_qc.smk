@@ -36,7 +36,7 @@ rule qualimap:
     log:
         logs + "/qualimap/{sample}.log"
     resources:
-        time="06:00:00"
+        time=360
     shell:
         """
         unset DISPLAY

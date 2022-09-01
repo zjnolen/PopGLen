@@ -227,7 +227,7 @@ rule repeatmodeler:
 		ref=REF_NAME
 	threads: 10
 	resources:
-		time="7-00:00:00"
+		time=10080
 	shadow: "copy-minimal"
 	shell:
 		"""
@@ -259,7 +259,7 @@ rule repeatmasker:
 		gff=os.path.basename(REF)+".out.gff"
 	threads: 5
 	resources:
-		time="12:00:00"
+		time=720
 	shadow: "copy-minimal"
 	shell:
 		"""
@@ -386,7 +386,7 @@ rule combine_depth_bed:
 	conda:
 		"../envs/bedtools.yaml"
 	resources:
-		time="04:00:00"
+		time=240
 	shell:
 		"""
 		cat {input} > {output}.tmp
@@ -687,7 +687,7 @@ rule combine_beds:
 		"../envs/bedtools.yaml"
 	threads: lambda wildcards, attempt: attempt*2
 	resources:
-		time="04:00:00"
+		time=240
 	shell:
 		r"""
 		printf '%s\n' {input.filt} > {output.lis} 2> {log}

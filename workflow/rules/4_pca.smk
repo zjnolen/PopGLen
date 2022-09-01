@@ -6,6 +6,8 @@ rule pca_pcangsd:
 		cov=results+"/analyses/pcangsd/"+dataset+"_{population}{dp}.cov"
 	log:
 		logs + "/pcangsd/"+dataset+"_{population}{dp}.log"
+	container:
+		pcangsd_container
 	params:
 		prefix=results + "/analyses/pcangsd/"+dataset+"_{population}{dp}"
 	threads: lambda wildcards, attempt: attempt
@@ -13,10 +15,7 @@ rule pca_pcangsd:
 		time=lambda wildcards, attempt: attempt*60
 	shell:
 		"""
-		module load bioinfo-tools
-		module load PCAngsd/0.982
-
-		pcangsd.py -b {input.beagle} -o {params.prefix} &> {log}
+		pcangsd -b {input.beagle} -o {params.prefix} &> {log}
 		"""
 
 localrules: plot_pca

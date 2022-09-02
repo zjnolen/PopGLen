@@ -52,9 +52,10 @@ rule evalAdmix:
 			"_{population}{dp}_K{kvalue}.corres"
 	log:
 		logs+"/evaladmix/"+dataset+"_{population}{dp}_K{kvalue}.log"
+	container:
+		evaladmix_container
 	shell:
 		"""
-		~/polyommatini/working/shared/bin/evalAdmix -beagle {input.beagle} \
-			-fname {input.fopt} -qname {input.qopt} -o {output} -P {threads} \
-			2> {log}
+		evalAdmix -beagle {input.beagle} -fname {input.fopt} \
+			-qname {input.qopt} -o {output} -P {threads} 2> {log}
 		"""

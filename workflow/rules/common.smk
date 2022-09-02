@@ -7,6 +7,7 @@ import csv
 # Set up software containers (for easier version updating)
 angsd_container="docker://zjnolen/angsd:0.938"
 pcangsd_container="docker://zjnolen/pcangsd:1.10"
+evaladmix_container="docker://zjnolen/evaladmix:0.961"
 
 # load and validate config file
 # if os.path.exists("config/config.yaml"):

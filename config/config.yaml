@@ -79,6 +79,8 @@ analyses:
     dfam_lib:
     build_lib:
   extreme_depth:
+  dataset_missing_data:
+  # excess_hetero: true
   # quality control
   qualimap:
   damageprofiler:

@@ -14,7 +14,7 @@ rule ngsAdmix:
 		prefix=results+"/analyses/ngsadmix/"+dataset+
 			"_{population}{dp}_K{kvalue}",
 		extra=config["params"]["ngsadmix"]["extra"],
-		reps=config["params"]["ngsadmix"]["extra"]
+		reps=config["params"]["ngsadmix"]["reps"]
 	threads: 4
 	resources:
 		time=lambda wildcards, attempt: attempt*10080

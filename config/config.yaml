@@ -144,4 +144,6 @@ params:
     snp_pval: "1e-6"
     min_maf: 0.05
   ngsadmix:
-    kvalues: [2,3,4,5]
+    kvalues: []
+    reps:
+    extra: ""

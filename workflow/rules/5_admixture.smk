@@ -17,7 +17,7 @@ rule ngsAdmix:
 		reps=config["params"]["ngsadmix"]["reps"]
 	threads: 4
 	resources:
-		time=lambda wildcards, attempt: attempt*10080
+		time=lambda wildcards, attempt: attempt*2880
 	shell:
 		"""
 		export TMPDIR={resources.tmpdir}

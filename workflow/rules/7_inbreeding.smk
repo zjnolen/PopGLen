@@ -14,6 +14,8 @@ rule ngsf_hmm:
 			"_{population}{dp}.pos"
 	log:
 		logs + "/ngsF-HMM/"+dataset+"_{population}{dp}.log"
+	container:
+		ngsf_hmm_container
 	params:
 		out=results + "/analyses/ngsF-HMM/"+dataset+
 			"_{population}{dp}"
@@ -22,9 +24,6 @@ rule ngsf_hmm:
 		time=lambda wildcards, attempt: attempt*2880
 	shell:
 		r"""
-		module load bioinfo-tools
-		module load ngsF-HMM/20200720-2df9690
-
 		zcat {input.beagle} | awk '{{print $1}}' | sed 's/\(.*\)_/\1\t/' \
 			| tail -n +2 > {output.pos} 2> {log}
 		
@@ -45,17 +44,62 @@ rule convert_ibd:
 		pos=rules.ngsf_hmm.output.pos,
 		inds=rules.popfile.output.inds
 	output:
-		roh=results + "/analyses/ngsF-HMM/"+dataset+"_{population}{dp}.roh"
+		roh=results+"/analyses/ngsF-HMM/"+dataset+"_{population}{dp}.roh"
 	log:
 		logs + "/ngsF-HMM/"+dataset+"_{population}{dp}_convert_ibd.log"
+	container:
+		ngsf_hmm_container
+	shadow:
+		"copy-minimal"
 	shell:
 		"""
-		inds=$(basename {input.inds})
-		tail -n +2 {input.inds} > {resources.tmpdir}/$inds.tmp
+		tail -n +2 {input.inds} > {input.inds}.tmp 2> {log}
 
-		perl workflow/scripts/convert_ibd_mod.pl --pos_file {input.pos} \
-			--ind_file {resources.tmpdir}/$inds.tmp \
-			--ibd_pos_file {input.ibd} > {output.roh} 2> {log}
+		# convert_ibd.pl drops warnings when chromosomes have non-numeric 
+		# names, and may not handle them well. As a work around, a numeric 
+		# index of chromosome names is created, then the names replaced with 
+		# these numbers. Then returns their names after the conversion is 
+		# complete.
+
+		# first, create the index file
+		n_contigs=$(awk '{{print $1}}' {input.pos} | uniq | wc -l) 2>> {log}
+		awk '{{print $1}}' {input.pos} | uniq > {input.pos}.contigs 2>> {log}
+		seq $n_contigs > {input.pos}.contigs.idx 2>> {log}
+		
+		# create index based pos file, adapted from:
+		# Glenn Jackman - https://stackoverflow.com/a/7198895
+		awk '
+    		FILENAME == ARGV[1] {{ listA[$1] = FNR; next }}
+    		FILENAME == ARGV[2] {{ listB[FNR] = $1; next }}
+    		{{
+        		for (i = 1; i <= NF; i++) {{
+            		if ($1 in listA) {{
+               			$1 = listB[listA[$i]]
+            		}}
+        		}}
+        		print
+    		}}' \
+		{input.pos}.contigs {input.pos}.contigs.idx {input.pos} \
+			> {input.pos}.tmp 2>> {log}
+
+		convert_ibd.pl --pos_file {input.pos}.tmp \
+			--ind_file {input.inds}.tmp	--ibd_pos_file {input.ibd} \
+			> {output.roh}.tmp 2>> {log}
+		
+		# Revert back to original contig name:
+		awk '
+    		FILENAME == ARGV[1] {{ listA[$1] = FNR; next }}
+    		FILENAME == ARGV[2] {{ listB[FNR] = $1; next }}
+    		{{
+        		for (i = 1; i <= NF; i++) {{
+            		if ($1 in listA) {{
+               			$1 = listB[listA[$i]]
+            		}}
+        		}}
+        		print
+    		}}' \
+		{input.pos}.contigs.idx {input.pos}.contigs {output.roh}.tmp \
+			> {output.roh} 2>> {log}
 		"""
 
 rule plot_froh:

@@ -1,14 +1,4 @@
-localrules: link_ref, ref_chunking
-
-rule link_ref:
-    input:
-        config["reference"]["fasta"]
-    output:
-        REF
-    shell:
-        """
-        ln -s {input} {output}
-        """
+localrules: ref_chunking
 
 rule bwa_index:
     input:

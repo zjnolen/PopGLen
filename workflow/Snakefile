@@ -50,13 +50,13 @@ all_outputs = []
 # 			"_all.ibsMat"
 
 if config["analyses"]["qualimap"]:
-	all_outputs.append(expand(results+
-			"/qc/qualimap/{sample}/genome_results.txt",
+	all_outputs.append(expand(
+		"results/mapping/qc/qualimap/{sample}/genome_results.txt",
 			sample=samples.index))
 
 if config["analyses"]["damageprofiler"]:
-	all_outputs.append(expand(results+
-			"/qc/damageprofiler/{sample}/dmgprof.json",
+	all_outputs.append(expand(
+		"results/mapping/qc/damageprofiler/{sample}/dmgprof.json",
 			sample=samples.index[samples['depth'] == 'low'].tolist()))
 
 if config["analyses"]["relatedness"]:

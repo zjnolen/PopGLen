@@ -18,10 +18,7 @@ ngsf_hmm_container="docker://zjnolen/ngsf-hmm:20200722-2df9690"
 dataset = config["dataset"]
 
 # set results directory
-results = "results/"+dataset
-
-# set intermediate directory
-intermediate = "intermediate/"+dataset
+results = "results/results/"+dataset
 
 # set logs directory
 logs = "logs/"+dataset
@@ -187,12 +184,12 @@ def get_samples_from_pop(population):
 
 def get_bamlist_bams(wildcards):
     pop = wildcards.population
-    return expand(results+"/mapping/{sample}{{dp}}.rmdup.realn.bam", 
+    return expand("results/mapping/bams/{sample}{{dp}}.rmdup.realn.bam", 
                 sample = get_samples_from_pop(pop))
 
 def get_bamlist_bais(wildcards):
     pop = wildcards.population
-    return expand(results+"/mapping/{sample}{{dp}}.rmdup.realn.bam.bai", 
+    return expand("results/mapping/bams/{sample}{{dp}}.rmdup.realn.bam.bai", 
                 sample = get_samples_from_pop(pop))
 
 # def get_intersect_inputs(wildcards):

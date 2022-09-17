@@ -25,16 +25,16 @@ rule samtools_idxstats:
 
 rule qualimap:
     input:
-        results+"/mapping/{sample}.rmdup.realn.bam"
+        "results/mapping/{sample}{dp}.rmdup.realn.bam"
     output:
-        results+"/qc/qualimap/{sample}/qualimapReport.html",
-        results+"/qc/qualimap/{sample}/genome_results.txt"
+        "results/mapping/qc/qualimap/{sample}{dp}/qualimapReport.html",
+        "results/mapping/qc/qualimap/{sample}{dp}/genome_results.txt"
     params:
-        out=results+"/qc/qualimap/{sample}"
+        out="results/mapping/qc/qualimap/{sample}{dp}"
     conda:
         "../envs/qualimap.yaml"
     log:
-        logs + "/qualimap/{sample}.log"
+        "logs/mapping/qualimap/{sample}{dp}.log"
     resources:
         time=360
     shell:

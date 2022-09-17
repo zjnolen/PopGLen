@@ -10,11 +10,11 @@ rule fastp_mergedout:
     input:
         sample=get_raw_fastq
     output:
-        merged=results+"/preprocessing/fastp/{sample}.merged.fastq.gz",
-        html=results+"/preprocessing/fastp/{sample}_paired.html",
-        json=results+"/preprocessing/fastp/{sample}_paired.json"
+        merged="results/preprocessing/fastp/{sample}.merged.fastq.gz",
+        html="results/preprocessing/qc/fastp/fastp_{sample}_paired.html",
+        json="results/preprocessing/qc/fastp/fastp_{sample}_paired.json"
     log:
-        logs+"/fastp/{sample}.merged.log"
+        "logs/preprocessing/fastp/{sample}.merged.log"
     conda:
         "../envs/fastp.yaml"
     params:
@@ -33,12 +33,12 @@ rule fastp_pairedout:
     input:
         sample=get_raw_fastq
     output:
-        paired=expand(results+"/preprocessing/fastp/{{sample}}.{read}.fastq.gz",
+        paired=expand("results/preprocessing/fastp/{{sample}}.{read}.fastq.gz",
             read=["R1","R2"]),
-        html=results+"/preprocessing/fastp/{sample}_paired.html",
-        json=results+"/preprocessing/fastp/{sample}_paired.json"
+        html="results/preprocessing/qc/fastp/fastp_{sample}_paired.html",
+        json="results/preprocessing/qc/fastp/fastp_{sample}_paired.json"
     log:
-        logs+"/fastp/{sample}.paired.log"
+        "logs/preprocessing/fastp/{sample}.paired.log"
     conda:
         "../envs/fastp.yaml"
     params:

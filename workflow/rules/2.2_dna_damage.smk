@@ -1,9 +1,9 @@
 rule damageprofiler:
 	input:
-		bam=results+"/mapping/{sample}.rmdup.realn.bam",
+		bam="results/mapping/{sample}.rmdup.realn.bam",
 		ref=REF
 	output:
-		multiext(results+"/qc/damageprofiler/{sample}/",
+		multiext("results/mapping/qc/damageprofiler/{sample}/",
 				"5pCtoT_freq.txt","3pGtoA_freq.txt","Length_plot.pdf",
 				"DamagePlot_five_prime.svg","DamagePlot.pdf",
 				"DamagePlot_three_prime.svg","DamageProfiler.log",
@@ -14,11 +14,11 @@ rule damageprofiler:
 				"3p_freq_misincorporations.txt","DNA_comp_genome.txt",
 				"DNA_composition_sample.txt","dmgprof.json")
 	log:
-		logs + "/damageprofiler/{sample}.log"
+		"logs/mapping/damageprofiler/{sample}.log"
 	conda:
 		"../envs/damageprofiler.yaml"
 	params:
-		out=results+"/qc/damageprofiler/{sample}"
+		out="results/mapping/qc/damageprofiler/{sample}"
 	threads: lambda wildcards, attempt: attempt
 	resources:
 		time=lambda wildcards, attempt: attempt*60

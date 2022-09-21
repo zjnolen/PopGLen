@@ -244,13 +244,13 @@ rule symlink_bams:
 
 rule samtools_subsample:
     input:
-        bam="results/mapping/bams/{sample}.rmdup.realn.bam",
+        bam="results/mapping/bams/{sample}.rmdup.realn{rescale}.bam",
         depth=results+"/qc/ind_filtered_depth/"+dataset+ \
 			"_{sample}.depth.sum"
     output:
-        "results/mapping/bams/{sample}{dp}.rmdup.realn.bam"
+        "results/mapping/bams/{sample}{dp}.rmdup.realn{rescale}.bam"
     log:
-        "logs/mapping/samtools/subsample/{sample}{dp}.log"
+        "logs/mapping/samtools/subsample/{sample}{dp}{rescale}.log"
     conda:
         "../envs/samtools.yaml"
     shadow: "copy-minimal"

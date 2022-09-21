@@ -1,6 +1,5 @@
 #=====================Dataset Configuration============================#
 
-samples:
 
 units:
 
@@ -108,7 +107,7 @@ params:
   picard:
     # By default we set Picard to remove duplicate reads, change to 
     # false to flag only.
-    MarkDuplicates: "REMOVE_DUPLICATES=true"
+    MarkDuplicates: "REMOVE_DUPLICATES=true OPTICAL_DUPLICATE_PIXEL_DISTANCE=2500"
   angsd:
     # gl_model - 1=SAMtools, 2=GATK, 3=SOAPsnp, 4=SYK; default is 1
     gl_model: 2
@@ -133,7 +132,7 @@ params:
     # excessive mismatches, only include paired reads when both mates map,
     # remove reads with multiple best hits, and reduce base quality scores 
     # based on baq (penalizes bases around indels)
-    extra: "-C 50 -only_proper_pairs 1 -uniqueOnly 1 -baq 1"
+    extra: "-C 50 -only_proper_pairs 1 -uniqueOnly 1"
     # fold - Define if SFS should be folded when made. If you don't 
     # have ancestral states to assign to -anc, it is best to set to 1. 
     # We set the default to 1.
@@ -144,6 +143,6 @@ params:
     snp_pval: "1e-6"
     min_maf: 0.05
   ngsadmix:
-    kvalues: []
-    reps:
+    kvalues: [1,2]
+    reps: 20
     extra: ""

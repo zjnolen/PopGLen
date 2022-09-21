@@ -1,6 +1,6 @@
 rule damageprofiler:
 	input:
-		bam="results/mapping/{sample}.rmdup.realn.bam",
+		bam="results/mapping/bams/{sample}.rmdup.realn.bam",
 		ref=REF
 	output:
 		multiext("results/mapping/qc/damageprofiler/{sample}/",
@@ -26,4 +26,26 @@ rule damageprofiler:
 		"""
 		damageprofiler -Xmx{resources.mem_mb}m -i {input.bam} -r {input.ref} \
 			-o {params.out} &> {log}
+		"""
+
+rule mapDamage2_rescaling:
+	input:
+		bam="results/mapping/bams/{sample}.rmdup.realn.bam",
+		ref=REF
+	output:
+		outdir=directory("results/mapping/qc/mapdamage/{sample}/"),
+		tmp="results/mapping/qc/mapdamage/{sample}/{sample}.rmdup.realn.rescaled.bam",
+		rescaled="results/mapping/bams/{sample}.rmdup.realn.rescaled.bam"
+	log:
+		"logs/mapping/mapdamage/{sample}.log"
+	container:
+		mapdamage_container
+	threads: 8
+	resources:
+		time=1440
+	shell:
+		"""
+		mapDamage -i {input.bam} -r {input.ref} -d {output.outdir} --rescale \
+			2> {log}
+		cp {output.tmp} {output.rescaled} 2>> {log}
 		"""

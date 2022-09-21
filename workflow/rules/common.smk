@@ -9,6 +9,7 @@ angsd_container="docker://zjnolen/angsd:0.938"
 pcangsd_container="docker://zjnolen/pcangsd:1.10"
 evaladmix_container="docker://zjnolen/evaladmix:0.961"
 ngsf_hmm_container="docker://zjnolen/ngsf-hmm:20200722-2df9690"
+mapdamage_container="docker://quay.io/biocontainers/mapdamage2:2.2.1--pyr40_0"
 
 # load and validate config file
 # if os.path.exists("config/config.yaml"):
@@ -184,12 +185,12 @@ def get_samples_from_pop(population):
 
 def get_bamlist_bams(wildcards):
     pop = wildcards.population
-    return expand("results/mapping/bams/{sample}{{dp}}.rmdup.realn.bam", 
+    return expand(results+"/bams/{sample}{{dp}}.bam", 
                 sample = get_samples_from_pop(pop))
 
 def get_bamlist_bais(wildcards):
     pop = wildcards.population
-    return expand("results/mapping/bams/{sample}{{dp}}.rmdup.realn.bam.bai", 
+    return expand(results+"/bams/{sample}{{dp}}.bam.bai", 
                 sample = get_samples_from_pop(pop))
 
 # def get_intersect_inputs(wildcards):

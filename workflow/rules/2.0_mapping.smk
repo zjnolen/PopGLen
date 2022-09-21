@@ -1,3 +1,5 @@
+###### Mapping reads to reference ######
+
 rule bwa_mem_merged:
     input:
         merged=rules.fastp_mergedout.output.merged,
@@ -51,6 +53,8 @@ rule bwa_mem_paired:
             {input.paired} | \
         samtools sort -o {output.bam} 2> {log}
         """
+
+###### Duplicate removal ######
 
 rule mark_duplicates:
     input:
@@ -125,25 +129,32 @@ def get_dedup_bam(wildcards):
     # Determines if bam should use Picard or DeDup for duplicate removal
     s = wildcards.sample
     if s in samples.index[samples.depth == "low"]:
-        return ["results/mapping/dedup/"+s+".merged.rmdup.bam",
-                "results/mapping/dedup/"+s+".merged.rmdup.bam.bai"]
+        return "results/mapping/dedup/"+s+".merged.rmdup.bam"
     elif s in samples.index[samples.depth == "high"]:
-        return ["results/mapping/dedup/"+s+".clipped.rmdup.bam",
-                "results/mapping/dedup/"+s+".clipped.rmdup.bam.bai"]
-
-ruleorder: finalize_rmdup > samtools_index_temp
+        return "results/mapping/dedup/"+s+".clipped.rmdup.bam"
 
 rule finalize_rmdup:
     input:
         get_dedup_bam
     output:
-        temp("results/mapping/dedup/{sample}.rmdup.bam"),
-        temp("results/mapping/dedup/{sample}.rmdup.bam.bai")
+        temp("results/mapping/dedup/{sample}.rmdup.bam")
     shell:
         """
-        cp {input[0]} {output[0]}
-        cp {input[1]} {output[1]}
+        cp {input} {output}
         """
+
+rule samtools_index_rmdup:
+    input:
+        "results/mapping/dedup/{prefix}.bam"
+    output:
+        temp("results/mapping/dedup/{prefix}.bam.bai")
+    log:
+        "logs/mapping/samtools/index_rmdup/{prefix}.log"
+    shadow: "copy-minimal"
+    wrapper:
+        "0.84.0/bio/samtools/index"
+
+###### Realign reads around indels ######
 
 rule realignertargetcreator:
     input:
@@ -192,33 +203,50 @@ rule indelrealigner:
             -targetIntervals {input.intervals} -o {output.realigned} 2> {log}
         """
 
-ruleorder: samtools_index > samtools_index_temp
-
-rule samtools_index_temp:
+rule samtools_index_final:
     input:
-        "{prefix}.bam"
+        "results/mapping/bams/{prefix}.bam"
     output:
-        temp("{prefix}.bam.bai")
+        "results/mapping/bams/{prefix}.bam.bai"
     log:
-        "logs/mapping/samtools/index_temp/{prefix}.log"
+        "logs/mapping/samtools/index_rmdup/{prefix}.log"
     shadow: "copy-minimal"
     wrapper:
         "0.84.0/bio/samtools/index"
 
-rule samtools_index:
+###### Gather bams and symlink into dataset folder ######
+#### This allows bams to be re-used across datasets #####
+
+def get_final_bam(wildcards):
+    # Determines if bam should use Picard or DeDup for duplicate removal
+    s = wildcards.sample
+    dp = wildcards.dp
+    if s in samples.index[samples.time == "historical"]:
+        return ["results/mapping/bams/"+s+dp+".rmdup.realn.rescaled.bam",
+                "results/mapping/bams/"+s+dp+".rmdup.realn.rescaled.bam.bai"]
+    elif s in samples.index[samples.time == "modern"]:
+        return ["results/mapping/bams/"+s+dp+".rmdup.realn.bam",
+                "results/mapping/bams/"+s+dp+".rmdup.realn.bam.bai"]
+
+rule symlink_bams:
     input:
-        "results/mapping/bams/{sample}{dp}.rmdup.realn.bam"
+        get_final_bam
     output:
-        "results/mapping/bams/{sample}{dp}.rmdup.realn.bam.bai"
-    log:
-        "logs/mapping/samtools/index/{sample}{dp}.log"
-    shadow: "copy-minimal"
-    wrapper:
-        "0.84.0/bio/samtools/index"
+        results+"/bams/{sample}{dp}.bam",
+        results+"/bams/{sample}{dp}.bam.bai"
+    shell:
+        """
+        ln -sr {input[0]} {output[0]}
+        ln -sr {input[1]} {output[1]}
+        """
+
+###### Bam subsampling for result verification ######
 
 rule samtools_subsample:
     input:
-        bam="results/mapping/bams/{sample}.rmdup.realn.bam"
+        bam="results/mapping/bams/{sample}.rmdup.realn.bam",
+        depth=results+"/qc/ind_filtered_depth/"+dataset+ \
+			"_{sample}.depth.sum"
     output:
         "results/mapping/bams/{sample}{dp}.rmdup.realn.bam"
     log:
@@ -230,8 +258,7 @@ rule samtools_subsample:
         time=lambda wildcards, attempt: attempt*720
     shell:
         """
-        dp=$(samtools depth -a {input.bam} | awk '{{sum+=$3}} END \
-            {{print sum/NR}}')
+        dp=$(awk '{{print $2}}' {input.depth})
         
         subdp=$(echo {wildcards.dp} | sed 's/.dp//g')
 
@@ -242,11 +269,9 @@ rule samtools_subsample:
             samtools view -h -s ${{RANDOM}}.${{propdec}} -@ {threads} \
                 -b {input.bam} > {output} 2> {log}
         else
-            ln -sf $(basename {input.bam}) {output}
+            echo "WARNING: Depth of sample is lower than subsample depth." \
+                &> {log}
+            echo "Subsampled bam will be symlink of original." &>> {log}
+            ln -sf $(basename {input.bam}) {output} 2>> {log}
         fi
-
-        echo "Subsampled average depth:" >> {log}
-
-        samtools depth -a {output} | awk '{{sum+=$3}} END \
-            {{print sum/NR}}' &>> {log}
         """

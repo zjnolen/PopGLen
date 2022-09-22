@@ -46,9 +46,6 @@ wildcard_constraints:
 
 all_outputs = []
 
-# results+"/genotyping/single-read-sampling/"+dataset+
-# 			"_all.ibsMat"
-
 if config["analyses"]["qualimap"]:
 	all_outputs.append(expand(
 		"results/mapping/qc/qualimap/{sample}/genome_results.txt",
@@ -57,7 +54,7 @@ if config["analyses"]["qualimap"]:
 if config["analyses"]["damageprofiler"]:
 	all_outputs.append(expand(
 		"results/mapping/qc/damageprofiler/{sample}/dmgprof.json",
-			sample=samples.index[samples['depth'] == 'low'].tolist()))
+			sample=samples.index[samples['time'] == 'historical'].tolist()))
 
 if config["analyses"]["relatedness"]:
 	all_outputs.append(expand(

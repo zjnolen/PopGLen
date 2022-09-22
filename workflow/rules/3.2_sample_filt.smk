@@ -1,25 +1,46 @@
-rule ngsrelate:
+# Pairwise individual relatedness with R0, R1, KING-robust kinship 
+# method from Waples et al. 2019, MolEcol
+
+rule est_kinship_stats:
 	input:
-		beagle=rules.merge_beagle.output.beagle,
-		bamlist=rules.angsd_makeBamlist.output,
-		inds=rules.popfile.output.inds
+		sfs=results + "/analyses/sfs/"+dataset+
+			"_{ind1}-{ind2}{dp}.sfs"
 	output:
-		relate=results+"/analyses/ngsrelate/"+dataset+
-			"_{population}{dp}_relate.tsv",
-		samples=results+"/analyses/ngsrelate/"+dataset+
-			"_{population}{dp}_samples.list"
+		results+"/analyses/kinship/"+dataset+
+			"_{ind1}-{ind2}{dp}.kinship"
 	log:
-		logs + "/ngsrelate/"+dataset+"_{population}{dp}.log"
-	threads: lambda wildcards, attempt: attempt*4
+		logs + "/kinship/"+dataset+"_{ind1}-{ind2}{dp}_kinship.log"
+	conda:
+		"../envs/r.yaml"
 	resources:
-		time=lambda wildcards, attempt: attempt*360
+		time=lambda wildcards, attempt: attempt*15
+	script:
+		"../scripts/kinship.R"
+
+def get_kinship(wildcards):
+	combos = list(itertools.combinations(samples.index, 2))
+	# sort inds alphebetically, this ensures that should new inds be added
+	# after generating some SFS, the reordering of the combinations won't
+	# lead to generating identical SFS with the individuals swapped
+	combos = [sorted(pair) for pair in combos]
+	ind1 = [pair[0] for pair in combos]
+	ind2 = [pair[1] for pair in combos]
+	return expand(results+"/analyses/kinship/"+dataset+
+				"_{ind1}-{ind2}"+wildcards.dp+".kinship",
+				zip, ind1=ind1, ind2=ind2)
+
+rule compile_kinship_stats:
+	input:
+		get_kinship
+	output:
+		results+"/analyses/kinship/"+dataset+"_all{dp}.kinship"
+	resources:
+		time=lambda wildcards, attempt: attempt*15
 	shell:
-		r"""
-		module load bioinfo-tools NgsRelate
-
-		nsites=$(zcat {input.beagle} | tail -n +2 | wc -l) 2>> {log}
-
-		nind=$(cat {input.bamlist} | wc -l | awk '{{print $1+1}}') 2>> {log}
+		"""
+		echo "ind1	ind2	R0	R1	KING" > {output}
+		cat {input} >> {output}
+		"""
 
 		echo "nsites nind" >> {log}
 

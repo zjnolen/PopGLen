@@ -61,7 +61,7 @@ if config["analyses"]["damageprofiler"]:
 
 if config["analyses"]["relatedness"]:
 	all_outputs.append(expand(
-		results+"/analyses/ngsrelate/"+dataset+"_all{dp}_relate.tsv",
+		results+"/analyses/kinship/"+dataset+"_all{dp}.kinship",
 		dp=subsample))
 
 if config["analyses"]["pca_pcangsd"]:

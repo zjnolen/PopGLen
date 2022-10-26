@@ -55,7 +55,12 @@ rule plot_heterozygosity:
 			"_all{dp}_heterozygosity.tsv",
 		report(results+"/plots/heterozygosity/"+dataset+
 			"_all{dp}_heterozygosity.pdf",
-			category="Heterozygosity")
+			category="Heterozygosity",
+			labels={
+				"Topic":"Heterozygosity",
+				"Subsampling":"{dp}",
+				"Type":"boxplot"
+			})
 	conda:
 		"../envs/r.yaml"
 	script:

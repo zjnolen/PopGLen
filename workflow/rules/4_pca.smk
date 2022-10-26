@@ -28,7 +28,13 @@ rule plot_pca:
 		report(
 			results+"/plots/pca/"+dataset+
 				"_{population}{dp}_pc{xpc}-{ypc}.pdf",
-			category="PCA")
+			category="PCA",
+			labels={
+				"Topic":"PCA",
+				"PCs":"PC{xpc}-PC{ypc}",
+				"Subsampling":"{dp}",
+				"Type":"scatterplot"
+			})
 	conda:
 		"../envs/r.yaml"
 	script:

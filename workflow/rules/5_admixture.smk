@@ -36,7 +36,13 @@ rule plot_admix:
 		report(
 			results+"/plots/ngsadmix/"+dataset+
 				"_{population}{dp}_K{kvalue}.pdf",
-			category="Admixture")
+			category="Admixture",
+			labels={
+				"Topic":"Admixture",
+				"K-value":"{kvalue}",
+				"Subsampling":"{dp}",
+				"Type":"admix plot"
+			})
 	conda:
 		"../envs/r.yaml"
 	script:

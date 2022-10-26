@@ -96,7 +96,13 @@ rule plot_fst:
 		results+"/analyses/fst/"+dataset+"_{unit}pairs{dp}.fst.sum"
 	output:
 		report(results+"/plots/fst/"+dataset+"_{unit}pairs{dp}_fst.pdf",
-			category="Fst")
+			category="Fst",
+			labels={
+				"Topic":"Pairwise Fst",
+				"Unit":"{unit}",
+				"Subsampling":"{dp}",
+				"Type":"heatmap"
+			})
 	conda:
 		"../envs/r.yaml"
 	script:

@@ -31,6 +31,15 @@ rule realSFS_2dSFS:
 		angsd_container
 	log:
 		logs + "/realSFS/2dSFS/"+dataset+"_{population1}-{population2}{dp}.log"
+	wildcard_constraints:
+		population1="|".join(
+			[i for i in samples.index.tolist()] +
+			[i for i in samples.population.values.tolist()]
+			),
+		population2="|".join(
+			[i for i in samples.index.tolist()] +
+			[i for i in samples.population.values.tolist()]
+			)
 	params:
 		fold=config["params"]["angsd"]["fold"]
 	threads: lambda wildcards, attempt: attempt*5

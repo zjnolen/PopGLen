@@ -21,3 +21,5 @@ config/samples_*.tsv
 # ignore vagrant stuff for testing VM
 .vagrant
 Vagrantfile
+# ignore reports folder
+reports

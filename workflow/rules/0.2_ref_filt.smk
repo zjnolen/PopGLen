@@ -275,28 +275,32 @@ rule angsd_depth:
 		bams=get_bamlist_bams,
 		bais=get_bamlist_bais
 	output:
-		posgz=results+"/genotyping/filters/depthfilt/"+dataset+ \
-				"_{population}{dp}_chunk{chunk}.pos.gz",
-		hist=results+"/genotyping/filters/depthfilt/"+dataset+ \
-				"_{population}{dp}_chunk{chunk}.depthGlobal"
+		posgz=temp(results+"/genotyping/filters/depthfilt/"+dataset+ \
+				"_{population}{dp}_chunk{chunk}.pos.gz"),
+		hist=temp(results+"/genotyping/filters/depthfilt/"+dataset+ \
+				"_{population}{dp}_chunk{chunk}.depthGlobal"),
+		samphist=temp(results+"/genotyping/filters/depthfilt/"+dataset+ \
+				"_{population}{dp}_chunk{chunk}.depthSample"),
+		arg=temp(results+"/genotyping/filters/depthfilt/"+dataset+ \
+				"_{population}{dp}_chunk{chunk}.arg")
 	log:
 		logs+ "/depthfilt/"+dataset+"_{population}{dp}_chunk{chunk}.log"
 	container:
 		angsd_container
 	params:
-		out=results+
-			"/genotyping/filters/depthfilt/"+dataset+"_{population}{dp}_chunk{chunk}"
+		out=results+"/genotyping/filters/depthfilt/"+dataset+ \
+			"_{population}{dp}_chunk{chunk}"
 	threads: lambda wildcards, attempt: attempt*2
 	resources:
 		time=lambda wildcards, attempt: attempt*360
 	shell:
 		"""
 		nInd=$(cat {input.bamlist} | wc -l | awk '{{print $1+1}}')
-        maxDP=$(echo 100 $nInd | awk '{{print $1 * $2}}')
+        maxDP=$(echo 1000 $nInd | awk '{{print $1 * $2}}')
 
 		angsd -bam {input.bamlist} -nThreads {threads} -rf {input.regions} \
-			-doCounts 1 -dumpCounts 1 -doDepth 1 \
-			-maxDepth $maxDP -out {params.out} &> {log}
+			-doCounts 1 -dumpCounts 1 -doDepth 1 -maxDepth $maxDP \
+			-out {params.out} &> {log}
 		"""
 
 rule combine_depths:
@@ -305,7 +309,7 @@ rule combine_depths:
 						"_{{population}}{{dp}}_chunk{chunk}.depthGlobal",
 						chunk=chunklist)
 	output:
-		results+"/genotyping/filters/depthfilt/"+dataset+
+		results+"/genotyping/filters/depthfilt/"+dataset+ \
 			"_{population}{dp}.depthGlobal"
 	shell:
 		"""
@@ -397,8 +401,10 @@ rule angsd_missdata:
 		bams=get_bamlist_bams,
 		bais=get_bamlist_bais
 	output:
-		posgz=results+"/genotyping/filters/missdata/"+dataset+ \
-				"_{population}{dp}_chunk{chunk}_over{miss}.pos.gz"
+		posgz=temp(results+"/genotyping/filters/missdata/"+dataset+ \
+				"_{population}{dp}_chunk{chunk}_over{miss}.pos.gz"),
+		arg=temp(results+"/genotyping/filters/missdata/"+dataset+ \
+				"_{population}{dp}_chunk{chunk}_over{miss}.arg")
 	log:
 		logs+ "/missdata/"+dataset+"_{population}{dp}_chunk{chunk}_over{miss}.log"
 	container:
@@ -416,7 +422,7 @@ rule angsd_missdata:
 		"""
 		nInd=$(cat {input.bamlist} | wc -l | awk '{{print $1+1}}')
 		minInd=$(echo $nInd \
-			| awk '{{print $1*(1-{wildcards.miss})}}' \
+			| awk '{{print $1*{wildcards.miss}}}' \
 			| awk '{{print int($1) + ( $1!=int($1) && $1>=0 )}}')
 		
 		angsd -bam {input.bamlist} -nThreads {threads} -rf {input.regions} \
@@ -452,7 +458,7 @@ rule missdata_bed:
 		awk '{{print $1"\t"$2-1"\t"$2}}' {output.tmp} > {output.bed}
 		bedtools merge -i {output.bed} > {output.tmp}
 		bedtools subtract -a {input.genbed} -b {output.tmp} > {output.bed}
-
+		
 		# summarize bed
 		perc=$(echo {wildcards.miss} | awk '{{print $1*100}}')
 		len=$(awk 'BEGIN{{SUM=0}}{{SUM+=$3-$2}}END{{print SUM}}' {output.bed})
@@ -470,33 +476,51 @@ rule missdata_bed:
 def get_bed_filts(wildcards):
 	bedin = []
 	bedsum = []
+	# add minimum size filter if set
 	if config["reference"]["min_size"] and config["reference"]["min_size"] > 0:
 		bedin.append(REF_DIR+"/beds/"+REF_NAME+"_scaff"+
 					 str(config["reference"]["min_size"])+".bed")
 		bedsum.append(REF_DIR+"/beds/"+REF_NAME+"_scaff"+
 					 str(config["reference"]["min_size"])+".bed.sum")
+	# add sex chromosome filter if set
 	if config["reference"]["XZ"] or config["reference"]["exclude"]:
 		bedin.append(REF_DIR+"/beds/"+REF_NAME+"_excl.bed")
 		bedsum.append(REF_DIR+"/beds/"+REF_NAME+"_excl.bed.sum")
+	# add mappability filter if set
 	if config["analyses"]["genmap"]:
 		bedin.append(REF_DIR+"/beds/"+REF_NAME+"_lowmap.bed")
 		bedsum.append(REF_DIR+"/beds/"+REF_NAME+"_lowmap.bed.sum")
+	# add repeat filter if set
 	if config["analyses"]["repeatmasker"]:
 		bedin.append(REF_DIR+"/repeatmasker/"+os.path.basename(REF)+".out.gff")
 		bedsum.append(REF_DIR+"/repeatmasker/"+os.path.basename(REF)+
 			".out.gff.sum")
+	# add global depth extremes filter if set
 	if config["analyses"]["extreme_depth"]:
 		bedin.append(results+"/genotyping/filters/beds/"+dataset+
 					 "{dp}_depthfilt.bed")
 		bedsum.append(results+"/genotyping/filters/beds/"+dataset+
 					 "{dp}_depthfilt.bed.sum")
+	# add dataset level missing data filter if set
 	if config["analyses"]["dataset_missing_data"]:
 		bedin.append(results+"/genotyping/filters/missdata/"+dataset+
 			"_all{dp}_under"+
-			str(config["params"]["angsd"]["max_missing_dataset"])+".bed")
+			str(config["analyses"]["dataset_missing_data"])+".bed")
 		bedsum.append(results+"/genotyping/filters/missdata/"+dataset+
 			"_all{dp}_under"+
-			str(config["params"]["angsd"]["max_missing_dataset"])+".sum")
+			str(config["analyses"]["dataset_missing_data"])+".sum")
+	# add population level missing data filter if set
+	if config["analyses"]["population_missing_data"]:
+		[bedin.append(i) for i in \
+			expand(results+"/genotyping/filters/missdata/"+dataset+
+					"_{population}{{dp}}_under"+
+				str(config["analyses"]["population_missing_data"])+".bed",
+				population=pop_list)]
+		[bedsum.append(i) for i in \
+			expand(results+"/genotyping/filters/missdata/"+dataset+
+					"_{population}{{dp}}_under"+
+				str(config["analyses"]["population_missing_data"])+".sum",
+				population=pop_list)]	
 	# if config["analyses"]["excess_hetero"]:
 	# 	bedin.append(results+"/genotyping/filters/beds/"+dataset+
 	# 				 "_heterofilt.bed")

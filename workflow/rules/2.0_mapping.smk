@@ -220,20 +220,19 @@ rule samtools_index_final:
 def get_final_bam(wildcards):
     # Determines if bam should use Picard or DeDup for duplicate removal
     s = wildcards.sample
-    dp = wildcards.dp
     if s in samples.index[samples.time == "historical"]:
-        return ["results/mapping/bams/"+s+dp+".rmdup.realn.rescaled.bam",
-                "results/mapping/bams/"+s+dp+".rmdup.realn.rescaled.bam.bai"]
+        return ["results/mapping/bams/"+s+".rmdup.realn.rescaled.bam",
+                "results/mapping/bams/"+s+".rmdup.realn.rescaled.bam.bai"]
     elif s in samples.index[samples.time == "modern"]:
-        return ["results/mapping/bams/"+s+dp+".rmdup.realn.bam",
-                "results/mapping/bams/"+s+dp+".rmdup.realn.bam.bai"]
+        return ["results/mapping/bams/"+s+".rmdup.realn.bam",
+                "results/mapping/bams/"+s+".rmdup.realn.bam.bai"]
 
 rule symlink_bams:
     input:
         get_final_bam
     output:
-        results+"/bams/{sample}{dp}.bam",
-        results+"/bams/{sample}{dp}.bam.bai"
+        results+"/bams/{sample}.bam",
+        results+"/bams/{sample}.bam.bai"
     shell:
         """
         ln -sr {input[0]} {output[0]}
@@ -244,34 +243,41 @@ rule symlink_bams:
 
 rule samtools_subsample:
     input:
-        bam="results/mapping/bams/{sample}.rmdup.realn{rescale}.bam",
-        depth=results+"/qc/ind_filtered_depth/"+dataset+ \
-			"_{sample}.depth.sum"
+        bam=results+"/bams/{sample}.bam",
+        bai=results+"/bams/{sample}.bam.bai",
+        depth=results+"/qc/ind_depth/filtered/"+dataset+ \
+			"_{sample}.depth.sum",
+        bed=results+"/genotyping/filters/beds/"+dataset+"_filts.bed"
     output:
-        "results/mapping/bams/{sample}{dp}.rmdup.realn{rescale}.bam"
+        bam=results+"/bams/{sample}.dp"+str(config["downsample_cov"])+".bam",
+        bai=results+"/bams/{sample}.dp"+str(config["downsample_cov"])+ \
+            ".bam.bai"
     log:
-        "logs/mapping/samtools/subsample/{sample}{dp}{rescale}.log"
+        "logs/mapping/samtools/subsample/{sample}.dp"+ \
+            str(config["downsample_cov"])+".log"
     conda:
         "../envs/samtools.yaml"
     shadow: "copy-minimal"
+    params:
+        dp=config["downsample_cov"]
     resources:
         time=lambda wildcards, attempt: attempt*720
     shell:
         """
         dp=$(awk '{{print $2}}' {input.depth})
-        
-        subdp=$(echo {wildcards.dp} | sed 's/.dp//g')
 
-        prop=$(echo "$dp $subdp" | awk '{{print 1 / ($1 / $2)}}')
+        prop=$(echo "$dp {params.dp}" | awk '{{print 1 / ($1 / $2)}}')
 
         if [ `awk 'BEGIN {{print ('$prop' <= 1.0)}}'` = 1 ]; then
             propdec=$(echo $prop | awk -F "." '{{print $2}}')
-            samtools view -h -s ${{RANDOM}}.${{propdec}} -@ {threads} \
-                -b {input.bam} > {output} 2> {log}
+            samtools view -h -s ${{RANDOM}}.${{propdec}} -q 30 -L {input.bed} -@ {threads} \
+                -b {input.bam} > {output.bam} 2> {log}
+            samtools index {output.bam} 2>> {log}
         else
             echo "WARNING: Depth of sample is lower than subsample depth." \
                 &> {log}
             echo "Subsampled bam will be symlink of original." &>> {log}
-            ln -sf $(basename {input.bam}) {output} 2>> {log}
+            ln -sf $(basename {input.bam}) {output.bam} 2>> {log}
+            ln -sf $(basename {input.bai}) {output.bai} 2>> {log}
         fi
         """

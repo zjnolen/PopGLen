@@ -109,12 +109,155 @@ rule kinship_table_html:
 	script:
 		"../scripts/tsv2html.Rmd"
 
+# Individual depth histograms
 
-		echo $nsites $nind >> {log}
+rule ind_unfiltered_depth:
+	input:
+		bamlist=rules.angsd_makeBamlist.output,
+		bams=get_bamlist_bams,
+		bais=get_bamlist_bais,
+		anc=REF,
+		ref=REF
+	output:
+		sample_hist="results/mapping/qc/ind_depth/unfiltered/"+dataset+ \
+			"_{population}{dp}.depthSample",
+		global_hist=temp("results/mapping/qc/ind_depth/unfiltered/"+dataset+ \
+			"_{population}{dp}.depthGlobal"),
+		arg="results/mapping/qc/ind_depth/unfiltered/"+dataset+ \
+			"_{population}{dp}.arg"
+	log:
+		"logs/mapping/ind_depth/unfiltered/"+dataset+"_{population}{dp}.log"
+	container:
+		angsd_container
+	params:
+		out="results/mapping/qc/ind_depth/unfiltered/"+dataset+ \
+			"_{population}{dp}",
+		maxdepth=config["params"]["angsd"]["maxdepth"]
+	threads: lambda wildcards, attempt: attempt
+	resources:
+		time=lambda wildcards, attempt: attempt*120
+	shell:
+		"""
+		angsd -doDepth 1 -doCounts 1 -maxDepth {params.maxdepth} \
+			-bam {input.bamlist} -nThreads {threads} -out {params.out} &> {log}
+		"""
 
-		cut -f1 {input.inds} | tail -n +2 > {output.samples} 2>> {log}
+rule ind_filtered_depth:
+	input:
+		bamlist=rules.angsd_makeBamlist.output,
+		bams=get_bamlist_bams,
+		bais=get_bamlist_bais,
+		anc=REF,
+		ref=REF,
+		sites=results+"/genotyping/filters/beds/"+dataset+"{dp}_filts.sites",
+		idx=results+"/genotyping/filters/beds/"+dataset+"{dp}_filts.sites.idx"
+	output:
+		sample_hist=results+"/qc/ind_depth/filtered/"+dataset+ \
+			"_{population}{dp}.depthSample",
+		global_hist=temp(results+"/qc/ind_depth/filtered/"+dataset+ \
+			"_{population}{dp}.depthGlobal"),
+		arg=results+"/qc/ind_depth/filtered/"+dataset+ \
+			"_{population}{dp}.arg"
+	log:
+		logs+"/ind_depth/filtered/"+dataset+"_{population}{dp}.log"
+	container:
+		angsd_container
+	params:
+		extra=config["params"]["angsd"]["extra"],
+		mapQ=config["mapQ"],
+		baseQ=config["baseQ"],
+		out=results+"/qc/ind_depth/filtered/"+dataset+ \
+			"_{population}{dp}",
+		maxdepth=config["params"]["angsd"]["maxdepth"]
+	threads: lambda wildcards, attempt: attempt
+	resources:
+		time=lambda wildcards, attempt: attempt*60
+	shell:
+		"""
+		angsd -doDepth 1 -doCounts 1 -maxDepth {params.maxdepth} \
+			-bam {input.bamlist} -ref {input.ref} -nThreads {threads} \
+			{params.extra} -minMapQ {params.mapQ} -minQ {params.baseQ} \
+			-sites {input.sites} -out {params.out} &> {log}
+		"""
 
-		ngsrelate -G {input.beagle} -n $nind -L $nsites -O {output.relate} \
-			-z {output.samples} 2>> {log}
+def get_total_bed(wildcards):
+	if wildcards.prefix == "results/mapping/qc/ind_depth/unfiltered/":
+		return REF_DIR+"/beds/"+REF_NAME+"_genome.bed"
+	elif wildcards.prefix == results+"/qc/ind_depth/filtered/":
+		return results+"/genotyping/filters/beds/"+dataset+"{dp}_filts.bed"
+
+rule summarize_ind_depth:
+	input:
+		sample_hist="{prefix}"+dataset+"_{sample}{dp}.depthSample",
+		bed=get_total_bed
+	output:
+		sample_summ="{prefix}"+dataset+"_{sample}{dp}.depth.sum"
+	conda:
+		"../envs/r.yaml"
+	wildcard_constraints:
+		prefix="results/mapping/qc/ind_depth/unfiltered/|"+
+			results+"/qc/ind_depth/filtered/"
+	script:
+		"../scripts/calc_depth.R"
+
+def get_depth_header(wildcards):
+	if wildcards.prefix == "results/mapping/qc/ind_depth/unfiltered/":
+		return "genome"
+	elif wildcards.prefix == results+"/qc/ind_depth/filtered/":
+		return "filt"
+
+rule merge_ind_depth:
+	input:
+		depth=lambda w: expand("{{prefix}}"+dataset+
+			"_{sample}{{dp}}.depthSample",
+			sample=get_samples_from_pop("all")),
+		summary=lambda w: expand("{{prefix}}"+dataset+ \
+			"_{sample}{{dp}}.depth.sum",
+			sample=get_samples_from_pop("all"))
+	output:
+		"{prefix}"+dataset+"_all{dp}.depth",
+		"{prefix}"+dataset+"_all{dp}.depth.sum"
+	params:
+		header=get_depth_header
+	shell:
+		"""
+		cat {input.depth} > {output[0]}
+		echo "sample	{params.header}.depth.mean	{params.header}.depth.stdev" > {output[1]}
+		cat {input.summary} >> {output[1]}
+		"""
+
+def get_sample_qcs(wildcards):
+	inputs = [results+"/genotyping/pop_lists/"+dataset+
+					"_all.indiv.list",
+				"results/mapping/qc/ind_depth/unfiltered/"+dataset+
+					"_all{dp}.depth.sum",
+				results+"/qc/ind_depth/filtered/"+dataset+
+					"_all{dp}.depth.sum"]
+	if config["analyses"]["endogenous_content"]:
+		inputs.append(
+			results+"/qc/endogenous_content/"+dataset+"_all.endo.tsv")
+	return inputs
+
+localrules: combine_sample_qc
+
+rule combine_sample_qc:
+	input:
+		get_sample_qcs
+	output:
+		results+"/qc/"+dataset+"_all{dp}.sampleqc.tsv"
+	shadow: "copy-minimal"
+	shell:
+		r"""
+		for i in {input}; do
+			head -n 1 $i > ${{i}}.tmp
+			tail -n +2 $i | sort -k1 >> ${{i}}.tmp
+		done
+
+		cut -d '	' -f 1 {input[0]}.tmp > {output}
+		
+		for i in {input}; do
+			cut -d '	' -f 2- ${{i}}.tmp | paste {output} - > {output}.tmp
+			mv {output}.tmp {output}
+		done
 		"""
 	

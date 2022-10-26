@@ -66,12 +66,10 @@ chunks = chunkify(REF, config["chunk_size"])
 chunklist = list(range(1,len(chunks)+1))
 
 # load and validate sample sheet
-samples = pd.read_table(config["samples"]).set_index("sample", drop=False)
+samples = pd.read_table(config["samples"], dtype = str).set_index("sample", drop=False)
 # drop samples specified in config
 samples = samples.drop(config["exclude_ind"])
-
 # validate(df, schema="../schemas/samples.schema.yaml")
-
 # load and validate unit sheet
 units = pd.read_table(config["units"]).set_index("sample", drop=False)
 

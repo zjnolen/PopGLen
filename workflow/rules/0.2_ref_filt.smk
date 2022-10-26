@@ -325,7 +325,7 @@ rule summarize_depths:
 		upper=0.975
 	threads: lambda wildcards, attempt: attempt*2
 	script:
-		"../scripts/depth.R"
+		"../scripts/depth_extremes.R"
 
 rule depth_bed:
 	input:

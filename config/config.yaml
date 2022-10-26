@@ -84,6 +84,7 @@ analyses:
   # quality control
   qualimap:
   damageprofiler:
+  endogenous_content:
   relatedness:
   # population genomic analyses
   pca_pcangsd:

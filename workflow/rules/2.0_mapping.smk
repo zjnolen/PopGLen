@@ -58,7 +58,7 @@ rule bwa_mem_paired:
 
 rule mark_duplicates:
     input:
-        "results/mapping/mapped/{sample}.paired.bam"
+        bams="results/mapping/mapped/{sample}.paired.bam"
     output:
         bam=temp("results/mapping/dedup/{sample}.paired.rmdup.bam"),
         metrics="results/mapping/qc/mark_duplicates/{sample}.picard.metrics"
@@ -71,7 +71,7 @@ rule mark_duplicates:
     resources:
         time=lambda wildcards, attempt: attempt*1440
     wrapper:
-        "0.84.0/bio/picard/markduplicates"
+        "v1.17.2/bio/picard/markduplicates"
 
 rule bam_clipoverlap:
     input:
@@ -152,7 +152,7 @@ rule samtools_index_rmdup:
         "logs/mapping/samtools/index_rmdup/{prefix}.log"
     shadow: "copy-minimal"
     wrapper:
-        "0.84.0/bio/samtools/index"
+        "v1.17.2/bio/samtools/index"
 
 ###### Realign reads around indels ######
 
@@ -212,7 +212,7 @@ rule samtools_index_final:
         "logs/mapping/samtools/index_rmdup/{prefix}.log"
     shadow: "copy-minimal"
     wrapper:
-        "0.84.0/bio/samtools/index"
+        "v1.17.2/bio/samtools/index"
 
 ###### Gather bams and symlink into dataset folder ######
 #### This allows bams to be re-used across datasets #####

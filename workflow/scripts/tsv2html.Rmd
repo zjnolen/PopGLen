@@ -1,0 +1,11 @@
+---
+output: html_document
+---
+
+```{r, echo = FALSE}
+library(reactable)
+library(data.table)
+
+dt <- fread(snakemake@input[[1]], header = TRUE)
+reactable(dt, searchable = TRUE, filterable = TRUE)
+```

@@ -24,16 +24,20 @@ rule ngsLD_estLD:
 		nsites=$(cat {output.pos} | wc -l)
 
 		nind=$(cat {input.bamlist} | wc -l | awk '{{print $1+1}}')
-
-		ngsLD --geno {input.beagle} --n_ind $nind --n_sites $nsites \
-			--pos {output.pos} --probs --n_threads {threads} \
-			| gzip > {output.ld} 2>> {log}
+		if [[ $nsites == 0 ]]; then
+			touch {output.ld}
+		else
+			ngsLD --geno {input.beagle} --n_ind $nind --n_sites $nsites \
+				--pos {output.pos} --probs --n_threads {threads} \
+				| gzip > {output.ld} 2>> {log}
+		fi
 		"""
 
 
 rule ngsLD_prune_sites:
 	input:
-		ld=rules.ngsLD_estLD.output.ld
+		ld=rules.ngsLD_estLD.output.ld,
+		pos=rules.ngsLD_estLD.output.pos
 	output:
 		sites=results+"/genotyping/pruned_beagle/ngsLD/"+dataset+
 			"{population}{dp}_chunk{chunk}_pruned.sites"
@@ -46,8 +50,14 @@ rule ngsLD_prune_sites:
 		time=lambda wildcards, attempt: attempt*1440
 	shell:
 		"""
-		workflow/scripts/prune_ngsLD.py --input {input.ld} --max_dist 50000 \
-			--min_weight 0.1 --output {output.sites} 2> {log}
+		nsites=$(cat {input.pos} | wc -l)
+
+		if [[ $nsites == 0 ]]; then
+			touch {output.sites}
+		else
+			workflow/scripts/prune_ngsLD.py --input {input.ld} --max_dist 50000 \
+				--min_weight 0.1 --output {output.sites} 2> {log}
+		fi
 		"""
 
 rule prune_chunk_beagle:

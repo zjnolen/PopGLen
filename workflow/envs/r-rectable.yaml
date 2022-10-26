@@ -1,0 +1,8 @@
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - r-base
+  - r-data.table
+  - r-reactable
+  - r-rmarkdown

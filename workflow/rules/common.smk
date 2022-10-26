@@ -160,15 +160,6 @@ def get_subsample_prop(wildcards):
 
 ########## ANGSD ###########
 
-def get_miss_data_prop(wildcards):
-    pop = wildcards.population
-    if pop == "all":
-        return config["params"]["angsd"]["max_missing_dataset"]
-    elif pop in samples.population.values:
-        return config["params"]["angsd"]["max_missing_pop"]
-    elif pop in samples.index:
-        return 0.0
-
 # The following function is useful for now, but not robust to duplicate 
 # names across column types. Needs improvement
 

@@ -51,7 +51,7 @@ def get_snpset(wildcards):
 def get_popopts(wildcards):
 	pop = wildcards.population
 	if pop == "all":
-		return "-doMajorMinor 1 -minInd $minInd -SNP_pval "+ \
+		return "-doMajorMinor 1 -SNP_pval "+ \
 				str(config["params"]["angsd"]["snp_pval"])+" -minMaf "+ \
 				str(config["params"]["angsd"]["min_maf"])
 	else:
@@ -80,7 +80,7 @@ rule angsd_doGlf2:
 		extra=config["params"]["angsd"]["extra"],
 		mapQ=config["mapQ"],
 		baseQ=config["baseQ"],
-		miss=get_miss_data_prop,
+		# miss=get_miss_data_prop,
 		popopts=get_popopts,
 		out=results + "/genotyping/beagle/chunk/"+dataset+
 			"_{population}{dp}_chunk{chunk}"
@@ -89,10 +89,7 @@ rule angsd_doGlf2:
 		time=lambda wildcards, attempt: attempt*720
 	shell:
 		"""
-		nInd=$(cat {input.bamlist} | wc -l | awk '{{print $1+1}}')
-		minInd=$(echo $nInd \
-			| awk '{{print $1*(1-{params.miss})}}' \
-			| awk '{{print int($1) + ( $1!=int($1) && $1>=0 )}}')
+		# nInd=$(cat {input.bamlist} | wc -l | awk '{{print $1+1}}')
 
 		angsd -doGlf 2 -bam {input.bamlist} -GL {params.gl_model} \
 			{params.popopts} -doMaf 1 -ref {input.ref} -nThreads {threads}  \
@@ -181,7 +178,6 @@ rule angsd_doSaf:
 		extra=config["params"]["angsd"]["extra"],
 		mapQ=config["mapQ"],
 		baseQ=config["baseQ"],
-		miss=get_miss_data_prop,
 		out=results+"/genotyping/saf/chunk/"+dataset+
 			"_{population}{dp}_chunk{chunk}"
 	resources:
@@ -190,9 +186,6 @@ rule angsd_doSaf:
 	shell:
 		"""
 		nInd=$(cat {input.bamlist} | wc -l | awk '{{print $1+1}}')
-		minInd=$(echo $nInd \
-			| awk '{{print $1*(1-{params.miss})}}' \
-			| awk '{{print int($1) + ( $1!=int($1) && $1>=0 )}}')
 
 		angsd -doSaf 1 -bam {input.bamlist} -GL {params.gl_model} \
 			-ref {input.ref} -anc {input.anc} -nThreads {threads} \

@@ -94,7 +94,21 @@ rule compile_kinship_stats:
 		cat {input} >> {output}
 		"""
 
-		echo "nsites nind" >> {log}
+rule kinship_table_html:
+	input:
+		results+"/analyses/kinship/"+dataset+"_all{dp}.kinship"
+	output:
+		report(results+"/analyses/kinship/"+dataset+"_all{dp}.kinship.html",
+				category="Quality Control",
+				labels={
+					"Topic":"Sample Kinship",
+					"Type":"Table"
+				})
+	conda:
+		"../envs/r-rectable.yaml"
+	script:
+		"../scripts/tsv2html.Rmd"
+
 
 		echo $nsites $nind >> {log}
 

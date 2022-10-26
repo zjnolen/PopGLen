@@ -548,3 +548,18 @@ rule combine_beds:
 		sort -k1 {output.sit}.tmp > {output.sit}
 		rm {output.sit}.tmp
 		"""
+
+rule filter_summary:
+	input:
+		results+"/genotyping/filters/beds/"+dataset+"{dp}_filts.sum"
+	output:
+		report(results+"/genotyping/filters/"+dataset+"{dp}_filts.html",
+				category="Quality Control",
+				labels={
+					"Topic":"Site filters",
+					"Type":"Table"
+				})
+	conda:
+		"../envs/r-rectable.yaml"
+	script:
+		"../scripts/tsv2html.Rmd"

@@ -107,7 +107,7 @@ rule plot_froh:
 		roh=expand(results+"/analyses/ngsF-HMM/"+dataset+
 			"_{population}{{dp}}.roh", population=pop_list),
 		inds=results+"/genotyping/pop_lists/"+dataset+"_all.indiv.list",
-		autos=rules.sexlink_sum.output.sum
+		autos=rules.sexlink_bed.output.sum
 	output:
 		report(expand(results+"/plots/inbreeding/"+dataset+
 			"_all{{dp}}.{stat}.pdf",

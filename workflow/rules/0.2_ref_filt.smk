@@ -5,8 +5,7 @@
 # adapted from Pečnerová et al. 2021 (Current Biology).
 
 localrules: genome_bed, smallscaff_bed, sexlink_bed, mito_bed, \
-genmap_filt_bed, genome_sum, smallscaff_sum, depth_sum, genmap_filt_sum, \
-repeat_sum, sexlink_sum, combine_beds
+genmap_filt_bed, combine_beds, repeat_sum
 
 #################################################
 # Reference-based filters (dataset independent) #
@@ -18,20 +17,15 @@ rule genome_bed:
 	input:
 		fai=REF+".fai"
 	output:
-		bed=REF_DIR+"/beds/"+REF_NAME+"_genome.bed"
-	shell:
-		r"""
-		awk -v OFS='\t' '{{print $1, "0", $2}}' {input.fai} > {output.bed}
-		"""
-
-rule genome_sum:
-	input:
-		bed=REF_DIR+"/beds/"+REF_NAME+"_genome.bed"
-	output:
+		bed=REF_DIR+"/beds/"+REF_NAME+"_genome.bed",
 		sum=REF_DIR+"/beds/"+REF_NAME+"_genome.bed.sum"
 	shell:
 		r"""
-		len=$(awk 'BEGIN{{SUM=0}}{{SUM+=$3-$2}}END{{print SUM}}' {input.bed})
+		# generate bed
+		awk -v OFS='\t' '{{print $1, "0", $2}}' {input.fai} > {output.bed}
+
+		# summarize bed
+		len=$(awk 'BEGIN{{SUM=0}}{{SUM+=$3-$2}}END{{print SUM}}' {output.bed})
 		echo $len | awk '{{print "Total genome\t"$1"\t"$1/$1*100}}' > \
 			{output.sum}
 		"""
@@ -40,29 +34,23 @@ rule genome_sum:
 
 rule smallscaff_bed:
 	input:
-		genbed=rules.genome_bed.output.bed
+		genbed=rules.genome_bed.output.bed,
+		gensum=rules.genome_bed.output.sum
 	output:
 		bed=REF_DIR+"/beds/"+REF_NAME+"_scaff"+
-			str(config["reference"]["min_size"])+".bed"
+			str(config["reference"]["min_size"])+".bed",
+		sum=REF_DIR+"/beds/"+REF_NAME+"_scaff"+
+			str(config["reference"]["min_size"])+".bed.sum"
 	params:
 		minsize=config["reference"]["min_size"]
 	shell:
 		r"""
+		# generate bed
 		awk '$3 < {params.minsize}' {input.genbed} > {output.bed}
-		"""
 
-rule smallscaff_sum:
-	input:
-		sum=rules.genome_sum.output.sum,
-		bed=rules.smallscaff_bed.output.bed
-	output:
-		sum=rules.smallscaff_bed.output.bed+".sum"
-	params:
-		minsize=config["reference"]["min_size"]
-	shell:
-		r"""
-		len=$(awk 'BEGIN{{SUM=0}}{{SUM+=$3-$2}}END{{print SUM}}' {input.bed})
-		echo $len $(awk -F "\t" '{{print $2}}' {input.sum}) | \
+		# summarize bed
+		len=$(awk 'BEGIN{{SUM=0}}{{SUM+=$3-$2}}END{{print SUM}}' {output.bed})
+		echo $len $(awk -F "\t" '{{print $2}}' {input.gensum}) | \
 			awk '{{print "Scaffolds<{params.minsize}bp\t"$2-$1"\t"($2-$1)/$2*100}}' \
 			> {output.sum}
 		"""
@@ -71,29 +59,26 @@ rule smallscaff_sum:
 
 rule sexlink_bed:
 	input:
-		rules.genome_bed.output.bed
+		genbed=rules.genome_bed.output.bed,
+		gensum=rules.genome_bed.output.sum
 	output:
 		exclbed=REF_DIR+"/beds/"+REF_NAME+"_excl.bed",
+		sum=REF_DIR+"/beds/"+REF_NAME+"_excl.bed.sum",
 		xzbed=REF_DIR+"/beds/"+REF_NAME+"_XZ.bed"
 	params:
 		xz=config["reference"]["XZ"],
 		excl=config["reference"]["exclude"]+config["reference"]["mito"]
-	run:
-		shell("printf '%s\\n' {params.xz} | "
-			"grep -f - {input[0]} > {output.xzbed}")
-		shell("printf '%s\\n' {params.xz} {params.excl} | "
-			"grep -f - {input[0]} > {output.exclbed}")
-
-rule sexlink_sum:
-	input:
-		sum=rules.genome_sum.output.sum,
-		bed=rules.sexlink_bed.output.exclbed
-	output:
-		sum=rules.sexlink_bed.output.exclbed+".sum"
 	shell:
 		r"""
-		len=$(awk 'BEGIN{{SUM=0}}{{SUM+=$3-$2}}END{{print SUM}}' {input.bed})
-		echo $len $(awk -F "\t" '{{print $2}}' {input.sum}) | \
+		# generate beds
+		printf '%s\n' {params.xz} | grep -f - {input.genbed} > {output.xzbed}
+		printf '%s\n' {params.xz} {params.excl} | grep -f - {input.genbed} > \
+			{output.exclbed}
+		
+		# summarize exclbed
+		len=$(awk 'BEGIN{{SUM=0}}{{SUM+=$3-$2}}END{{print SUM}}' \
+			{output.exclbed})
+		echo $len $(awk -F "\t" '{{print $2}}' {input.gensum}) | \
 			awk '{{print "Autosomes\t"$2-$1"\t"($2-$1)/$2*100}}' \
 			> {output.sum}
 		"""
@@ -164,31 +149,25 @@ rule genmap_map:
 
 rule genmap_filt_bed:
 	input:
-		bed=rules.genmap_map.output.bed
+		genbed=rules.genmap_map.output.bed,
+		gensum=rules.genome_bed.output.sum
 	output:
-		bed=REF_DIR+"/beds/"+REF_NAME+"_lowmap.bed"
+		bed=REF_DIR+"/beds/"+REF_NAME+"_lowmap.bed",
+		sum=REF_DIR+"/beds/"+REF_NAME+"_lowmap.bed.sum"
 	log:
 		"logs/reffilt/genmap/map/"+REF_NAME+"_lowmap.log"
 	params:
 		thresh=config["params"]["genmap"]["map_thresh"]
 	shell:
-		"""
-		awk '$4 < {params.thresh}' {input.bed} > {output.bed} 2> {log}
-		"""
-
-rule genmap_filt_sum:
-	input:
-		sum=rules.genome_sum.output.sum,
-		bed=rules.genmap_filt_bed.output.bed
-	output:
-		sum=rules.genmap_filt_bed.output.bed+".sum"
-	params:
-		map=config["params"]["genmap"]["map_thresh"]
-	shell:
 		r"""
-		len=$(awk 'BEGIN{{SUM=0}}{{SUM+=$3-$2}}END{{print SUM}}' {input.bed})
-		echo $len $(awk -F "\t" '{{print $2}}' {input.sum}) | \
-			awk '{{print "Mappability<{params.map}\t"$2-$1"\t"($2-$1)/$2*100}}' \
+		# generate bed
+		awk '$4 < {params.thresh}' {input.genbed} > {output.bed} 2> {log}
+
+		#summarize bed
+		len=$(awk 'BEGIN{{SUM=0}}{{SUM+=$3-$2}}END{{print SUM}}' \
+			{output.bed}) 2>> {log}
+		echo $len $(awk -F "\t" '{{print $2}}' {input.gensum}) | awk \
+			'{{print "Mappability<{params.thresh}\t"$2-$1"\t"($2-$1)/$2*100}}' \
 			> {output.sum}
 		"""
 
@@ -269,7 +248,7 @@ rule repeatmasker:
 
 rule repeat_sum:
 	input:
-		sum=rules.genome_sum.output.sum,
+		sum=rules.genome_bed.output.sum,
 		gff=rules.repeatmasker.output.gff
 	output:
 		sum=rules.repeatmasker.output.gff+".sum"
@@ -376,37 +355,33 @@ rule depth_bed:
 
 rule combine_depth_bed:
 	input:
-		expand(results+"/genotyping/filters/depthfilt/"+dataset+
+		beds=expand(results+"/genotyping/filters/depthfilt/"+dataset+
 			"_{population}{{dp}}_depthextremes.bed",population=["all"]+
-			list(set(samples.depth.values)))
+			list(set(samples.depth.values))),
+		gensum=rules.genome_bed.output.sum
 	output:
-		results+"/genotyping/filters/beds/"+dataset+"{dp}_depthfilt.bed"
+		bed=results+"/genotyping/filters/beds/"+dataset+"{dp}_depthfilt.bed",
+		sum=results+"/genotyping/filters/beds/"+dataset+"{dp}_depthfilt.bed.sum"
 	log:
 		logs+"/depthfilt/"+dataset+"{dp}_combinebed.log"
 	conda:
 		"../envs/bedtools.yaml"
+	shadow: "copy-minimal"
 	resources:
 		time=240
 	shell:
 		"""
-		cat {input} > {output}.tmp
-		sort -k1,1 -k2,2n {output}.tmp > {output}.tmp.sort
-		rm {output}.tmp
+		# combine beds
+		cat {input.beds} > {output.bed}.tmp
+		sort -k1,1 -k2,2n {output.bed}.tmp > {output.bed}.tmp.sort
+		rm {output.bed}.tmp
 
-		bedtools merge -i {output}.tmp.sort > {output}
-		rm {output}.tmp.sort
-		"""
+		bedtools merge -i {output.bed}.tmp.sort > {output.bed}
+		rm {output.bed}.tmp.sort
 
-rule depth_sum:
-	input:
-		sum=rules.genome_sum.output.sum,
-		bed=rules.combine_depth_bed.output
-	output:
-		sum=rules.combine_depth_bed.output[0]+".sum"
-	shell:
-		r"""
-		len=$(awk 'BEGIN{{SUM=0}}{{SUM+=$3-$2}}END{{print SUM}}' {input.bed})
-		echo $len $(awk -F "\t" '{{print $2}}' {input.sum}) | \
+		# summarize bed
+		len=$(awk 'BEGIN{{SUM=0}}{{SUM+=$3-$2}}END{{print SUM}}' {output.bed})
+		echo $len $(awk -F "\t" '{{print $2}}' {input.gensum}) | \
 			awk '{{print "Depth\t"$2-$1"\t"($2-$1)/$2*100}}' \
 			> {output.sum}
 		"""
@@ -455,16 +430,20 @@ rule missdata_bed:
 		pos=lambda w: expand(results+"/genotyping/filters/missdata/"+dataset+
 						"_{{population}}{{dp}}_chunk{chunk}_over{{miss}}.pos.gz",
 						chunk=chunklist),
-		genbed=rules.genome_bed.output.bed
+		genbed=rules.genome_bed.output.bed,
+		gensum=rules.genome_bed.output.sum
 	output:
 		bed=results+"/genotyping/filters/missdata/"+dataset+
 			"_{population}{dp}_under{miss}.bed",
+		sum=results+"/genotyping/filters/missdata/"+dataset+
+			"_{population}{dp}_under{miss}.bed.sum",
 		tmp=temp(results+"/genotyping/filters/missdata/"+dataset+
 			"_{population}{dp}_under{miss}.bed.tmp")
 	conda:
 		"../envs/bedtools.yaml"
 	shell:
 		r"""
+		# generate bed
 		> {output.tmp}
 		for i in {input.pos}; do
 			zcat $i | tail -n +2 >> {output.tmp}
@@ -473,160 +452,14 @@ rule missdata_bed:
 		awk '{{print $1"\t"$2-1"\t"$2}}' {output.tmp} > {output.bed}
 		bedtools merge -i {output.bed} > {output.tmp}
 		bedtools subtract -a {input.genbed} -b {output.tmp} > {output.bed}
-		"""
 
-rule missdata_sum:
-	input:
-		sum=rules.genome_sum.output.sum,
-		bed=rules.missdata_bed.output.bed
-	output:
-		sum=results+"/genotyping/filters/missdata/"+dataset+
-			"_{population}{dp}_under{miss}.sum"
-	shell:
-		r"""
-		perc=$(echo {wildcards.miss} | awk '{{print (1-$1)*100}}')
-		len=$(awk 'BEGIN{{SUM=0}}{{SUM+=$3-$2}}END{{print SUM}}' {input.bed})
-		echo $len $(awk -F "\t" '{{print $2}}' {input.sum}) $perc | \
-			awk '{{print "Min "$3"% data (dataset)\t"$2-$1"\t" \
+		# summarize bed
+		perc=$(echo {wildcards.miss} | awk '{{print $1*100}}')
+		len=$(awk 'BEGIN{{SUM=0}}{{SUM+=$3-$2}}END{{print SUM}}' {output.bed})
+		echo $len $(awk -F "\t" '{{print $2}}' {input.gensum}) $perc | \
+			awk '{{print "Min "$3"% data ({wildcards.population})\t"$2-$1"\t" \
 			($2-$1)/$2*100}}' > {output.sum}
 		"""
-
-# # Excess heterozygosity - PCAngsd
-
-# rule excess_hetero_beagle:
-# 	input:
-# 		bamlist=results+"/genotyping/bamlists/"+dataset+"_all.bamlist",
-# 		regions=REF_DIR+"/beds/chunk{chunk}_"+config["chunk_size"]+"bp.rf",
-# 		ref=REF
-# 	output:
-# 		beagle=results+"/genotyping/filters/heterofilt/beagle/chunk/"+dataset+
-# 				"_chunk{chunk}_heterofilt.beagle.gz"
-# 	log:
-# 		logs + "/heterofilt/beagle/"+dataset+"_chunk{chunk}_heterofilt.log"
-# 	container:
-# 		"docker://zjnolen/angsd:0.937"
-# 	params:
-# 		gl_model=config["params"]["angsd"]["gl_model"],
-# 		extra=config["params"]["angsd"]["extra"],
-# 		mapQ=config["mapQ"],
-# 		baseQ=config["baseQ"],
-# 		pval=config["params"]["angsd"]["snp_pval"],
-# 		maf=config["params"]["angsd"]["min_maf"],
-# 		out=results+"/genotyping/filters/heterofilt/beagle/chunk/"+dataset+
-# 			"_chunk{chunk}_heterofilt"
-# 	threads: lambda wildcards, attempt: attempt*2
-# 	resources:
-# 		time="06:00:00"
-# 	shell:
-# 		"""
-# 		angsd -doGlf 2 -bam {input.bamlist} -GL {params.gl_model} \
-# 			-ref {input.ref} -nThreads {threads} {params.extra} \
-# 			-doMaf 1 -doMajorMinor 1 -minMapQ {params.mapQ} \
-# 			-minQ {params.baseQ} -SNP_pval {params.pval} -minMaf {params.maf} \
-# 			-rf {input.regions} -out {params.out} &> {log}
-# 		"""
-
-# rule excess_hetero_beagle_merge:
-# 	input:
-# 		lambda w: expand(results+"/genotyping/filters/heterofilt/beagle/" \
-# 						"chunk/"+dataset+"_chunk{chunk}_heterofilt.beagle.gz",
-# 						chunk=chunklist)
-# 	output:
-# 		beagle=results+"/genotyping/filters/heterofilt/beagle/"+dataset+ \
-# 				"_heterofilt.beagle.gz"
-# 	log:
-# 		logs + "/heterofilt/beagle/"+dataset+"_heterofilt.log"
-# 	shell:
-# 		r"""
-# 		set +o pipefail;
-# 		zcat {input[0]} | head -n 1 | gzip > {output} 2> {log}
-
-# 		for f in {input}; do
-# 			zcat $f | tail -n +2 | gzip >> {output.beagle} 2>> {log}
-# 		done
-# 		"""
-
-# rule excess_hetero_pcangsd:
-# 	input:
-# 		beagle=rules.excess_hetero_beagle_merge.output.beagle
-# 	output:
-# 		cov=results+"/genotyping/filters/heterofilt/"+dataset+
-# 			"_heterofilt.cov",
-# 		inb=results+"/genotyping/filters/heterofilt/"+dataset+
-# 			"_heterofilt.inbreed.sites.npy",
-# 		lrt=results+"/genotyping/filters/heterofilt/"+dataset+
-# 			"_heterofilt.lrt.sites.npy",
-# 		sites=results+"/genotyping/filters/heterofilt/"+dataset+
-# 			"_heterofilt.sites"
-# 	log:
-# 		logs + "/heterofilt/pcangsd/"+dataset+"_heterofilt.log"
-# 	params:
-# 		out=results+"/genotyping/filters/heterofilt/"+dataset+"_heterofilt"
-# 	resources:
-# 		time="04:00:00"
-# 	threads: 4
-# 	shell:
-# 		r"""
-# 		module load bioinfo-tools
-# 		module load PCAngsd/0.982
-
-# 		pcangsd.py -threads {threads} -b {input.beagle} -inbreedSites \
-# 			-sites_save -o {params.out} &> {log}
-		
-# 		cp {output.sites} {output.sites}.bak
-# 		sed -i -r 's/(.*)_/\1\t/' {output.sites}
-# 		"""
-
-# rule excess_hetero_bed:
-# 	input:
-# 		inb=rules.excess_hetero_pcangsd.output.inb,
-# 		lrt=rules.excess_hetero_pcangsd.output.lrt,
-# 		sites=rules.excess_hetero_pcangsd.output.sites,
-# 		genbed=rules.genome_bed.output.bed
-# 	output:
-# 		bed=results+"/genotyping/filters/beds/"+dataset+"_heterofilt.bed",
-# 		sites=results+"/genotyping/filters/beds/"+dataset+
-# 			"_heterofilt.filt.sites"
-# 	params:
-# 		hwe=1e-6,
-# 		F=-0.95,
-# 		win=50000
-# 	run:
-# 		import pandas as pd
-# 		import numpy as np
-# 		genbed = pd.read_csv(input.genbed, sep = "\t", header = None,
-# 			names = ["chr","start","stop"])
-# 		df = pd.read_csv(input.sites, sep = "\t", header = None, 
-# 			names = ["chr","pos"])
-# 		inb = np.load(input.inb)
-# 		lrt = np.load(input.lrt)
-# 		df['inb'] = inb.tolist()
-# 		df['lrt'] = lrt.tolist()
-# 		df = pd.merge(genbed,df)
-# 		df['max'] = df['stop']
-# 		df = df[(df['inb'] < params.F) & (df['lrt'] < params.hwe)]
-# 		df['start'] = df['pos'] - params.win
-# 		df['stop'] = df['pos'] + params.win
-# 		df['start'][df['start'] < 0] = 0
-# 		df['stop'][df['stop'] > df['max']] = df['max']
-# 		df.to_csv(output.sites, sep = "\t", columns=['chr','pos'], 
-# 			header=False, index=False)
-# 		df.to_csv(output.bed, sep = "\t", columns=['chr','start','stop'], 
-# 			header=False, index=False)
-
-# rule excess_hetero_sum:
-# 	input:
-# 		sum=rules.genome_sum.output.sum,
-# 		bed=rules.excess_hetero_bed.output.bed
-# 	output:
-# 		sum=rules.excess_hetero_bed.output.bed+".sum"
-# 	shell:
-# 		r"""
-# 		len=$(awk 'BEGIN{{SUM=0}}{{SUM+=$3-$2}}END{{print SUM}}' {input.bed})
-# 		echo $len $(awk -F "\t" '{{print $2}}' {input.sum}) | \
-# 			awk '{{print "Excess heterozygosity\t"$2-$1"\t"($2-$1)/$2*100}}' \
-# 			> {output.sum}
-# 		"""
 
 #################################################
 #              Combine all filters              #

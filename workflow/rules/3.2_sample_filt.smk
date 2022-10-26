@@ -260,4 +260,18 @@ rule combine_sample_qc:
 			mv {output}.tmp {output}
 		done
 		"""
-	
+
+rule sample_qc_summary:
+	input:
+		results+"/qc/"+dataset+"_all{dp}.sampleqc.tsv"
+	output:
+		report(results+"/qc/"+dataset+"_all{dp}.sampleqc.html",
+				category="Quality Control",
+				labels={
+					"Topic":"Sample QC",
+					"Type":"Table"
+				})
+	conda:
+		"../envs/r-rectable.yaml"
+	script:
+		"../scripts/tsv2html.Rmd"

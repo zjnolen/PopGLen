@@ -44,14 +44,9 @@ wildcard_constraints:
 	dp=(subsample[0]+"|.{0}" if len(subsample)==2 else ".{0}"),
 	chunk="[0-9]+"
 
-
-all_outputs.append(expand(
-	"results/mapping/qc/ind_depth/unfiltered/"+dataset+"_all{dp}.depth.sum",
-		dp=subsample))
-
-all_outputs.append(expand(
-	results+"/qc/ind_depth/filtered/"+dataset+"_all{dp}.depth.sum",
-		dp=subsample))
+all_outputs = expand([results+"/qc/"+dataset+"_all{dp}.sampleqc.html",
+				results+"/genotyping/filters/"+dataset+"{dp}_filts.html"],
+				dp=subsample)
 
 if config["analyses"]["qualimap"]:
 	all_outputs.append(expand(

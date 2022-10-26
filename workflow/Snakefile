@@ -56,6 +56,10 @@ if config["analyses"]["damageprofiler"]:
 		"results/mapping/qc/damageprofiler/{sample}/dmgprof.json",
 			sample=samples.index[samples['time'] == 'historical'].tolist()))
 
+if config["analyses"]["endogenous_content"]:
+	all_outputs.append(
+		results+"/qc/endogenous_content/"+dataset+"_all.endo.tsv")
+
 if config["analyses"]["relatedness"]:
 	all_outputs.append(expand(
 		results+"/analyses/kinship/"+dataset+"_all{dp}.kinship",

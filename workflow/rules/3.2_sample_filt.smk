@@ -1,3 +1,48 @@
+# Per individual estimates of endogenous content - primarily useful for 
+# historical samples or when using references that are not specific to 
+# the species of interest
+
+def get_endo_cont_stat(wildcards):
+    # Gets bam file for endogenous content calculation
+    s = wildcards.sample
+    if s in samples.index[samples.time == "modern"]:
+        return "results/mapping/mapped/"+s+".paired.flagstat"
+    elif s in samples.index[samples.time == "historical"]:
+        return "results/mapping/mapped/"+s+".merged.flagstat"
+
+rule endo_cont:
+    input:
+        get_endo_cont_stat
+    output:
+        "results/mapping/qc/endogenous_content/{sample}.endo"
+    shell:
+        r"""
+        total=$(grep -E "^[0-9]+ \+ [0-9]+ in total" {input} \
+            | awk '{{print $1}}')
+        mapped=$(grep -E "^[0-9]+ \+ [0-9]+ mapped" {input} \
+            | awk '{{print $1}}')
+        primary=$(grep -E "^[0-9]+ \+ [0-9]+ primary mapped" {input} \
+            | awk '{{print $1}}')
+        
+        echo $total $mapped $primary {wildcards.sample} | \
+            awk '{{printf "%s\t%.3f\t%.3f\n",$4,$2/$1*100,$3/$1*100}}' \
+            > {output}
+        """
+
+rule compile_endo_cont:
+	input:
+		lambda w: expand("results/mapping/qc/endogenous_content/{sample}.endo",
+			sample=get_samples_from_pop("all"))
+	output:
+		results+"/qc/endogenous_content/"+dataset+"_all.endo.tsv"
+	resources:
+		time=lambda wildcards, attempt: attempt*15
+	shell:
+		"""
+		echo "sample	perc.endo	perc.prim.endo" > {output}
+		cat {input} >> {output}
+		"""
+
 # Pairwise individual relatedness with R0, R1, KING-robust kinship 
 # method from Waples et al. 2019, MolEcol
 

@@ -55,6 +55,13 @@ rule est_kinship_stats:
 			"_{ind1}-{ind2}{dp}.kinship"
 	log:
 		logs + "/kinship/"+dataset+"_{ind1}-{ind2}{dp}_kinship.log"
+	wildcard_constraints:
+		ind1="|".join(
+			[i for i in samples.index.tolist()]
+			),
+		ind2="|".join(
+			[i for i in samples.index.tolist()]
+			)
 	conda:
 		"../envs/r.yaml"
 	resources:

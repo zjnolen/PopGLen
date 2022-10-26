@@ -25,7 +25,7 @@ rule samtools_idxstats:
 
 rule qualimap:
     input:
-        "results/mapping/{sample}{dp}.rmdup.realn.bam"
+        "results/mapping/bams/{sample}{dp}.rmdup.realn.bam"
     output:
         "results/mapping/qc/qualimap/{sample}{dp}/qualimapReport.html",
         "results/mapping/qc/qualimap/{sample}{dp}/genome_results.txt"

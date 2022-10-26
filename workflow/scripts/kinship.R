@@ -20,7 +20,7 @@ calc_coeffs <- function(filepath){
   # KING-robust kinship
   coeffs['Kin'] = 
     (df['HETHET'] - 2*(df['IBS0'])) / (df['IBS1'] + 2*df['HETHET'])
-  return(coeffs)
+  return(round(coeffs, digits = 8))
 }
 
 toprint = data.frame(matrix(nrow=1,ncol=0))

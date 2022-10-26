@@ -113,28 +113,15 @@ params:
   angsd:
     # gl_model - 1=SAMtools, 2=GATK, 3=SOAPsnp, 4=SYK; default is 1
     gl_model: 2
-    # max_missing - Exclude sites based on missing data in individuals 
-    # where 0.0 allows sites with completely missing data and 1.0 
-    # permits no missing data. You have the option to set different 
-    # values for the dataset as a whole (such as for making a PCA) and 
-    # for individual populations (calculating thetas, F, ROH, etc.). We 
-    # set the default to 0.2 (20% missing data) for populations and 0.0 
-    # for the whole dataset.
-    max_missing_pop: 0.2
-    max_missing_dataset: 0.1
-    # min_depth_mult - A multiplier to define the minimum depth to include a 
-    # site in an analysis, it is multiplied by the average depth. A hard coded 
-    # minimum depth of 3 per individual is always included.
-    min_depth_mult: 0.33
-    # max_depth_mult - A multiplier to define the maximum depth to include a 
-    # site in an analysis, it is multiplied by the average depth.
-    max_depth_mult: 3
+    # When calculating per individual depth, any depth higher than this 
+    # value will be binned to this value.
+    maxdepth: 1000
     # extra - any additional filtering parameters to be used across all 
     # analyses with angsd. By default, we use -C 50 to correct for 
     # excessive mismatches, only include paired reads when both mates map,
     # remove reads with multiple best hits, and reduce base quality scores 
     # based on baq (penalizes bases around indels)
-    extra: "-C 50 -only_proper_pairs 1 -uniqueOnly 1"
+    extra: "-C 50 -uniqueOnly 1"
     # fold - Define if SFS should be folded when made. If you don't 
     # have ancestral states to assign to -anc, it is best to set to 1. 
     # We set the default to 1.

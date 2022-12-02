@@ -5,8 +5,8 @@ rule ngsLD_estLD:
 		beagle=rules.angsd_doGlf2.output.beagle,
 		bamlist=rules.angsd_makeBamlist.output
 	output:
-		ld=results+"/genotyping/pruned_beagle/ngsLD/"+dataset+
-			"_{population}{dp}_chunk{chunk}.ld.gz",
+		ld=temp(results+"/genotyping/pruned_beagle/ngsLD/"+dataset+
+			"_{population}{dp}_chunk{chunk}.ld.gz"),
 		pos=results+"/genotyping/pruned_beagle/ngsLD/"+dataset+
 			"_{population}{dp}_chunk{chunk}.pos"
 	log:

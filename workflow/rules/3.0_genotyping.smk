@@ -64,10 +64,10 @@ rule angsd_doGlf2:
 		fai=REF+".fai",
 		sites=get_snpset
 	output:
-		beagle=results+"/genotyping/beagle/chunk/"+dataset+
-			"_{population}{dp}_chunk{chunk}.beagle.gz",
-		maf=results+"/genotyping/beagle/chunk/"+dataset+
-			"_{population}{dp}_chunk{chunk}.mafs.gz"
+		beagle=temp(results+"/genotyping/beagle/chunk/"+dataset+
+			"_{population}{dp}_chunk{chunk}.beagle.gz"),
+		maf=temp(results+"/genotyping/beagle/chunk/"+dataset+
+			"_{population}{dp}_chunk{chunk}.mafs.gz")
 	log:
 		logs + "/angsd/doGlf2/"+dataset+"_{population}{dp}_chunk{chunk}.log"
 	container:

@@ -207,6 +207,37 @@ rule realSFS_catsaf:
 		realSFS cat {input.safs} -P {threads} -outnames {params.out} 2> {log}
 		"""
 
+rule angsd_doIBS:
+	input:
+		bamlist=rules.angsd_makeBamlist.output,
+		bams=get_bamlist_bams,
+		bais=get_bamlist_bais,
+		sites=results+"/genotyping/filters/beds/"+dataset+"{dp}_snps.sites",
+		idx=results+"/genotyping/filters/beds/"+dataset+"{dp}_snps.sites.idx"
+	output:
+		results+"/genotyping/IBSmatrix/"+dataset+
+			"_{population}{dp}.ibs.gz",
+		results+"/genotyping/IBSmatrix/"+dataset+
+			"_{population}{dp}.ibsMat"
+	log:
+		logs+"/angsd/doIBS/"+dataset+"_{population}{dp}.log"
+	container:
+		angsd_container
+	params:
+		mapQ=config["mapQ"],
+		baseQ=config["baseQ"],
+		out=results+"/genotyping/IBSmatrix/"+dataset+
+			"_{population}{dp}"
+	threads: 4
+	resources:
+		time=lambda wildcards, attempt: attempt*1440
+	shell:
+		"""
+		angsd -doIBS 1 -bam {input.bamlist} -nThreads {threads} -doCounts 1 \
+			-minMapQ {params.mapQ} -minQ {params.baseQ} -sites {input.sites} \
+			-doMajorMinor 3 -makeMatrix 1 -out {params.out} &> {log}
+		"""
+
 rule angsd_doGlf4:
 	input:
 		bamlist=rules.angsd_makeBamlist.output,

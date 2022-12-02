@@ -1,5 +1,3 @@
-localrules: convert_ibd, plot_froh
-
 rule ngsf_hmm:
 	input:
 		beagle=rules.merge_pruned_beagles.output.beagle,

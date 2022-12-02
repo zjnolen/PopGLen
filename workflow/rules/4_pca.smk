@@ -18,8 +18,6 @@ rule pca_pcangsd:
 		pcangsd -b {input.beagle} -o {params.prefix} &> {log}
 		"""
 
-localrules: plot_pca
-
 rule plot_pca:
 	input:
 		rules.pca_pcangsd.output.cov,

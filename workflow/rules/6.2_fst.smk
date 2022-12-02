@@ -89,8 +89,6 @@ rule aggregate_global_fst:
 		cat {input} >> {output} 2>> {log}
 		"""
 
-localrules: plot_fst
-
 rule plot_fst:
 	input:
 		results+"/analyses/fst/"+dataset+"_{unit}pairs{dp}.fst.sum"
@@ -107,3 +105,63 @@ rule plot_fst:
 		"../envs/r.yaml"
 	script:
 		"../scripts/plot_fst.R"
+
+rule calc_dxy:
+	input:
+		maf1=results+"/genotyping/mafs/"+dataset+"_{population1}{dp}.mafs.gz",
+		maf2=results+"/genotyping/mafs/"+dataset+"_{population2}{dp}.mafs.gz"
+	output:
+		dxy=results+"/analyses/dxy/"+dataset+
+			"_{population1}-{population2}{dp}.dxy"
+	conda:
+		"../envs/r-dxy.yaml"
+	shell:
+		"""
+		Rscript workflow/scripts/calcDxy.R -p <(zcat {input.maf1}) \
+			-q <(zcat {input.maf2}) \
+			-t $(zcat {input.maf1} | tail -n +2 | wc -l) > {output.dxy}
+		"""
+
+def get_dxy(wildcards):
+	unit = pop_list
+	combos = list(itertools.combinations(unit, 2))
+	# sort pops alphebetically, this ensures that should new pops be added
+	# after generating some SFS, the reordering of the combinations won't
+	# lead to generating identical SFS with the populations swapped
+	combos = [sorted(pair) for pair in combos]
+	pop1 = [pair[0] for pair in combos]
+	pop2 = [pair[1] for pair in combos]
+	return expand(results+"/analyses/dxy/"+dataset+
+				"_{population1}-{population2}"+wildcards.dp+".dxy",
+				zip, population1=pop1, population2=pop2)
+
+rule aggregate_global_dxy:
+	input:
+		get_dxy
+	output:
+		results+"/analyses/dxy/"+dataset+"_{unit}pairs{dp}.dxy.sum"
+	log:
+		logs+"/calcDxy/dxy/aggregate/"+dataset+"_{unit}pairs{dp}.log"
+	wildcard_constraints:
+		unit="ind|pop"
+	shell:
+		"""
+		echo "pop1\tpop2\tdxy\tdxy_per_site" > {output} 2> {log}
+		cat {input} >> {output} 2>> {log}
+		"""
+
+# rule aggregate_global_fst_dxy:
+# 	input:
+# 		fst=get_fst,
+# 		dxy=get_dxy
+# 	output:
+# 		results+"/analyses/fst/"+dataset+"_{unit}pairs{dp}.fst.dxy.sum"
+# 	log:
+# 		logs+"/realSFS/fst/aggregate/"+dataset+"_{unit}pairs{dp}.log"
+# 	wildcard_constraints:
+# 		unit="ind|pop"
+# 	shell:
+# 		"""
+# 		echo "pop1\tpop2\tunweight.fst\tweight.fst\tdxy\tper_site_dxy" > {output} 2> {log}
+# 		echo $(cat {input.} >> {output} 2>> {log}
+# 		"""

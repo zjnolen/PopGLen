@@ -51,8 +51,6 @@ rule realSFS_2dSFS:
 			> {output.sfs} 2> {log}
 		"""
 
-localrules: plot_heterozygosity
-
 rule plot_heterozygosity:
 	input:
 		sfs=expand(results+

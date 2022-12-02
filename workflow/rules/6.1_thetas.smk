@@ -44,8 +44,6 @@ rule thetaStat:
 			-outnames {params.out}
 		"""
 
-localrules: plot_thetas
-
 rule plot_thetas:
 	input:
 		expand(results+"/analyses/thetas/"+dataset+

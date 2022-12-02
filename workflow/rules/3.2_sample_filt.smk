@@ -197,6 +197,7 @@ rule summarize_ind_depth:
 	wildcard_constraints:
 		prefix="results/mapping/qc/ind_depth/unfiltered/|"+
 			results+"/qc/ind_depth/filtered/"
+	threads: lambda wildcards, attempt: attempt
 	script:
 		"../scripts/calc_depth.R"
 
@@ -269,6 +270,50 @@ rule sample_qc_summary:
 				category="Quality Control",
 				labels={
 					"Topic":"Sample QC",
+					"Type":"Table"
+				})
+	conda:
+		"../envs/r-rectable.yaml"
+	script:
+		"../scripts/tsv2html.Rmd"
+
+rule ngsrelate:
+	input:
+		beagle=rules.merge_beagle.output.beagle,
+		bamlist=rules.angsd_makeBamlist.output,
+		inds=rules.popfile.output.inds
+	output:
+		relate=results+"/analyses/ngsrelate/"+dataset+
+			"_{population}{dp}_relate.tsv",
+		samples=results+"/analyses/ngsrelate/"+dataset+
+			"_{population}{dp}_samples.list"
+	log:
+		logs + "/ngsrelate/"+dataset+"_{population}{dp}.log"
+	threads: lambda wildcards, attempt: attempt*4
+	resources:
+		time=lambda wildcards, attempt: attempt*360
+	shell:
+		r"""
+		module load bioinfo-tools NgsRelate
+		nsites=$(zcat {input.beagle} | tail -n +2 | wc -l) 2>> {log}
+		nind=$(cat {input.bamlist} | wc -l | awk '{{print $1+1}}') 2>> {log}
+		echo "nsites nind" >> {log}
+		echo $nsites $nind >> {log}
+		cut -f1 {input.inds} | tail -n +2 > {output.samples} 2>> {log}
+		ngsrelate -G {input.beagle} -n $nind -L $nsites -O {output.relate} \
+			-z {output.samples} 2>> {log}
+		"""
+
+rule ngsrelate_summary:
+	input:
+		results+"/analyses/ngsrelate/"+dataset+
+			"_{population}{dp}_relate.tsv"
+	output:
+		report(results+"/analyses/ngsrelate/"+dataset+
+				"_{population}{dp}_relate.html",
+				category="Quality Control",
+				labels={
+					"Topic":"Ngs Relate",
 					"Type":"Table"
 				})
 	conda:

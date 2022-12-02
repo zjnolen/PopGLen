@@ -1,4 +1,4 @@
-name: landscape-genomics
+name: angsd-snakemake-pipeline
 
 channels:
   - conda-forge

@@ -1,58 +1,54 @@
 # Genotype likelihood population genomics pipeline
 
-**Under development** - mostly works, but not on all systems. And certainly 
-needs some documentation... if you'd like to use in this early state, give it 
-a try, and feel free to send me questions. See develop branch for most recent 
-changes.
+**Under development** - This is under active development, so changes are 
+rather rapid. The master branch will have stable versions, and as soon as I 
+feel things are complete enough, I'll begin organizing things into proper 
+releases.
 
 This pipeline performs multiple common population genomic analyses within a 
 genotype likelihood framework primarily using ANGSD and related softwares. It 
 requires sequencing reads and a reference genome. Right now, it only works 
-with libraries with a single run of paired end reads per sample, but this will 
-be improved down the line. Some analyses are only possible on UPPMAX's Rackham 
-cluster, but will be updated to use singularity as the pipeline matures. As 
-the focus is primarily on conservation genomics projects, these will be the 
-analyses added first.
+with libraries with a single sequencing run of paired end reads per sample, 
+but this will be improved down the line. The resource allocaition is tuned 
+to Uppmax's Rackham cluster in Sweden. It may need some tuning of the 
+resources to work on your cluster.
 
 ## Features
 
-Here is a rough graph of the workflow with some rules removed for readability. 
-It will at some point get a readability improvement when the workflow is 
-finalized!
-
-![](dag.svg)
-
 Currently, the pipeline performs the following tasks:
 
-**Reference genome preparation**
+### Reference genome preparation
 
-- Before starting, please clean up scaffold names in reference, preferably 
-  they contain only 10-15 alphanumeric characters.
 - Indexing of reference for subsequent analyses
 
-**Raw read preparation**
+### Raw read preparation
 
 - Trimming of paired-end reads from high quality libraries
-- Collapsing of paired-end reads from fragmented libraries
+- Collapsing of paired-end reads from fragmented (aDNA/historical DNA) 
+  libraries
 
-**Read mapping**
+### Read mapping
 
 - Mapping prepared raw reads to reference using bwa-mem and clipping of 
   overlapping reads
-- Removal of PCR and sequencing duplicates separately for high quality 
-  (Picard) and fragmented (DeDup) reads
+  - **NOTE**: Reads marked as historical will only map reads that overlap and 
+    collapse, to reduce mapping of likely contaminants.
+- Removal of PCR and sequencing duplicates separately for fresh 
+  (Picard) and fragmented (DeDup) DNA reads
 - Realignment around indels
-- Indexing of deduplicated, realigned, mapped reads
+- Optional recalibration of base quality scores on degraded DNA bam files with 
+  [MapDamage2](https://ginolhac.github.io/mapDamage/)
+- Indexing of deduplicated, realigned, mapped, and recalibrated reads
 
-**Sample quality control**
+### Sample quality control
 
 - Assess post-mortem DNA damage with DamageProfiler
 - Assess mapping quality stats with Qualimap
-- ~~Assess endogenous content before duplicate reads are removed~~ Needs to be 
-  re-added
-- Assess sample duplication and relatedness with NgsRelate
+- Assess endogenous content before duplicate reads are removed
+- Assess sample duplication and relatedness using methods from [Waples et al. 
+  2019](https://doi.org/10.1111/mec.14954)
 
-**Data quality filtering**
+### Data quality filtering
 
 - Analyses can be set with minimum mapping and base quality thresholds
 - Exclusion of entire scaffolds (i.e. sex-linked, low quality) through user 
@@ -60,10 +56,11 @@ Currently, the pipeline performs the following tasks:
 - Exclusion of repeat regions from analyses using RepeatModeler/RepeatMasker
 - Exclusion of low mappability regions with GenMap
 - Exclusion of sites with extreme global depth values (determined separately 
-  for the entire dataset, low coverage, and high coverage subsets, then merged)
-- Exclusion of sites based on data missingness across dataset
+  for the entire dataset, and subsets at certain coverage ranges, then merged)
+- Exclusion of sites based on data missingness across dataset and/or per 
+  population
 
-**GL based population genomic analyses**
+### GL based population genomic analyses
 
 To speed up the pipeline, many of these analyses are done for part of the 
 genome at a time, then later merged. This is only done for analyses where 
@@ -97,11 +94,6 @@ variance in depth between groups.
   population sampling, not for lone samples which will always return an 
   inbreeding coefficient of 0)
 
-**Reporting of results**
-
-A Snakemake report can be generated after a successful run. The output is 
-rather rough for now, but has some improvements in mind.
-
 ### Planned
 
 Some additional components to the pipeline are planned, the order below 
@@ -110,23 +102,173 @@ roughly corresponding to priority:
 **Data analysis**
 - Allow custom site list - either as a supplement to the filters already 
   present or as the only filter (by setting all other filters to `false`)
+- Sliding window based Fst, and manhattan plots in report for sliding window 
+  results
 - Allow starting with bam files - for those that want to process raw reads 
   in their own way before performing analyses
-- Adjust quality scores of damaged bases with MapDamage (for now, this can 
-  still be handled roughly by adding the `-trim INT` or `-noTrans 1` options 
-  in the ANGSD parameters)
-- Add calculation of Dxy (either Peñalba's or Marques's method)
-- Improve portability of the following using containers:
-  - PCAngsd
-  - ngsF-HMM
-  - ngsrelate
+- Add calculation of bootstrapped SFS
+- Add calculation of Dxy (either Peñalba's or Marques's method, looking at 
+  others' methods as well)
+- Add schema for configuration files to improve incorrect format handling and 
+  to enable defaults
+- The pruning script here has been improved and added to ngsLD, make it use 
+  that directly rather than the one here
 - TreeMix using Maf file outputs?
 - Add options to include genotype calling based approaches for comparison?
 
-**Reporting**
+## Installation
 
-- Categorization of outputs
-- Summary tables of mapping and filtering stats
+### Requirements
+
+General:
+- conda/mamba
+- singularity
+
+For processing using a cluster's job queue:
+- Appropriate [Snakemake profile for job scheduler](https://github.com/Snakemake-Profiles)
+
+If your cluster uses SLURM as its job scheduler, a slurm profile is packaged 
+with this pipeline in the [`slurm`](slurm) folder. (Source: 
+[Snakemake-Profiles/slurm](https://github.com/Snakemake-Profiles/slurm))
+
+### Setup
+
+#### 1. Clone this repository
+
+For the current master branch:
+```
+clone https://github.com/zjnolen/angsd-snakemake-pipeline.git
+```
+
+#### 2. Install the necessary conda environment
+
+```bash
+# If you have conda installed:
+conda env create -f environment.yaml
+
+# If you have mamba installed (faster):
+mamba env create -f environment.yaml
+```
+
+## Running
+
+For details on the use of snakemake and its options, please see the 
+documentation available [here](https://snakemake.readthedocs.io/en/stable/).
+
+### Configuration
+
+The first set is to configure the pipeline for your data. See the 
+[configuration readme](config/README.md) for more details on how to do this.
+
+### Running the pipeline
+
+Activate the conda environment you created:
+
+```bash
+
+```
+
+Snakemake runs continuously as the pipeline runs, so it is best to run it in 
+a way that will not quit upon user logout. I recommend using [screen](https://linuxize.com/post/how-to-use-linux-screen/), 
+which is often installed on many HPCs.
+
+```bash
+# start a new screen session
+screen -S snakemake
+
+# You will be sent into a new shell, here, activate the conda env
+conda activate angsd-snakemake-pipeline
+
+# You can run the snakemake commands in the sections below in this shell. 
+# You can detach the screen and it will keep running on the machine unless it 
+# is powered off or killed. To detach, press ctrl+a followed by d
+
+# To reattach a screen you've detached
+screen -r snakemake
+
+# To terminate a screen when you are done, press ctrl+a followed by k
+```
+
+As an alternative, you can set up the snakemake run as a job in itself, just 
+be sure to give it a long enough time to run the whole pipeline.
+
+#### Local execution (not recommended)
+
+This means execution will run all jobs on the machine you are logged into. 
+This is likely not what most want do do here, as many of these programs are 
+cpu and memory intensive, but it will give an idea of the necessary options.
+
+A simple run of the pipeline can be done with:
+
+```bash
+snakemake \
+  --configfile config/config.yaml \
+  --use-singularity \
+  --use-conda \
+  --cores INT
+```
+The options here are all required for a local run, they mean the following:
+- `--configfile` - Points to the config file for the run
+- `--use-singularity` - Necessary, as many programs are only available here 
+  with singularity
+- `--use-conda` - Necessary, as many programs here are deployed with conda
+- `--cores` - Required for local execution, how many cores to let snakemake use
+
+It's good to run this the first time with the `-n` option, which performs a 
+dry run, then you can see what snakemake will do before you run it.
+
+#### Cluster execution (**recommended**)
+
+See [snakemake's documentation on cluster execution](https://snakemake.readthedocs.io/en/stable/executing/cluster.html) 
+for more information on how to do this. It is best to set up a [profile](https://snakemake.readthedocs.io/en/stable/executing/cli.html#profiles) 
+for your cluster environment. I've included a snakemake profile for slurm in 
+this repository in the [`slurm`](slurm) folder. See the documentation for this 
+profile for more details on how to use it. Largely, most will just need to set 
+their default cluster settings in [`config/cluster.yaml`](config/cluster.yaml). 
+These default settings share the long form names you would put at the start of 
+sbatch scripts. Some examples that most might add are:
+
+- `account` - The account on the HPC that your job hours will be put on
+- `time` - The default time limit for jobs without time specifications
+- `output` - File to send the slurm standard error and output
+
+The defaults for `time` and `output` in this repo should work well for most, 
+so just setting your `account` should be sufficient.
+
+Then, to run with the slurm profile included here, the command would be:
+
+```bash
+snakemake \
+  --configfile config/config.yaml \
+  --profile slurm
+```
+The required options, and some other recommendations are already included in 
+the profile and can be seen in [`slurm/config.yaml`](slurm/config.yaml).
+
+### Reporting of results
+
+A Snakemake report can be generated after a successful run that includes 
+tables and plots of major results. These are meant to be illustrative and give 
+users a quick overview of results and will not be optimized to display every 
+dataset perfectly.
+
+To produce the report, simply use the following command after a successful 
+run:
+
+```bash
+snakemake --configfile config/config.yaml --report reports/report.html
+```
+
+# Workflow directed action graph
+
+Here is a rough graph of the workflow with some rules removed for readability. 
+It will at some point get a readability improvement when the workflow is 
+finalized! This is also not really how it looks in the current version, but 
+it is a close approximation of the flow as of now.
+
+![](dag.svg)
+
+# Deprecated sections below, but still here until they're replaced
 
 ## Stages
 

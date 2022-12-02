@@ -1,10 +1,12 @@
 #=====================Dataset Configuration============================#
 
-samples:
+# Here, you'll point to your dataset files
 
-units:
+samples: "config/samples.tsv" # path to the sample list for the dataset
 
-dataset:
+units: "config/units.tsv" # path to the units list for the dataset
+
+dataset: "dataset_name" # unique name for the dataset
 
 #===================== Reference Configuration ========================#
 
@@ -12,19 +14,22 @@ dataset:
 # requirements for downstream analyses. The first is that it should be 
 # uncompressed, or, if compressed, only in bgzip format (from samtools).
 # The second is that scaffold names should be concise (10-15 char.) 
-# with only letters, numbers, and underscores.
+# with only letters and numbers. Other characters will most often work 
+# but have not all been tested. So far '.' and '_' seem functional too.
 #
-# chunk_size - Most analyses can be run per scaffold and merged later
-# If a value is given, the genome will be broken into chunks of roughly
-# this size which will be analyzed in parallel when appropriate. In the 
-# current implementation, scaffolds will not be split if they roll over 
-# the chunk size, instead, it will fit however many whole scaffolds it 
-# can in that chunk. This may be improved later on.
+# chunk_size - Most analyses can be run per scaffold and merged later.
+# The genome will be broken into chunks of roughly this size which will 
+# be analyzed in parallel when appropriate. In the current 
+# implementation, scaffolds will not be split if they roll over the 
+# chunk size, instead, it will fit however many whole scaffolds it can 
+# in that chunk. This may be improved later on. If you don't want to 
+# use this, set this value to something larger than the whole genome 
+# size.
 #
 # fasta - A string with the absolute or relative path to a local copy of
-# the fasta.
+# the reference fasta file.
 #
-# mito - Scaffold containing mitochondria, will be excluded 
+# mito - Scaffold name containing mitochondria, will be excluded 
 # from autosomal analyses. Leave blank if not present in reference or 
 # cannot be identified.
 #
@@ -35,13 +40,14 @@ dataset:
 # quality) from all analyses. Scaffolds smaller than the min_size 
 # option don't need to be specified here.
 #
-# min_size - Scaffolds shorter than this number (bp) will be excluded.
+# min_size - Scaffolds shorter than this number (bp) will be excluded. 
+# Leave blank and small scaffolds won't be filtered out.
 
 chunk_size:
 
 reference:
-  name:
-  fasta:
+  name: "ref_name"
+  fasta: "/path/to/reference/fasta/file.fa"
   mito: []
   XZ: []
   exclude: []
@@ -52,11 +58,18 @@ reference:
 # Sometimes you will want to exclude individuals from downstream 
 # analyses (too low coverage, relatives in dataset, duplicated), but do 
 # not want to remove them from the sample list. List these individuals 
-# here and they will be removed.
+# here and they will be removed or place a '#' in front of them in the 
+# sample list.
 
 exclude_ind: []
 
 #==================== Downsampling Configuration ======================#
+
+# When coverage is highly variable and some samples are substantially 
+# lower in coverage, you may wish to downsample your other samples to 
+# this lower coverage to check for coverage effects. Set this value to, 
+# in addition to the full coverage analyses, redo analyses with all 
+# samples downsampled to this coverage.
 
 downsample_cov:
 
@@ -72,48 +85,73 @@ downsample_cov:
 populations:
 
 analyses:
-  # filtering
-  genmap:
+
+# filtering
+  # filter out regions with low mappability (true/false)
+  genmap: true
+  # filter out repetitive regions. fill in for only one of the three options following
   repeatmasker:
+    # path to a local repeat library .fa file
     local_lib:
+    # string with taxa name to get repeat libraries from dfam
     dfam_lib:
-    build_lib:
-  extreme_depth:
-  dataset_missing_data:
-  population_missing_data:
-  # excess_hetero: true
-  # quality control
-  qualimap:
-  damageprofiler:
-  endogenous_content:
-  relatedness:
-  # population genomic analyses
-  pca_pcangsd:
-  admix_ngsadmix:
-  thetas_angsd:
-  heterozygosity_angsd:
+    # run repeatmodeler to build repeat database (true/false)
+    build_lib: true
+  # filter out sites at the extremes of the depth distribution (upper and lower 2.5%)
+  extreme_depth: true
+  # filter sites with data in less than this proportion of samples [0-1]
+  dataset_missing_data: 0.9
+  # filter sites with data in less than this proportion of samples per population [0-1]
+  population_missing_data: 0.8
+
+# quality control (all true/false)
+  # generate qualimap report for all bam files
+  qualimap: true
+  # generate damage report for historical samples
+  damageprofiler: true
+  # generate endogenous content proportions for all samples
+  endogenous_content: true
+  # generate a table of relatedness between all individuals
+  relatedness: true
+
+# population genomic analyses (all true/false)
+  # PCA
+  pca_pcangsd: false
+  # Admixture
+  admix_ngsadmix: false
+  # pi, wattersons, and tajima's d
+  thetas_angsd: false
+  # individual heterozygosity
+  heterozygosity_angsd: false
+  # pairwise population fst (only set `populations` to true/false)
   fst_angsd:
-    populations:
-    individuals:
-  inbreeding_ngsf-hmm:
-  ibs_matrix:
+    populations: false
+  # inbreeding using runs of homozygosity
+  inbreeding_ngsf-hmm: false 
+  # identity by state matrix
+  ibs_matrix: false
 
 #===================== Software Configuration =========================#
 
+# Minimum mapping and base quality scores, reads and bases lower than 
+# this will be excluded from likelihood calculations
 mapQ: 30
 baseQ: 30
 
 params:
   genmap:
+    # K & E parameters for genmap
     K: "100"
     E: "2"
+    # sites with a mappability lower than the value below will be excluded
     map_thresh: 1
   picard:
-    # By default we set Picard to remove duplicate reads, change to 
-    # false to flag only.
+    # Additional options to pass to picard markduplicates. By default we set 
+    # Picard to remove duplicate reads, and set the optical duplicate pixel 
+    # distance to the recommended value for patterned flow cells.
     MarkDuplicates: "--REMOVE_DUPLICATES true --OPTICAL_DUPLICATE_PIXEL_DISTANCE 2500"
   angsd:
-    # gl_model - 1=SAMtools, 2=GATK, 3=SOAPsnp, 4=SYK; default is 1
+    # gl_model - 1=SAMtools, 2=GATK, 3=SOAPsnp, 4=SYK; default is 2
     gl_model: 2
     # When calculating per individual depth, any depth higher than this 
     # value will be binned to this value.
@@ -126,14 +164,22 @@ params:
     extra: "-C 50 -uniqueOnly 1"
     # fold - Define if SFS should be folded when made. If you don't 
     # have ancestral states to assign to -anc, it is best to set to 1. 
-    # We set the default to 1.
+    # We set the default to 1 as the workflow currently doesn't accept 
+    # an ancestral state fasta
     fold: 1
     # sfsboot - Define number of bootstrap SFS to produce, we default 
-    # to 100.
+    # to 100. This actually does nothing for now.
     sfsboot: 100
+    # SNP p-value cutoff for calling SNPs in the dataset
     snp_pval: "1e-6"
+    # minimum minor allele frequency of a SNP for it to be called
     min_maf: 0.05
   ngsadmix:
+    # list of k values to perform admixture analysis on
     kvalues: [1,2]
+    # number of reps to perform of admixture analysis per k, the tool will 
+    # continue performing reps until this value is hit or the top 3 replicates 
+    # converge
     reps: 20
+    # additional options to pass to ngsadmix
     extra: ""

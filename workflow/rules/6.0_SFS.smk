@@ -48,7 +48,8 @@ rule realSFS_2dSFS:
 	shell:
 		"""
 		realSFS {input.saf1} {input.saf2} -fold {params.fold} -P {threads} \
-			> {output.sfs} 2> {log}
+			> {output.sfs}.ml 2> {log}
+		mv {output.sfs}.ml {output.sfs} 2>> {log}
 		"""
 
 rule plot_heterozygosity:

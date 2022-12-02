@@ -292,7 +292,7 @@ rule angsd_depth:
 			"_{population}{dp}_chunk{chunk}"
 	threads: lambda wildcards, attempt: attempt*2
 	resources:
-		time=lambda wildcards, attempt: attempt*360
+		time=lambda wildcards, attempt: attempt*720
 	shell:
 		"""
 		nInd=$(cat {input.bamlist} | wc -l | awk '{{print $1+1}}')
@@ -442,7 +442,7 @@ rule missdata_bed:
 		bed=results+"/genotyping/filters/missdata/"+dataset+
 			"_{population}{dp}_under{miss}.bed",
 		sum=results+"/genotyping/filters/missdata/"+dataset+
-			"_{population}{dp}_under{miss}.bed.sum",
+			"_{population}{dp}_under{miss}.sum",
 		tmp=temp(results+"/genotyping/filters/missdata/"+dataset+
 			"_{population}{dp}_under{miss}.bed.tmp")
 	conda:
@@ -569,7 +569,7 @@ rule combine_beds:
 
 		awk '{{print $1"\t"$2+1"\t"$3}}' {output.bed} > {output.sit}.tmp \
 			2>> {log}
-		sort -k1 {output.sit}.tmp > {output.sit}
+		sort -V {output.sit}.tmp > {output.sit}
 		rm {output.sit}.tmp
 		"""
 

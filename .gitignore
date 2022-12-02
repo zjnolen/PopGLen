@@ -23,3 +23,5 @@ config/samples_*.tsv
 Vagrantfile
 # ignore reports folder
 reports
+# ignore dev containers for vscode
+.devcontainer

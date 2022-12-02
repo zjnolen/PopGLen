@@ -37,6 +37,7 @@ rule plot_admix:
 			results+"/plots/ngsadmix/"+dataset+
 				"_{population}{dp}_K{kvalue}.pdf",
 			category="Admixture",
+			subcategory="NGSadmix",
 			labels={
 				"Topic":"Admixture",
 				"K-value":"{kvalue}",
@@ -65,3 +66,29 @@ rule evalAdmix:
 		evalAdmix -beagle {input.beagle} -fname {input.fopt} \
 			-qname {input.qopt} -o {output} -P {threads} 2> {log}
 		"""
+
+localrules: plot_evalAdmix
+
+rule plot_evalAdmix:
+	input:
+		corres=rules.evalAdmix.output,
+		qopt=rules.ngsAdmix.output.qopt,
+		pops=rules.popfile.output.inds
+	output:
+		report(
+			results+"/plots/evaladmix/"+dataset+
+				"_{population}{dp}_K{kvalue}_evaladmix.html",
+			category="Admixture",
+			subcategory="evalAdmix",
+			labels={
+				"Topic":"evalAdmix",
+				"K-value":"{kvalue}",
+				"Subsampling":"{dp}",
+				"Type":"correlation matrix"
+			})
+	log:
+		logs+"/evaladmix/"+dataset+"_{population}{dp}_K{kvalue}_plot.log"
+	container:
+		evaladmix_container
+	script:
+		"../scripts/plot_evaladmix.Rmd"

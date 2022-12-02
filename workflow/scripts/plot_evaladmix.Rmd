@@ -1,0 +1,33 @@
+---
+output: html_document
+---
+
+```{r, echo = FALSE}
+plot_evaladmix <- function(pop,qopt,corres,k) {
+
+	source("/usr/local/bin/visFuns.R")
+
+	# read population labels and estimated admixture proportions
+	pop<-read.table(pop, header = TRUE)
+	pop
+	q<-read.table(qopt)
+	q
+
+	# order according to population
+	ord<-orderInds(pop = as.vector(pop[,2]), q = q)
+
+	# read in correlation matrix
+	r<-as.matrix(read.table(corres))
+
+	# Plot correlation of residuals
+	plot <- plotCorRes(cor_mat = r, pop = as.vector(pop[,2]), ord=ord, 
+		title=paste0("Evaluation of admixture proportions with K=",k),
+		max_z=0.1, min_z=-0.1)
+	
+	return(plot)
+
+}
+
+plot_evaladmix(snakemake@input[["pops"]],snakemake@input[["qopt"]],
+	snakemake@input[["corres"]],snakemake@wildcards[["kvalue"]])
+```

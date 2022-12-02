@@ -96,6 +96,7 @@ analyses:
     populations:
     individuals:
   inbreeding_ngsf-hmm:
+  ibs_matrix:
 
 #===================== Software Configuration =========================#
 

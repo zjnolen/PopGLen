@@ -59,12 +59,9 @@ def get_popopts(wildcards):
 
 rule angsd_doGlf2:
 	input:
-		bamlist=rules.angsd_makeBamlist.output,
-		bams=get_bamlist_bams,
-		bais=get_bamlist_bais,
-		anc=REF,
-		ref=REF,
-		regions=REF_DIR+"/beds/chunk{chunk}_"+str(config["chunk_size"])+"bp.rf",
+		glf=results+"/genotyping/glf/chunk/"+dataset+ \
+			"_{population}{dp}_chunk{chunk}.glf.gz",
+		fai=REF+".fai",
 		sites=get_snpset
 	output:
 		beagle=results+"/genotyping/beagle/chunk/"+dataset+
@@ -76,11 +73,6 @@ rule angsd_doGlf2:
 	container:
 		angsd_container
 	params:
-		gl_model=config["params"]["angsd"]["gl_model"],
-		extra=config["params"]["angsd"]["extra"],
-		mapQ=config["mapQ"],
-		baseQ=config["baseQ"],
-		# miss=get_miss_data_prop,
 		popopts=get_popopts,
 		out=results + "/genotyping/beagle/chunk/"+dataset+
 			"_{population}{dp}_chunk{chunk}"
@@ -89,13 +81,14 @@ rule angsd_doGlf2:
 		time=lambda wildcards, attempt: attempt*720
 	shell:
 		"""
-		# nInd=$(cat {input.bamlist} | wc -l | awk '{{print $1+1}}')
+		set +o pipefail;
+		nInd=$(zcat {input.glf} | awk '{{print (NF-2)/10; exit}}') &> {log}
 
-		angsd -doGlf 2 -bam {input.bamlist} -GL {params.gl_model} \
-			{params.popopts} -doMaf 1 -ref {input.ref} -nThreads {threads}  \
-			{params.extra} -minMapQ {params.mapQ} -minQ {params.baseQ} \
-			-sites {input.sites[0]} -rf {input.regions} \
-			-out {params.out} &> {log}
+		echo $nInd &>> {log}
+
+		angsd -doGlf 2 -glf10_text {input.glf} {params.popopts} -doMaf 1 \
+			-nThreads {threads} -sites {input.sites[0]} -fai {input.fai} \
+			-nInd $nInd -out {params.out} &>> {log}
 		"""
 
 rule merge_beagle:
@@ -154,19 +147,17 @@ rule snpset:
 
 rule angsd_doSaf:
 	input:
-		bamlist=rules.angsd_makeBamlist.output,
-		bams=get_bamlist_bams,
-		bais=get_bamlist_bais,
-		anc=REF,
-		ref=REF,
-		regions=REF_DIR+"/beds/chunk{chunk}_"+str(config["chunk_size"])+"bp.rf",
-		sites=results+"/genotyping/filters/beds/"+dataset+"{dp}_filts.sites",
-		idx=results+"/genotyping/filters/beds/"+dataset+"{dp}_filts.sites.idx"
+		glf=results+"/genotyping/glf/chunk/"+dataset+ \
+			"_{population}{dp}_chunk{chunk}.glf.gz",
+		fai=REF+".fai",
+		anc=REF
 	output:
-		saf=results+"/genotyping/saf/chunk/"+dataset+
-			"_{population}{dp}_chunk{chunk}.saf.gz",
-		safidx=results+"/genotyping/saf/chunk/"+dataset+
-			"_{population}{dp}_chunk{chunk}.saf.idx",
+		saf=temp(results+"/genotyping/saf/chunk/"+dataset+
+			"_{population}{dp}_chunk{chunk}.saf.gz"),
+		safidx=temp(results+"/genotyping/saf/chunk/"+dataset+
+			"_{population}{dp}_chunk{chunk}.saf.idx"),
+		safpos=temp(results+"/genotyping/saf/chunk/"+dataset+
+			"_{population}{dp}_chunk{chunk}.saf.pos.gz"),
 		arg=results+"/genotyping/saf/chunk/"+dataset+
 			"_{population}{dp}_chunk{chunk}.arg",
 	log:
@@ -174,10 +165,6 @@ rule angsd_doSaf:
 	container:
 		angsd_container
 	params:
-		gl_model=config["params"]["angsd"]["gl_model"],
-		extra=config["params"]["angsd"]["extra"],
-		mapQ=config["mapQ"],
-		baseQ=config["baseQ"],
 		out=results+"/genotyping/saf/chunk/"+dataset+
 			"_{population}{dp}_chunk{chunk}"
 	resources:
@@ -185,18 +172,24 @@ rule angsd_doSaf:
 	threads: lambda wildcards, attempt: attempt*2
 	shell:
 		"""
-		nInd=$(cat {input.bamlist} | wc -l | awk '{{print $1+1}}')
+		set +o pipefail;
+		nInd=$(zcat {input.glf} | awk '{{print (NF-2)/10; exit}}')
 
-		angsd -doSaf 1 -bam {input.bamlist} -GL {params.gl_model} \
-			-ref {input.ref} -anc {input.anc} -nThreads {threads} \
-			{params.extra} -minMapQ {params.mapQ} -minQ {params.baseQ} \
-			-sites {input.sites} -rf {input.regions} -out {params.out} &> {log}
+		angsd -doSaf 1 -glf10_text {input.glf} -anc {input.anc} \
+			-nThreads {threads} -fai {input.fai} -nInd $nInd \
+			-out {params.out} &> {log}
 		"""
 
 rule realSFS_catsaf:
 	input:
 		safs=lambda w: expand(results+"/genotyping/saf/chunk/"+
 			dataset+"_{{population}}{{dp}}_chunk{chunk}.saf.idx",
+			chunk=chunklist),
+		safgz=lambda w: expand(results+"/genotyping/saf/chunk/"+
+			dataset+"_{{population}}{{dp}}_chunk{chunk}.saf.gz",
+			chunk=chunklist),
+		safposgz=lambda w: expand(results+"/genotyping/saf/chunk/"+
+			dataset+"_{{population}}{{dp}}_chunk{chunk}.saf.pos.gz",
 			chunk=chunklist)
 	output:
 		results+"/genotyping/saf/"+dataset+
@@ -214,7 +207,7 @@ rule realSFS_catsaf:
 		realSFS cat {input.safs} -P {threads} -outnames {params.out} 2> {log}
 		"""
 
-rule angsd_haplocall:
+rule angsd_doGlf4:
 	input:
 		bamlist=rules.angsd_makeBamlist.output,
 		bams=get_bamlist_bams,
@@ -224,76 +217,91 @@ rule angsd_haplocall:
 		sites=results+"/genotyping/filters/beds/"+dataset+"{dp}_filts.sites",
 		idx=results+"/genotyping/filters/beds/"+dataset+"{dp}_filts.sites.idx"
 	output:
-		results+"/genotyping/haploid_calls/chunk/"+dataset+
-			"_{population}{dp}_chunk{chunk}.haplo.gz"
+		glf=results+"/genotyping/glf/chunk/"+dataset+ \
+			"_{population}{dp}_chunk{chunk}.glf.gz",
+		arg=results+"/genotyping/glf/chunk/"+dataset+ \
+			"_{population}{dp}_chunk{chunk}.arg"
 	log:
-		logs+"/angsd/doHaploCall/"+dataset+"_{population}{dp}_chunk{chunk}.log"
+		logs+"/angsd/doGlf4/"+dataset+"_{population}{dp}_chunk{chunk}.log"
+	wildcard_constraints:
+		population="all"
 	container:
 		angsd_container
 	params:
+		gl_model=config["params"]["angsd"]["gl_model"],
 		extra=config["params"]["angsd"]["extra"],
 		mapQ=config["mapQ"],
 		baseQ=config["baseQ"],
-		out=results+"/genotyping/haploid_calls/chunk/"+dataset+
+		out=results+"/genotyping/glf/chunk/"+dataset+ \
 			"_{population}{dp}_chunk{chunk}"
 	resources:
-		time=lambda wildcards, attempt: attempt*240
+		time=lambda wildcards, attempt: attempt*180
+	threads: lambda wildcards, attempt: attempt*2
 	shell:
 		"""
-		angsd -doHaploCall 1 -bam {input.bamlist} -ref {input.ref} \
-			-nThreads {threads} -doCounts 1 -minMinor 1 {params.extra} \
+		angsd -doGlf 4 -bam {input.bamlist} -GL {params.gl_model} \
+			-ref {input.ref} -nThreads {threads} {params.extra} \
 			-minMapQ {params.mapQ} -minQ {params.baseQ} -sites {input.sites} \
 			-rf {input.regions} -out {params.out} &> {log}
 		"""
 
-rule merge_haplocall:
-	input:
-		haplos=lambda w: expand(results+"/genotyping/haploid_calls/chunk/"+
-			dataset+"_{{population}}{{dp}}_chunk{chunk}.haplo.gz",
-			chunk=chunklist)
-	output:
-		results+"/genotyping/haploid_calls/"+dataset+
-			"_{population}{dp}.haplo.gz"
-	log:
-		logs+"/angsd/doHaploCall/"+dataset+"_{population}{dp}_merge.log"
-	resources:
-		time=lambda wildcards, attempt: attempt*60
-	shell:
-		"""
-		set +o pipefail;
-		zcat {input.haplos[0]} | head -n 1 | gzip > {output} 2> {log}
+# rule catglf:
+# 	input:
+# 		glfs=lambda w: expand(results+"/genotyping/glf/chunk/"+
+# 			dataset+"_all{{dp}}_chunk{chunk}.glf.gz",
+# 			chunk=chunklist)
+# 	output:
+# 		results+"/genotyping/glf/"+dataset+
+# 			"_all{dp}.glf.gz"
+# 	log:
+# 		logs+"/angsd/doGlf4/cat/"+dataset+"_all{dp}.log"
+# 	resources:
+# 		time=lambda wildcards, attempt: attempt*60
+# 	shell:
+# 		"""
+# 		cat {input.glfs} > {output} 2> {log}
+# 		"""
 
-		for i in {input.haplos}; do
-			zcat $i | tail -n +2 | gzip >> {output}
-		done 2>> {log}
-		"""
-
-rule angsd_doIBS:
+rule sampleglf:
 	input:
-		bamlist=rules.angsd_makeBamlist.output,
-		bams=get_bamlist_bams,
-		bais=get_bamlist_bais,
-		sites=results+"/genotyping/filters/beds/"+dataset+"{dp}_filts.sites",
-		idx=results+"/genotyping/filters/beds/"+dataset+"{dp}_filts.sites.idx"
+		glf=results+"/genotyping/glf/chunk/"+dataset+
+			"_all{dp}_chunk{chunk}.glf.gz"
 	output:
-		results+"/genotyping/single-read-sampling/"+dataset+
-			"_{population}{dp}.ibs.gz",
-		results+"/genotyping/single-read-sampling/"+dataset+
-			"_{population}{dp}.ibsMat"
+		glf=results+"/genotyping/glf/chunk/"+dataset+
+			"_{sample}{dp}_chunk{chunk}.glf.gz"
 	log:
-		logs+"/angsd/doIBS/"+dataset+"_{population}{dp}.log"
-	container:
-		angsd_container
+		logs+"/angsd/sampleglf/"+dataset+"_{sample}{dp}_chunk{chunk}.log"
 	params:
-		mapQ=config["mapQ"],
-		baseQ=config["baseQ"],
-		out=results+"/genotyping/single-read-sampling/"+dataset+
-			"_{population}{dp}"
-	resources:
-		time=lambda wildcards, attempt: attempt*1440
+		start=lambda w: samples.index.values.tolist().index(w.sample),
+		end=lambda w: str(samples.index.values.tolist().index(w.sample)+1)
 	shell:
 		"""
-		angsd -doIBS 1 -bam {input.bamlist} -nThreads {threads} -doCounts 1 \
-			-minMapQ {params.mapQ} -minQ {params.baseQ} -sites {input.sites} \
-			-makeMatrix 1 -out {params.out} &> {log}
+		zcat {input.glf} | cut -f1-2,{params.start}3-{params.end}2 | \
+			gzip > {output} 2> {log}
+		"""
+
+rule popglf:
+	input:
+		sample_glfs=lambda w: expand(results+"/genotyping/glf/chunk/"+dataset+
+			"_{sample}{{dp}}_chunk{{chunk}}.glf.gz", 
+			sample=get_samples_from_pop(w.population))
+	output:
+		glf=results+"/genotyping/glf/chunk/"+dataset+ \
+			"_{population}{dp}_chunk{chunk}.glf.gz"
+	log:
+		logs+"/angsd/sampleglf/"+dataset+"_{population}{dp}_chunk{chunk}.log"
+	wildcard_constraints:
+		population="|".join(
+			[i for i in samples.index.tolist()] +
+			[i for i in samples.population.values.tolist()] +
+			[i for i in samples.depth.values.tolist()]
+			)
+	shell:
+		"""
+		zcat {input.sample_glfs[0]} | cut -f1-2 | gzip > {output.glf} 2> {log}
+		for i in {input.sample_glfs}; do
+			zcat $i | cut -f3-12 | paste -d '	' <(zcat {output.glf}) - | \
+				gzip > {output.glf}.tmp
+			mv {output.glf}.tmp {output.glf}
+		done 2>> {log}
 		"""

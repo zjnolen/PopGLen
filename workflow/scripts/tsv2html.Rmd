@@ -12,6 +12,6 @@ reactable(dt,
 	filterable = TRUE, 
 	showPageSizeOptions = TRUE,
 	defaultPageSize = 25,
-	resizeable = TRUE,
+	resizable = TRUE,
 	wrap = FALSE)
 ```

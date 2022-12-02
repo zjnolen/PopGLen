@@ -7,5 +7,11 @@ library(reactable)
 library(data.table)
 
 dt <- fread(snakemake@input[[1]], header = TRUE)
-reactable(dt, searchable = TRUE, filterable = TRUE)
+reactable(dt, 
+	searchable = TRUE, 
+	filterable = TRUE, 
+	showPageSizeOptions = TRUE,
+	defaultPageSize = 25,
+	resizeable = TRUE,
+	wrap = FALSE)
 ```

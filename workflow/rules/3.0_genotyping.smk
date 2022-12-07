@@ -192,8 +192,8 @@ rule realSFS_catsaf:
 			dataset+"_{{population}}{{dp}}_chunk{chunk}.saf.pos.gz",
 			chunk=chunklist)
 	output:
-		results+"/genotyping/saf/"+dataset+
-			"_{population}{dp}.saf.idx"
+		multiext(results+"/genotyping/saf/"+dataset+
+			"_{population}{dp}.saf",".idx",".pos.gz",".gz")
 	log:
 		logs+"/realSFS/cat/"+dataset+"_{population}{dp}.log"
 	container:

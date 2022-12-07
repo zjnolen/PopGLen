@@ -2,7 +2,8 @@ rule realSFS_1dSFS:
 	input:
 		saf=rules.realSFS_catsaf.output
 	output:
-		sfs=results + "/analyses/sfs/"+dataset+"_{population}{dp}.sfs"
+		sfs=ensure(results + "/analyses/sfs/"+dataset+"_{population}{dp}.sfs",
+			non_empty=True)
 	container:
 		angsd_container
 	log:
@@ -20,13 +21,13 @@ rule realSFS_1dSFS:
 
 rule realSFS_2dSFS:
 	input:
-		saf1=results+"/genotyping/saf/"+dataset+
-			"_{population1}{dp}.saf.idx",
-		saf2=results+"/genotyping/saf/"+dataset+
-			"_{population2}{dp}.saf.idx"
+		saf1=multiext(results+"/genotyping/saf/"+dataset+
+			"_{population1}{dp}.saf",".idx",".pos.gz",".gz"),
+		saf2=multiext(results+"/genotyping/saf/"+dataset+
+			"_{population2}{dp}.saf",".idx",".pos.gz",".gz")
 	output:
-		sfs=results + "/analyses/sfs/"+dataset+
-			"_{population1}-{population2}{dp}.sfs"
+		sfs=ensure(results + "/analyses/sfs/"+dataset+
+			"_{population1}-{population2}{dp}.sfs", non_empty=True)
 	container:
 		angsd_container
 	log:
@@ -47,9 +48,8 @@ rule realSFS_2dSFS:
 		time=lambda wildcards, attempt: attempt*180
 	shell:
 		"""
-		realSFS {input.saf1} {input.saf2} -fold {params.fold} -P {threads} \
-			> {output.sfs}.ml 2> {log}
-		mv {output.sfs}.ml {output.sfs} 2>> {log}
+		realSFS {input.saf1[0]} {input.saf2[0]} -fold {params.fold} \
+			-P {threads} > {output.sfs} 2> {log}
 		"""
 
 rule plot_heterozygosity:

@@ -17,7 +17,7 @@ rule realSFS_fst_index:
 		time=lambda wildcards, attempt: attempt*120
 	shell:
 		"""
-		realSFS fst index {input.saf1} {input.saf2} -sfs {input.sfs} \
+		realSFS fst index {input.saf1[0]} {input.saf2[0]} -sfs {input.sfs} \
 			-fstout {params.out} 2> {log}
 		"""
 

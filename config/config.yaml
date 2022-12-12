@@ -165,18 +165,16 @@ params:
     # remove reads with multiple best hits, and reduce base quality scores 
     # based on baq (penalizes bases around indels)
     extra: "-C 50 -uniqueOnly 1"
+    snp_pval: "1e-6"
+    min_maf: 0.05
+  realsfs:
     # fold - Define if SFS should be folded when made. If you don't 
     # have ancestral states to assign to -anc, it is best to set to 1. 
-    # We set the default to 1 as the workflow currently doesn't accept 
-    # an ancestral state fasta
+    # We set the default to 1.
     fold: 1
     # sfsboot - Define number of bootstrap SFS to produce, we default 
-    # to 100. This actually does nothing for now.
+    # to 100.
     sfsboot: 100
-    # SNP p-value cutoff for calling SNPs in the dataset
-    snp_pval: "1e-6"
-    # minimum minor allele frequency of a SNP for it to be called
-    min_maf: 0.05
   ngsadmix:
     # list of k values to perform admixture analysis on
     kvalues: [1,2]

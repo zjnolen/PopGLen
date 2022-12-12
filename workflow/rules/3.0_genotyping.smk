@@ -176,8 +176,7 @@ rule angsd_doSaf:
 		nInd=$(zcat {input.glf} | awk '{{print (NF-2)/10; exit}}')
 
 		angsd -doSaf 1 -glf10_text {input.glf} -anc {input.anc} \
-			-nThreads {threads} -fai {input.fai} -nInd $nInd \
-			-out {params.out} &> {log}
+			-nThreads 1 -fai {input.fai} -nInd $nInd -out {params.out} &> {log}
 		"""
 
 rule realSFS_catsaf:
@@ -204,7 +203,7 @@ rule realSFS_catsaf:
 		time=lambda wildcards, attempt: attempt*60
 	shell:
 		"""
-		realSFS cat {input.safs} -P {threads} -outnames {params.out} 2> {log}
+		realSFS cat {input.safs} -P 1 -outnames {params.out} 2> {log}
 		"""
 
 rule angsd_doIBS:

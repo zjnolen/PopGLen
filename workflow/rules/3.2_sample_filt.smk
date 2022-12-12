@@ -51,10 +51,10 @@ rule est_kinship_stats:
 		sfs=results + "/analyses/sfs/"+dataset+
 			"_{ind1}-{ind2}{dp}.sfs"
 	output:
-		results+"/analyses/kinship/"+dataset+
+		results+"/analyses/kinship/waples2019/"+dataset+
 			"_{ind1}-{ind2}{dp}.kinship"
 	log:
-		logs + "/kinship/"+dataset+"_{ind1}-{ind2}{dp}_kinship.log"
+		logs + "/kinship/waples2019/"+dataset+"_{ind1}-{ind2}{dp}_kinship.log"
 	wildcard_constraints:
 		ind1="|".join(
 			[i for i in samples.index.tolist()]
@@ -77,7 +77,7 @@ def get_kinship(wildcards):
 	combos = [sorted(pair) for pair in combos]
 	ind1 = [pair[0] for pair in combos]
 	ind2 = [pair[1] for pair in combos]
-	return expand(results+"/analyses/kinship/"+dataset+
+	return expand(results+"/analyses/kinship/waples2019/"+dataset+
 				"_{ind1}-{ind2}"+wildcards.dp+".kinship",
 				zip, ind1=ind1, ind2=ind2)
 
@@ -85,7 +85,7 @@ rule compile_kinship_stats:
 	input:
 		get_kinship
 	output:
-		results+"/analyses/kinship/"+dataset+"_all{dp}.kinship"
+		results+"/analyses/kinship/waples2019/"+dataset+"_all{dp}.kinship"
 	resources:
 		time=lambda wildcards, attempt: attempt*15
 	shell:
@@ -96,12 +96,13 @@ rule compile_kinship_stats:
 
 rule kinship_table_html:
 	input:
-		results+"/analyses/kinship/"+dataset+"_all{dp}.kinship"
+		results+"/analyses/kinship/waples2019/"+dataset+"_all{dp}.kinship"
 	output:
-		report(results+"/analyses/kinship/"+dataset+"_all{dp}.kinship.html",
-				category="Quality Control",
+		report(results+"/analyses/kinship/waples2019/"+dataset+
+					"_all{dp}.kinship.html",
+				category="Kinship",
 				labels={
-					"Topic":"Sample Kinship",
+					"Topic":"Waples et al. 2019 R0,R1,KING",
 					"Type":"Table"
 				})
 	conda:
@@ -283,12 +284,12 @@ rule ngsrelate:
 		bamlist=rules.angsd_makeBamlist.output,
 		inds=rules.popfile.output.inds
 	output:
-		relate=results+"/analyses/ngsrelate/"+dataset+
+		relate=results+"/analyses/kinship/ngsrelate/"+dataset+
 			"_{population}{dp}_relate.tsv",
-		samples=results+"/analyses/ngsrelate/"+dataset+
+		samples=results+"/analyses/kinship/ngsrelate/"+dataset+
 			"_{population}{dp}_samples.list"
 	log:
-		logs + "/ngsrelate/"+dataset+"_{population}{dp}.log"
+		logs + "/kinship/ngsrelate/"+dataset+"_{population}{dp}.log"
 	threads: lambda wildcards, attempt: attempt*4
 	resources:
 		time=lambda wildcards, attempt: attempt*360
@@ -306,14 +307,14 @@ rule ngsrelate:
 
 rule ngsrelate_summary:
 	input:
-		results+"/analyses/ngsrelate/"+dataset+
+		results+"/analyses/kinship/ngsrelate/"+dataset+
 			"_{population}{dp}_relate.tsv"
 	output:
-		report(results+"/analyses/ngsrelate/"+dataset+
+		report(results+"/analyses/kinship/ngsrelate/"+dataset+
 				"_{population}{dp}_relate.html",
-				category="Quality Control",
+				category="Kinship",
 				labels={
-					"Topic":"Ngs Relate",
+					"Topic":"NgsRelate",
 					"Type":"Table"
 				})
 	conda:

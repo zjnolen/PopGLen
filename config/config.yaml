@@ -104,15 +104,18 @@ analyses:
   # filter sites with data in less than this proportion of samples per population [0-1]
   population_missing_data: 0.8
 
-# quality control (all true/false)
-  # generate qualimap report for all bam files
+# quality control
+  # generate qualimap report for all bam files (true/false)
   qualimap: true
-  # generate damage report for historical samples
+  # generate damage report for historical samples (true/false)
   damageprofiler: true
-  # generate endogenous content proportions for all samples
+  # generate endogenous content proportions for all samples (true/false)
   endogenous_content: true
   # generate a table of relatedness between all individuals
-  relatedness: true
+  # use true/false to select methods to calculate relatedness with
+  relatedness:
+    ngsrelate: # uses ngsrelate to generate relatedness stats
+    waples2019: # uses method on ANGSD generated 2D SFS as described in Waples et al. 2019
 
 # population genomic analyses (all true/false)
   # PCA

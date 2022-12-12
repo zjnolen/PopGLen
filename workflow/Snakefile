@@ -62,9 +62,14 @@ if config["analyses"]["endogenous_content"]:
 	all_outputs.append(
 		results+"/qc/endogenous_content/"+dataset+"_all.endo.tsv")
 
-if config["analyses"]["relatedness"]:
+if config["analyses"]["relatedness"]["ngsrelate"]:
 	all_outputs.append(expand(
-		results+"/analyses/kinship/"+dataset+"_all{dp}.kinship.html",
+		results+"/analyses/kinship/ngsrelate/"+dataset+"_all{dp}_relate.html",
+		dp=subsample))
+
+if config["analyses"]["relatedness"]["waples2019"]:
+	all_outputs.append(expand(
+		results+"/analyses/kinship/waples2019/"+dataset+"_all{dp}.kinship.html",
 		dp=subsample))
 
 if config["analyses"]["pca_pcangsd"]:

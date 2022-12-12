@@ -14,12 +14,12 @@ rule realSFS_saf2theta:
 	params:
 		out=results + "/analyses/thetas/"+dataset+
 			"_{population}{dp}",
-		fold=config["params"]["angsd"]["fold"]
+		fold=config["params"]["realsfs"]["fold"]
 	resources:
 		time=lambda wildcards, attempt: attempt*120
 	shell:
 		"""
-		realSFS saf2theta {input.safidx} -sfs {input.sfs} -fold {params.fold} \
+		realSFS saf2theta {input.safidx[0]} -sfs {input.sfs} -fold {params.fold} \
 			-outname {params.out}
 		"""
 

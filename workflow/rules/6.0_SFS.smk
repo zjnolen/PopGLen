@@ -9,13 +9,13 @@ rule realSFS_1dSFS:
 	log:
 		logs + "/realSFS/1dSFS/"+dataset+"_{population}{dp}.log"
 	params:
-		fold=config["params"]["angsd"]["fold"]
-	threads: lambda wildcards, attempt: attempt*5
+		fold=config["params"]["realsfs"]["fold"]
+	threads: lambda wildcards, attempt: attempt*2
 	resources:
 		time=lambda wildcards, attempt: attempt*120
 	shell:
 		"""
-		realSFS {input.saf} -fold {params.fold} -P {threads} \
+		realSFS {input.saf[0]} -fold {params.fold} -P {threads} \
 			> {output.sfs} 2> {log}
 		"""
 
@@ -42,8 +42,8 @@ rule realSFS_2dSFS:
 			[i for i in samples.population.values.tolist()]
 			)
 	params:
-		fold=config["params"]["angsd"]["fold"]
-	threads: lambda wildcards, attempt: attempt*5
+		fold=config["params"]["realsfs"]["fold"]
+	threads: lambda wildcards, attempt: attempt*2
 	resources:
 		time=lambda wildcards, attempt: attempt*180
 	shell:

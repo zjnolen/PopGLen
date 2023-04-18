@@ -7,7 +7,7 @@
 # Depends on: NGSadmix (case sensitive) in $PATH
 
 # Author: Zachary J. Nolen
-# Last updated: 2022-05-05
+# Last updated: 2023-04-18
 
 
 # If you would like to change the settings of this wrapper, export the
@@ -19,6 +19,9 @@
 # $reps - The maximum number of replicates to perform if convergence is not
 # reached (default 100)
 #
+# $minreps - The minimum number of replicates to perform before assessing if 
+# convergence is reached (default 10)
+
 # $conv - The number of top replicates to assess convergence of (default 3)
 #
 # $thresh - The maximum range of likelihoods for the top $conv replicates to 
@@ -126,6 +129,14 @@ else
 	echoerr
 fi
 
+if [ -z $minreps ]; then
+	minreps=20
+else
+	echoerr 'WARNING: $minreps has been modified from the default.'
+	echoerr 'Ignore if this change was intentional.'
+	echoerr
+fi
+
 # set maximum range between top reps in likelihood units to qualify reps
 # as reaching convergance
 if [ -z $thresh ]; then
@@ -147,24 +158,20 @@ else
 fi
 
 # log what got set
-echoerr "Beginning ngsadmix replicates, will perform replicate runs until"
-echoerr "the top $conv runs are within $thresh log-likelihood units of each"
-echoerr "other or until $reps replicates have finished. If you'd like to"
-echoerr 'change these convergence criteria, edit the $reps, $thresh, or'
+if (( $(echo "$thresh > 0" | bc -l) )); then
+echoerr "Beginning ngsadmix replicates, will perform replicate runs until "
+echoerr "until $reps replicates have finished. If you'd like to change "
+echoerr 'these convergence criteria, edit the $reps, $thresh, or $conv '
+echoerr 'variables in the wrapper or export them before starting.'
+echoerr
+else
+echoerr "Beginning ngsadmix replicates, will perform replicate runs until "
+echoerr "the top $conv runs are within $thresh log-likelihood units of each "
+echoerr "other or until $reps replicates have finished. If you'd like to "
+echoerr 'change these convergence criteria, edit the $reps, $thresh, or '
 echoerr '$conv variables in the wrapper or export them before starting.'
 echoerr
-
-# Maybe one day I will add resuming a terminated run, but I don't have a good
-# way to save the best likelihood from the previous run without it being a 
-# false positive of convergence. Maybe temp names?
-
-# if [ $resume == "1" ]; then
-# 	echoerr "Picking up from previous interrupted run at the last completed"
-# 	echoerr "replicate. WARNING: I won't check to make sure your inputs or"
-# 	echoerr "options are the same since the last run, so please be sure of"
-# 	echoerr "this or start over by removing the -resume option."
-# 	echoerr
-# fi
+fi
 
 #####################
 ## Run the wrapper ##
@@ -173,22 +180,47 @@ echoerr
 # set log file where replicate likelihoods will be stored and assessed from
 templog=$temp/${outfile}_optimization_wrapper.log
 permlog=$outdir/${outfile}_optimization_wrapper.log
-
-# initialize the log and make the temporary directory for kept results
-> $permlog
-> $templog
 mkdir -p $temp/bestrep
 
+# initialize the log and make the temporary directory for kept results
+if [ "$resume" == "1" ]; then
+	echoerr "Resuming optimization from previous run."
+	if [ ! -f $permlog ]; then
+		echoerr "ERROR: Log from previous optimization not found, please "
+		echoerr "ensure that an optimization log from a previous run of this "
+		echoerr "wrapper, along with its best replicate output are in: "
+		echoerr "$permlog"
+		exit -1
+	fi
+	cp $permlog $templog
+	cp $outdir/${outfile}.filter $temp/bestrep/
+	cp $outdir/${outfile}.fopt.gz $temp/bestrep/
+	cp $outdir/${outfile}.log $temp/bestrep/
+	cp $outdir/${outfile}.qopt $temp/bestrep/
+	initrep=$(tail -1 $templog | awk '{print $1+1}')
+	echoerr "Will pick up on replicate $initrep, if run has not already "
+	echoerr "met convergence criteria."
+	echoerr "WARNING: I will not check to ensure your options are the same "
+	echoerr "on this run as the previous, only that the output filenames "
+	echoerr "match."
+else
+	> $permlog
+	> $templog
+	initrep=1
+fi
+
 # run replicates of ngsadmix until we hit either convergence or $reps
-for i in $(seq 1 $reps); do
-	# check if loop should break when convergence is reached
-	if (( "$i" > "10" )); then
-		# sort likelihoods, see if top three are within $thresh of each other
-		# and break if so
-		diff=$(sort -k2gr $templog | head -n 3 | awk '{print $2}' | \
-				tr '\n' ' ' | awk '{print $1-$3}')
-		if (( $(echo $diff $thresh | awk '{print $1 <= $2}') )); then
-			break
+for i in $(seq $initrep $reps); do
+	if (( $(echo "$thresh > 0" | bc -l) )); then
+		# check if loop should break when convergence is reached
+		if (( "$i" > "$minreps" )); then
+			# sort likelihoods, see if top three are within $thresh of each other
+			# and break if so
+			diff=$(sort -k3gr $templog | head -n 3 | awk '{print $3}' | \
+					tr '\n' ' ' | awk '{print $1-$3}')
+			if (( $(echo $diff $thresh | awk '{print $1 <= $2}') )); then
+				break
+			fi
 		fi
 	fi
 
@@ -198,18 +230,25 @@ for i in $(seq 1 $reps); do
 
 	# run replicate
 	echoerr "Beginning replicate $i..."
-	NGSadmix $passedargs -o $reptemp/$outfile -seed $RANDOM
+	seed=$RANDOM
+	NGSadmix $passedargs -o $reptemp/$outfile -seed $seed
 
 	# add likelihood to log
 	like=$(grep 'best like=' $reptemp/$outfile.log | sed 's/=/ /g' | \
 			awk '{print $3}')
-	echo "$i	$like" >> $templog
+	echo "$i	$seed	$like" >> $templog
 	cp $templog $permlog
 
 	# if better than previous reps, store results
-	bestrep=$(sort -k2gr $templog | head -n 1 | awk '{print $1}')
+	bestrep=$(sort -k3gr $templog | head -n 1 | awk '{print $1}')
 	if [ "$bestrep" == "$i" ]; then
+		echoerr "Updating best replicate..."
+		echoerr "WARNING: If the script is cancelled before I say 'Done!' "
+		echoerr "there may be a mismatch in the optimization log and saved "
+		echoerr "best replicate."
 		mv $reptemp/* $temp/bestrep/
+		mv $temp/bestrep/* $outdir/
+		echoerr "Done!"
 	fi
 
 	# delete replicate folder
@@ -217,7 +256,7 @@ for i in $(seq 1 $reps); do
 
 done
 
-diff=$(sort -k2gr $permlog | head -n 3 | awk '{print $2}' | tr '\n' ' ' | \
+diff=$(sort -k3gr $permlog | head -n 3 | awk '{print $3}' | tr '\n' ' ' | \
 	awk '{print $1-$3}')
 
 if (( $(echo $diff $thresh | awk '{print $1 <= $2}') )); then
@@ -234,14 +273,8 @@ else
 	echoerr
 fi
 
-echoerr "Moving best likelihood results to output folder..."
-mv $temp/bestrep/* $outdir/
-
-echoerr "Done!"
-echoerr
-
 echoerr "Final checks to make sure you have the right files..."
-bestlike=$(sort -k2gr $templog | head -n 1 | awk '{print $2}')
+bestlike=$(sort -k3gr $templog | head -n 1 | awk '{print $3}')
 yourlike=$(grep 'best like=' $outpre.log | sed 's/=/ /g' | \
 			awk '{print $3}')
 

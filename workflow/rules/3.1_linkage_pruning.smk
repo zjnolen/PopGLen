@@ -45,7 +45,7 @@ rule ngsLD_prune_sites:
 		logs + "/ngsLD/prune_sites/"+dataset+"_{population}{dp}_chunk{chunk}.log"
 	conda:
 		"../envs/pruning.yaml"
-	threads: lambda wildcards, attempt: attempt*5
+	threads: lambda wildcards, attempt: attempt*2
 	resources:
 		time=lambda wildcards, attempt: attempt*1440
 	shell:

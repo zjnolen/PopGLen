@@ -217,7 +217,9 @@ rule angsd_doIBS:
 		results+"/genotyping/IBSmatrix/"+dataset+
 			"_{population}{dp}.ibs.gz",
 		results+"/genotyping/IBSmatrix/"+dataset+
-			"_{population}{dp}.ibsMat"
+			"_{population}{dp}.ibsMat",
+		results+"/genotyping/IBSmatrix/"+dataset+
+			"_{population}{dp}.arg"
 	log:
 		logs+"/angsd/doIBS/"+dataset+"_{population}{dp}.log"
 	container:
@@ -227,9 +229,9 @@ rule angsd_doIBS:
 		baseQ=config["baseQ"],
 		out=results+"/genotyping/IBSmatrix/"+dataset+
 			"_{population}{dp}"
-	threads: 4
+	threads: 8
 	resources:
-		time=lambda wildcards, attempt: attempt*1440
+		time=lambda wildcards, attempt: attempt*2880
 	shell:
 		"""
 		angsd -doIBS 1 -bam {input.bamlist} -nThreads {threads} -doCounts 1 \

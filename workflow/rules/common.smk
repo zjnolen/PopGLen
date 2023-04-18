@@ -100,6 +100,9 @@ def get_samples_from_pop(population):
     pop = population
     if pop == "all":
         return samples.index.values.tolist()
+    elif pop == "all_excl_pca-admix":
+        excl = config["excl_pca-admix"]
+        return [s for s in samples.index.values.tolist() if s not in excl]
     elif pop in samples.depth.values:
         return samples.index[samples.depth == pop].values.tolist()
     elif pop in samples.population.values and pop not in samples.index:

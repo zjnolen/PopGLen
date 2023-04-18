@@ -168,7 +168,7 @@ rule realignertargetcreator:
         bam="results/mapping/dedup/{sample}.rmdup.bam",
         bai="results/mapping/dedup/{sample}.rmdup.bam.bai",
         ref=REF,
-        dic=REF+".dict",
+        dic=os.path.splitext(REF)[0]+".dict",
         fai=REF+".fai"
     output:
         intervals="results/mapping/indelrealign/{sample}.rmdup.intervals"
@@ -192,7 +192,7 @@ rule indelrealigner:
         bai="results/mapping/dedup/{sample}.rmdup.bam.bai",
         intervals="results/mapping/indelrealign/{sample}.rmdup.intervals",
         ref=REF,
-        dic=REF+".dict",
+        dic=os.path.splitext(REF)[0]+".dict",
         fai=REF+".fai"
     output:
         realigned="results/mapping/bams/{sample}.rmdup.realn.bam"
@@ -206,7 +206,7 @@ rule indelrealigner:
         time=lambda wildcards, attempt: attempt*1440
     shell:
         """
-        gatk3 -T IndelRealigner -R {input.ref} -I {input.bam} \
+        gatk3 -Xmx{resources.mem_mb}m -T IndelRealigner -R {input.ref} -I {input.bam} \
             -targetIntervals {input.intervals} -o {output.realigned} 2> {log}
         """
 

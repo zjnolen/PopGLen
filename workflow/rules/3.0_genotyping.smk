@@ -267,7 +267,7 @@ rule angsd_doGlf4:
 		out=results+"/genotyping/glf/chunk/"+dataset+ \
 			"_{population}{dp}_chunk{chunk}"
 	resources:
-		time=lambda wildcards, attempt: attempt*180
+		time=lambda wildcards, attempt: attempt*360
 	threads: lambda wildcards, attempt: attempt*2
 	shell:
 		"""

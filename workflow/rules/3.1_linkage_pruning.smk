@@ -117,6 +117,13 @@ rule merge_pruned_beagles:
 			"_{population}{dp}_pruned.beagle.gz"
 	log:
 		logs + "/ngsLD/{population}{dp}_merge_pruned.log"
+	wildcard_constraints:
+		population="|".join(
+			["all"] +
+			[i for i in samples.index.tolist()] +
+			[i for i in samples.population.values.tolist()] +
+			[i for i in samples.depth.values.tolist()]
+			)
 	resources:
 		time=lambda wildcards, attempt: attempt*60
 	shell:
@@ -132,4 +139,29 @@ rule merge_pruned_beagles:
 		for f in {input.pruned}; do
 			zcat $f | tail -n +2 | gzip | cat >> {output.beagle} 2>> {log}
 		done
+		"""
+
+def get_excl_ind_cols(wildcards):
+	exclinds = config["excl_pca-admix"]
+	exclindex = [samples.index.to_list().index(i) for i in exclinds]
+	col1 = [x*3+4 for x in exclindex]
+	col2 = [x+1 for x in col1]
+	col3 = [x+1 for x in col2]
+	remove = col1+col2+col3
+	remove_string = ','.join([str(i) for i in remove])
+	return remove_string
+
+rule remove_excl_pca_admix:
+	input:
+		results+"/genotyping/pruned_beagle/"+dataset+
+			"_all{dp}_pruned.beagle.gz"
+	output:
+		results+"/genotyping/pruned_beagle/"+dataset+
+			"_all_excl_pca-admix{dp}_pruned.beagle.gz"
+	params:
+		remcols=get_excl_ind_cols
+	shell:
+		"""
+		zcat {input} | cut -f{params.remcols} --complement \
+			| gzip > {output}
 		"""

@@ -35,7 +35,7 @@ rule plot_admix:
 	output:
 		report(
 			results+"/plots/ngsadmix/"+dataset+
-				"_{population}{dp}_K{kvalue}.pdf",
+				"_{population}{dp}_K{kvalue}.svg",
 			category="Admixture",
 			subcategory="NGSadmix",
 			labels={

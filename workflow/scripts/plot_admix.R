@@ -6,7 +6,7 @@ plot_admix <- function(qopt, pop, k, plotout) {
 
 	ord <- order(p)
 
-	pdf(plotout, height = 5, width = 2+n*0.3)
+	svg(plotout, height = 5, width = 2+n*0.3)
 	par(mar=c(8,4.1,4.1,2.1))
 	barplot(t(q)[,ord],
 		col=1:as.integer(k),

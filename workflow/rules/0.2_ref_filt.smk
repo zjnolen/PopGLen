@@ -214,16 +214,20 @@ rule repeatmodeler:
 		"""
 
 ## Get repeatmasker inputs
-repmaskin = []
-repmaskin.append(REF)
-if config["analyses"]["repeatmasker"]["local_lib"]:
-	repmaskin.append(config["analyses"]["repeatmasker"]["local_lib"])
-elif config["analyses"]["repeatmasker"]["build_lib"]:
-	repmaskin.append(rules.repeatmodeler.output.fa)
+def get_repmaskin(wildcards):
+	repmaskin = []
+	repmaskin.append(REF)
+	if config["analyses"]["repeatmasker"]["local_lib"]:
+		repmaskin.append(config["analyses"]["repeatmasker"]["local_lib"])
+	elif config["analyses"]["repeatmasker"]["build_lib"]:
+		repmaskin.append(rules.repeatmodeler.output.fa)
+	elif config["analyses"]["repeatmasker"]["dfam_lib"]:
+		repmaskin.append("")
+	return repmaskin
 
 rule repeatmasker:
 	input:
-		repmaskin
+		get_repmaskin
 	output:
 		gff=REF_DIR+"/repeatmasker/"+os.path.basename(REF)+".out.gff"
 	log:
@@ -234,15 +238,15 @@ rule repeatmasker:
 		out=REF_DIR+"/repeatmasker/",
 		lib="-species '"+config["analyses"]["repeatmasker"]["dfam_lib"]+"'" \
 				if config["analyses"]["repeatmasker"]["dfam_lib"] \
-				else "-lib "+repmaskin[1],
+				else "-lib",
 		gff=os.path.basename(REF)+".out.gff"
 	threads: 5
 	resources:
 		time=720
-	shadow: "copy-minimal"
+	shadow: "shallow"
 	shell:
 		"""
-		RepeatMasker -pa {threads} {params.lib} -gff -x -no_is \
+		RepeatMasker -pa {threads} {params.lib} {input[1]} -gff -x -no_is \
 			-dir {params.out} {input[0]} &> {log}
 		"""
 
@@ -491,7 +495,7 @@ def get_bed_filts(wildcards):
 		bedin.append(REF_DIR+"/beds/"+REF_NAME+"_lowmap.bed")
 		bedsum.append(REF_DIR+"/beds/"+REF_NAME+"_lowmap.bed.sum")
 	# add repeat filter if set
-	if config["analyses"]["repeatmasker"]:
+	if any(config["analyses"]["repeatmasker"].values()):
 		bedin.append(REF_DIR+"/repeatmasker/"+os.path.basename(REF)+".out.gff")
 		bedsum.append(REF_DIR+"/repeatmasker/"+os.path.basename(REF)+
 			".out.gff.sum")

@@ -25,7 +25,7 @@ rule plot_pca:
 	output:
 		report(
 			results+"/plots/pca/"+dataset+
-				"_{population}{dp}_pc{xpc}-{ypc}.pdf",
+				"_{population}{dp}_pc{xpc}-{ypc}.svg",
 			category="PCA",
 			labels={
 				"Topic":"PCA",

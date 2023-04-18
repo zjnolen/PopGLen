@@ -33,6 +33,7 @@ wildcard_constraints:
 	),
 	population="|".join(
 		["all"] + 
+		["all_excl_pca-admix"] +
 		[i for i in samples.index.tolist()] +
 		[i for i in samples.population.values.tolist()] +
 		[i for i in samples.depth.values.tolist()]
@@ -73,10 +74,16 @@ if config["analyses"]["relatedness"]["waples2019"]:
 		dp=subsample))
 
 if config["analyses"]["pca_pcangsd"]:
-	all_outputs.append(expand(
-		[results+"/plots/pca/"+dataset+"_all{dp}_pc1-2.pdf",
-		results+"/plots/pca/"+dataset+"_all{dp}_pc3-4.pdf"],
-		dp=subsample))
+	if config["excl_pca-admix"]:
+		all_outputs.append(expand(
+			[results+"/plots/pca/"+dataset+"_all_excl_pca-admix{dp}_pc1-2.svg",
+			results+"/plots/pca/"+dataset+"_all_excl_pca-admix{dp}_pc3-4.svg"],
+			dp=subsample))
+	else:
+		all_outputs.append(expand(
+			[results+"/plots/pca/"+dataset+"_all{dp}_pc1-2.svg",
+			results+"/plots/pca/"+dataset+"_all{dp}_pc3-4.svg"],
+			dp=subsample))
 
 if config["analyses"]["thetas_angsd"]:
 	all_outputs.append(expand(
@@ -111,16 +118,28 @@ if config["analyses"]["inbreeding_ngsf-hmm"]:
 		)
 
 if config["analyses"]["admix_ngsadmix"]:
-	all_outputs.append(
-		expand(
-			[results+"/plots/evaladmix/"+dataset+
-				"_all{dp}_K{kvalue}_evaladmix.html",
-			results+"/plots/ngsadmix/"+dataset+
-			"_all{dp}_K{kvalue}.pdf"],
-			kvalue=config["params"]["ngsadmix"]["kvalues"],
-			dp=subsample
+	if config["excl_pca-admix"]:
+		all_outputs.append(
+			expand(
+				[results+"/plots/evaladmix/"+dataset+
+					"_all_excl_pca-admix{dp}_K{kvalue}_evaladmix.html",
+				results+"/plots/ngsadmix/"+dataset+
+					"_all_excl_pca-admix{dp}_K{kvalue}.svg"],
+				kvalue=config["params"]["ngsadmix"]["kvalues"],
+				dp=subsample
+				)
 			)
-		)
+	else:
+		all_outputs.append(
+			expand(
+				[results+"/plots/evaladmix/"+dataset+
+					"_all{dp}_K{kvalue}_evaladmix.html",
+				results+"/plots/ngsadmix/"+dataset+
+					"_all{dp}_K{kvalue}.svg"],
+				kvalue=config["params"]["ngsadmix"]["kvalues"],
+				dp=subsample
+				)
+			)
 
 if config["analyses"]["ibs_matrix"]:
 	all_outputs.append(
@@ -130,6 +149,14 @@ if config["analyses"]["ibs_matrix"]:
 			dp=subsample
 		)
 	)
+
+# if config["analyses"]["bcf_angsd"]:
+# 	all_outputs.append(
+# 		expand(
+# 			results+"/genotyping/calling/"+dataset+"_all{dp}.bcf",
+# 			dp=subsample
+# 		)
+# 	)
 
 # master target rule
 rule all:

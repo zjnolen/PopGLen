@@ -115,6 +115,7 @@ rule genmap_index:
 		"../envs/genmap.yaml"
 	params:
 		out=REF_DIR+"/genmap/index"
+	threads: lambda wildcards, attempt: attempt
 	shell:
 		"""
 		# genmap index annoyingly fails if directory already exists,

@@ -87,14 +87,19 @@ rule bam_clipoverlap:
     conda:
         # "../envs/bamutil.yaml"
         "../envs/fgbio.yaml"
-    shadow: "copy-minimal"
+    shadow: "minimal"
+    threads: lambda wildcards, attempt: attempt*2
     resources:
         time=lambda wildcards, attempt: attempt*1440
     shell:
         """
-        samtools sort -n -u {input.bam} | fgbio ClipBam -i /dev/stdin \
-            -o {output.bam} -r {input.ref} -m {output.met} \
-            --clip-overlapping-reads=true -S Coordinate 2> {log}
+        samtools sort -n -o {input.bam}.namesort.bam {input.bam} 2> {log}
+        fgbio -Xmx{resources.mem_mb}m ClipBam \
+                -i {input.bam}.namesort.bam \
+                -r {input.ref} -m {output.met} \
+                --clip-overlapping-reads=true \
+                -o {output.bam}.namesort.bam 2>> {log}
+        samtools sort -o {output.bam} {output.bam}.namesort.bam 2>> {log}
         """
 
 rule dedup_merged:

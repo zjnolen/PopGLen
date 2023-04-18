@@ -44,7 +44,7 @@ rule picard_dict:
     input:
         REF
     output:
-        REF+".dict"
+        os.path.splitext(REF)[0]+".dict"
     conda:
         "../envs/picard.yaml"
     shell:

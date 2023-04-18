@@ -12,12 +12,14 @@ rule realSFS_fst_index:
 		logs+"/realSFS/fst/index/"+dataset+
 			"_{population1}-{population2}{dp}.log"
 	params:
-		out=results+"/analyses/fst/"+dataset+"_{population1}-{population2}{dp}"
+		out=results+"/analyses/fst/"+dataset+"_{population1}-{population2}{dp}",
+		fst=config["params"]["realsfs"]["whichFst"]
 	resources:
 		time=lambda wildcards, attempt: attempt*120
 	shell:
 		"""
-		realSFS fst index {input.saf1[0]} {input.saf2[0]} -sfs {input.sfs} \
+		realSFS fst index -whichFst {params.fst} \
+			{input.saf1[0]} {input.saf2[0]} -sfs {input.sfs} \
 			-fstout {params.out} 2> {log}
 		"""
 

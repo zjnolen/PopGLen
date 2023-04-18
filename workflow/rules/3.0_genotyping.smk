@@ -328,12 +328,18 @@ rule popglf:
 			[i for i in samples.population.values.tolist()] +
 			[i for i in samples.depth.values.tolist()]
 			)
+	params:
+		tmpfile=dataset+"_{population}{dp}_chunk{chunk}.glf"
+	resources:
+		time=360
 	shell:
 		"""
-		zcat {input.sample_glfs[0]} | cut -f1-2 | gzip > {output.glf} 2> {log}
+		zcat {input.sample_glfs[0]} | cut -f1-2 > {resources.tmpdir}/{params.tmpfile} 2> {log}
 		for i in {input.sample_glfs}; do
-			zcat $i | cut -f3-12 | paste -d '	' <(zcat {output.glf}) - | \
-				gzip > {output.glf}.tmp
-			mv {output.glf}.tmp {output.glf}
-		done 2>> {log}
+			echo "Adding $i to glf..." >> {log}
+			zcat $i | cut -f3-12 | paste -d '	' {resources.tmpdir}/{params.tmpfile} - > {resources.tmpdir}/{params.tmpfile}.tmp 2>> {log}
+			mv {resources.tmpdir}/{params.tmpfile}.tmp {resources.tmpdir}/{params.tmpfile} 2>> {log}
+		done
+		echo "Gzipping final glf..." >> {log}
+		gzip -c {resources.tmpdir}/{params.tmpfile} > {output.glf} 2>> {log}
 		"""

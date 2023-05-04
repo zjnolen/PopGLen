@@ -135,9 +135,9 @@ rule dedup_merged:
 def get_dedup_bam(wildcards):
     # Determines if bam should use Picard or DeDup for duplicate removal
     s = wildcards.sample
-    if s in samples.index[samples.depth == "low"]:
+    if s in samples.index[samples.time == "historical"]:
         return "results/mapping/dedup/"+s+".merged.rmdup.bam"
-    elif s in samples.index[samples.depth == "high"]:
+    elif s in samples.index[samples.time == "modern"]:
         return "results/mapping/dedup/"+s+".clipped.rmdup.bam"
 
 rule finalize_rmdup:

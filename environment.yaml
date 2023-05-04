@@ -7,8 +7,8 @@ channels:
 
 dependencies:
   # core packages for workflow
-  - python =3.10.*
-  - snakemake-minimal =7.18.*
+  - python =3.11.*
+  - snakemake-minimal =7.25.*
   - mamba
   - pandas
   - graphviz

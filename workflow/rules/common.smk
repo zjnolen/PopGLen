@@ -10,6 +10,7 @@ pcangsd_container="docker://zjnolen/pcangsd:1.10"
 evaladmix_container="docker://zjnolen/evaladmix:0.961"
 ngsf_hmm_container="docker://zjnolen/ngsf-hmm:20200722-2df9690"
 mapdamage_container="docker://quay.io/biocontainers/mapdamage2:2.2.1--pyr40_0"
+ngsrelate_container="docker://zjnolen/ngsrelate:20220925-ec95c8f"
 
 # load and validate config file
 # if os.path.exists("config/config.yaml"):

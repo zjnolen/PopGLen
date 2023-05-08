@@ -74,6 +74,7 @@ rule angsd_doGlf2:
 		angsd_container
 	params:
 		popopts=get_popopts,
+		nind=lambda w: len(get_samples_from_pop(w.population)),
 		out=results + "/genotyping/beagle/chunk/"+dataset+
 			"_{population}{dp}_chunk{chunk}"
 	threads: lambda wildcards, attempt: attempt
@@ -81,14 +82,9 @@ rule angsd_doGlf2:
 		time=lambda wildcards, attempt: attempt*720
 	shell:
 		"""
-		set +o pipefail;
-		nInd=$(zcat {input.glf} | awk '{{print (NF-2)/10; exit}}') &> {log}
-
-		echo $nInd &>> {log}
-
 		angsd -doGlf 2 -glf10_text {input.glf} {params.popopts} -doMaf 1 \
 			-nThreads {threads} -sites {input.sites[0]} -fai {input.fai} \
-			-nInd $nInd -out {params.out} &>> {log}
+			-nInd {params.nind} -out {params.out} &>> {log}
 		"""
 
 rule merge_beagle:
@@ -165,6 +161,7 @@ rule angsd_doSaf:
 	container:
 		angsd_container
 	params:
+		nind=lambda w: len(get_samples_from_pop(w.population)),
 		out=results+"/genotyping/saf/chunk/"+dataset+
 			"_{population}{dp}_chunk{chunk}"
 	resources:
@@ -172,11 +169,9 @@ rule angsd_doSaf:
 	threads: lambda wildcards, attempt: attempt*2
 	shell:
 		"""
-		set +o pipefail;
-		nInd=$(zcat {input.glf} | awk '{{print (NF-2)/10; exit}}')
-
 		angsd -doSaf 1 -glf10_text {input.glf} -anc {input.anc} \
-			-nThreads 1 -fai {input.fai} -nInd $nInd -out {params.out} &> {log}
+			-nThreads 1 -fai {input.fai} -nInd {params.nind} \
+			-out {params.out} &> {log}
 		"""
 
 rule realSFS_catsaf:

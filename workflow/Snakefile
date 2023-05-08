@@ -28,6 +28,7 @@ else:
 	subsample = [""]
 
 wildcard_constraints:
+	dataset=dataset,
 	sample="|".join(
 		samples.index.tolist()
 	),
@@ -36,10 +37,6 @@ wildcard_constraints:
 		["all_excl_pca-admix"] +
 		[i for i in samples.index.tolist()] +
 		[i for i in samples.population.values.tolist()] +
-		[i for i in samples.depth.values.tolist()]
-		),
-	set="|".join(
-		["all"]+
 		[i for i in samples.depth.values.tolist()]
 		),
 	dp=(subsample[0]+"|.{0}" if len(subsample)==2 else ".{0}"),

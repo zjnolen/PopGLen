@@ -60,6 +60,6 @@ plot_roh <- function(aggroh,plotpre) {
 aggroh <- aggregate_roh(snakemake@input[["roh"]],
   snakemake@params[["popnames"]],
   snakemake@input[["inds"]],
-  read.table(snakemake@input[["autos"]])[,2])
+  read.table(snakemake@input[["autos"]], sep = "\t")[,2])
 
 plot_roh(aggroh,snakemake@params[["outpre"]])

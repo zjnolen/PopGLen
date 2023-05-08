@@ -100,12 +100,19 @@ rule convert_ibd:
 			> {output.roh} 2>> {log}
 		"""
 
+def get_auto_sum(wildcards):
+	if config["reference"]["sex-linked"] or config["reference"]["exclude"] \
+		or config["reference"]["mito"]:
+		return REF_DIR+"/beds/"+REF_NAME+"_excl.bed.sum"
+	else:
+		return REF_DIR+"/beds/"+REF_NAME+"_genome.bed"
+
 rule plot_froh:
 	input:
 		roh=expand(results+"/analyses/ngsF-HMM/"+dataset+
 			"_{population}{{dp}}.roh", population=pop_list),
 		inds=results+"/genotyping/pop_lists/"+dataset+"_all.indiv.list",
-		autos=rules.sexlink_bed.output.sum
+		autos=get_auto_sum
 	output:
 		report(expand(results+"/plots/inbreeding/"+dataset+
 			"_all{{dp}}.{stat}.pdf",

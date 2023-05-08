@@ -64,15 +64,15 @@ rule sexlink_bed:
 	output:
 		exclbed=REF_DIR+"/beds/"+REF_NAME+"_excl.bed",
 		sum=REF_DIR+"/beds/"+REF_NAME+"_excl.bed.sum",
-		xzbed=REF_DIR+"/beds/"+REF_NAME+"_XZ.bed"
+		sexbed=REF_DIR+"/beds/"+REF_NAME+"_sex-linked.bed"
 	params:
-		xz=config["reference"]["XZ"],
+		sex=config["reference"]["sex-linked"],
 		excl=config["reference"]["exclude"]+config["reference"]["mito"]
 	shell:
 		r"""
 		# generate beds
-		printf '%s\n' {params.xz} | grep -f - {input.genbed} > {output.xzbed}
-		printf '%s\n' {params.xz} {params.excl} | grep -f - {input.genbed} > \
+		printf '%s\n' {params.sex} | grep -f - {input.genbed} > {output.sexbed}
+		printf '%s\n' {params.sex} {params.excl} | grep -f - {input.genbed} > \
 			{output.exclbed}
 		
 		# summarize exclbed

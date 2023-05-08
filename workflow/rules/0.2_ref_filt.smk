@@ -488,7 +488,8 @@ def get_bed_filts(wildcards):
 		bedsum.append(REF_DIR+"/beds/"+REF_NAME+"_scaff"+
 					 str(config["reference"]["min_size"])+".bed.sum")
 	# add sex chromosome filter if set
-	if config["reference"]["XZ"] or config["reference"]["exclude"]:
+	if config["reference"]["sex-linked"] or config["reference"]["exclude"] \
+		or config["reference"]["mito"]:
 		bedin.append(REF_DIR+"/beds/"+REF_NAME+"_excl.bed")
 		bedsum.append(REF_DIR+"/beds/"+REF_NAME+"_excl.bed.sum")
 	# add mappability filter if set

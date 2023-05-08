@@ -40,8 +40,10 @@ def chunkify(reference_fasta, chunk_size):
             seq_length = len("".join(seq).replace("\n",""))
             if seq_length > 0:
                 contigs = contigs + [[contig,seq_length]]
-    df = pd.DataFrame(contigs, columns = ['contig','length']).set_index('contig')
-    df.drop(config["reference"]["mito"]+config["reference"]["XZ"]+config["reference"]["exclude"])
+    df = pd.DataFrame(contigs, columns=['contig','length']).set_index('contig')
+    df.drop(index=config["reference"]["mito"]+
+        config["reference"]["sex-linked"]+config["reference"]["exclude"],
+        inplace = True)
     dfs = []
     included = []
     total = 0
@@ -53,14 +55,16 @@ def chunkify(reference_fasta, chunk_size):
         
         if row['length'] >= minsize:
             total += row['length']
-            if total > chunk_size or n+1 >= len(df):
+            if total > chunk_size:
                 new_df = pd.DataFrame(included)
                 dfs.append(new_df)
                 included = []
                 #new_df = df.iloc[0:0, :].copy()
                 total = row['length']
             included.append(row)
-    
+            if n+1 == len(df):
+                new_df = pd.DataFrame(included)
+                dfs.append(new_df)    
     return dfs
 
 chunks = chunkify(REF, config["chunk_size"])

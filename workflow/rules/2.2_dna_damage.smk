@@ -34,18 +34,19 @@ rule mapDamage2_rescaling:
 		ref=REF
 	output:
 		outdir=directory("results/mapping/qc/mapdamage/{sample}/"),
-		tmp="results/mapping/qc/mapdamage/{sample}/{sample}.rmdup.realn.rescaled.bam",
 		rescaled="results/mapping/bams/{sample}.rmdup.realn.rescaled.bam"
 	log:
 		"logs/mapping/mapdamage/{sample}.log"
 	container:
 		mapdamage_container
-	threads: 8
+	threads: 2
 	resources:
 		time=1440
+	params:
+		tmp="results/mapping/qc/mapdamage/{sample}/{sample}.rmdup.realn.rescaled.bam"
 	shell:
 		"""
 		mapDamage -i {input.bam} -r {input.ref} -d {output.outdir} --rescale \
 			2> {log}
-		cp {output.tmp} {output.rescaled} 2>> {log}
+		mv {params.tmp} {output.rescaled} 2>> {log}
 		"""

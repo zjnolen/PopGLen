@@ -44,6 +44,11 @@ def chunkify(reference_fasta, chunk_size):
     df.drop(index=config["reference"]["mito"]+
         config["reference"]["sex-linked"]+config["reference"]["exclude"],
         inplace = True)
+    if chunk_size < max(df['length']):
+        raise ValueError("Config invalid - chunk_size ("+str(chunk_size)+
+            ") cannot be smaller than the largest contig in the reference ("+
+            str(max(df['length']))+"). Please set chunk_size to a value "+
+            "greater than or equal to "+str(max(df['length']))+").")
     dfs = []
     included = []
     total = 0

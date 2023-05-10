@@ -1,9 +1,9 @@
 rule damageprofiler:
 	input:
-		bam="results/mapping/bams/{sample}.rmdup.realn.bam",
-		ref=REF
+		bam="results/mapping/bams/{sample}.{ref}.rmdup.realn.bam",
+		ref="results/ref/{ref}/{ref}.fa"
 	output:
-		multiext("results/mapping/qc/damageprofiler/{sample}/",
+		multiext("results/mapping/qc/damageprofiler/{sample}.{ref}/",
 				"5pCtoT_freq.txt","3pGtoA_freq.txt","Length_plot.pdf",
 				"DamagePlot_five_prime.svg","DamagePlot.pdf",
 				"DamagePlot_three_prime.svg","DamageProfiler.log",
@@ -14,11 +14,11 @@ rule damageprofiler:
 				"3p_freq_misincorporations.txt","DNA_comp_genome.txt",
 				"DNA_composition_sample.txt","dmgprof.json")
 	log:
-		"logs/mapping/damageprofiler/{sample}.log"
+		"logs/mapping/damageprofiler/{sample}.{ref}.log"
 	conda:
 		"../envs/damageprofiler.yaml"
 	params:
-		out="results/mapping/qc/damageprofiler/{sample}"
+		out=lambda w, output: os.path.dirname(output[0])
 	threads: lambda wildcards, attempt: attempt
 	resources:
 		time=lambda wildcards, attempt: attempt*60
@@ -30,23 +30,22 @@ rule damageprofiler:
 
 rule mapDamage2_rescaling:
 	input:
-		bam="results/mapping/bams/{sample}.rmdup.realn.bam",
-		ref=REF
+		bam="results/mapping/bams/{sample}.{ref}.rmdup.realn.bam",
+		ref="results/ref/{ref}/{ref}.fa"
 	output:
-		outdir=directory("results/mapping/qc/mapdamage/{sample}/"),
-		rescaled="results/mapping/bams/{sample}.rmdup.realn.rescaled.bam"
+		outdir=directory("results/mapping/qc/mapdamage/{sample}.{ref}/"),
+		rescaled="results/mapping/bams/{sample}.{ref}.rmdup.realn.rescaled.bam"
 	log:
-		"logs/mapping/mapdamage/{sample}.log"
+		"logs/mapping/mapdamage/{sample}.{ref}.log"
 	container:
 		mapdamage_container
 	threads: 2
 	resources:
 		time=1440
 	params:
-		tmp="results/mapping/qc/mapdamage/{sample}/{sample}.rmdup.realn.rescaled.bam"
+		tmp="results/mapping/qc/mapdamage/{sample}.{ref}/{sample}.{ref}.rmdup.realn.rescaled.bam"
 	shell:
 		"""
-		mapDamage -i {input.bam} -r {input.ref} -d {output.outdir} --rescale \
-			2> {log}
-		mv {params.tmp} {output.rescaled} 2>> {log}
+		(mapDamage -i {input.bam} -r {input.ref} -d {output.outdir} --rescale
+		mv {params.tmp} {output.rescaled}) &> {log}
 		"""

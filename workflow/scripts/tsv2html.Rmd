@@ -3,6 +3,8 @@ output: html_document
 ---
 
 ```{r, echo = FALSE}
+sink(file(snakemake@log[[1]], open="wt"), type = "message")
+
 library(reactable)
 library(data.table)
 

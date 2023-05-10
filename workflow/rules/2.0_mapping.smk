@@ -2,71 +2,71 @@
 
 rule bwa_mem_merged:
     input:
-        merged=rules.fastp_mergedout.output.merged,
+        merged="results/preprocessing/fastp/{sample}.merged.fastq.gz",
+        ref="results/ref/{ref}/{ref}.fa",
         idx=rules.bwa_index.output
     output:
-        bam=temp("results/mapping/mapped/{sample}.merged.bam")
+        bam=temp("results/mapping/mapped/{sample}.{ref}.merged.bam")
     log:
-        "logs/mapping/bwa_mem/{sample}.merged.log"
+        "logs/mapping/bwa_mem/{sample}.{ref}.merged.log"
     params:
-        index=REF,
         rg=get_read_group
     conda:
         "../envs/mapping.yaml"
-    shadow: "copy-minimal"
+    shadow: "minimal"
     threads: lambda wildcards, attempt: attempt*10
     resources:
         time=lambda wildcards, attempt: attempt*2880
     shell:
         """
-        bwa mem \
+        (bwa mem \
             -t {threads} \
             {params.rg} \
-            {params.index} \
+            {input.ref} \
             {input.merged} | \
-        samtools sort -o {output.bam} 2> {log}
+        samtools sort -o {output.bam}) 2> {log}
         """
 
 rule bwa_mem_paired:
     input:
-        paired=rules.fastp_pairedout.output.paired,
+        paired=expand("results/preprocessing/fastp/{{sample}}.{read}.fastq.gz", read=["R1","R2"]),
+        ref="results/ref/{ref}/{ref}.fa",
         idx=rules.bwa_index.output
     output:
-        bam=temp("results/mapping/mapped/{sample}.paired.bam")
+        bam=temp("results/mapping/mapped/{sample}.{ref}.paired.bam")
     log:
-        "logs/mapping/bwa_mem/{sample}.paired.log"
+        "logs/mapping/bwa_mem/{sample}.{ref}.paired.log"
     params:
-        index=REF,
         rg=get_read_group
     conda:
         "../envs/mapping.yaml"
-    shadow: "copy-minimal"
+    shadow: "minimal"
     threads: lambda wildcards, attempt: attempt*10
     resources:
         time=lambda wildcards, attempt: attempt*2880
     shell:
         """
-        bwa mem \
+        (bwa mem \
             -t {threads} \
             {params.rg} \
-            {params.index} \
+            {input.ref} \
             {input.paired} | \
-        samtools sort -o {output.bam} 2> {log}
+        samtools sort -o {output.bam}) 2> {log}
         """
 
 ###### Duplicate removal ######
 
 rule mark_duplicates:
     input:
-        bams="results/mapping/mapped/{sample}.paired.bam"
+        bams="results/mapping/mapped/{sample}.{ref}.paired.bam"
     output:
-        bam=temp("results/mapping/dedup/{sample}.paired.rmdup.bam"),
-        metrics="results/mapping/qc/mark_duplicates/{sample}.picard.metrics"
+        bam=temp("results/mapping/dedup/{sample}.{ref}.paired.rmdup.bam"),
+        metrics="results/mapping/qc/mark_duplicates/{sample}.{ref}.picard.metrics"
     log:
-        "logs/mapping/picard/dedup/{sample}.paired.log"
+        "logs/mapping/picard/dedup/{sample}.{ref}.paired.log"
     params:
         extra=config["params"]["picard"]["MarkDuplicates"]
-    shadow: "copy-minimal"
+    shadow: "minimal"
     threads: lambda wildcards, attempt: attempt*4
     resources:
         # can be memory intensive for big bam files, look into ways of 
@@ -77,15 +77,15 @@ rule mark_duplicates:
 
 rule bam_clipoverlap:
     input:
-        bam="results/mapping/dedup/{sample}.paired.rmdup.bam",
-        ref=REF
+        bam="results/mapping/dedup/{sample}.{ref}.paired.rmdup.bam",
+        ref="results/ref/{ref}/{ref}.fa"
     output:
-        bam=temp("results/mapping/dedup/{sample}.clipped.rmdup.bam"),
-        met="results/mapping/qc/fgbio_clipbam/{sample}.fgbio_clip.metrics"
+        bam=temp("results/mapping/dedup/{sample}.{ref}.clipped.rmdup.bam"),
+        bai=temp("results/mapping/dedup/{sample}.{ref}.clipped.rmdup.bam.bai"),
+        met="results/mapping/qc/fgbio_clipbam/{sample}.{ref}.fgbio_clip.metrics"
     log:
-        "logs/mapping/fgbio/clipbam/{sample}.log"
+        "logs/mapping/fgbio/clipbam/{sample}.{ref}.log"
     conda:
-        # "../envs/bamutil.yaml"
         "../envs/fgbio.yaml"
     shadow: "minimal"
     threads: lambda wildcards, attempt: attempt*2
@@ -93,178 +93,141 @@ rule bam_clipoverlap:
         time=lambda wildcards, attempt: attempt*1440
     shell:
         """
-        samtools sort -n -o {input.bam}.namesort.bam {input.bam} 2> {log}
+        (samtools sort -n -o {input.bam}.namesort.bam {input.bam}
         fgbio -Xmx{resources.mem_mb}m ClipBam \
                 -i {input.bam}.namesort.bam \
                 -r {input.ref} -m {output.met} \
                 --clip-overlapping-reads=true \
-                -o {output.bam}.namesort.bam 2>> {log}
-        samtools sort -o {output.bam} {output.bam}.namesort.bam 2>> {log}
+                -o {output.bam}.namesort.bam
+        samtools sort -o {output.bam} {output.bam}.namesort.bam
+        samtools index {output.bam}) 2> {log}
         """
 
 rule dedup_merged:
     input:
-        "results/mapping/mapped/{sample}.merged.bam"
+        "results/mapping/mapped/{sample}.{ref}.merged.bam"
     output:
-        json="results/mapping/qc/dedup/{sample}.dedup.json",
-        hist="results/mapping/qc/dedup/{sample}.dedup.hist",
-        log="results/mapping/qc/dedup/{sample}.dedup.log",
-        bam=temp("results/mapping/dedup/{sample}.merged_rmdup.bam"),
-        bamfin=temp("results/mapping/dedup/{sample}.merged.rmdup.bam")
+        json="results/mapping/qc/dedup/{sample}.{ref}.dedup.json",
+        hist="results/mapping/qc/dedup/{sample}.{ref}.dedup.hist",
+        log="results/mapping/qc/dedup/{sample}.{ref}.dedup.log",
+        bam=temp("results/mapping/dedup/{sample}.{ref}.merged_rmdup.bam"),
+        bamfin=temp("results/mapping/dedup/{sample}.{ref}.merged.rmdup.bam"),
+        bai=temp("results/mapping/dedup/{sample}.{ref}.merged.rmdup.bam.bai")
     log:
-        "logs/mapping/dedup/{sample}.merged.log"
+        "logs/mapping/dedup/{sample}.{ref}.merged.log"
     conda:
         "../envs/dedup.yaml"
-    shadow: "copy-minimal"
+    shadow: "minimal"
     params:
-        outdir="results/mapping/dedup/"
+        outdir=lambda w, output: os.path.dirname(output.bamfin)
     resources:
         time=lambda wildcards, attempt: attempt*1440
     shell:
         """
-        dedup -i {input} -m -u -o {params.outdir} 2> {log}
-        samtools sort -o {output.bamfin} {output.bam} 2>> {log}
-        mv {params.outdir}{wildcards.sample}.merged.dedup.json \
-            {output.json} 2>> {log}
-        mv {params.outdir}{wildcards.sample}.merged.hist \
-            {output.hist} 2>> {log}
-        mv {params.outdir}{wildcards.sample}.merged.log \
-            {output.log} 2>> {log}
+        (dedup -i {input} -m -u -o {params.outdir}
+        samtools sort -o {output.bamfin} {output.bam}
+        samtools index {output.bamfin}
+        mv {params.outdir}/{wildcards.sample}.{wildcards.ref}.merged.dedup.json {output.json}
+        mv {params.outdir}/{wildcards.sample}.{wildcards.ref}.merged.hist {output.hist}
+        mv {params.outdir}/{wildcards.sample}.{wildcards.ref}.merged.log {output.log}) 2> {log}
         """
-
-def get_dedup_bam(wildcards):
-    # Determines if bam should use Picard or DeDup for duplicate removal
-    s = wildcards.sample
-    if s in samples.index[samples.time == "historical"]:
-        return "results/mapping/dedup/"+s+".merged.rmdup.bam"
-    elif s in samples.index[samples.time == "modern"]:
-        return "results/mapping/dedup/"+s+".clipped.rmdup.bam"
-
-rule finalize_rmdup:
-    input:
-        get_dedup_bam
-    output:
-        temp("results/mapping/dedup/{sample}.rmdup.bam")
-    shell:
-        """
-        cp {input} {output}
-        """
-
-rule samtools_index_rmdup:
-    input:
-        "results/mapping/dedup/{prefix}.bam"
-    output:
-        temp("results/mapping/dedup/{prefix}.bam.bai")
-    log:
-        "logs/mapping/samtools/index_rmdup/{prefix}.log"
-    shadow: "copy-minimal"
-    wrapper:
-        "v1.17.2/bio/samtools/index"
 
 ###### Realign reads around indels ######
 
 rule realignertargetcreator:
     input:
-        bam="results/mapping/dedup/{sample}.rmdup.bam",
-        bai="results/mapping/dedup/{sample}.rmdup.bam.bai",
-        ref=REF,
-        dic=os.path.splitext(REF)[0]+".dict",
-        fai=REF+".fai"
+        bam=get_dedup_bam,
+        ref="results/ref/{ref}/{ref}.fa",
+        dic="results/ref/{ref}/{ref}.dict",
+        fai="results/ref/{ref}/{ref}.fa.fai"
     output:
-        intervals="results/mapping/indelrealign/{sample}.rmdup.intervals"
+        intervals="results/mapping/indelrealign/{sample}.{ref}.rmdup.intervals"
     log:
-        "logs/mapping/gatk/realignertargetcreator/{sample}.log"
+        "logs/mapping/gatk/realignertargetcreator/{sample}.{ref}.log"
     conda:
         "../envs/gatk.yaml"
-    shadow: "copy-minimal"
+    shadow: "minimal"
     threads: lambda wildcards, attempt: attempt*2
     resources:
         time=lambda wildcards, attempt: attempt*720
     shell:
         """
-        gatk3 -T RealignerTargetCreator -nt {threads} -I {input.bam} \
+        gatk3 -T RealignerTargetCreator -nt {threads} -I {input.bam[0]} \
             -R {input.ref} -o {output.intervals} 2> {log}
         """
 
 rule indelrealigner:
     input:
-        bam="results/mapping/dedup/{sample}.rmdup.bam",
-        bai="results/mapping/dedup/{sample}.rmdup.bam.bai",
-        intervals="results/mapping/indelrealign/{sample}.rmdup.intervals",
-        ref=REF,
-        dic=os.path.splitext(REF)[0]+".dict",
-        fai=REF+".fai"
+        bam=get_dedup_bam,
+        intervals="results/mapping/indelrealign/{sample}.{ref}.rmdup.intervals",
+        ref="results/ref/{ref}/{ref}.fa",
+        dic="results/ref/{ref}/{ref}.dict",
+        fai="results/ref/{ref}/{ref}.fa.fai"
     output:
-        realigned="results/mapping/bams/{sample}.rmdup.realn.bam"
+        realigned="results/mapping/bams/{sample}.{ref}.rmdup.realn.bam"
     log:
-        "logs/mapping/gatk/indelrealigner/{sample}.log"
+        "logs/mapping/gatk/indelrealigner/{sample}.{ref}.log"
     conda:
         "../envs/gatk.yaml"
-    shadow: "copy-minimal"
+    shadow: "minimal"
     threads: lambda wildcards, attempt: attempt*4
     resources:
         time=lambda wildcards, attempt: attempt*1440
     shell:
         """
-        gatk3 -Xmx{resources.mem_mb}m -T IndelRealigner -R {input.ref} -I {input.bam} \
+        gatk3 -Xmx{resources.mem_mb}m -T IndelRealigner -R {input.ref} -I {input.bam[0]} \
             -targetIntervals {input.intervals} -o {output.realigned} 2> {log}
         """
 
-rule samtools_index_final:
+rule samtools_index:
     input:
         "results/mapping/bams/{prefix}.bam"
     output:
         "results/mapping/bams/{prefix}.bam.bai"
     log:
-        "logs/mapping/samtools/index_rmdup/{prefix}.log"
-    shadow: "copy-minimal"
-    wrapper:
-        "v1.17.2/bio/samtools/index"
+        "logs/mapping/samtools/index/{prefix}.log"
+    conda:
+        "../envs/samtools.yaml"
+    shell:
+        """
+        samtools index {input} 2> {log}
+        """
 
 ###### Gather bams and symlink into dataset folder ######
 #### This allows bams to be re-used across datasets #####
 
-def get_final_bam(wildcards):
-    # Determines if bam should use Picard or DeDup for duplicate removal
-    s = wildcards.sample
-    if s in samples.index[samples.time == "historical"]:
-        return ["results/mapping/bams/"+s+".rmdup.realn.rescaled.bam",
-                "results/mapping/bams/"+s+".rmdup.realn.rescaled.bam.bai"]
-    elif s in samples.index[samples.time == "modern"]:
-        return ["results/mapping/bams/"+s+".rmdup.realn.bam",
-                "results/mapping/bams/"+s+".rmdup.realn.bam.bai"]
-
 rule symlink_bams:
     input:
-        get_final_bam
+        unpack(get_final_bam)
     output:
-        results+"/bams/{sample}.bam",
-        results+"/bams/{sample}.bam.bai"
+        bam="results/datasets/{dataset}/bams/{sample}.{ref}.bam",
+        bai="results/datasets/{dataset}/bams/{sample}.{ref}.bam.bai"
+    log:
+        "logs/{dataset}/symlink_bams/{sample}.{ref}.log"
+    conda:
+        "../envs/shell.yaml"
     shell:
         """
-        ln -sr {input[0]} {output[0]}
-        ln -sr {input[1]} {output[1]}
+        ln -sr {input.bam} {output.bam}
+        ln -sr {input.bai} {output.bai}
         """
 
 ###### Bam subsampling for result verification ######
 
 rule samtools_subsample:
     input:
-        bam=results+"/bams/{sample}.bam",
-        bai=results+"/bams/{sample}.bam.bai",
-        depth=results+"/qc/ind_depth/filtered/"+dataset+ \
-			"_{sample}.depth.sum",
-        bed=results+"/genotyping/filters/beds/"+dataset+"_filts.bed"
+        bam=get_bamlist_bams,
+        bai=get_bamlist_bais,
+        depth="results/datasets/{dataset}/qc/ind_depth/filtered/{dataset}_{population}.depth.sum",
+        bed="results/datasets/{dataset}/genotyping/filters/beds/{dataset}_filts.bed"
     output:
-        bam=results+"/bams/{sample}.dp"+str(config["downsample_cov"])+".bam",
-        bai=results+"/bams/{sample}.dp"+str(config["downsample_cov"])+ \
-            ".bam.bai"
+        bam="results/datasets/{dataset}/bams/{population}{dp}.bam",
+        bai="results/datasets/{dataset}/bams/{population}{dp}.bam.bai"
     log:
-        "logs/mapping/samtools/subsample/{sample}.dp"+ \
-            str(config["downsample_cov"])+".log"
+        "logs/mapping/samtools/subsample/{dataset}_{population}{dp}.log"
     conda:
         "../envs/samtools.yaml"
-    shadow: "copy-minimal"
+    shadow: "minimal"
     params:
         dp=config["downsample_cov"]
     resources:

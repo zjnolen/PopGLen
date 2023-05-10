@@ -23,12 +23,14 @@ include: "rules/7_inbreeding.smk"
 # Accumulate desired output files from config file
 
 if config["downsample_cov"]:
-	subsample = [".dp" + str(config["downsample_cov"]), ""]
+	dp = config["downsample_cov"]
+	subsample = [f".dp{dp}", ""]
 else:
 	subsample = [""]
 
 wildcard_constraints:
-	dataset=dataset,
+	ref=config["reference"]["name"],
+	dataset=config["dataset"],
 	sample="|".join(
 		samples.index.tolist()
 	),
@@ -42,119 +44,72 @@ wildcard_constraints:
 	dp=(subsample[0]+"|.{0}" if len(subsample)==2 else ".{0}"),
 	chunk="[0-9]+"
 
-all_outputs = expand([results+"/qc/"+dataset+"_all{dp}.sampleqc.html",
-				results+"/genotyping/filters/"+dataset+"{dp}_filts.html"],
-				dp=subsample)
+all_outputs = []
 
 if config["analyses"]["qualimap"]:
-	all_outputs.append(expand(
-		"results/mapping/qc/qualimap/{sample}/genome_results.txt",
-			sample=samples.index))
+	all_outputs.append("results/mapping/qc/qualimap/{sample}.{ref}/genome_results.txt")
 
 if config["analyses"]["damageprofiler"]:
-	all_outputs.append(expand(
-		"results/mapping/qc/damageprofiler/{sample}/dmgprof.json",
-			sample=samples.index[samples['time'] == 'historical'].tolist()))
+	all_outputs.append("results/mapping/qc/damageprofiler/{histsample}.{ref}/dmgprof.json")
 
 if config["analyses"]["endogenous_content"]:
-	all_outputs.append(
-		results+"/qc/endogenous_content/"+dataset+"_all.endo.tsv")
+	all_outputs.append("results/datasets/{dataset}/qc/endogenous_content/{dataset}.{ref}_all.endo.tsv")
 
 if config["analyses"]["relatedness"]["ngsrelate"]:
-	all_outputs.append(expand(
-		results+"/analyses/kinship/ngsrelate/"+dataset+"_all{dp}_relate.html",
-		dp=subsample))
+	all_outputs.append("results/datasets/{dataset}/analyses/kinship/ngsrelate/{dataset}.{ref}_all{dp}_relate.html")
 
 if config["analyses"]["relatedness"]["waples2019"]:
-	all_outputs.append(expand(
-		results+"/analyses/kinship/waples2019/"+dataset+"_all{dp}.kinship.html",
-		dp=subsample))
+	all_outputs.append("results/datasets/{dataset}/analyses/kinship/waples2019/{dataset}.{ref}_all{dp}.kinship.html")
 
 if config["analyses"]["pca_pcangsd"]:
 	if config["excl_pca-admix"]:
-		all_outputs.append(expand(
-			[results+"/plots/pca/"+dataset+"_all_excl_pca-admix{dp}_pc1-2.svg",
-			results+"/plots/pca/"+dataset+"_all_excl_pca-admix{dp}_pc3-4.svg"],
-			dp=subsample))
+		all_outputs.extend(["results/datasets/{dataset}/plots/pca/{dataset}.{ref}_all_excl_pca-admix{dp}_pc1-2.svg", "results/datasets/{dataset}/plots/pca/{dataset}.{ref}_all_excl_pca-admix{dp}_pc3-4.svg"])
 	else:
-		all_outputs.append(expand(
-			[results+"/plots/pca/"+dataset+"_all{dp}_pc1-2.svg",
-			results+"/plots/pca/"+dataset+"_all{dp}_pc3-4.svg"],
-			dp=subsample))
+		all_outputs.extend(["results/datasets/{dataset}/plots/pca/{dataset}.{ref}_all{dp}_pc1-2.svg","results/datasets/{dataset}/plots/pca/{dataset}.{ref}_all{dp}_pc3-4.svg"])
 
 if config["analyses"]["thetas_angsd"]:
-	all_outputs.append(expand(
-		results+"/plots/thetas/"+dataset+"_all{subsample}.{stat}.pdf",
-		stat=["watterson","pi","tajima"], subsample=subsample))
+	all_outputs.extend(expand("results/datasets/{{dataset}}/plots/thetas/{{dataset}}.{{ref}}_all{{dp}}.{stat}.pdf",
+		stat=["watterson","pi","tajima"]))
 
 if config["analyses"]["fst_angsd"]["populations"]:
-	all_outputs.append(expand(results+
-			"/plots/fst/"+dataset+"_poppairs{dp}_fst.pdf",
-			dp=subsample))
+	all_outputs.append("results/datasets/{dataset}/plots/fst/{dataset}.{ref}_poppairs{dp}_fst.pdf")
 
 if config["analyses"]["fst_angsd"]["individuals"]:
-	all_outputs.append(expand(results+
-			"/analyses/fst/"+dataset+"_indpairs{dp}.fst.sum",
-			dp=subsample))
+	all_outputs.append("results/datasets/{dataset}/analyses/fst/{dataset}.{ref}_indpairs{dp}.fst.sum")
 
 if config["analyses"]["heterozygosity_angsd"]:
-	all_outputs.append(expand(
-		[
-		#results+"/analyses/thetas/"+dataset+"_{population}{subsample}.thetaWindows.pestPG",
-		results+"/plots/heterozygosity/"+dataset+
-		"_all{subsample}_heterozygosity.pdf"],
-		population=samples.index, 
-		subsample=subsample)
-		)
+	all_outputs.append("results/datasets/{dataset}/plots/heterozygosity/{dataset}.{ref}_all{dp}_heterozygosity.pdf")
 
 if config["analyses"]["inbreeding_ngsf-hmm"]:
-	all_outputs.append(expand(
-		results+"/plots/inbreeding/"+dataset+"_all{subsample}.{stat}.pdf",
-		stat=["froh","rohreg"],
-		subsample=subsample)
+	all_outputs.extend(expand("results/datasets/{{dataset}}/plots/inbreeding/{{dataset}}.{{ref}}_all{{dp}}.{stat}.pdf",
+		stat=["froh","rohreg"])
 		)
 
 if config["analyses"]["admix_ngsadmix"]:
 	if config["excl_pca-admix"]:
-		all_outputs.append(
+		all_outputs.extend(
 			expand(
-				[results+"/plots/evaladmix/"+dataset+
-					"_all_excl_pca-admix{dp}_K{kvalue}_evaladmix.html",
-				results+"/plots/ngsadmix/"+dataset+
-					"_all_excl_pca-admix{dp}_K{kvalue}.svg"],
-				kvalue=config["params"]["ngsadmix"]["kvalues"],
-				dp=subsample
-				)
+				["results/datasets/{{dataset}}/plots/evaladmix/{{dataset}}.{{ref}}_all_excl_pca-admix{{dp}}_K{kvalue}_evaladmix.html",
+				"results/datasets/{{dataset}}/plots/ngsadmix/{{dataset}}.{{ref}}_all_excl_pca-admix{{dp}}_K{kvalue}.svg"],
+				kvalue=config["params"]["ngsadmix"]["kvalues"])
 			)
 	else:
-		all_outputs.append(
+		all_outputs.extend(
 			expand(
-				[results+"/plots/evaladmix/"+dataset+
-					"_all{dp}_K{kvalue}_evaladmix.html",
-				results+"/plots/ngsadmix/"+dataset+
-					"_all{dp}_K{kvalue}.svg"],
-				kvalue=config["params"]["ngsadmix"]["kvalues"],
-				dp=subsample
-				)
+				["results/datasets/{{dataset}}/plots/evaladmix/{{dataset}}.{{ref}}_all{{dp}}_K{kvalue}_evaladmix.html",
+				"results/datasets/{{dataset}}/plots/ngsadmix/{{dataset}}.{{ref}}_all{{dp}}_K{kvalue}.svg"],
+				kvalue=config["params"]["ngsadmix"]["kvalues"])
 			)
 
 if config["analyses"]["ibs_matrix"]:
-	all_outputs.append(
-		expand(
-			results+"/genotyping/IBSmatrix/"+dataset+
-				"_all{dp}.ibsMat",
-			dp=subsample
-		)
-	)
-
-# if config["analyses"]["bcf_angsd"]:
-# 	all_outputs.append(
-# 		expand(
-# 			results+"/genotyping/calling/"+dataset+"_all{dp}.bcf",
-# 			dp=subsample
-# 		)
-# 	)
+	all_outputs.append("results/datasets/{dataset}/analyses/IBS/{dataset}.{ref}_all{dp}.ibsMat")
 
 # master target rule
 rule all:
-    input: all_outputs
+	input:
+		expand(all_outputs,
+			sample=samples.index,
+			ref=config["reference"]["name"],
+			histsample=samples.index[samples['time'] == 'historical'].tolist(),
+			dataset=config["dataset"],
+			dp=subsample)

@@ -1,16 +1,12 @@
-localrules:
-
 rule ngsLD_estLD:
 	input:
-		beagle=rules.angsd_doGlf2.output.beagle,
-		bamlist=rules.angsd_makeBamlist.output
+		beagle="results/datasets/{dataset}/beagles/chunks/{dataset}.{ref}_{population}{dp}_chunk{chunk}.beagle.gz",
+		bamlist="results/datasets/{dataset}/bamlists/{dataset}.{ref}_{population}{dp}.bamlist"
 	output:
-		ld=temp(results+"/genotyping/pruned_beagle/ngsLD/"+dataset+
-			"_{population}{dp}_chunk{chunk}.ld.gz"),
-		pos=results+"/genotyping/pruned_beagle/ngsLD/"+dataset+
-			"_{population}{dp}_chunk{chunk}.pos"
+		ld=temp("results/datasets/{dataset}/beagles/pruned/ngsLD/{dataset}{ref}_{population}{dp}_chunk{chunk}.ld.gz"),
+		pos="results/datasets/{dataset}/beagles/pruned/ngsLD/{dataset}{ref}_{population}{dp}_chunk{chunk}.pos"
 	log:
-		logs + "/ngsLD/estLD/"+dataset+"_{population}{dp}_chunk{chunk}.log"
+		"logs/{dataset}/ngsLD/estLD/{dataset}{ref}_{population}{dp}_chunk{chunk}.log"
 	container:
 		"library://james-s-santangelo/ngsld/ngsld:1.1.1"
 	threads: lambda wildcards, attempt: attempt
@@ -18,8 +14,8 @@ rule ngsLD_estLD:
 		time=lambda wildcards, attempt: attempt*720
 	shell:
 		r"""
-		zcat {input.beagle} | awk '{{print $1}}' | sed 's/\(.*\)_/\1\t/' \
-			| tail -n +2 > {output.pos} 2> {log}
+		(zcat {input.beagle} | awk '{{print $1}}' | sed 's/\(.*\)_/\1\t/' \
+			| tail -n +2 > {output.pos}
 		
 		nsites=$(cat {output.pos} | wc -l)
 
@@ -29,20 +25,19 @@ rule ngsLD_estLD:
 		else
 			ngsLD --geno {input.beagle} --n_ind $nind --n_sites $nsites \
 				--pos {output.pos} --probs --n_threads {threads} \
-				| gzip > {output.ld} 2>> {log}
-		fi
+				| gzip > {output.ld}
+		fi) 2> {log}
 		"""
 
 
 rule ngsLD_prune_sites:
 	input:
-		ld=rules.ngsLD_estLD.output.ld,
-		pos=rules.ngsLD_estLD.output.pos
+		ld="results/datasets/{dataset}/beagles/pruned/ngsLD/{dataset}{ref}_{population}{dp}_chunk{chunk}.ld.gz",
+		pos="results/datasets/{dataset}/beagles/pruned/ngsLD/{dataset}{ref}_{population}{dp}_chunk{chunk}.pos"
 	output:
-		sites=results+"/genotyping/pruned_beagle/ngsLD/"+dataset+
-			"{population}{dp}_chunk{chunk}_pruned.sites"
+		sites="results/datasets/{dataset}/beagles/pruned/ngsLD/{dataset}{ref}_{population}{dp}_chunk{chunk}_pruned.sites"
 	log:
-		logs + "/ngsLD/prune_sites/"+dataset+"_{population}{dp}_chunk{chunk}.log"
+		"logs/{dataset}/ngsLD/prune_sites/{dataset}{ref}_{population}{dp}_chunk{chunk}.log"
 	conda:
 		"../envs/pruning.yaml"
 	threads: lambda wildcards, attempt: attempt*2
@@ -50,73 +45,57 @@ rule ngsLD_prune_sites:
 		time=lambda wildcards, attempt: attempt*1440
 	shell:
 		"""
-		nsites=$(cat {input.pos} | wc -l)
+		(nsites=$(cat {input.pos} | wc -l)
 
 		if [[ $nsites == 0 ]]; then
 			touch {output.sites}
 		else
 			workflow/scripts/prune_ngsLD.py --input {input.ld} --max_dist 50000 \
-				--min_weight 0.1 --output {output.sites} 2> {log}
-		fi
+				--min_weight 0.1 --output {output.sites}
+		fi) 2> {log}
 		"""
 
 rule prune_chunk_beagle:
 	input:
-		beagle=rules.angsd_doGlf2.output.beagle,
-		sites=expand(results+"/genotyping/pruned_beagle/ngsLD/"+dataset+
-			"{population}{{dp}}_chunk{{chunk}}_pruned.sites",
-			population="all")
+		beagle="results/datasets/{dataset}/beagles/chunks/{dataset}.{ref}_{population}{dp}_chunk{chunk}.beagle.gz",
+		sites="results/datasets/{dataset}/beagles/pruned/ngsLD/{dataset}{ref}_all{dp}_chunk{chunk}_pruned.sites"
 	output:
-		pruned=temp(results+"/genotyping/pruned_beagle/chunk/"+dataset+
-			"_{population}{dp}_chunk{chunk}_pruned.beagle"),
-		prunedgz=results+"/genotyping/pruned_beagle/chunk/"+dataset+
-			"_{population}{dp}_chunk{chunk}_pruned.beagle.gz"
+		prunedgz="results/datasets/{dataset}/beagles/pruned/chunks/{dataset}.{ref}_{population}{dp}_chunk{chunk}_pruned.beagle.gz"
 	log:
-		logs+"/ngsLD/prune_beagle/"+dataset+"_{population}{dp}_chunk{chunk}.log"
+		"logs/{dataset}/ngsLD/prune_beagle/{dataset}{ref}_{population}{dp}_chunk{chunk}.log"
+	conda:
+		"../envs/shell.yaml"
+	shadow: "minimal"
 	threads: lambda wildcards, attempt: attempt*10
+	params:
+		pruned="results/datasets/{dataset}/beagles/pruned/chunks/{dataset}{ref}_{population}{dp}_chunk{chunk}_pruned.beagle"
 	resources:
 		time=lambda wildcards, attempt: attempt*120
 	shell:
 		r"""
-		set +o pipefail;
-		zcat {input.beagle} | head -n 1 > {output.pruned} 2> {log}
+		(set +o pipefail;
+		zcat {input.beagle} | head -n 1 > {params.pruned}
 		
 		join -t $'\t' <(sort -k1,1 {input.sites}) <(zcat {input.beagle} | sort -k1,1) | \
 			sed 's/_/\t/' | sort -k1,1 -k2,2n | sed 's/\t/_/' \
-			>> {output.pruned} 2>> {log}
+			>> {params.pruned}
 
-		gzip -c {output.pruned} > {output.prunedgz} 2>> {log}
+		gzip -c {params.pruned} > {output.prunedgz}
 
-		Nsites=$(cat {input.sites} | wc -l | awk '{{print $1+1}}') &>> {log}
-		NsitesB=$(zcat {output.prunedgz} | wc -l) &>> {log}
+		Nsites=$(cat {input.sites} | wc -l | awk '{{print $1+1}}')
+		NsitesB=$(zcat {output.prunedgz} | wc -l)
 
-		echo "Sites searched for: $Nsites" &>> {log}
-		echo "Sites in pruned beagle: $NsitesB" &>> {log}
-
-		# No longer works since pruned site list isn't custom to population.
-		# Would fail for any population that happens to be missing a site in
-		# the pruned dataset in all individuals.
-		# if [ $Nsites = $NsitesB ]; then
-		# 	echo "Pruning successful!" &>> {log}
-		# else
-		# 	echo "Number of sites in pruned beagle differ from sites file." \
-		# 		&>> {log}
-		# 	exit 1
-		# fi
+		echo "Sites searched for: $Nsites"
+		echo "Sites in pruned beagle: $NsitesB") &> {log}
 		"""
 
 rule merge_pruned_beagles:
 	input:
-		pruned=lambda w: expand(results+"/genotyping/pruned_beagle/chunk/"+
-			dataset+"_{{population}}{{dp}}_chunk{chunk}_pruned.beagle.gz", 
-			chunk=chunklist),
-		full=results+"/genotyping/beagle/"+dataset+
-			"_{population}{dp}.beagle.gz"
+		pruned=lambda w: expand("results/datasets/{{dataset}}/beagles/pruned/chunks/{{dataset}}.{{ref}}_{{population}}{{dp}}_chunk{chunk}_pruned.beagle.gz", chunk=chunklist)
 	output:
-		beagle=results+"/genotyping/pruned_beagle/"+dataset+
-			"_{population}{dp}_pruned.beagle.gz"
+		beagle="results/datasets/{dataset}/beagles/pruned/{dataset}.{ref}_{population}{dp}_pruned.beagle.gz"
 	log:
-		logs + "/ngsLD/{population}{dp}_merge_pruned.log"
+		"logs/{dataset}/ngsLD/merge_pruned/{dataset}.{ref}_{population}{dp}_merge_pruned.log"
 	wildcard_constraints:
 		population="|".join(
 			["all"] +
@@ -124,44 +103,37 @@ rule merge_pruned_beagles:
 			[i for i in samples.population.values.tolist()] +
 			[i for i in samples.depth.values.tolist()]
 			)
+	conda:
+		"../envs/shell.yaml"
 	resources:
 		time=lambda wildcards, attempt: attempt*60
 	shell:
 		r"""
-		echo "cat file order:"
+		(echo "cat file order:"
 		echo {input.pruned} | tr ' ' '\n'
 
 		echo "Printing header to beagle..."
 		set +o pipefail;
-		zcat {input.full} | head -n 1 | gzip > {output.beagle}
+		zcat {input.pruned} | head -n 1 | gzip > {output.beagle}
 
 		echo "Adding requested chunks to beagle..."
 		for f in {input.pruned}; do
-			zcat $f | tail -n +2 | gzip | cat >> {output.beagle} 2>> {log}
-		done
+			zcat $f | tail -n +2
+		done | gzip >> {output.beagle}) &> {log}
 		"""
-
-def get_excl_ind_cols(wildcards):
-	exclinds = config["excl_pca-admix"]
-	exclindex = [samples.index.to_list().index(i) for i in exclinds]
-	col1 = [x*3+4 for x in exclindex]
-	col2 = [x+1 for x in col1]
-	col3 = [x+1 for x in col2]
-	remove = col1+col2+col3
-	remove_string = ','.join([str(i) for i in remove])
-	return remove_string
 
 rule remove_excl_pca_admix:
 	input:
-		results+"/genotyping/pruned_beagle/"+dataset+
-			"_all{dp}_pruned.beagle.gz"
+		"results/datasets/{dataset}/beagles/pruned/{dataset}.{ref}_all{dp}_pruned.beagle.gz"
 	output:
-		results+"/genotyping/pruned_beagle/"+dataset+
-			"_all_excl_pca-admix{dp}_pruned.beagle.gz"
+		"results/datasets/{dataset}/beagles/pruned/{dataset}.{ref}_all_excl_pca-admix{dp}_pruned.beagle.gz"
+	log:
+		"logs/{dataset}/ngsLD/excl_pca_admix_beagle/{dataset}.{ref}_all_excl_pca-admix{dp}.log"
+	conda:
+		"../envs/shell.yaml"
 	params:
 		remcols=get_excl_ind_cols
 	shell:
 		"""
-		zcat {input} | cut -f{params.remcols} --complement \
-			| gzip > {output}
+		zcat {input} | cut -f{params.remcols} --complement | gzip > {output} 2> {log}
 		"""

@@ -1,15 +1,14 @@
 rule pca_pcangsd:
 	input:
-		beagle=results+"/genotyping/pruned_beagle/"+dataset+
-			"_{population}{dp}_pruned.beagle.gz"
+		beagle="results/datasets/{dataset}/beagles/pruned/{dataset}.{ref}_all{dp}_pruned.beagle.gz"
 	output:
-		cov=results+"/analyses/pcangsd/"+dataset+"_{population}{dp}.cov"
+		cov="results/datasets/{dataset}/analyses/pcangsd/{dataset}.{ref}_all{dp}.cov"
 	log:
-		logs + "/pcangsd/"+dataset+"_{population}{dp}.log"
+		"logs/{dataset}/pcangsd/{dataset}.{ref}_all{dp}.log"
 	container:
 		pcangsd_container
 	params:
-		prefix=results + "/analyses/pcangsd/"+dataset+"_{population}{dp}"
+		prefix=lambda w, output: os.path.splitext(output.cov)[0]
 	threads: lambda wildcards, attempt: attempt
 	resources:
 		time=lambda wildcards, attempt: attempt*60
@@ -20,12 +19,11 @@ rule pca_pcangsd:
 
 rule plot_pca:
 	input:
-		rules.pca_pcangsd.output.cov,
-		rules.popfile.output.inds
+		"results/datasets/{dataset}/analyses/pcangsd/{dataset}.{ref}_all{dp}.cov",
+		"results/datasets/{dataset}/poplists/{dataset}_all.indiv.list"
 	output:
 		report(
-			results+"/plots/pca/"+dataset+
-				"_{population}{dp}_pc{xpc}-{ypc}.svg",
+			"results/datasets/{dataset}/plots/pca/{dataset}.{ref}_all{dp}_pc{xpc}-{ypc}.svg",
 			category="PCA",
 			labels={
 				"Topic":"PCA",
@@ -33,6 +31,8 @@ rule plot_pca:
 				"Subsampling":"{dp}",
 				"Type":"scatterplot"
 			})
+	log:
+		"logs/{dataset}/pcangsd/{dataset}.{ref}_all{dp}_pc{xpc}-{ypc}_plot.log"
 	conda:
 		"../envs/r.yaml"
 	script:

@@ -3,6 +3,8 @@
 # supplementary materials available at:
 # https://github.com/rwaples/freqfree_suppl/blob/master/read_realSFS.R
 
+sink(file(snakemake@log[[1]], open="wt"), type = "message")
+
 calc_coeffs <- function(filepath){
   df = read.csv(filepath, sep =' ', header = FALSE)
   colnames(df) = c('A', 'D', 'G', 'B', 'E', 'H', 'C', 'F', 'I', 'drop')

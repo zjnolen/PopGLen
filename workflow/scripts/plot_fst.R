@@ -1,3 +1,5 @@
+sink(file(snakemake@log[[1]], open="wt"), type = "message")
+
 plot_fst <- function(fst_table, plotout) {
 	require(ggplot2)
 

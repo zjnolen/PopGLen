@@ -3,8 +3,9 @@ channels:
   - bioconda
 
 dependencies:
-  - bedtools =2.30
   - gawk
   - coreutils
+  - bc
   - gzip
   - grep
+  - perl

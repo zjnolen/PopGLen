@@ -1,57 +1,52 @@
 rule ngsf_hmm:
 	input:
-		beagle=rules.merge_pruned_beagles.output.beagle,
-		bamlist=rules.angsd_makeBamlist.output
+		beagle="results/datasets/{dataset}/beagles/pruned/{dataset}.{ref}_{population}{dp}_pruned.beagle.gz"
 	output:
-		#indf=results + "/inbreeding/{population}.indF",
-		ibd=results+"/analyses/ngsF-HMM/"+dataset+
-			"_{population}{dp}.ibd",
-		indF=results+"/analyses/ngsF-HMM/"+dataset+
-			"_{population}{dp}.indF",
-		pos=results+"/analyses/ngsF-HMM/"+dataset+
-			"_{population}{dp}.pos"
+		ibd="results/datasets/{dataset}/analyses/ngsF-HMM/{dataset}.{ref}_{population}{dp}.ibd",
+		indF="results/datasets/{dataset}/analyses/ngsF-HMM/{dataset}.{ref}_{population}{dp}.indF",
+		pos="results/datasets/{dataset}/analyses/ngsF-HMM/{dataset}.{ref}_{population}{dp}.pos"
 	log:
-		logs + "/ngsF-HMM/"+dataset+"_{population}{dp}.log"
+		"logs/{dataset}/ngsF-HMM/{dataset}.{ref}_{population}{dp}.log"
 	container:
 		ngsf_hmm_container
 	params:
-		out=results + "/analyses/ngsF-HMM/"+dataset+
-			"_{population}{dp}"
+		out=lambda w, output: os.path.splitext(output.pos)[0],
+		nind=lambda w: len(get_samples_from_pop(w.population))
 	threads: lambda wildcards, attempt: attempt*10
 	resources:
 		time=lambda wildcards, attempt: attempt*2880
 	shell:
 		r"""
-		zcat {input.beagle} | awk '{{print $1}}' | sed 's/\(.*\)_/\1\t/' \
-			| tail -n +2 > {output.pos} 2> {log}
+		(zcat {input.beagle} | awk '{{print $1}}' | sed 's/\(.*\)_/\1\t/' \
+			| tail -n +2 > {output.pos}
 		
 		nsites=$(cat {output.pos} | wc -l)
 
-		nind=$(cat {input.bamlist} | wc -l | awk '{{print $1+1}}')
+		nind={params.nind}
 
 		export TMPDIR={resources.tmpdir}
 
 		workflow/scripts/ngsF-HMM.sh --geno {input.beagle} --n_ind $nind \
 			--n_sites $nsites --pos {output.pos} --lkl \
-			--out {params.out} --n_threads {threads} &>> {log}
+			--out {params.out} --n_threads {threads}) 2> {log}
 		"""
 
 rule convert_ibd:
 	input:
-		ibd=rules.ngsf_hmm.output.ibd,
-		pos=rules.ngsf_hmm.output.pos,
-		inds=rules.popfile.output.inds
+		ibd="results/datasets/{dataset}/analyses/ngsF-HMM/{dataset}.{ref}_{population}{dp}.ibd",
+		inds="results/datasets/{dataset}/poplists/{dataset}_{population}.indiv.list",
+		pos="results/datasets/{dataset}/analyses/ngsF-HMM/{dataset}.{ref}_{population}{dp}.pos"
 	output:
-		roh=results+"/analyses/ngsF-HMM/"+dataset+"_{population}{dp}.roh"
+		roh="results/datasets/{dataset}/analyses/ngsF-HMM/{dataset}.{ref}_{population}{dp}.roh"
 	log:
-		logs + "/ngsF-HMM/"+dataset+"_{population}{dp}_convert_ibd.log"
+		"logs/{dataset}/ngsF-HMM/{dataset}.{ref}_{population}{dp}_convert_ibd.log"
 	container:
 		ngsf_hmm_container
 	shadow:
-		"copy-minimal"
+		"minimal"
 	shell:
 		"""
-		tail -n +2 {input.inds} > {input.inds}.tmp 2> {log}
+		(tail -n +2 {input.inds} > {input.inds}.tmp
 
 		# convert_ibd.pl drops warnings when chromosomes have non-numeric 
 		# names, and may not handle them well. As a work around, a numeric 
@@ -78,11 +73,11 @@ rule convert_ibd:
         		print
     		}}' \
 		{input.pos}.contigs {input.pos}.contigs.idx {input.pos} \
-			> {input.pos}.tmp 2>> {log}
+			> {input.pos}.tmp
 
 		convert_ibd.pl --pos_file {input.pos}.tmp \
 			--ind_file {input.inds}.tmp	--ibd_pos_file {input.ibd} \
-			> {output.roh}.tmp 2>> {log}
+			> {output.roh}.tmp
 		
 		# Revert back to original contig name:
 		awk '
@@ -97,31 +92,24 @@ rule convert_ibd:
         		print
     		}}' \
 		{input.pos}.contigs.idx {input.pos}.contigs {output.roh}.tmp \
-			> {output.roh} 2>> {log}
+			> {output.roh}) 2> {log}
 		"""
-
-def get_auto_sum(wildcards):
-	if config["reference"]["sex-linked"] or config["reference"]["exclude"] \
-		or config["reference"]["mito"]:
-		return REF_DIR+"/beds/"+REF_NAME+"_excl.bed.sum"
-	else:
-		return REF_DIR+"/beds/"+REF_NAME+"_genome.bed"
 
 rule plot_froh:
 	input:
-		roh=expand(results+"/analyses/ngsF-HMM/"+dataset+
-			"_{population}{{dp}}.roh", population=pop_list),
-		inds=results+"/genotyping/pop_lists/"+dataset+"_all.indiv.list",
+		roh=expand("results/datasets/{{dataset}}/analyses/ngsF-HMM/{{dataset}}.{{ref}}_{population}{{dp}}.roh", population=pop_list),
+		inds="results/datasets/{dataset}/poplists/{dataset}_all.indiv.list",
 		autos=get_auto_sum
 	output:
-		report(expand(results+"/plots/inbreeding/"+dataset+
-			"_all{{dp}}.{stat}.pdf",
+		report(expand("results/datasets/{{dataset}}/plots/inbreeding/{{dataset}}.{{ref}}_all{{dp}}.{stat}.pdf",
 			stat=["froh","rohreg"]),
 			category="Inbreeding")
+	log:
+		"logs/{dataset}/ngsF-HMM/{dataset}.{ref}_all{dp}_plot.log"
 	conda:
 		"../envs/r.yaml"
 	params:
 		popnames=pop_list,
-		outpre=results+"/plots/inbreeding/"+dataset+"_all{dp}"
+		outpre=lambda w, output: output[0].removesuffix(".froh.pdf")
 	script:
 		"../scripts/plot_Froh.R"

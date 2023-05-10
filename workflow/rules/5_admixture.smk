@@ -1,41 +1,41 @@
 rule ngsAdmix:
 	input:
-		beagle=rules.merge_pruned_beagles.output.beagle
+		beagle="results/datasets/{dataset}/beagles/pruned/{dataset}.{ref}_all{dp}_pruned.beagle.gz"
 	output:
-		qopt=results+"/analyses/ngsadmix/"+dataset+
-			"_{population}{dp}_K{kvalue}.qopt",
-		fopt=results+"/analyses/ngsadmix/"+dataset+
-			"_{population}{dp}_K{kvalue}.fopt.gz"
+		qopt="results/datasets/{dataset}/analyses/ngsadmix/{dataset}.{ref}_all{dp}_K{kvalue}.qopt",
+		fopt="results/datasets/{dataset}/analyses/ngsadmix/{dataset}.{ref}_all{dp}_K{kvalue}.fopt.gz"
 	log:
-		logs+"/ngsadmix/"+dataset+"_{population}{dp}_K{kvalue}.log"
+		"logs/{dataset}/ngsadmix/{dataset}.{ref}_all{dp}_K{kvalue}.log"
 	container:
 		angsd_container
 	params:
-		prefix=results+"/analyses/ngsadmix/"+dataset+
-			"_{population}{dp}_K{kvalue}",
+		prefix=lambda w, output: os.path.splitext(output.qopt)[0],
 		extra=config["params"]["ngsadmix"]["extra"],
-		reps=config["params"]["ngsadmix"]["reps"]
+		reps=config["params"]["ngsadmix"]["reps"],
+		minreps=config["params"]["ngsadmix"]["minreps"],
+		thresh=config["params"]["ngsadmix"]["thresh"],
+		conv=config["params"]["ngsadmix"]["conv"]
 	threads: 4
 	resources:
 		time=lambda wildcards, attempt: attempt*2880
 	shell:
 		"""
-		export TMPDIR={resources.tmpdir}
+		(export TMPDIR={resources.tmpdir}
 		export reps={params.reps}
+		export minreps={params.reps}
+		export thresh={params.thresh}
+		export conv={params.conv}
 		workflow/scripts/ngsadmix.sh -likes {input.beagle} {params.extra} \
-			-K {wildcards.kvalue} -P {threads} -o {params.prefix} 2> {log}
+			-K {wildcards.kvalue} -P {threads} -o {params.prefix}) &> {log}
 		"""
-
-localrules: plot_admix
 
 rule plot_admix:
 	input:
-		rules.ngsAdmix.output.qopt,
-		rules.popfile.output.inds
+		"results/datasets/{dataset}/analyses/ngsadmix/{dataset}.{ref}_all{dp}_K{kvalue}.qopt",
+		"results/datasets/{dataset}/poplists/{dataset}_all.indiv.list"
 	output:
 		report(
-			results+"/plots/ngsadmix/"+dataset+
-				"_{population}{dp}_K{kvalue}.svg",
+			"results/datasets/{dataset}/plots/ngsadmix/{dataset}.{ref}_all{dp}_K{kvalue}.svg",
 			category="Admixture",
 			subcategory="NGSadmix",
 			labels={
@@ -44,6 +44,8 @@ rule plot_admix:
 				"Subsampling":"{dp}",
 				"Type":"admix plot"
 			})
+	log:
+		"logs/{dataset}/ngsadmix/{dataset}.{ref}_all{dp}_K{kvalue}_plot.log"
 	conda:
 		"../envs/r.yaml"
 	script:
@@ -51,33 +53,29 @@ rule plot_admix:
 
 rule evalAdmix:
 	input:
-		beagle=rules.merge_pruned_beagles.output.beagle,
-		qopt=rules.ngsAdmix.output.qopt,
-		fopt=rules.ngsAdmix.output.fopt
+		beagle="results/datasets/{dataset}/beagles/pruned/{dataset}.{ref}_all{dp}_pruned.beagle.gz",
+		qopt="results/datasets/{dataset}/analyses/ngsadmix/{dataset}.{ref}_all{dp}_K{kvalue}.qopt",
+		fopt="results/datasets/{dataset}/analyses/ngsadmix/{dataset}.{ref}_all{dp}_K{kvalue}.fopt.gz"
 	output:
-		results+"/analyses/ngsadmix/"+dataset+
-			"_{population}{dp}_K{kvalue}.corres"
+		"results/datasets/{dataset}/analyses/ngsadmix/{dataset}.{ref}_all{dp}_K{kvalue}.corres"
 	log:
-		logs+"/evaladmix/"+dataset+"_{population}{dp}_K{kvalue}.log"
+		"logs/{dataset}/evaladmix/{dataset}.{ref}_all{dp}_K{kvalue}.log"
 	container:
 		evaladmix_container
 	shell:
 		"""
 		evalAdmix -beagle {input.beagle} -fname {input.fopt} \
-			-qname {input.qopt} -o {output} -P {threads} 2> {log}
+			-qname {input.qopt} -o {output} -P {threads} &> {log}
 		"""
-
-localrules: plot_evalAdmix
 
 rule plot_evalAdmix:
 	input:
-		corres=rules.evalAdmix.output,
-		qopt=rules.ngsAdmix.output.qopt,
-		pops=rules.popfile.output.inds
+		corres="results/datasets/{dataset}/analyses/ngsadmix/{dataset}.{ref}_all{dp}_K{kvalue}.corres",
+		qopt="results/datasets/{dataset}/analyses/ngsadmix/{dataset}.{ref}_all{dp}_K{kvalue}.qopt",
+		pops="results/datasets/{dataset}/poplists/{dataset}_all.indiv.list"
 	output:
 		report(
-			results+"/plots/evaladmix/"+dataset+
-				"_{population}{dp}_K{kvalue}_evaladmix.html",
+			"results/datasets/{dataset}/plots/evaladmix/{dataset}.{ref}_all{dp}_K{kvalue}_evaladmix.html",
 			category="Admixture",
 			subcategory="evalAdmix",
 			labels={
@@ -87,7 +85,7 @@ rule plot_evalAdmix:
 				"Type":"correlation matrix"
 			})
 	log:
-		logs+"/evaladmix/"+dataset+"_{population}{dp}_K{kvalue}_plot.log"
+		"logs/{dataset}/evaladmix/{dataset}.{ref}_all{dp}_K{kvalue}_plot.log"
 	container:
 		evaladmix_container
 	script:

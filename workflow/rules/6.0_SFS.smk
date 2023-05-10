@@ -1,13 +1,14 @@
 rule realSFS_1dSFS:
 	input:
-		saf=rules.realSFS_catsaf.output
+		saf="results/datasets/{dataset}/safs/{dataset}.{ref}_{population}{dp}.saf.idx",
+		others=multiext("results/datasets/{dataset}/safs/{dataset}.{ref}_{population}{dp}.saf",".pos.gz",".gz")
 	output:
-		sfs=ensure(results + "/analyses/sfs/"+dataset+"_{population}{dp}.sfs",
+		sfs=ensure("results/datasets/{dataset}/analyses/sfs/{dataset}.{ref}_{population}{dp}.sfs",
 			non_empty=True)
 	container:
 		angsd_container
 	log:
-		logs + "/realSFS/1dSFS/"+dataset+"_{population}{dp}.log"
+		"logs/{dataset}/realSFS/1dSFS/{dataset}.{ref}_{population}{dp}.log"
 	params:
 		fold=config["params"]["realsfs"]["fold"]
 	threads: lambda wildcards, attempt: attempt*2
@@ -15,23 +16,22 @@ rule realSFS_1dSFS:
 		time=lambda wildcards, attempt: attempt*120
 	shell:
 		"""
-		realSFS {input.saf[0]} -fold {params.fold} -P {threads} \
+		realSFS {input.saf} -fold {params.fold} -P {threads} \
 			> {output.sfs} 2> {log}
 		"""
 
 rule realSFS_2dSFS:
 	input:
-		saf1=multiext(results+"/genotyping/saf/"+dataset+
-			"_{population1}{dp}.saf",".idx",".pos.gz",".gz"),
-		saf2=multiext(results+"/genotyping/saf/"+dataset+
-			"_{population2}{dp}.saf",".idx",".pos.gz",".gz")
+		saf1="results/datasets/{dataset}/safs/{dataset}.{ref}_{population1}{dp}.saf.idx",
+		saf1_others=multiext("results/datasets/{dataset}/safs/{dataset}.{ref}_{population1}{dp}.saf",".pos.gz",".gz"),
+		saf2="results/datasets/{dataset}/safs/{dataset}.{ref}_{population2}{dp}.saf.idx",
+		saf2_others=multiext("results/datasets/{dataset}/safs/{dataset}.{ref}_{population2}{dp}.saf",".pos.gz",".gz")
 	output:
-		sfs=ensure(results + "/analyses/sfs/"+dataset+
-			"_{population1}-{population2}{dp}.sfs", non_empty=True)
+		sfs=ensure("results/datasets/{dataset}/analyses/sfs/{dataset}.{ref}_{population1}-{population2}{dp}.sfs", non_empty=True)
 	container:
 		angsd_container
 	log:
-		logs + "/realSFS/2dSFS/"+dataset+"_{population1}-{population2}{dp}.log"
+		"logs/{dataset}/realSFS/2dSFS/{dataset}.{ref}_{population1}-{population2}{dp}.log"
 	wildcard_constraints:
 		population1="|".join(
 			[i for i in samples.index.tolist()] +
@@ -48,27 +48,26 @@ rule realSFS_2dSFS:
 		time=lambda wildcards, attempt: attempt*180
 	shell:
 		"""
-		realSFS {input.saf1[0]} {input.saf2[0]} -fold {params.fold} \
+		realSFS {input.saf1} {input.saf2} -fold {params.fold} \
 			-P {threads} > {output.sfs} 2> {log}
 		"""
 
 rule plot_heterozygosity:
 	input:
-		sfs=expand(results+
-			"/analyses/sfs/"+dataset+"_{sample}{{dp}}.sfs",
+		sfs=expand("results/datasets/{{dataset}}/analyses/sfs/{{dataset}}.{{ref}}_{sample}{{dp}}.sfs",
 			sample=samples.index),
-		popfile=results+"/genotyping/pop_lists/"+dataset+"_all.indiv.list"
+		popfile="results/datasets/{dataset}/poplists/{dataset}_all.indiv.list"
 	output:
-		results+"/analyses/heterozygosity/"+dataset+
-			"_all{dp}_heterozygosity.tsv",
-		report(results+"/plots/heterozygosity/"+dataset+
-			"_all{dp}_heterozygosity.pdf",
+		"results/datasets/{dataset}/analyses/heterozygosity/{dataset}.{ref}_all{dp}_heterozygosity.tsv",
+		report("results/datasets/{dataset}/plots/heterozygosity/{dataset}.{ref}_all{dp}_heterozygosity.pdf",
 			category="Heterozygosity",
 			labels={
 				"Topic":"Heterozygosity",
 				"Subsampling":"{dp}",
 				"Type":"boxplot"
 			})
+	log:
+		"logs/{dataset}/heterozygosity/{dataset}.{ref}_all{dp}_calc-plot.log"
 	conda:
 		"../envs/r.yaml"
 	script:

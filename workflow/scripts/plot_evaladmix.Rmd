@@ -3,6 +3,8 @@ output: html_document
 ---
 
 ```{r, echo = FALSE}
+sink(file(snakemake@log[[1]], open="wt"), type = "message")
+
 plot_evaladmix <- function(pop,qopt,corres,k) {
 
 	source("/usr/local/bin/visFuns.R")

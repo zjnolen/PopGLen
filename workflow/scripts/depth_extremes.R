@@ -1,6 +1,8 @@
 # calculates upper and lower percentiles of lower depth, excluding sites 
 # with depth = 0
 
+sink(file(snakemake@log[[1]], open="wt"), type = "message")
+
 chrom.dp.table <- read.table(snakemake@input[[1]], header = FALSE)
 genome.dp <- colSums(chrom.dp.table)
 genome.dp[1] <- 0
@@ -10,10 +12,7 @@ df$count <- genome.dp
 quants <- with(df, quantile(rep(x = dp, times = count),
 			probs = c(snakemake@params[["lower"]],
 			snakemake@params[["upper"]])))
-quants
 quants <- unname(quants)
 mean <- with(df, mean(rep(x = dp, times = count)))
-mean
 toprint <- c(mean,as.integer(quants))
-toprint
 write(toprint, snakemake@output[[1]])

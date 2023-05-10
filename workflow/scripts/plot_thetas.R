@@ -1,3 +1,5 @@
+sink(file(snakemake@log[[1]], open="wt"), type = "message")
+
 combine_pestPG <- function(pestPGlist, popnames) {
 
   combined <- c()

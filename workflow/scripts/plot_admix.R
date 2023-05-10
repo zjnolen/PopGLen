@@ -1,3 +1,5 @@
+sink(file(snakemake@log[[1]], open="wt"), type = "message")
+
 plot_admix <- function(qopt, pop, k, plotout) {
 	q <- read.table(qopt)
 	s <- as.data.frame(read.table(pop, header = TRUE))

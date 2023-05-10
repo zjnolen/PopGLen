@@ -1,3 +1,5 @@
+sink(file(snakemake@log[[1]], open="wt"), type = "message")
+
 aggregate_roh <- function(rohlist,poplist,samplelist,lenautos) {
   samples <- as.data.frame(read.table(samplelist, header=TRUE))
   Froh <- data.frame()
@@ -39,7 +41,7 @@ plot_roh <- function(aggroh,plotpre) {
   require(ggplot2)
 
   ggplot(aggroh, aes(x=population,y=Froh,fill=minroh)) +
-    geom_bar(position="identity", stat="summary", fun.y = "mean") +
+    geom_bar(position="identity", stat="summary") +
     theme_classic()
   
   ggsave(paste0(plotpre,".froh.pdf"))

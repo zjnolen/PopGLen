@@ -1,3 +1,5 @@
+sink(file(snakemake@log[[1]], open="wt"), type = "message")
+
 bed_total_len <- function(bedfile) {
 	df <- data.frame(read.table(bedfile))
 	total <- sum(df[,3]-df[,2])

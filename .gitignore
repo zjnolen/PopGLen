@@ -25,3 +25,5 @@ Vagrantfile
 reports
 # ignore dev containers for vscode
 .devcontainer
+# ignore benchmarks
+benchmarks

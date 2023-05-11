@@ -1,12 +1,21 @@
-localrules: link_ref, ref_chunking
+# Rules for preparing a reference genome for use with various tools. This includes
+# linking it to an appropriate directory, indexing it, and dividing contigs up amongst
+# 'chunks', which improves parallelization of analyses.
+
+
+localrules:
+    link_ref,
+    ref_chunking,
+
 
 rule link_ref:
+    """Link reference genome to results directory"""
     input:
-        config["reference"]["fasta"]
+        config["reference"]["fasta"],
     output:
-        "results/ref/{ref}/{ref}.fa"
+        "results/ref/{ref}/{ref}.fa",
     log:
-        "logs/ref/link_ref/{ref}.log"
+        "logs/ref/link_ref/{ref}.log",
     conda:
         "../envs/shell.yaml"
     shell:
@@ -14,61 +23,75 @@ rule link_ref:
         ln -sr {input} {output} 2> {log}
         """
 
+
 rule bwa_index:
+    """Index reference genome for bwa (mapping)"""
     input:
-        "results/ref/{ref}/{ref}.fa"
+        "results/ref/{ref}/{ref}.fa",
     output:
-        multiext("results/ref/{ref}/{ref}.fa",".amb",".ann",".bwt",".pac",".sa")
+        multiext("results/ref/{ref}/{ref}.fa", ".amb", ".ann", ".bwt", ".pac", ".sa"),
     log:
-        "logs/ref/bwa_index/{ref}.log"
+        "logs/ref/bwa_index/{ref}.log",
     conda:
         "../envs/mapping.yaml"
     resources:
-        time=120
+        time=120,
+    benchmark:
+        "benchmarks/ref/bwa_index/{ref}.log"
     shell:
         """
         bwa index {input} 2> {log}
         """
 
+
 rule samtools_faidx:
+    """Index reference genome using samtools (fai index used by several tools)"""
     input:
-        "results/ref/{ref}/{ref}.fa"
+        "results/ref/{ref}/{ref}.fa",
     output:
-        "results/ref/{ref}/{ref}.fa.fai"
+        "results/ref/{ref}/{ref}.fa.fai",
     log:
-        "logs/ref/samtools_faidx/{ref}.log"
+        "logs/ref/samtools_faidx/{ref}.log",
     conda:
         "../envs/samtools.yaml"
+    benchmark:
+        "benchmarks/ref/samtools_faidx/{ref}.log"
     shell:
         """
         samtools faidx {input} 2> {log}
         """
 
+
 rule ref_chunking:
+    """Create regions files for running ANGSD in chunks along the genome"""
     input:
-        "results/ref/{ref}/{ref}.fa"
+        "results/ref/{ref}/{ref}.fa",
     output:
-        "results/datasets/{dataset}/filters/chunks/{ref}_chunk{chunk}.rf"
+        "results/datasets/{dataset}/filters/chunks/{ref}_chunk{chunk}.rf",
     log:
-        "logs/{dataset}/ref/chunking/{ref}_chunk{chunk}.rf"
+        "logs/{dataset}/ref/chunking/{ref}_chunk{chunk}.rf",
     conda:
         "../envs/shell.yaml"
     params:
-        contigs = lambda w: chunks[int(w.chunk) - 1].index.tolist()
+        contigs=lambda w: chunks[int(w.chunk) - 1].index.tolist(),
     shell:
         r"""
         echo {params.contigs} | tr " " "\n" > {output} 2> {log}
         """
 
+
 rule picard_dict:
+    """Create a dictionary for the reference using Picard for use with GATK"""
     input:
-        "results/ref/{ref}/{ref}.fa"
+        "results/ref/{ref}/{ref}.fa",
     output:
-        "results/ref/{ref}/{ref}.dict"
+        "results/ref/{ref}/{ref}.dict",
     log:
-        "logs/ref/picard_dict/{ref}.log"
+        "logs/ref/picard_dict/{ref}.log",
     conda:
         "../envs/picard.yaml"
+    benchmark:
+        "benchmarks/ref/picard_dict/{ref}.log"
     shell:
         r"""
         picard CreateSequenceDictionary -Xmx{resources.mem_mb}m \

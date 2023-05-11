@@ -1,0 +1,84 @@
+# Rules for generating site frequency spectra
+
+
+rule realSFS_1dSFS:
+    """
+    Generate a 1D site frequency spectrum.
+    """
+    input:
+        saf="results/datasets/{dataset}/safs/{dataset}.{ref}_{population}{dp}.saf.idx",
+        others=multiext(
+            "results/datasets/{dataset}/safs/{dataset}.{ref}_{population}{dp}.saf",
+            ".pos.gz",
+            ".gz",
+        ),
+    output:
+        sfs=ensure(
+            "results/datasets/{dataset}/analyses/sfs/{dataset}.{ref}_{population}{dp}.sfs",
+            non_empty=True,
+        ),
+    container:
+        angsd_container
+    log:
+        "logs/{dataset}/realSFS/1dSFS/{dataset}.{ref}_{population}{dp}.log",
+    benchmark:
+        "benchmarks/{dataset}/realSFS/1dSFS/{dataset}.{ref}_{population}{dp}.log"
+    params:
+        fold=config["params"]["realsfs"]["fold"],
+    threads: lambda wildcards, attempt: attempt * 2
+    resources:
+        time=lambda wildcards, attempt: attempt * 120,
+    shell:
+        """
+        realSFS {input.saf} -fold {params.fold} -P {threads} \
+            > {output.sfs} 2> {log}
+        """
+
+
+rule realSFS_2dSFS:
+    """
+    Generate a 2D site frequency spectrum.
+    """
+    input:
+        saf1="results/datasets/{dataset}/safs/{dataset}.{ref}_{population1}{dp}.saf.idx",
+        saf1_others=multiext(
+            "results/datasets/{dataset}/safs/{dataset}.{ref}_{population1}{dp}.saf",
+            ".pos.gz",
+            ".gz",
+        ),
+        saf2="results/datasets/{dataset}/safs/{dataset}.{ref}_{population2}{dp}.saf.idx",
+        saf2_others=multiext(
+            "results/datasets/{dataset}/safs/{dataset}.{ref}_{population2}{dp}.saf",
+            ".pos.gz",
+            ".gz",
+        ),
+    output:
+        sfs=ensure(
+            "results/datasets/{dataset}/analyses/sfs/{dataset}.{ref}_{population1}-{population2}{dp}.sfs",
+            non_empty=True,
+        ),
+    container:
+        angsd_container
+    log:
+        "logs/{dataset}/realSFS/2dSFS/{dataset}.{ref}_{population1}-{population2}{dp}.log",
+    benchmark:
+        "benchmarks/{dataset}/realSFS/2dSFS/{dataset}.{ref}_{population1}-{population2}{dp}.log"
+    wildcard_constraints:
+        population1="|".join(
+            [i for i in samples.index.tolist()]
+            + [i for i in samples.population.values.tolist()]
+        ),
+        population2="|".join(
+            [i for i in samples.index.tolist()]
+            + [i for i in samples.population.values.tolist()]
+        ),
+    params:
+        fold=config["params"]["realsfs"]["fold"],
+    threads: lambda wildcards, attempt: attempt * 2
+    resources:
+        time=lambda wildcards, attempt: attempt * 180,
+    shell:
+        """
+        realSFS {input.saf1} {input.saf2} -fold {params.fold} \
+            -P {threads} > {output.sfs} 2> {log}
+        """

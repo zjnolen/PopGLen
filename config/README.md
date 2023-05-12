@@ -143,7 +143,7 @@ settings for each analysis are set in the next section.
 
 - `populations:` A list of populations found in your sample list to limit
   population analyses to. Might be useful if you want to perform individual
-  analyses on some samples but not include them in any population level 
+  analyses on some samples but not include them in any population level
   analyses
 
 - `analyses:`
@@ -275,5 +275,5 @@ or a pull request and I'll gladly put it in.
     - `extra:` Additional arguments to pass to NGSadmix (for instance,
       increasing `-maxiter`). (string, [docs](http://www.popgen.dk/software/index.php/NgsAdmix))
     - `ibs:` Settings for identity by state calculation with ANGSD
-      - `-doIBS:` Whether to use a random (1) or consensus (2) base in IBS 
+      - `-doIBS:` Whether to use a random (1) or consensus (2) base in IBS
         distance calculation ([docs](http://www.popgen.dk/angsd/index.php/PCA_MDS))

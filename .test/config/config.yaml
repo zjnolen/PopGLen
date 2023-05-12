@@ -1,0 +1,156 @@
+#=====================Dataset Configuration============================#
+
+samples: .test/config/samples.tsv
+
+units: .test/config/units.tsv
+
+dataset: "test"
+
+#===================== Reference Configuration ========================#
+
+# Before using your reference it is important it meets certain 
+# requirements for downstream analyses. The first is that it should be 
+# uncompressed, or, if compressed, only in bgzip format (from samtools).
+# The second is that scaffold names should be concise (10-15 char.) 
+# with only letters, numbers, and underscores.
+#
+# chunk_size - Most analyses can be run per scaffold and merged later
+# If a value is given, the genome will be broken into chunks of roughly
+# this size which will be analyzed in parallel when appropriate. In the 
+# current implementation, scaffolds will not be split if they roll over 
+# the chunk size, instead, it will fit however many whole scaffolds it 
+# can in that chunk. This may be improved later on.
+#
+# fasta - A string with the absolute or relative path to a local copy of
+# the fasta.
+#
+# mito - Scaffold containing mitochondria, will be excluded 
+# from autosomal analyses. Leave blank if not present in reference or 
+# cannot be identified.
+#
+# XZ - Scaffold(s) that are a part of XZ chromosomes. Will be excluded 
+# from autosomal analyses and included in sex-chromosome analyses.
+#
+# exclude - Scaffold(s) to exclude (i.e. abnormally sex-linked, lower-
+# quality) from all analyses. Scaffolds smaller than the min_size 
+# option don't need to be specified here.
+#
+# min_size - Scaffolds shorter than this number (bp) will be excluded.
+
+chunk_size: 200000
+
+reference:
+  name: "testref"
+  fasta: ".test/data/ref/testref.fa"
+  mito: ["chrM"]
+  sex-linked: ["chrZ"]
+  exclude: []
+  min_size: 3000
+#===================== Sample Set Configuration =======================#
+
+# Sometimes you will want to exclude individuals from downstream 
+# analyses (too low coverage, relatives in dataset, duplicated), but do 
+# not want to remove them from the sample list. List these individuals 
+# here and they will be removed.
+
+exclude_ind: []
+
+excl_pca-admix: []
+
+#==================== Downsampling Configuration ======================#
+
+downsample_cov:
+
+#====================== Analysis Selection ============================#
+# Here you select what steps in the pipeline you would like to perform.
+# Individual and dataset level analyses are performed for all 
+# individuals in the dataset. 'populations' option can take a list of 
+# populations to perform population level analyses on. If this is left
+# empty, population level analyses will be performed for each unique
+# population name in the sample list, excluding single sample 
+# populations in analyses that are biased by or do not support them.
+
+populations: []
+
+analyses:
+  # filtering
+  genmap: true
+  repeatmasker:
+    local_lib:
+    dfam_lib:
+    build_lib: true
+  extreme_depth: true
+  dataset_missing_data: 0.5
+  population_missing_data: 0.5
+  # quality control
+  qualimap: true
+  damageprofiler: true
+  endogenous_content: true
+  relatedness: 
+    ngsrelate: true
+    waples2019: true
+  # population genomic analyses
+  pca_pcangsd: true
+  admix_ngsadmix: true
+  thetas_angsd: true
+  heterozygosity_angsd: true
+  fst_angsd:
+    populations: true
+    individuals: false
+  inbreeding_ngsf-hmm: true
+  ibs_matrix: true
+
+#===================== Software Configuration =========================#
+
+mapQ: 30
+baseQ: 30
+
+params:
+  genmap:
+    K: "100"
+    E: "2"
+    map_thresh: 1
+  fastp:
+    extra: "-p -g --overlap_len_require 15"
+  picard:
+    # By default we set Picard to remove duplicate reads, change to 
+    # false to flag only.
+    MarkDuplicates: "--REMOVE_DUPLICATES true --OPTICAL_DUPLICATE_PIXEL_DISTANCE 2500"
+  angsd:
+    # gl_model - 1=SAMtools, 2=GATK, 3=SOAPsnp, 4=SYK; default is 1
+    gl_model: 2
+    # When calculating per individual depth, any depth higher than this 
+    # value will be binned to this value.
+    maxdepth: 1000
+    # extra - any additional filtering parameters to be used across all 
+    # analyses with angsd. By default, we use -C 50 to correct for 
+    # excessive mismatches, only include paired reads when both mates map,
+    # remove reads with multiple best hits, and reduce base quality scores 
+    # based on baq (penalizes bases around indels)
+    extra: "-C 50 -uniqueOnly 1"
+    snp_pval: "1e-6"
+    min_maf: 0.05
+  realsfs:
+    # fold - Define if SFS should be folded when made. If you don't 
+    # have ancestral states to assign to -anc, it is best to set to 1. 
+    # We set the default to 1.
+    fold: 1
+    # sfsboot - Define number of bootstrap SFS to produce, we default 
+    # to 100.
+    sfsboot: 100
+  fst:
+    whichFst: 1
+    win_size: 50000
+    win_step: 10000
+  thetas:
+    win_size: 50000
+    win_step: 10000
+  ngsadmix:
+    kvalues: [1,2,3,4]
+    reps: 100
+    minreps: 20
+    thresh:
+    conv:
+    extra: "-maxiter 4000"
+  ibs:
+    doibs: 1

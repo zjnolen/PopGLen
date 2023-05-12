@@ -1,0 +1,53 @@
+name: Tests
+
+on:
+  push:
+    branches:
+      - develop
+  pull_request:
+    branches_ignore: []
+
+jobs:
+  formatting:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout with submodules
+      uses: actions/checkout@v3.5.2
+      with:
+        submodules: recursive
+        fetch-depth: 0
+    - name: Formatting
+      uses: github/super-linter@v5
+      env:
+        VALIDATE_ALL_CODEBASE: false
+        DEFAULT_BRANCH: master
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        VALIDATE_SNAKEMAKE_SNAKEFMT: true
+  linting:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3.5.2
+    - name: Linting
+      uses: snakemake/snakemake-github-action@v1.24.0
+      with:
+        snakefile: "workflow/Snakefile"
+        args: "--configfile .test/config/config.yaml --lint"
+
+  run-workflow:
+    runs-on: ubuntu-latest
+    needs:
+      - linting
+      - formatting
+    steps:
+    - name: Checkout repository with submodules
+      uses: actions/checkout@v3.5.2
+    - name: Test workflow
+      uses: snakemake/snakemake-github-action@v1.24.0
+      with:
+        snakefile: "workflow/Snakefile"
+        args: "--configfile .test/config/config.yaml --use-conda --show-failed-logs --cores 2 --conda-cleanup-pkgs cache --use-singularity"
+    - name: Test report
+      uses: snakemake/snakemake-github-action@v1.24.0
+      with:
+        snakefile: "workflow/Snakefile"
+        args: "--configfile .test/config_basic/config.yaml --report report.html"

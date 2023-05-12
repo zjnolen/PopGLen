@@ -31,7 +31,7 @@ jobs:
       uses: snakemake/snakemake-github-action@v1.24.0
       with:
         snakefile: "workflow/Snakefile"
-        args: "--configfile config/config.yaml --lint"
+        args: "--configfile .test/config/config.yaml --lint"
 
   run-workflow:
     runs-on: ubuntu-latest
@@ -45,9 +45,9 @@ jobs:
       uses: snakemake/snakemake-github-action@v1.24.0
       with:
         snakefile: "workflow/Snakefile"
-        args: "--configfile config/config.yaml --use-conda --show-failed-logs --cores 2 --conda-cleanup-pkgs cache --use-singularity"
+        args: "--configfile .test/config/config.yaml --use-conda --show-failed-logs --cores 2 --conda-cleanup-pkgs cache --use-singularity"
     - name: Test report
       uses: snakemake/snakemake-github-action@v1.24.0
       with:
         snakefile: "workflow/Snakefile"
-        args: "--configfile config/config.yaml --report report.html"
+        args: "--configfile .test/config/config.yaml --report report.html"

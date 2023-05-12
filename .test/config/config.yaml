@@ -1,8 +1,8 @@
 #=====================Dataset Configuration============================#
 
-samples: .test/config/samples.tsv
+samples: config/samples.tsv
 
-units: .test/config/units.tsv
+units: config/units.tsv
 
 dataset: "test"
 

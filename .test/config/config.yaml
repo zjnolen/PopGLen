@@ -41,7 +41,7 @@ chunk_size: 200000
 
 reference:
   name: "testref"
-  fasta: ".test/data/ref/testref.fa"
+  fasta: "data/ref/testref.fa"
   mito: ["chrM"]
   sex-linked: ["chrZ"]
   exclude: []

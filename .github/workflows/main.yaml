@@ -42,7 +42,7 @@ jobs:
       uses: snakemake/snakemake-github-action@v1.24.0
       with:
         snakefile: "workflow/Snakefile"
-        args: "--configfile .test/config/config.yaml --use-conda --show-failed-logs --cores 2 --conda-cleanup-pkgs cache --use-singularity --default-resources 'mem_mb=1000'"
+        args: "--configfile .test/config/config.yaml --use-conda --show-failed-logs --cores 2 --conda-cleanup-pkgs cache --use-singularity --default-resources mem_mb=1000"
     - name: Test report
       uses: snakemake/snakemake-github-action@v1.24.0
       with:

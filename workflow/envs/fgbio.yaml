@@ -4,4 +4,4 @@ channels:
 
 dependencies:
   - fgbio =2.0.2
-  - samtools =1.14
+  - samtools =1.15

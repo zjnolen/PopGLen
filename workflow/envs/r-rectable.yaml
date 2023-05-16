@@ -2,7 +2,7 @@ channels:
   - conda-forge
   - bioconda
 dependencies:
-  - r-base
-  - r-data.table
-  - r-reactable
-  - r-rmarkdown
+  - r-base =4.2.*
+  - r-data.table =1.14.8
+  - r-reactable =0.4.4
+  - r-rmarkdown =2.21

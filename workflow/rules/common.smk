@@ -13,6 +13,10 @@ import csv
 
 min_version("7.25.0")
 
+# Containerize workflow
+
+containerized: "docker://zjnolen/angsd-snakemake-pipeline:0.1"
+
 # Create variables for software containers (for easier version updating)
 
 angsd_container = "docker://zjnolen/angsd:0.938"
@@ -21,6 +25,7 @@ evaladmix_container = "docker://zjnolen/evaladmix:0.961"
 ngsf_hmm_container = "docker://zjnolen/ngsf-hmm:20200722-2df9690"
 mapdamage_container = "docker://quay.io/biocontainers/mapdamage2:2.2.1--pyr40_0"
 ngsrelate_container = "docker://zjnolen/ngsrelate:20220925-ec95c8f"
+ngsld_container = "library://james-s-santangelo/ngsld/ngsld:1.1.1"
 
 
 # Define function for genome chunks to break up analysis (for parallelization)

@@ -19,7 +19,7 @@ rule ngsLD_estLD:
     benchmark:
         "benchmarks/{dataset}/ngsLD/estLD/{dataset}{ref}_{population}{dp}_chunk{chunk}.log"
     container:
-        "library://james-s-santangelo/ngsld/ngsld:1.1.1"
+        ngsld_container
     threads: lambda wildcards, attempt: attempt
     resources:
         time=lambda wildcards, attempt: attempt * 720,

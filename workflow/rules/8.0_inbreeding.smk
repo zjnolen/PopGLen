@@ -24,21 +24,8 @@ rule ngsf_hmm:
     threads: lambda wildcards, attempt: attempt * 10
     resources:
         time=lambda wildcards, attempt: attempt * 2880,
-    shell:
-        r"""
-        (zcat {input.beagle} | awk '{{print $1}}' | sed 's/\(.*\)_/\1\t/' \
-            | tail -n +2 > {output.pos}
-        
-        nsites=$(cat {output.pos} | wc -l)
-
-        nind={params.nind}
-
-        export TMPDIR={resources.tmpdir}
-
-        workflow/scripts/ngsF-HMM.sh --geno {input.beagle} --n_ind $nind \
-            --n_sites $nsites --pos {output.pos} --lkl \
-            --out {params.out} --n_threads {threads}) 2> {log}
-        """
+    script:
+        "../scripts/ngsF-HMM.sh"
 
 
 rule convert_ibd:

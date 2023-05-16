@@ -13,6 +13,7 @@ rule ngsAdmix:
     output:
         qopt="results/datasets/{dataset}/analyses/ngsadmix/{dataset}.{ref}_all{dp}_K{kvalue}.qopt",
         fopt="results/datasets/{dataset}/analyses/ngsadmix/{dataset}.{ref}_all{dp}_K{kvalue}.fopt.gz",
+        log="results/datasets/{dataset}/analyses/ngsadmix/{dataset}.{ref}_all{dp}_K{kvalue}_optimization_wrapper.log",
     log:
         "logs/{dataset}/ngsadmix/{dataset}.{ref}_all{dp}_K{kvalue}.log",
     benchmark:
@@ -29,16 +30,8 @@ rule ngsAdmix:
     threads: 4
     resources:
         time=lambda wildcards, attempt: attempt * 2880,
-    shell:
-        """
-        (export TMPDIR={resources.tmpdir}
-        export reps={params.reps}
-        export minreps={params.reps}
-        export thresh={params.thresh}
-        export conv={params.conv}
-        workflow/scripts/ngsadmix.sh -likes {input.beagle} {params.extra} \
-            -K {wildcards.kvalue} -P {threads} -o {params.prefix}) &> {log}
-        """
+    script:
+        "../scripts/ngsadmix.sh"
 
 
 rule plot_admix:

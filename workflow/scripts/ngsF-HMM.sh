@@ -7,71 +7,35 @@
 # Depends on: ngsF-HMM (case sensitive) in $PATH
 
 # Author: Zachary J. Nolen
-# Last updated: 2022-07-06
+# Last updated: 2023-05-16
 
-
-# If you would like to change the settings of this wrapper, export the
-# variables of interest before running and it will prioritize the ones you
-# define. If you don't, they will set their defaults. Eligible options are:
-#
-# $TMPDIR - The temporary directory where temporary results are processed
-#
-# $reps - The maximum number of replicates to perform if convergence is not
-# reached (default 100)
-#
-# $conv - The number of top replicates to assess convergence of (default 3)
-#
-# $thresh - The maximum range of likelihoods for the top $conv replicates to 
-# count as converged (default 2)
+# This version is modified to be compatible with a snakemake pipeline, see 
+# previous commits for a more general version.
 
 #####################
 ### Housekeeping ####
 #####################
 
-# Define function to make printing to stderr easy
+(# Define function to make printing to stderr easy
 echoerr() { echo "$@" 1>&2; }
 
 # Make it so stuff fails more often
 set -eo pipefail
 
-#####################
-## Parse Arguments ##
-#####################
+################################
+## Import Snakemake Arguments ##
+################################
 
-# Parse arguments and divide up between what will be passed to ngsF-HMM 
-# and what will be used for wrapper processing. Method adapted from this
-# useful answer on stack overflow: https://stackoverflow.com/a/14203146
+geno="${snakemake_input[beagle]}"
+pos="${snakemake_output[pos]}"
+zcat $geno | awk '{print $1}' | sed 's/\(.*\)_/\1\t/' | tail -n +2 > $pos
+nind="${snakemake_params[nind]}"
+nsites=$(cat $pos | wc -l)
+outpre="${snakemake_params[out]}"
+threads="${snakemake[threads]}"
+TMPDIR="${snakemake_resources[tmpdir]}"
 
-passedargs=()
-
-while [[ $# -gt 0 ]]; do
-  case $1 in
-    --out)
-      outpre="$2"
-      shift # past argument
-      shift # past value
-      ;;
-	# -resume)
-	#   resume=1
-	#   shift
-	#   ;;
-	--lkl|--loglkl|--call-geno|--indF_fixed|--alpha_fixed|--log_bin)
-	  passedargs+=("$1")
-	  shift
-	  ;;
-    -*|--*)
-      passedargs+=("$1 $2")
-	  shift
-	  shift
-      ;;
-    *)
-      passedargs+=("$1") # save positional arg
-      shift # past argument
-      ;;
-  esac
-done
-
-passedargs=${passedargs[@]}
+passedargs="--geno $geno --pos $pos --n_ind $nind --n_sites $nsites --lkl --n_threads $threads"
 
 # log what happened
 echoerr "The following options will be passed to ngsF-HMM, please make sure"
@@ -87,9 +51,6 @@ outfile=$(basename $outpre)
 outdir=$(dirname $outpre)
 
 # temp directory
-if [ -z $TMPDIR ]; then
-    TMPDIR=$HOME/scratch
-fi
 temp=$TMPDIR/ngsF-HMM_opt_$outfile
 mkdir -p $temp
 
@@ -119,7 +80,7 @@ echoerr
 
 # set maximum number of replicates to perform before stopping if not 
 # converged
-if [ -z $reps ]; then
+if [ -z $reps ] || [ "$reps" = "None" ]; then
 	reps=100
 else
 	echoerr 'WARNING: $reps has been modified from the default.'
@@ -129,7 +90,7 @@ fi
 
 # set maximum range between top reps in likelihood units to qualify reps
 # as reaching convergance
-if [ -z $thresh ]; then
+if [ -z $thresh ] || [ "$thresh" = "None" ]; then
 	thresh=2
 else
 	echoerr 'WARNING: $thresh has been modified from the default.'
@@ -139,7 +100,7 @@ fi
 
 # set the minimum number of top replicates that must be within the value 
 # $thresh to qualify as converged
-if [ -z $conv ]; then
+if [ -z $conv ] || [ "$conv" = "None" ]; then
 	conv=3
 else
 	echoerr 'WARNING: $conv has been modified from the default.'
@@ -183,7 +144,7 @@ mkdir -p $temp/bestrep
 # run replicates of ngsF-HMM until we hit either convergence or $reps
 for i in $(seq 1 $reps); do
 	# check if loop should break when convergence is reached
-	if (( "$i" > "4" )); then
+	if (( "$i" > "20" )); then
 		# sort likelihoods, see if top three are within $thresh of each other
 		# and break if so
 		diff=$(sort -k2gr $templog | head -n 3 | awk '{print $2}' | \
@@ -249,4 +210,4 @@ else
 	echoerr "run."
 	echoerr "best like = $bestlike; output like = $yourlike"
 	exit -1
-fi
+fi) 2> "${snakemake_log[0]}"

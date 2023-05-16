@@ -59,18 +59,11 @@ rule ngsLD_prune_sites:
     threads: lambda wildcards, attempt: attempt * 2
     resources:
         time=lambda wildcards, attempt: attempt * 1440,
-    shell:
-        """
-        (nsites=$(cat {input.pos} | wc -l)
-
-        if [[ $nsites == 0 ]]; then
-            touch {output.sites}
-        else
-            workflow/scripts/prune_ngsLD.py --input {input.ld} --max_dist 50000 \
-                --min_weight 0.1 --output {output.sites}
-        fi) 2> {log}
-        """
-
+    params:
+        maxdist=50000,
+        minweight=0.1,
+    script:
+        "../scripts/prune_ngsLD.py"
 
 rule prune_chunk_beagle:
     """

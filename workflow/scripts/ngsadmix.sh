@@ -4,10 +4,14 @@
 # Execute with whatever arguments you would give to ngsadmix and it will run
 # replicates until they converge or a maximum number is reached
 
+# This version of the script has been modified for compatibility with a 
+# snakemake workflow, look at previous commits of this file to get a more 
+# generalized version.
+
 # Depends on: NGSadmix (case sensitive) in $PATH
 
 # Author: Zachary J. Nolen
-# Last updated: 2023-04-18
+# Last updated: 2023-05-16
 
 
 # If you would like to change the settings of this wrapper, export the
@@ -34,46 +38,28 @@
 ### Housekeeping ####
 #####################
 
-# Define function to make printing to stderr easy
+(# Define function to make printing to stderr easy
 echoerr() { echo "$@" 1>&2; }
 
 # Make it so stuff fails more often
 set -eo pipefail
 
-#####################
-## Parse Arguments ##
-#####################
+################################
+## Import Snakemake Arguments ##
+################################
 
-# Parse arguments and divide up between what will be passed to ngsadmix 
-# and what will be used for wrapper processing. Method adapted from this
-# useful answer on stack overflow: https://stackoverflow.com/a/14203146
+beagle="${snakemake_input[beagle]}"
+extra="${snakemake_params[extra]}"
+kvalue="${snakemake_wildcards[kvalue]}"
+threads="${snakemake[threads]}"
+outpre="${snakemake_params[prefix]}"
+reps="${snakemake_params[reps]}"
+minreps="${snakemake_params[minreps]}"
+thresh="${snakemake_params[thresh]}"
+conv="${snakemake_params[conv]}"
+TMPDIR="${snakemake_resources[tmpdir]}"
 
-passedargs=()
-
-while [[ $# -gt 0 ]]; do
-  case $1 in
-    -o|-outfiles)
-      outpre="$2"
-      shift # past argument
-      shift # past value
-      ;;
-	-resume)
-	  resume=1
-	  shift
-	  ;;
-    -*|--*)
-      passedargs+=("$1 $2")
-	  shift
-	  shift
-      ;;
-    *)
-      passedargs+=("$1") # save positional arg
-      shift # past argument
-      ;;
-  esac
-done
-
-passedargs=${passedargs[@]}
+passedargs="-likes $beagle $extra -K $kvalue -P $threads"
 
 # log what happened
 echoerr "The following options will be passed to ngsadmix, please make sure"
@@ -89,9 +75,6 @@ outfile=$(basename $outpre)
 outdir=$(dirname $outpre)
 
 # temp directory
-if [ -z $TMPDIR ]; then
-    TMPDIR=$HOME/scratch
-fi
 temp=$TMPDIR/ngsadmix_opt_$outfile
 mkdir -p $temp
 
@@ -121,38 +104,42 @@ echoerr
 
 # set maximum number of replicates to perform before stopping if not 
 # converged
-if [ -z $reps ]; then
+if [ -z "$reps" ] || [ "$reps" = "None" ]; then
 	reps=100
 else
-	echoerr 'WARNING: $reps has been modified from the default.'
+	echoerr 'WARNING: $reps may have been modified from the default.'
+	echoerr '$reps is now set to: '"$reps."
 	echoerr 'Ignore if this change was intentional.'
 	echoerr
 fi
 
-if [ -z $minreps ]; then
+if [ -z $minreps ] || [ "$minreps" = "None" ]; then
 	minreps=20
 else
-	echoerr 'WARNING: $minreps has been modified from the default.'
+	echoerr 'WARNING: $minreps may have been modified from the default.'
+	echoerr '$minreps is now set to: '"$minreps."
 	echoerr 'Ignore if this change was intentional.'
 	echoerr
 fi
 
 # set maximum range between top reps in likelihood units to qualify reps
 # as reaching convergance
-if [ -z $thresh ]; then
+if [ -z $thresh ] || [ "$thresh" = "None" ]; then
 	thresh=2
 else
-	echoerr 'WARNING: $thresh has been modified from the default.'
+	echoerr 'WARNING: $thresh may have been modified from the default.'
+	echoerr '$thresh is now set to: '"$thresh."
 	echoerr 'Ignore if this change was intentional.'
 	echoerr
 fi
 
 # set the minimum number of top replicates that must be within the value 
 # $thresh to qualify as converged
-if [ -z $conv ]; then
+if [ -z $conv ] || [ "$conv" = "None" ]; then
 	conv=3
 else
-	echoerr 'WARNING: $conv has been modified from the default.'
+	echoerr 'WARNING: $conv may have been modified from the default.'
+	echoerr '$conv is now set to: '"$conv."
 	echoerr 'Ignore if this change was intentional.'
 	echoerr
 fi
@@ -161,15 +148,15 @@ fi
 if (( $(echo "$thresh > 0" | bc -l) )); then
 echoerr "Beginning ngsadmix replicates, will perform replicate runs until "
 echoerr "until $reps replicates have finished. If you'd like to change "
-echoerr 'these convergence criteria, edit the $reps, $thresh, or $conv '
-echoerr 'variables in the wrapper or export them before starting.'
+echoerr 'these convergence criteria, edit the reps, thresh, or conv '
+echoerr 'variables in the snakemake config.'
 echoerr
 else
 echoerr "Beginning ngsadmix replicates, will perform replicate runs until "
 echoerr "the top $conv runs are within $thresh log-likelihood units of each "
 echoerr "other or until $reps replicates have finished. If you'd like to "
-echoerr 'change these convergence criteria, edit the $reps, $thresh, or '
-echoerr '$conv variables in the wrapper or export them before starting.'
+echoerr 'change these convergence criteria, edit the reps, thresh, or '
+echoerr 'conv variables in the snakemake config.'
 echoerr
 fi
 
@@ -179,38 +166,13 @@ fi
 
 # set log file where replicate likelihoods will be stored and assessed from
 templog=$temp/${outfile}_optimization_wrapper.log
-permlog=$outdir/${outfile}_optimization_wrapper.log
+permlog="${snakemake_output[log]}"
 mkdir -p $temp/bestrep
-
-# initialize the log and make the temporary directory for kept results
-if [ "$resume" == "1" ]; then
-	echoerr "Resuming optimization from previous run."
-	if [ ! -f $permlog ]; then
-		echoerr "ERROR: Log from previous optimization not found, please "
-		echoerr "ensure that an optimization log from a previous run of this "
-		echoerr "wrapper, along with its best replicate output are in: "
-		echoerr "$permlog"
-		exit -1
-	fi
-	cp $permlog $templog
-	cp $outdir/${outfile}.filter $temp/bestrep/
-	cp $outdir/${outfile}.fopt.gz $temp/bestrep/
-	cp $outdir/${outfile}.log $temp/bestrep/
-	cp $outdir/${outfile}.qopt $temp/bestrep/
-	initrep=$(tail -1 $templog | awk '{print $1+1}')
-	echoerr "Will pick up on replicate $initrep, if run has not already "
-	echoerr "met convergence criteria."
-	echoerr "WARNING: I will not check to ensure your options are the same "
-	echoerr "on this run as the previous, only that the output filenames "
-	echoerr "match."
-else
-	> $permlog
-	> $templog
-	initrep=1
-fi
+> $templog
+> $permlog
 
 # run replicates of ngsadmix until we hit either convergence or $reps
-for i in $(seq $initrep $reps); do
+for i in $(seq 1 $reps); do
 	if (( $(echo "$thresh > 0" | bc -l) )); then
 		# check if loop should break when convergence is reached
 		if (( "$i" > "$minreps" )); then
@@ -286,4 +248,4 @@ else
 	echoerr "run."
 	echoerr "best like = $bestlike; output like = $yourlike"
 	exit -1
-fi
+fi) 2> "$snakemake_log[0]"

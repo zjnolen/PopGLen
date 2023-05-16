@@ -36,6 +36,8 @@ jobs:
       - linting
       - formatting
     steps:
+    - name: Maximize build disk space
+      uses: easimon/maximize-build-space@v7
     - name: Checkout repository
       uses: actions/checkout@v3.5.2
     - name: Set up conda environment and singularity

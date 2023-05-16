@@ -9,9 +9,7 @@ dependencies:
   # core packages for workflow
   - python =3.11.*
   - snakemake-minimal =7.25.*
+  - pandas =2.0.1
   - mamba
-  - pandas
   - graphviz
-  - perl
-  - gzip
   - pygments

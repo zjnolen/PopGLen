@@ -1,0 +1,4 @@
+usage:
+  software-stack-deployment:
+    singularity+conda: true
+  report: true

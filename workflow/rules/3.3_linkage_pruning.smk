@@ -65,6 +65,7 @@ rule ngsLD_prune_sites:
     script:
         "../scripts/prune_ngsLD.py"
 
+
 rule prune_chunk_beagle:
     """
     Subsets beagle file to pruned SNPs.

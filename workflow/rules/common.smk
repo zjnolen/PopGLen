@@ -13,12 +13,6 @@ import csv
 
 min_version("7.25.0")
 
-# Containerize workflow
-
-
-containerized: "docker://zjnolen/angsd-snakemake-pipeline:0.1"
-
-
 # Create variables for software containers (for easier version updating)
 
 angsd_container = "docker://zjnolen/angsd:0.938"

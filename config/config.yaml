@@ -17,6 +17,7 @@ reference:
   sex-linked: []
   exclude: []
   min_size:
+
 #===================== Sample Set Configuration =======================#
 
 exclude_ind: []
@@ -58,6 +59,13 @@ analyses:
     individuals: false
   inbreeding_ngsf-hmm: false
   ibs_matrix: false
+
+#=========================== Filter Sets ==============================#
+
+filter_beds:
+  example:
+
+only_filter_beds: false
 
 #===================== Software Configuration =========================#
 

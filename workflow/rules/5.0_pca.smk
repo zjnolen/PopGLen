@@ -8,13 +8,13 @@ rule remove_excl_pca_admix:
     results), while allowing them in all other analyses.
     """
     input:
-        "results/datasets/{dataset}/beagles/pruned/{dataset}.{ref}_all{dp}_pruned.beagle.gz",
+        "results/datasets/{dataset}/beagles/pruned/{dataset}.{ref}_all{dp}_{sites}-filts_pruned.beagle.gz",
     output:
-        "results/datasets/{dataset}/beagles/pruned/{dataset}.{ref}_all_excl_pca-admix{dp}_pruned.beagle.gz",
+        "results/datasets/{dataset}/beagles/pruned/{dataset}.{ref}_all_excl_pca-admix{dp}_{sites}-filts_pruned.beagle.gz",
     log:
-        "logs/{dataset}/ngsLD/excl_pca_admix_beagle/{dataset}.{ref}_all_excl_pca-admix{dp}.log",
+        "logs/{dataset}/ngsLD/excl_pca_admix_beagle/{dataset}.{ref}_all_excl_pca-admix{dp}_{sites}-filts.log",
     benchmark:
-        "benchmarks/{dataset}/ngsLD/excl_pca_admix_beagle/{dataset}.{ref}_all_excl_pca-admix{dp}.log"
+        "benchmarks/{dataset}/ngsLD/excl_pca_admix_beagle/{dataset}.{ref}_all_excl_pca-admix{dp}_{sites}-filts.log"
     conda:
         "../envs/shell.yaml"
     params:
@@ -30,13 +30,13 @@ rule pca_pcangsd:
     Produces covariance matrix from SNP genotype likelihood data with PCAngsd.
     """
     input:
-        beagle="results/datasets/{dataset}/beagles/pruned/{dataset}.{ref}_all{dp}_pruned.beagle.gz",
+        beagle="results/datasets/{dataset}/beagles/pruned/{dataset}.{ref}_all{dp}_{sites}-filts_pruned.beagle.gz",
     output:
-        cov="results/datasets/{dataset}/analyses/pcangsd/{dataset}.{ref}_all{dp}.cov",
+        cov="results/datasets/{dataset}/analyses/pcangsd/{dataset}.{ref}_all{dp}_{sites}-filts.cov",
     log:
-        "logs/{dataset}/pcangsd/{dataset}.{ref}_all{dp}.log",
+        "logs/{dataset}/pcangsd/{dataset}.{ref}_all{dp}_{sites}-filts.log",
     benchmark:
-        "benchmarks/{dataset}/pcangsd/{dataset}.{ref}_all{dp}.log"
+        "benchmarks/{dataset}/pcangsd/{dataset}.{ref}_all{dp}_{sites}-filts.log"
     container:
         pcangsd_container
     params:
@@ -55,11 +55,11 @@ rule plot_pca:
     Plots PCA for various pairs of PCs.
     """
     input:
-        "results/datasets/{dataset}/analyses/pcangsd/{dataset}.{ref}_all{dp}.cov",
+        "results/datasets/{dataset}/analyses/pcangsd/{dataset}.{ref}_all{dp}_{sites}-filts.cov",
         "results/datasets/{dataset}/poplists/{dataset}_all.indiv.list",
     output:
         report(
-            "results/datasets/{dataset}/plots/pca/{dataset}.{ref}_all{dp}_pc{xpc}-{ypc}.svg",
+            "results/datasets/{dataset}/plots/pca/{dataset}.{ref}_all{dp}_{sites}-filts_pc{xpc}-{ypc}.svg",
             category="PCA",
             labels={
                 "Topic": "PCA",
@@ -69,9 +69,9 @@ rule plot_pca:
             },
         ),
     log:
-        "logs/{dataset}/pcangsd/{dataset}.{ref}_all{dp}_pc{xpc}-{ypc}_plot.log",
+        "logs/{dataset}/pcangsd/{dataset}.{ref}_all{dp}_{sites}-filts_pc{xpc}-{ypc}_plot.log",
     benchmark:
-        "benchmarks/{dataset}/pcangsd/{dataset}.{ref}_all{dp}_pc{xpc}-{ypc}_plot.log"
+        "benchmarks/{dataset}/pcangsd/{dataset}.{ref}_all{dp}_{sites}-filts_pc{xpc}-{ypc}_plot.log"
     conda:
         "../envs/r.yaml"
     script:

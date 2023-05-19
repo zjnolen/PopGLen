@@ -7,17 +7,17 @@ rule ngsLD_estLD:
     Estimates pairwise linkage disequilibrium between SNPs.
     """
     input:
-        beagle="results/datasets/{dataset}/beagles/chunks/{dataset}.{ref}_{population}{dp}_chunk{chunk}.beagle.gz",
+        beagle="results/datasets/{dataset}/beagles/chunks/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.beagle.gz",
         bamlist="results/datasets/{dataset}/bamlists/{dataset}.{ref}_{population}{dp}.bamlist",
     output:
         ld=temp(
-            "results/datasets/{dataset}/beagles/pruned/ngsLD/{dataset}{ref}_{population}{dp}_chunk{chunk}.ld.gz"
+            "results/datasets/{dataset}/beagles/pruned/ngsLD/{dataset}{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.ld.gz"
         ),
-        pos="results/datasets/{dataset}/beagles/pruned/ngsLD/{dataset}{ref}_{population}{dp}_chunk{chunk}.pos",
+        pos="results/datasets/{dataset}/beagles/pruned/ngsLD/{dataset}{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.pos",
     log:
-        "logs/{dataset}/ngsLD/estLD/{dataset}{ref}_{population}{dp}_chunk{chunk}.log",
+        "logs/{dataset}/ngsLD/estLD/{dataset}{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.log",
     benchmark:
-        "benchmarks/{dataset}/ngsLD/estLD/{dataset}{ref}_{population}{dp}_chunk{chunk}.log"
+        "benchmarks/{dataset}/ngsLD/estLD/{dataset}{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.log"
     container:
         ngsld_container
     threads: lambda wildcards, attempt: attempt
@@ -46,14 +46,14 @@ rule ngsLD_prune_sites:
     Prunes SNPs to produce a list of SNPs in linkage equilibrium.
     """
     input:
-        ld="results/datasets/{dataset}/beagles/pruned/ngsLD/{dataset}{ref}_{population}{dp}_chunk{chunk}.ld.gz",
-        pos="results/datasets/{dataset}/beagles/pruned/ngsLD/{dataset}{ref}_{population}{dp}_chunk{chunk}.pos",
+        ld="results/datasets/{dataset}/beagles/pruned/ngsLD/{dataset}{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.ld.gz",
+        pos="results/datasets/{dataset}/beagles/pruned/ngsLD/{dataset}{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.pos",
     output:
-        sites="results/datasets/{dataset}/beagles/pruned/ngsLD/{dataset}{ref}_{population}{dp}_chunk{chunk}_pruned.sites",
+        sites="results/datasets/{dataset}/beagles/pruned/ngsLD/{dataset}{ref}_{population}{dp}_chunk{chunk}_{sites}-filts_pruned.sites",
     log:
-        "logs/{dataset}/ngsLD/prune_sites/{dataset}{ref}_{population}{dp}_chunk{chunk}.log",
+        "logs/{dataset}/ngsLD/prune_sites/{dataset}{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.log",
     benchmark:
-        "benchmarks/{dataset}/ngsLD/prune_sites/{dataset}{ref}_{population}{dp}_chunk{chunk}.log"
+        "benchmarks/{dataset}/ngsLD/prune_sites/{dataset}{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.log"
     conda:
         "../envs/pruning.yaml"
     threads: lambda wildcards, attempt: attempt * 2
@@ -71,21 +71,21 @@ rule prune_chunk_beagle:
     Subsets beagle file to pruned SNPs.
     """
     input:
-        beagle="results/datasets/{dataset}/beagles/chunks/{dataset}.{ref}_{population}{dp}_chunk{chunk}.beagle.gz",
-        sites="results/datasets/{dataset}/beagles/pruned/ngsLD/{dataset}{ref}_all{dp}_chunk{chunk}_pruned.sites",
+        beagle="results/datasets/{dataset}/beagles/chunks/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.beagle.gz",
+        sites="results/datasets/{dataset}/beagles/pruned/ngsLD/{dataset}{ref}_all{dp}_chunk{chunk}_{sites}-filts_pruned.sites",
     output:
-        prunedgz="results/datasets/{dataset}/beagles/pruned/chunks/{dataset}.{ref}_{population}{dp}_chunk{chunk}_pruned.beagle.gz",
+        prunedgz="results/datasets/{dataset}/beagles/pruned/chunks/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts_pruned.beagle.gz",
     log:
-        "logs/{dataset}/ngsLD/prune_beagle/{dataset}{ref}_{population}{dp}_chunk{chunk}.log",
+        "logs/{dataset}/ngsLD/prune_beagle/{dataset}{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.log",
     benchmark:
-        "benchmarks/{dataset}/ngsLD/prune_beagle/{dataset}{ref}_{population}{dp}_chunk{chunk}.log"
+        "benchmarks/{dataset}/ngsLD/prune_beagle/{dataset}{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.log"
     conda:
         "../envs/shell.yaml"
     shadow:
         "minimal"
     threads: lambda wildcards, attempt: attempt * 10
     params:
-        pruned="results/datasets/{dataset}/beagles/pruned/chunks/{dataset}{ref}_{population}{dp}_chunk{chunk}_pruned.beagle",
+        pruned="results/datasets/{dataset}/beagles/pruned/chunks/{dataset}{ref}_{population}{dp}_chunk{chunk}_{sites}-filts_pruned.beagle",
     resources:
         time=lambda wildcards, attempt: attempt * 120,
     shell:
@@ -113,15 +113,15 @@ rule merge_pruned_beagles:
     """
     input:
         pruned=lambda w: expand(
-            "results/datasets/{{dataset}}/beagles/pruned/chunks/{{dataset}}.{{ref}}_{{population}}{{dp}}_chunk{chunk}_pruned.beagle.gz",
+            "results/datasets/{{dataset}}/beagles/pruned/chunks/{{dataset}}.{{ref}}_{{population}}{{dp}}_chunk{chunk}_{{sites}}-filts_pruned.beagle.gz",
             chunk=chunklist,
         ),
     output:
-        beagle="results/datasets/{dataset}/beagles/pruned/{dataset}.{ref}_{population}{dp}_pruned.beagle.gz",
+        beagle="results/datasets/{dataset}/beagles/pruned/{dataset}.{ref}_{population}{dp}_{sites}-filts_pruned.beagle.gz",
     log:
-        "logs/{dataset}/ngsLD/merge_pruned/{dataset}.{ref}_{population}{dp}_merge_pruned.log",
+        "logs/{dataset}/ngsLD/merge_pruned/{dataset}.{ref}_{population}{dp}_{sites}-filts_merge_pruned.log",
     benchmark:
-        "benchmarks/{dataset}/ngsLD/merge_pruned/{dataset}.{ref}_{population}{dp}_merge_pruned.log"
+        "benchmarks/{dataset}/ngsLD/merge_pruned/{dataset}.{ref}_{population}{dp}_{sites}-filts_merge_pruned.log"
     wildcard_constraints:
         population="|".join(
             ["all"]

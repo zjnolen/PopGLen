@@ -9,21 +9,21 @@ rule angsd_doGlf2:
     population beagle files, even if a population is fixed for a certain allele.
     """
     input:
-        glf="results/datasets/{dataset}/glfs/chunks/{dataset}.{ref}_{population}{dp}_chunk{chunk}.glf.gz",
+        glf=get_glf,
         fai="results/ref/{ref}/{ref}.fa.fai",
         sites=get_snpset,
     output:
         beagle=temp(
-            "results/datasets/{dataset}/beagles/chunks/{dataset}.{ref}_{population}{dp}_chunk{chunk}.beagle.gz"
+            "results/datasets/{dataset}/beagles/chunks/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.beagle.gz"
         ),
         maf=temp(
-            "results/datasets/{dataset}/beagles/chunks/{dataset}.{ref}_{population}{dp}_chunk{chunk}.mafs.gz"
+            "results/datasets/{dataset}/beagles/chunks/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.mafs.gz"
         ),
-        arg="results/datasets/{dataset}/beagles/chunks/{dataset}.{ref}_{population}{dp}_chunk{chunk}.arg",
+        arg="results/datasets/{dataset}/beagles/chunks/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.arg",
     log:
-        "logs/{dataset}/angsd/doGlf2/{dataset}.{ref}_{population}{dp}_chunk{chunk}.log",
+        "logs/{dataset}/angsd/doGlf2/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.log",
     benchmark:
-        "benchmarks/{dataset}/angsd/doGlf2/{dataset}.{ref}_{population}{dp}_chunk{chunk}.log"
+        "benchmarks/{dataset}/angsd/doGlf2/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.log"
     container:
         angsd_container
     params:
@@ -47,15 +47,15 @@ rule merge_beagle:
     """
     input:
         lambda w: expand(
-            "results/datasets/{{dataset}}/beagles/chunks/{{dataset}}.{{ref}}_{{population}}{{dp}}_chunk{chunk}.beagle.gz",
+            "results/datasets/{{dataset}}/beagles/chunks/{{dataset}}.{{ref}}_{{population}}{{dp}}_chunk{chunk}_{{sites}}-filts.beagle.gz",
             chunk=chunklist,
         ),
     output:
-        beagle="results/datasets/{dataset}/beagles/{dataset}.{ref}_{population}{dp}.beagle.gz",
+        beagle="results/datasets/{dataset}/beagles/{dataset}.{ref}_{population}{dp}_{sites}-filts.beagle.gz",
     log:
-        "logs/{dataset}/angsd/doGlf2/{dataset}.{ref}_{population}{dp}_merge-beagle.log",
+        "logs/{dataset}/angsd/doGlf2/{dataset}.{ref}_{population}{dp}_{sites}-filts_merge-beagle.log",
     benchmark:
-        "benchmarks/{dataset}/angsd/doGlf2/{dataset}.{ref}_{population}{dp}_merge-beagle.log"
+        "benchmarks/{dataset}/angsd/doGlf2/{dataset}.{ref}_{population}{dp}_{sites}-filts_merge-beagle.log"
     conda:
         "../envs/shell.yaml"
     resources:
@@ -77,15 +77,15 @@ rule merge_maf:
     """
     input:
         lambda w: expand(
-            "results/datasets/{{dataset}}/beagles/chunks/{{dataset}}.{{ref}}_{{population}}{{dp}}_chunk{chunk}.mafs.gz",
+            "results/datasets/{{dataset}}/beagles/chunks/{{dataset}}.{{ref}}_{{population}}{{dp}}_chunk{chunk}_{{sites}}-filts.mafs.gz",
             chunk=chunklist,
         ),
     output:
-        maf="results/datasets/{dataset}/mafs/{dataset}.{ref}_{population}{dp}.mafs.gz",
+        maf="results/datasets/{dataset}/mafs/{dataset}.{ref}_{population}{dp}_{sites}-filts.mafs.gz",
     log:
-        "logs/{dataset}/angsd/doGlf2/{dataset}{ref}_{population}{dp}_merge-mafs.log",
+        "logs/{dataset}/angsd/doGlf2/{dataset}{ref}_{population}{dp}_{sites}-filts_merge-mafs.log",
     benchmark:
-        "benchmarks/{dataset}/angsd/doGlf2/{dataset}{ref}_{population}{dp}_merge-mafs.log"
+        "benchmarks/{dataset}/angsd/doGlf2/{dataset}{ref}_{population}{dp}_{sites}-filts_merge-mafs.log"
     conda:
         "../envs/shell.yaml"
     resources:
@@ -107,13 +107,13 @@ rule snpset:
     dataset.
     """
     input:
-        "results/datasets/{dataset}/mafs/{dataset}.{ref}_all{dp}.mafs.gz",
+        "results/datasets/{dataset}/mafs/{dataset}.{ref}_all{dp}_{sites}-filts.mafs.gz",
     output:
-        "results/datasets/{dataset}/filters/snps/{dataset}.{ref}{dp}_snps.sites",
+        "results/datasets/{dataset}/filters/snps/{dataset}.{ref}{dp}_{sites}-filts_snps.sites",
     log:
-        "logs/{dataset}/filters/snps/{dataset}.{ref}{dp}_snps.log",
+        "logs/{dataset}/filters/snps/{dataset}.{ref}{dp}_{sites}-filts_snps.log",
     benchmark:
-        "benchmarks/{dataset}/filters/snps/{dataset}.{ref}{dp}_snps.log"
+        "benchmarks/{dataset}/filters/snps/{dataset}.{ref}{dp}_{sites}-filts_snps.log"
     conda:
         "../envs/shell.yaml"
     shell:

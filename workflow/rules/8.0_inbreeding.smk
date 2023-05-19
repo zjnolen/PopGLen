@@ -7,15 +7,15 @@ rule ngsf_hmm:
     Estimate IBD tracts within individual genomes.
     """
     input:
-        beagle="results/datasets/{dataset}/beagles/pruned/{dataset}.{ref}_{population}{dp}_pruned.beagle.gz",
+        beagle="results/datasets/{dataset}/beagles/pruned/{dataset}.{ref}_{population}{dp}_{sites}-filts_pruned.beagle.gz",
     output:
-        ibd="results/datasets/{dataset}/analyses/ngsF-HMM/{dataset}.{ref}_{population}{dp}.ibd",
-        indF="results/datasets/{dataset}/analyses/ngsF-HMM/{dataset}.{ref}_{population}{dp}.indF",
-        pos="results/datasets/{dataset}/analyses/ngsF-HMM/{dataset}.{ref}_{population}{dp}.pos",
+        ibd="results/datasets/{dataset}/analyses/ngsF-HMM/{dataset}.{ref}_{population}{dp}_{sites}-filts.ibd",
+        indF="results/datasets/{dataset}/analyses/ngsF-HMM/{dataset}.{ref}_{population}{dp}_{sites}-filts.indF",
+        pos="results/datasets/{dataset}/analyses/ngsF-HMM/{dataset}.{ref}_{population}{dp}_{sites}-filts.pos",
     log:
-        "logs/{dataset}/ngsF-HMM/{dataset}.{ref}_{population}{dp}.log",
+        "logs/{dataset}/ngsF-HMM/{dataset}.{ref}_{population}{dp}_{sites}-filts.log",
     benchmark:
-        "benchmarks/{dataset}/ngsF-HMM/{dataset}.{ref}_{population}{dp}.log"
+        "benchmarks/{dataset}/ngsF-HMM/{dataset}.{ref}_{population}{dp}_{sites}-filts.log"
     container:
         ngsf_hmm_container
     params:
@@ -33,15 +33,15 @@ rule convert_ibd:
     Converts ngsF-HMM ibd format into a list of runs of homozygosity.
     """
     input:
-        ibd="results/datasets/{dataset}/analyses/ngsF-HMM/{dataset}.{ref}_{population}{dp}.ibd",
+        ibd="results/datasets/{dataset}/analyses/ngsF-HMM/{dataset}.{ref}_{population}{dp}_{sites}-filts.ibd",
         inds="results/datasets/{dataset}/poplists/{dataset}_{population}.indiv.list",
-        pos="results/datasets/{dataset}/analyses/ngsF-HMM/{dataset}.{ref}_{population}{dp}.pos",
+        pos="results/datasets/{dataset}/analyses/ngsF-HMM/{dataset}.{ref}_{population}{dp}_{sites}-filts.pos",
     output:
-        roh="results/datasets/{dataset}/analyses/ngsF-HMM/{dataset}.{ref}_{population}{dp}.roh",
+        roh="results/datasets/{dataset}/analyses/ngsF-HMM/{dataset}.{ref}_{population}{dp}_{sites}-filts.roh",
     log:
-        "logs/{dataset}/ngsF-HMM/{dataset}.{ref}_{population}{dp}_convert_ibd.log",
+        "logs/{dataset}/ngsF-HMM/{dataset}.{ref}_{population}{dp}_{sites}-filts_convert_ibd.log",
     benchmark:
-        "benchmarks/{dataset}/ngsF-HMM/{dataset}.{ref}_{population}{dp}_convert_ibd.log"
+        "benchmarks/{dataset}/ngsF-HMM/{dataset}.{ref}_{population}{dp}_{sites}-filts_convert_ibd.log"
     container:
         ngsf_hmm_container
     shadow:
@@ -105,7 +105,7 @@ rule plot_froh:
     """
     input:
         roh=expand(
-            "results/datasets/{{dataset}}/analyses/ngsF-HMM/{{dataset}}.{{ref}}_{population}{{dp}}.roh",
+            "results/datasets/{{dataset}}/analyses/ngsF-HMM/{{dataset}}.{{ref}}_{population}{{dp}}_{{sites}}-filts.roh",
             population=pop_list,
         ),
         inds="results/datasets/{dataset}/poplists/{dataset}_all.indiv.list",
@@ -113,15 +113,15 @@ rule plot_froh:
     output:
         report(
             expand(
-                "results/datasets/{{dataset}}/plots/inbreeding/{{dataset}}.{{ref}}_all{{dp}}.{stat}.pdf",
+                "results/datasets/{{dataset}}/plots/inbreeding/{{dataset}}.{{ref}}_all{{dp}}_{{sites}}-filts.{stat}.pdf",
                 stat=["froh", "rohreg"],
             ),
             category="Inbreeding",
         ),
     log:
-        "logs/{dataset}/ngsF-HMM/{dataset}.{ref}_all{dp}_plot.log",
+        "logs/{dataset}/ngsF-HMM/{dataset}.{ref}_all{dp}_{sites}-filts_plot.log",
     benchmark:
-        "benchmarks/{dataset}/ngsF-HMM/{dataset}.{ref}_all{dp}_plot.log"
+        "benchmarks/{dataset}/ngsF-HMM/{dataset}.{ref}_all{dp}_{sites}-filts_plot.log"
     conda:
         "../envs/r.yaml"
     params:

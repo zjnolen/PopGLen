@@ -110,6 +110,15 @@ else:
     pop_list = samples.population.unique().tolist()
 
 
+# Get a list of user defined filter sets if present
+
+filters = []
+if not config["only_filter_beds"]:
+    filters = filters + ["allsites"]
+if any(config["filter_beds"].values()):
+    filters = filters + list(config["filter_beds"].keys())
+
+
 # Define various helper functions for Snakefiles
 
 
@@ -219,6 +228,11 @@ def get_bed_filts(wildcards):
     }
 
 
+# Get bed file for user defined filters
+def get_newfilt(wildcards):
+    return config["filter_beds"][wildcards.sites]
+
+
 # Mapping
 
 
@@ -272,6 +286,22 @@ def get_endo_cont_stat(wildcards):
 
 # ANGSD
 
+## Get GLF input for beagle and SAF. If statistics are only desired for sites from a
+## user defined BED file, GLFs will only be made for those sites to prevent estimating
+## GLs for entire genome when only a subset is desired.
+
+
+def get_glf(wildcards):
+    if config["only_filter_beds"]:
+        return "results/datasets/{dataset}/glfs/chunks/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.glf.gz"
+    elif config["only_filter_beds"] and not any(config["filter_beds"].values()):
+        raise ValueError(
+            f"Config invalid - 'only_filter_beds' cannot be true without supplying bed "
+            f"files to at least one 'filter_beds' key."
+        )
+    else:
+        return "results/datasets/{dataset}/glfs/chunks/{dataset}.{ref}_{population}{dp}_chunk{chunk}_allsites-filts.glf.gz"
+
 
 ## Get options for making beagle files. Depends on whether the beagle file is
 ## for the whole dataset (all filtered sites go in and SNPs are called) or for
@@ -280,13 +310,13 @@ def get_snpset(wildcards):
     pop = wildcards.population
     if pop == "all":
         return [
-            "results/datasets/{dataset}/filters/combined/{dataset}.{ref}{dp}_filts.sites",
-            "results/datasets/{dataset}/filters/combined/{dataset}.{ref}{dp}_filts.sites.idx",
+            "results/datasets/{dataset}/filters/combined/{dataset}.{ref}{dp}_{sites}-filts.sites",
+            "results/datasets/{dataset}/filters/combined/{dataset}.{ref}{dp}_{sites}-filts.sites.idx",
         ]
     else:
         return [
-            "results/datasets/{dataset}/filters/snps/{dataset}.{ref}{dp}_snps.sites",
-            "results/datasets/{dataset}/filters/snps/{dataset}.{ref}{dp}_snps.sites.idx",
+            "results/datasets/{dataset}/filters/snps/{dataset}.{ref}{dp}_{sites}-filts_snps.sites",
+            "results/datasets/{dataset}/filters/snps/{dataset}.{ref}{dp}_{sites}-filts_snps.sites.idx",
         ]
 
 
@@ -325,7 +355,7 @@ def get_kinship(wildcards):
     ind1 = [pair[0] for pair in combos]
     ind2 = [pair[1] for pair in combos]
     return expand(
-        "results/datasets/{{dataset}}/analyses/kinship/waples2019/{{dataset}}.{{ref}}_{ind1}-{ind2}{{dp}}.kinship",
+        "results/datasets/{{dataset}}/analyses/kinship/waples2019/{{dataset}}.{{ref}}_{ind1}-{ind2}{{dp}}_{{sites}}-filts.kinship",
         zip,
         ind1=ind1,
         ind2=ind2,
@@ -338,25 +368,18 @@ def get_total_bed(wildcards):
     if wildcards.prefix == "results/mapping/qc/ind_depth/unfiltered/":
         return "results/ref/{ref}/beds/genome.bed"
     elif wildcards.prefix == "results/datasets/{dataset}/qc/ind_depth/filtered/":
-        return (
-            "results/datasets/{dataset}/filters/combined/{dataset}.{ref}{dp}_filts.bed"
-        )
-
-
-## Get header value for depth calculation table
-def get_depth_header(wildcards):
-    if wildcards.prefix == "results/mapping/qc/ind_depth/unfiltered/":
-        return "genome"
-    elif wildcards.prefix == "results/datasets/{dataset}/qc/ind_depth/filtered/":
-        return "filt"
+        return "results/datasets/{dataset}/filters/combined/{dataset}.{ref}{dp}_allsites-filts.bed"
 
 
 ## Gather sample QC output files for concatenation
 def get_sample_qcs(wildcards):
     dic = {
         "inds": "results/datasets/{dataset}/poplists/{dataset}_all.indiv.list",
-        "unfilt": "results/mapping/qc/ind_depth/unfiltered/{dataset}.{ref}_all{dp}.depth.sum",
-        "filt": "results/datasets/{dataset}/qc/ind_depth/filtered/{dataset}.{ref}_all{dp}.depth.sum",
+        "unfilt": "results/mapping/qc/ind_depth/unfiltered/{dataset}.{ref}_all{dp}_allsites-unfilt.depth.sum",
+        "filt": expand(
+            "results/datasets/{{dataset}}/qc/ind_depth/filtered/{{dataset}}.{{ref}}_all{{dp}}_{sites}-filts.depth.sum",
+            sites=filters,
+        ),
     }
     if config["analyses"]["endogenous_content"]:
         dic.update(
@@ -383,14 +406,14 @@ def get_fst(wildcards):
     pop2 = [pair[1] for pair in combos]
     if wildcards.scale == "global":
         return expand(
-            "results/datasets/{{dataset}}/analyses/fst/{{dataset}}.{{ref}}_{population1}-{population2}{{dp}}.fst.global.tsv",
+            "results/datasets/{{dataset}}/analyses/fst/{{dataset}}.{{ref}}_{population1}-{population2}{{dp}}_{{sites}}-filts.fst.global.tsv",
             zip,
             population1=pop1,
             population2=pop2,
         )
     elif wildcards.scale == "window":
         return expand(
-            "results/datasets/{{dataset}}/analyses/fst/{{dataset}}.{{ref}}_{population1}-{population2}{{dp}}.fst.window_{{win}}_{{step}}.tsv",
+            "results/datasets/{{dataset}}/analyses/fst/{{dataset}}.{{ref}}_{population1}-{population2}{{dp}}_{{sites}}-filts.fst.window_{{win}}_{{step}}.tsv",
             zip,
             population1=pop1,
             population2=pop2,

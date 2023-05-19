@@ -74,15 +74,15 @@ rule angsd_doGlf4:
         bais=get_bamlist_bais,
         ref="results/ref/{ref}/{ref}.fa",
         regions="results/datasets/{dataset}/filters/chunks/{ref}_chunk{chunk}.rf",
-        sites="results/datasets/{dataset}/filters/combined/{dataset}.{ref}{dp}_filts.sites",
-        idx="results/datasets/{dataset}/filters/combined/{dataset}.{ref}{dp}_filts.sites.idx",
+        sites="results/datasets/{dataset}/filters/combined/{dataset}.{ref}{dp}_{sites}-filts.sites",
+        idx="results/datasets/{dataset}/filters/combined/{dataset}.{ref}{dp}_{sites}-filts.sites.idx",
     output:
-        glf="results/datasets/{dataset}/glfs/chunks/{dataset}.{ref}_{population}{dp}_chunk{chunk}.glf.gz",
-        arg="results/datasets/{dataset}/glfs/chunks/{dataset}.{ref}_{population}{dp}_chunk{chunk}.arg",
+        glf="results/datasets/{dataset}/glfs/chunks/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.glf.gz",
+        arg="results/datasets/{dataset}/glfs/chunks/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.arg",
     log:
-        "logs/{dataset}/angsd/doGlf4/{dataset}.{ref}_{population}{dp}_chunk{chunk}.log",
+        "logs/{dataset}/angsd/doGlf4/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.log",
     benchmark:
-        "benchmarks/{dataset}/angsd/doGlf4/{dataset}.{ref}_{population}{dp}_chunk{chunk}.log"
+        "benchmarks/{dataset}/angsd/doGlf4/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.log"
     wildcard_constraints:
         population="all",
     container:
@@ -110,13 +110,13 @@ rule sampleglf:
     Extract glf of single sample from dataset glf.
     """
     input:
-        glf="results/datasets/{dataset}/glfs/chunks/{dataset}.{ref}_all{dp}_chunk{chunk}.glf.gz",
+        glf="results/datasets/{dataset}/glfs/chunks/{dataset}.{ref}_all{dp}_chunk{chunk}_{sites}-filts.glf.gz",
     output:
-        glf="results/datasets/{dataset}/glfs/chunks/{dataset}.{ref}_{sample}{dp}_chunk{chunk}.glf.gz",
+        glf="results/datasets/{dataset}/glfs/chunks/{dataset}.{ref}_{sample}{dp}_chunk{chunk}_{sites}-filts.glf.gz",
     log:
-        "logs/{dataset}/angsd/sampleglf/{dataset}.{ref}_{sample}{dp}_chunk{chunk}.log",
+        "logs/{dataset}/angsd/sampleglf/{dataset}.{ref}_{sample}{dp}_chunk{chunk}_{sites}-filts.log",
     benchmark:
-        "benchmarks/{dataset}/angsd/sampleglf/{dataset}.{ref}_{sample}{dp}_chunk{chunk}.log"
+        "benchmarks/{dataset}/angsd/sampleglf/{dataset}.{ref}_{sample}{dp}_chunk{chunk}_{sites}-filts.log"
     conda:
         "../envs/shell.yaml"
     params:
@@ -135,15 +135,15 @@ rule popglf:
     """
     input:
         sample_glfs=lambda w: expand(
-            "results/datasets/{{dataset}}/glfs/chunks/{{dataset}}.{{ref}}_{sample}{{dp}}_chunk{{chunk}}.glf.gz",
+            "results/datasets/{{dataset}}/glfs/chunks/{{dataset}}.{{ref}}_{sample}{{dp}}_chunk{{chunk}}_{{sites}}-filts.glf.gz",
             sample=get_samples_from_pop(w.population),
         ),
     output:
-        glf="results/datasets/{dataset}/glfs/chunks/{dataset}.{ref}_{population}{dp}_chunk{chunk}.glf.gz",
+        glf="results/datasets/{dataset}/glfs/chunks/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.glf.gz",
     log:
-        "logs/{dataset}/angsd/popglf/{dataset}.{ref}_{population}{dp}_chunk{chunk}.log",
+        "logs/{dataset}/angsd/popglf/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.log",
     benchmark:
-        "benchmarks/{dataset}/angsd/popglf/{dataset}.{ref}_{population}{dp}_chunk{chunk}.log"
+        "benchmarks/{dataset}/angsd/popglf/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.log"
     wildcard_constraints:
         population="|".join(
             [i for i in samples.index.tolist()]
@@ -153,7 +153,7 @@ rule popglf:
     conda:
         "../envs/shell.yaml"
     params:
-        tmpfile="{dataset}.{ref}_{population}{dp}_chunk{chunk}.glf",
+        tmpfile="{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.glf",
     resources:
         time=360,
     shell:

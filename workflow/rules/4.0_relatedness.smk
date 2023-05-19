@@ -8,13 +8,13 @@ rule est_kinship_stats:
     robust kinship between all sample pairings.
     """
     input:
-        sfs="results/datasets/{dataset}/analyses/sfs/{dataset}.{ref}_{ind1}-{ind2}{dp}.sfs",
+        sfs="results/datasets/{dataset}/analyses/sfs/{dataset}.{ref}_{ind1}-{ind2}{dp}_{sites}-filts.sfs",
     output:
-        "results/datasets/{dataset}/analyses/kinship/waples2019/{dataset}.{ref}_{ind1}-{ind2}{dp}.kinship",
+        "results/datasets/{dataset}/analyses/kinship/waples2019/{dataset}.{ref}_{ind1}-{ind2}{dp}_{sites}-filts.kinship",
     log:
-        "logs/{dataset}/kinship/waples2019/{dataset}.{ref}_{ind1}-{ind2}{dp}_kinship.log",
+        "logs/{dataset}/kinship/waples2019/{dataset}.{ref}_{ind1}-{ind2}{dp}_{sites}-filts_kinship.log",
     benchmark:
-        "benchmarks/{dataset}/kinship/waples2019/{dataset}.{ref}_{ind1}-{ind2}{dp}_kinship.log"
+        "benchmarks/{dataset}/kinship/waples2019/{dataset}.{ref}_{ind1}-{ind2}{dp}_{sites}-filts_kinship.log"
     wildcard_constraints:
         ind1="|".join([i for i in samples.index.tolist()]),
         ind2="|".join([i for i in samples.index.tolist()]),
@@ -33,11 +33,11 @@ rule compile_kinship_stats:
     input:
         get_kinship,
     output:
-        "results/datasets/{dataset}/analyses/kinship/waples2019/{dataset}.{ref}_all{dp}.kinship",
+        "results/datasets/{dataset}/analyses/kinship/waples2019/{dataset}.{ref}_all{dp}_{sites}-filts.kinship",
     log:
-        "logs/{dataset}/kinship/waples2019/{dataset}.{ref}_all{dp}_compile-stats.log",
+        "logs/{dataset}/kinship/waples2019/{dataset}.{ref}_all{dp}_{sites}-filts_compile-stats.log",
     benchmark:
-        "benchmarks/{dataset}/kinship/waples2019/{dataset}.{ref}_all{dp}_compile-stats.log"
+        "benchmarks/{dataset}/kinship/waples2019/{dataset}.{ref}_all{dp}_{sites}-filts_compile-stats.log"
     conda:
         "../envs/shell.yaml"
     resources:
@@ -54,17 +54,17 @@ rule kinship_table_html:
     Converts kinship table to html for report.
     """
     input:
-        "results/datasets/{dataset}/analyses/kinship/waples2019/{dataset}.{ref}_all{dp}.kinship",
+        "results/datasets/{dataset}/analyses/kinship/waples2019/{dataset}.{ref}_all{dp}_{sites}-filts.kinship",
     output:
         report(
-            "results/datasets/{dataset}/analyses/kinship/waples2019/{dataset}.{ref}_all{dp}.kinship.html",
+            "results/datasets/{dataset}/analyses/kinship/waples2019/{dataset}.{ref}_all{dp}_{sites}-filts.kinship.html",
             category="Kinship",
             labels={"Topic": "Waples et al. 2019 R0,R1,KING", "Type": "Table"},
         ),
     log:
-        "logs/{dataset}/kinship/waples2019/{dataset}.{ref}_all{dp}_tsv2html.log",
+        "logs/{dataset}/kinship/waples2019/{dataset}.{ref}_all{dp}_{sites}-filts_tsv2html.log",
     benchmark:
-        "benchmarks/{dataset}/kinship/waples2019/{dataset}.{ref}_all{dp}_tsv2html.log"
+        "benchmarks/{dataset}/kinship/waples2019/{dataset}.{ref}_all{dp}_{sites}-filts_tsv2html.log"
     conda:
         "../envs/r-rectable.yaml"
     script:
@@ -76,14 +76,13 @@ rule ngsrelate:
     Estimates inbreeding and relatedness measures using NGSrelate.
     """
     input:
-        beagle="results/datasets/{dataset}/beagles/pruned/{dataset}.{ref}_all{dp}_pruned.beagle.gz",
-        bamlist="results/datasets/{dataset}/bamlists/{dataset}.{ref}_all{dp}.bamlist",
+        beagle="results/datasets/{dataset}/beagles/pruned/{dataset}.{ref}_all{dp}_{sites}-filts_pruned.beagle.gz",
         inds="results/datasets/{dataset}/poplists/{dataset}_all.indiv.list",
     output:
-        relate="results/datasets/{dataset}/analyses/kinship/ngsrelate/{dataset}.{ref}_all{dp}_relate.tsv",
-        samples="results/datasets/{dataset}/analyses/kinship/ngsrelate/{dataset}.{ref}_all{dp}_samples.list",
+        relate="results/datasets/{dataset}/analyses/kinship/ngsrelate/{dataset}.{ref}_all{dp}_{sites}-filts_relate.tsv",
+        samples="results/datasets/{dataset}/analyses/kinship/ngsrelate/{dataset}.{ref}_all{dp}_{sites}-filts_samples.list",
     log:
-        "logs/{dataset}/kinship/ngsrelate/{dataset}.{ref}_all{dp}.log",
+        "logs/{dataset}/kinship/ngsrelate/{dataset}.{ref}_all{dp}_{sites}-filts.log",
     container:
         ngsrelate_container
     threads: lambda wildcards, attempt: attempt * 4
@@ -107,15 +106,15 @@ rule ngsrelate_summary:
     Converts NGSrelate table to html.
     """
     input:
-        "results/datasets/{dataset}/analyses/kinship/ngsrelate/{dataset}.{ref}_all{dp}_relate.tsv",
+        "results/datasets/{dataset}/analyses/kinship/ngsrelate/{dataset}.{ref}_all{dp}_{sites}-filts_relate.tsv",
     output:
         report(
-            "results/datasets/{dataset}/analyses/kinship/ngsrelate/{dataset}.{ref}_all{dp}_relate.html",
+            "results/datasets/{dataset}/analyses/kinship/ngsrelate/{dataset}.{ref}_all{dp}_{sites}-filts_relate.html",
             category="Kinship",
             labels={"Topic": "NgsRelate", "Type": "Table"},
         ),
     log:
-        "logs/{dataset}/kinship/ngsrelate/{dataset}.{ref}_all{dp}_tsv2html.log",
+        "logs/{dataset}/kinship/ngsrelate/{dataset}.{ref}_all{dp}_{sites}-filts_tsv2html.log",
     conda:
         "../envs/r-rectable.yaml"
     script:

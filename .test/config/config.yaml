@@ -17,6 +17,7 @@ reference:
   sex-linked: ["chrZ"]
   exclude: []
   min_size: 3000
+
 #===================== Sample Set Configuration =======================#
 
 exclude_ind: []
@@ -59,6 +60,13 @@ analyses:
   inbreeding_ngsf-hmm: true
   ibs_matrix: true
 
+#=========================== Filter Sets ==============================#
+
+filter_beds:
+  example: "config/example-filt.bed"
+
+only_filter_beds: false
+
 #===================== Software Configuration =========================#
 
 mapQ: 30
@@ -84,11 +92,11 @@ params:
     sfsboot: 100
   fst:
     whichFst: 1
-    win_size: 50000
-    win_step: 10000
+    win_size: 10000
+    win_step: 5000
   thetas:
-    win_size: 50000
-    win_step: 10000
+    win_size: 10000
+    win_step: 5000
   ngsadmix:
     kvalues: [1,2,3,4]
     reps: 100

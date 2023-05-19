@@ -6,23 +6,23 @@ rule realSFS_1dSFS:
     Generate a 1D site frequency spectrum.
     """
     input:
-        saf="results/datasets/{dataset}/safs/{dataset}.{ref}_{population}{dp}.saf.idx",
+        saf="results/datasets/{dataset}/safs/{dataset}.{ref}_{population}{dp}_{sites}-filts.saf.idx",
         others=multiext(
-            "results/datasets/{dataset}/safs/{dataset}.{ref}_{population}{dp}.saf",
+            "results/datasets/{dataset}/safs/{dataset}.{ref}_{population}{dp}_{sites}-filts.saf",
             ".pos.gz",
             ".gz",
         ),
     output:
         sfs=ensure(
-            "results/datasets/{dataset}/analyses/sfs/{dataset}.{ref}_{population}{dp}.sfs",
+            "results/datasets/{dataset}/analyses/sfs/{dataset}.{ref}_{population}{dp}_{sites}-filts.sfs",
             non_empty=True,
         ),
     container:
         angsd_container
     log:
-        "logs/{dataset}/realSFS/1dSFS/{dataset}.{ref}_{population}{dp}.log",
+        "logs/{dataset}/realSFS/1dSFS/{dataset}.{ref}_{population}{dp}_{sites}-filts.log",
     benchmark:
-        "benchmarks/{dataset}/realSFS/1dSFS/{dataset}.{ref}_{population}{dp}.log"
+        "benchmarks/{dataset}/realSFS/1dSFS/{dataset}.{ref}_{population}{dp}_{sites}-filts.log"
     params:
         fold=config["params"]["realsfs"]["fold"],
     threads: lambda wildcards, attempt: attempt * 2
@@ -40,29 +40,29 @@ rule realSFS_2dSFS:
     Generate a 2D site frequency spectrum.
     """
     input:
-        saf1="results/datasets/{dataset}/safs/{dataset}.{ref}_{population1}{dp}.saf.idx",
+        saf1="results/datasets/{dataset}/safs/{dataset}.{ref}_{population1}{dp}_{sites}-filts.saf.idx",
         saf1_others=multiext(
-            "results/datasets/{dataset}/safs/{dataset}.{ref}_{population1}{dp}.saf",
+            "results/datasets/{dataset}/safs/{dataset}.{ref}_{population1}{dp}_{sites}-filts.saf",
             ".pos.gz",
             ".gz",
         ),
-        saf2="results/datasets/{dataset}/safs/{dataset}.{ref}_{population2}{dp}.saf.idx",
+        saf2="results/datasets/{dataset}/safs/{dataset}.{ref}_{population2}{dp}_{sites}-filts.saf.idx",
         saf2_others=multiext(
-            "results/datasets/{dataset}/safs/{dataset}.{ref}_{population2}{dp}.saf",
+            "results/datasets/{dataset}/safs/{dataset}.{ref}_{population2}{dp}_{sites}-filts.saf",
             ".pos.gz",
             ".gz",
         ),
     output:
         sfs=ensure(
-            "results/datasets/{dataset}/analyses/sfs/{dataset}.{ref}_{population1}-{population2}{dp}.sfs",
+            "results/datasets/{dataset}/analyses/sfs/{dataset}.{ref}_{population1}-{population2}{dp}_{sites}-filts.sfs",
             non_empty=True,
         ),
     container:
         angsd_container
     log:
-        "logs/{dataset}/realSFS/2dSFS/{dataset}.{ref}_{population1}-{population2}{dp}.log",
+        "logs/{dataset}/realSFS/2dSFS/{dataset}.{ref}_{population1}-{population2}{dp}_{sites}-filts.log",
     benchmark:
-        "benchmarks/{dataset}/realSFS/2dSFS/{dataset}.{ref}_{population1}-{population2}{dp}.log"
+        "benchmarks/{dataset}/realSFS/2dSFS/{dataset}.{ref}_{population1}-{population2}{dp}_{sites}-filts.log"
     wildcard_constraints:
         population1="|".join(
             [i for i in samples.index.tolist()]

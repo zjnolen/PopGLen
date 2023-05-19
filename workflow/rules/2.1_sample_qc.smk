@@ -119,15 +119,15 @@ rule ind_unfiltered_depth:
         bais=get_bamlist_bais,
         ref="results/ref/{ref}/{ref}.fa",
     output:
-        sample_hist="results/mapping/qc/ind_depth/unfiltered/{dataset}.{ref}_{population}{dp}.depthSample",
+        sample_hist="results/mapping/qc/ind_depth/unfiltered/{dataset}.{ref}_{population}{dp}_allsites-unfilt.depthSample",
         global_hist=temp(
-            "results/mapping/qc/ind_depth/unfiltered/{dataset}.{ref}_{population}{dp}.depthGlobal"
+            "results/mapping/qc/ind_depth/unfiltered/{dataset}.{ref}_{population}{dp}_allsites-unfilt.depthGlobal"
         ),
-        arg="results/mapping/qc/ind_depth/unfiltered/{dataset}.{ref}_{population}{dp}.arg",
+        arg="results/mapping/qc/ind_depth/unfiltered/{dataset}.{ref}_{population}{dp}_allsites-unfilt.arg",
     log:
-        "logs/mapping/ind_depth/unfiltered/{dataset}.{ref}_{population}{dp}.log",
+        "logs/mapping/ind_depth/unfiltered/{dataset}.{ref}_{population}{dp}_allsites-unfilt.log",
     benchmark:
-        "benchmarks/mapping/ind_depth/unfiltered/{dataset}.{ref}_{population}{dp}.log"
+        "benchmarks/mapping/ind_depth/unfiltered/{dataset}.{ref}_{population}{dp}_allsites-unfilt.log"
     container:
         angsd_container
     params:
@@ -153,18 +153,18 @@ rule ind_filtered_depth:
         bams=get_bamlist_bams,
         bais=get_bamlist_bais,
         ref="results/ref/{ref}/{ref}.fa",
-        sites="results/datasets/{dataset}/filters/combined/{dataset}.{ref}{dp}_filts.sites",
-        idx="results/datasets/{dataset}/filters/combined/{dataset}.{ref}{dp}_filts.sites.idx",
+        sites="results/datasets/{dataset}/filters/combined/{dataset}.{ref}{dp}_{sites}-filts.sites",
+        idx="results/datasets/{dataset}/filters/combined/{dataset}.{ref}{dp}_{sites}-filts.sites.idx",
     output:
-        sample_hist="results/datasets/{dataset}/qc/ind_depth/filtered/{dataset}.{ref}_{population}{dp}.depthSample",
+        sample_hist="results/datasets/{dataset}/qc/ind_depth/filtered/{dataset}.{ref}_{population}{dp}_{sites}-filts.depthSample",
         global_hist=temp(
-            "results/datasets/{dataset}/qc/ind_depth/filtered/{dataset}.{ref}_{population}{dp}.depthGlobal"
+            "results/datasets/{dataset}/qc/ind_depth/filtered/{dataset}.{ref}_{population}{dp}_{sites}-filts.depthGlobal"
         ),
-        arg="results/datasets/{dataset}/qc/ind_depth/filtered/{dataset}.{ref}_{population}{dp}.arg",
+        arg="results/datasets/{dataset}/qc/ind_depth/filtered/{dataset}.{ref}_{population}{dp}_{sites}-filts.arg",
     log:
-        "logs/{dataset}/ind_depth/filtered/{dataset}.{ref}_{population}{dp}.log",
+        "logs/{dataset}/ind_depth/filtered/{dataset}.{ref}_{population}{dp}_{sites}-filts.log",
     benchmark:
-        "benchmarks/{dataset}/ind_depth/filtered/{dataset}.{ref}_{population}{dp}.log"
+        "benchmarks/{dataset}/ind_depth/filtered/{dataset}.{ref}_{population}{dp}_{sites}-filts.log"
     container:
         angsd_container
     params:
@@ -190,14 +190,14 @@ rule summarize_ind_depth:
     Get mean and standard deviation of depth from individual depth distributions
     """
     input:
-        sample_hist="{prefix}{dataset}.{ref}_{sample}{dp}.depthSample",
+        sample_hist="{prefix}{dataset}.{ref}_{sample}{dp}_{group}.depthSample",
         bed=get_total_bed,
     output:
-        sample_summ="{prefix}{dataset}.{ref}_{sample}{dp}.depth.sum",
+        sample_summ="{prefix}{dataset}.{ref}_{sample}{dp}_{group}.depth.sum",
     log:
-        "logs/summarize_ind_depth/{prefix}{dataset}.{ref}_{sample}{dp}.log",
+        "logs/summarize_ind_depth/{prefix}{dataset}.{ref}_{sample}{dp}_{group}.log",
     benchmark:
-        "benchmarks/summarize_ind_depth/{prefix}{dataset}.{ref}_{sample}{dp}.log"
+        "benchmarks/summarize_ind_depth/{prefix}{dataset}.{ref}_{sample}{dp}_{group}.log"
     conda:
         "../envs/r.yaml"
     wildcard_constraints:
@@ -214,28 +214,26 @@ rule merge_ind_depth:
     """
     input:
         depth=lambda w: expand(
-            "{{prefix}}{{dataset}}.{{ref}}_{sample}{{dp}}.depthSample",
+            "{{prefix}}{{dataset}}.{{ref}}_{sample}{{dp}}_{{group}}.depthSample",
             sample=get_samples_from_pop("all"),
         ),
         summary=lambda w: expand(
-            "{{prefix}}{{dataset}}.{{ref}}_{sample}{{dp}}.depth.sum",
+            "{{prefix}}{{dataset}}.{{ref}}_{sample}{{dp}}_{{group}}.depth.sum",
             sample=get_samples_from_pop("all"),
         ),
     output:
-        dep="{prefix}{dataset}.{ref}_all{dp}.depth",
-        sum="{prefix}{dataset}.{ref}_all{dp}.depth.sum",
+        dep="{prefix}{dataset}.{ref}_all{dp}_{group}.depth",
+        sum="{prefix}{dataset}.{ref}_all{dp}_{group}.depth.sum",
     log:
-        "logs/merge_depth/{prefix}{dataset}.{ref}_all{dp}.log",
+        "logs/merge_depth/{prefix}{dataset}.{ref}_all{dp}_{group}.log",
     benchmark:
-        "benchmarks/merge_depth/{prefix}{dataset}.{ref}_all{dp}.log"
+        "benchmarks/merge_depth/{prefix}{dataset}.{ref}_all{dp}_{group}.log"
     conda:
         "../envs/shell.yaml"
-    params:
-        header=get_depth_header,
     shell:
         """
         (cat {input.depth} > {output.dep}
-        echo "sample    {params.header}.depth.mean    {params.header}.depth.stdev" \
+        echo "sample\t{wildcards.group}.depth.mean\t{wildcards.group}.depth.stdev" \
             > {output.sum}
         cat {input.summary} >> {output.sum}) 2> {log}
         """

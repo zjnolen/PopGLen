@@ -6,27 +6,27 @@ rule realSFS_fst_index:
     Generates Fst index file for producing Fst estimates.
     """
     input:
-        saf1="results/datasets/{dataset}/safs/{dataset}.{ref}_{population1}{dp}.saf.idx",
+        saf1="results/datasets/{dataset}/safs/{dataset}.{ref}_{population1}{dp}_{sites}-filts.saf.idx",
         saf1_others=multiext(
-            "results/datasets/{dataset}/safs/{dataset}.{ref}_{population1}{dp}.saf",
+            "results/datasets/{dataset}/safs/{dataset}.{ref}_{population1}{dp}_{sites}-filts.saf",
             ".pos.gz",
             ".gz",
         ),
-        saf2="results/datasets/{dataset}/safs/{dataset}.{ref}_{population2}{dp}.saf.idx",
+        saf2="results/datasets/{dataset}/safs/{dataset}.{ref}_{population2}{dp}_{sites}-filts.saf.idx",
         saf2_others=multiext(
-            "results/datasets/{dataset}/safs/{dataset}.{ref}_{population2}{dp}.saf",
+            "results/datasets/{dataset}/safs/{dataset}.{ref}_{population2}{dp}_{sites}-filts.saf",
             ".pos.gz",
             ".gz",
         ),
-        sfs="results/datasets/{dataset}/analyses/sfs/{dataset}.{ref}_{population1}-{population2}{dp}.sfs",
+        sfs="results/datasets/{dataset}/analyses/sfs/{dataset}.{ref}_{population1}-{population2}{dp}_{sites}-filts.sfs",
     output:
-        fstidx="results/datasets/{dataset}/analyses/fst/{dataset}.{ref}_{population1}-{population2}{dp}.fst.idx",
+        fstidx="results/datasets/{dataset}/analyses/fst/{dataset}.{ref}_{population1}-{population2}{dp}_{sites}-filts.fst.idx",
     container:
         angsd_container
     log:
-        "logs/{dataset}/realSFS/fst/index/{dataset}.{ref}_{population1}-{population2}{dp}.log",
+        "logs/{dataset}/realSFS/fst/index/{dataset}.{ref}_{population1}-{population2}{dp}_{sites}-filts.log",
     benchmark:
-        "benchmarks/{dataset}/realSFS/fst/index/{dataset}.{ref}_{population1}-{population2}{dp}.log"
+        "benchmarks/{dataset}/realSFS/fst/index/{dataset}.{ref}_{population1}-{population2}{dp}_{sites}-filts.log"
     params:
         out=lambda w, output: output.fstidx.removesuffix(".fst.idx"),
         fst=config["params"]["fst"]["whichFst"],
@@ -45,15 +45,15 @@ rule realSFS_fst_stats:
     Estimates global weighted and unweighted Fst for each population pair.
     """
     input:
-        fstidx="results/datasets/{dataset}/analyses/fst/{dataset}.{ref}_{population1}-{population2}{dp}.fst.idx",
+        fstidx="results/datasets/{dataset}/analyses/fst/{dataset}.{ref}_{population1}-{population2}{dp}_{sites}-filts.fst.idx",
     output:
-        fstglob="results/datasets/{dataset}/analyses/fst/{dataset}.{ref}_{population1}-{population2}{dp}.fst.global.tsv",
+        fstglob="results/datasets/{dataset}/analyses/fst/{dataset}.{ref}_{population1}-{population2}{dp}_{sites}-filts.fst.global.tsv",
     container:
         angsd_container
     log:
-        "logs/{dataset}/realSFS/fst/stats/{dataset}.{ref}_{population1}-{population2}{dp}.log",
+        "logs/{dataset}/realSFS/fst/stats/{dataset}.{ref}_{population1}-{population2}{dp}_{sites}-filts.log",
     benchmark:
-        "benchmarks/{dataset}/realSFS/fst/stats/{dataset}.{ref}_{population1}-{population2}{dp}.log"
+        "benchmarks/{dataset}/realSFS/fst/stats/{dataset}.{ref}_{population1}-{population2}{dp}_{sites}-filts.log"
     resources:
         time=lambda wildcards, attempt: attempt * 60,
     shell:
@@ -69,19 +69,19 @@ rule realSFS_fst_stats2:
     Estimates fst in sliding windows across the genome.
     """
     input:
-        fstidx="results/datasets/{dataset}/analyses/fst/{dataset}.{ref}_{population1}-{population2}{dp}.fst.idx",
+        fstidx="results/datasets/{dataset}/analyses/fst/{dataset}.{ref}_{population1}-{population2}{dp}_{sites}-filts.fst.idx",
     output:
-        fstwin="results/datasets/{dataset}/analyses/fst/{dataset}.{ref}_{population1}-{population2}{dp}.fst.window_{win}_{step}.tsv",
+        fstwin="results/datasets/{dataset}/analyses/fst/{dataset}.{ref}_{population1}-{population2}{dp}_{sites}-filts.fst.window_{win}_{step}.tsv",
     container:
         angsd_container
     log:
-        "logs/{dataset}/realSFS/fst/stats2/{dataset}.{ref}_{population1}-{population2}{dp}.window_{win}_{step}.log",
+        "logs/{dataset}/realSFS/fst/stats2/{dataset}.{ref}_{population1}-{population2}{dp}_{sites}-filts.window_{win}_{step}.log",
     benchmark:
-        "benchmarks/{dataset}/realSFS/fst/stats2/{dataset}.{ref}_{population1}-{population2}{dp}.window_{win}_{step}.log"
+        "benchmarks/{dataset}/realSFS/fst/stats2/{dataset}.{ref}_{population1}-{population2}{dp}_{sites}-filts.window_{win}_{step}.log"
     shell:
         r"""
-        realSFS fst stats2 {input.fstidx} -win {wildcards.win} -step {wildcards.step} | 
-            awk '{{print "{wildcards.population1}\t{wildcards.population2}\t"\
+        realSFS fst stats2 {input.fstidx} -win {wildcards.win} -step {wildcards.step} \
+            -type 0 | awk '{{print "{wildcards.population1}\t{wildcards.population2}\t"\
             $0}}' > {output.fstwin} 2> {log}
         """
 
@@ -93,11 +93,11 @@ rule aggregate_fst_global:
     input:
         unpack(get_fst),
     output:
-        glob="results/datasets/{dataset}/analyses/fst/{dataset}.{ref}_{unit}pairs{dp}.fst.{scale}.tsv",
+        glob="results/datasets/{dataset}/analyses/fst/{dataset}.{ref}_{unit}pairs{dp}_{sites}-filts.fst.{scale}.tsv",
     log:
-        "logs/{dataset}/realSFS/fst/aggregate/{dataset}.{ref}_{unit}pairs{dp}.{scale}.log",
+        "logs/{dataset}/realSFS/fst/aggregate/{dataset}.{ref}_{unit}pairs{dp}_{sites}-filts.{scale}.log",
     benchmark:
-        "benchmarks/{dataset}/realSFS/fst/aggregate/{dataset}.{ref}_{unit}pairs{dp}.{scale}.log"
+        "benchmarks/{dataset}/realSFS/fst/aggregate/{dataset}.{ref}_{unit}pairs{dp}_{sites}-filts.{scale}.log"
     conda:
         "../envs/shell.yaml"
     wildcard_constraints:
@@ -117,11 +117,11 @@ rule aggregate_fst_window:
     input:
         unpack(get_fst),
     output:
-        window="results/datasets/{dataset}/analyses/fst/{dataset}.{ref}_{unit}pairs{dp}.fst.{scale}_{win}_{step}.tsv",
+        window="results/datasets/{dataset}/analyses/fst/{dataset}.{ref}_{unit}pairs{dp}_{sites}-filts.fst.{scale}_{win}_{step}.tsv",
     log:
-        "logs/{dataset}/realSFS/fst/aggregate/{dataset}.{ref}_{unit}pairs{dp}.{scale}_{win}_{step}.log",
+        "logs/{dataset}/realSFS/fst/aggregate/{dataset}.{ref}_{unit}pairs{dp}_{sites}-filts.{scale}_{win}_{step}.log",
     benchmark:
-        "benchmarks/{dataset}/realSFS/fst/aggregate/{dataset}.{ref}_{unit}pairs{dp}.{scale}_{win}_{step}.log"
+        "benchmarks/{dataset}/realSFS/fst/aggregate/{dataset}.{ref}_{unit}pairs{dp}_{sites}-filts.{scale}_{win}_{step}.log"
     conda:
         "../envs/shell.yaml"
     wildcard_constraints:
@@ -142,10 +142,10 @@ rule plot_fst:
     Plots fst heatmap of global fst estimates for all population pairs.
     """
     input:
-        "results/datasets/{dataset}/analyses/fst/{dataset}.{ref}_{unit}pairs{dp}.fst.global.tsv",
+        "results/datasets/{dataset}/analyses/fst/{dataset}.{ref}_{unit}pairs{dp}_{sites}-filts.fst.global.tsv",
     output:
         report(
-            "results/datasets/{dataset}/plots/fst/{dataset}.{ref}_{unit}pairs{dp}.fst.global.pdf",
+            "results/datasets/{dataset}/plots/fst/{dataset}.{ref}_{unit}pairs{dp}_{sites}-filts.fst.global.pdf",
             category="Fst",
             labels={
                 "Topic": "Pairwise Fst",
@@ -155,9 +155,9 @@ rule plot_fst:
             },
         ),
     log:
-        "logs/{dataset}/realSFS/fst/plot/{dataset}.{ref}_{unit}pairs{dp}.log",
+        "logs/{dataset}/realSFS/fst/plot/{dataset}.{ref}_{unit}pairs{dp}_{sites}-filts.log",
     benchmark:
-        "benchmarks/{dataset}/realSFS/fst/plot/{dataset}.{ref}_{unit}pairs{dp}.log"
+        "benchmarks/{dataset}/realSFS/fst/plot/{dataset}.{ref}_{unit}pairs{dp}_{sites}-filts.log"
     conda:
         "../envs/r.yaml"
     script:

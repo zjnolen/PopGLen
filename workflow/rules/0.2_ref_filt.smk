@@ -565,10 +565,10 @@ rule combine_beds:
     input:
         unpack(get_bed_filts),
     output:
-        bed="results/datasets/{dataset}/filters/combined/{dataset}.{ref}{dp}_filts.bed",
-        lis="results/datasets/{dataset}/filters/combined/{dataset}.{ref}{dp}_filts.list",
-        sit="results/datasets/{dataset}/filters/combined/{dataset}.{ref}{dp}_filts.sites",
-        sum="results/datasets/{dataset}/filters/combined/{dataset}.{ref}{dp}_filts.sum",
+        bed="results/datasets/{dataset}/filters/combined/{dataset}.{ref}{dp}_allsites-filts.bed",
+        lis="results/datasets/{dataset}/filters/combined/{dataset}.{ref}{dp}_allsites-filts.list",
+        sit="results/datasets/{dataset}/filters/combined/{dataset}.{ref}{dp}_allsites-filts.sites",
+        sum="results/datasets/{dataset}/filters/combined/{dataset}.{ref}{dp}_allsites-filts.sum",
     log:
         "logs/{dataset}/filters/combine/{dataset}.{ref}{dp}_combine_beds.log",
     benchmark:
@@ -598,11 +598,59 @@ rule combine_beds:
         filtlen=$(awk 'BEGIN{{SUM=0}}{{SUM+=$3-$2-1}}END{{print SUM}}' \
             {output.bed})
         echo $filtlen $(awk -F "\t" '{{print $2}}' {input.sum}) | \
-            awk '{{print "Combined    "$1"    "$1/$2*100}}' >> {output.sum}
+            awk '{{print "Combined\t"$1"\t"$1/$2*100}}' >> {output.sum}
 
         awk '{{print $1"\t"$2+1"\t"$3}}' {output.bed} > {output.sit}.tmp
         sort -V {output.sit}.tmp > {output.sit}
         rm {output.sit}.tmp) 2> {log}
+        """
+
+
+rule user_sites:
+    """
+    When users provide subsets of the genome to provide analyses on, create a bed and
+    sites file for each subset, to limit analyses with.
+    """
+    input:
+        gen="results/ref/{ref}/beds/genome.bed",
+        gensum="results/ref/{ref}/beds/genome.bed.sum",
+        newfilt=get_newfilt,
+        allfilt="results/datasets/{dataset}/filters/combined/{dataset}.{ref}{dp}_allsites-filts.bed",
+        sum="results/datasets/{dataset}/filters/combined/{dataset}.{ref}{dp}_allsites-filts.sum",
+    output:
+        bed="results/datasets/{dataset}/filters/combined/{dataset}.{ref}{dp}_{sites}-filts.bed",
+        tmp=temp(
+            "results/datasets/{dataset}/filters/combined/{dataset}.{ref}{dp}_{sites}-filts.bed.tmp"
+        ),
+        sit="results/datasets/{dataset}/filters/combined/{dataset}.{ref}{dp}_{sites}-filts.sites",
+        sum="results/datasets/{dataset}/filters/combined/{dataset}.{ref}{dp}_{sites}-filts.sum",
+    wildcard_constraints:
+        sites="|".join(list(config["filter_beds"].keys())),
+    log:
+        "logs/{dataset}/filters/user_sites/{dataset}.{ref}{dp}_{sites}-filt.log",
+    benchmark:
+        "benchmarks/{dataset}/filters/user_sites/{dataset}.{ref}{dp}_{sites}-filt.log"
+    conda:
+        "../envs/bedtools.yaml"
+    threads: lambda wildcards, attempt: attempt * 2
+    resources:
+        time=240,
+    shell:
+        r"""
+        (head -n -1 {input.sum} > {output.sum}
+
+        siteslen=$(awk 'BEGIN{{SUM=0}}{{SUM+=$3-$2-1}}END{{print SUM}}' {input.newfilt})
+        echo $siteslen $(awk -F "\t" '{{print $2}}' {input.gensum}) | \
+            awk '{{print "{wildcards.sites}-filts\t"$1"\t"$1/$2*100}}' \
+            >> {output.sum}
+        bedtools subtract -a {input.gen} -b {input.newfilt} > {output.tmp}
+        bedtools subtract -a {input.allfilt} -b {output.tmp} > {output.bed}
+
+        filtlen=$(awk 'BEGIN{{SUM=0}}{{SUM+=$3-$2-1}}END{{print SUM}}' {output.bed})
+        echo $filtlen $(awk -F "\t" '{{print $2}}' {input.gensum}) | \
+            awk '{{print "Combined\t"$1"\t"$1/$2*100}}' >> {output.sum}
+        
+        awk '{{print $1"\t"$2+1"\t"$3}}' {output.bed} | sort -V > {output.sit}) 2> {log}
         """
 
 

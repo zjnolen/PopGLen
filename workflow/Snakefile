@@ -68,34 +68,34 @@ if config["analyses"]["endogenous_content"]:
 
 if config["analyses"]["relatedness"]["ngsrelate"]:
     all_outputs.append(
-        "results/datasets/{dataset}/analyses/kinship/ngsrelate/{dataset}.{ref}_all{dp}_relate.html"
+        "results/datasets/{dataset}/analyses/kinship/ngsrelate/{dataset}.{ref}_all{dp}_{sites}-filts_relate.html"
     )
 
 if config["analyses"]["relatedness"]["waples2019"]:
     all_outputs.append(
-        "results/datasets/{dataset}/analyses/kinship/waples2019/{dataset}.{ref}_all{dp}.kinship.html"
+        "results/datasets/{dataset}/analyses/kinship/waples2019/{dataset}.{ref}_all{dp}_{sites}-filts.kinship.html"
     )
 
 if config["analyses"]["pca_pcangsd"]:
     if config["excl_pca-admix"]:
         all_outputs.extend(
             [
-                "results/datasets/{dataset}/plots/pca/{dataset}.{ref}_all_excl_pca-admix{dp}_pc1-2.svg",
-                "results/datasets/{dataset}/plots/pca/{dataset}.{ref}_all_excl_pca-admix{dp}_pc3-4.svg",
+                "results/datasets/{dataset}/plots/pca/{dataset}.{ref}_all_excl_pca-admix{dp}_{sites}-filts_pc1-2.svg",
+                "results/datasets/{dataset}/plots/pca/{dataset}.{ref}_all_excl_pca-admix{dp}_{sites}-filts_pc3-4.svg",
             ]
         )
     else:
         all_outputs.extend(
             [
-                "results/datasets/{dataset}/plots/pca/{dataset}.{ref}_all{dp}_pc1-2.svg",
-                "results/datasets/{dataset}/plots/pca/{dataset}.{ref}_all{dp}_pc3-4.svg",
+                "results/datasets/{dataset}/plots/pca/{dataset}.{ref}_all{dp}_{sites}-filts_pc1-2.svg",
+                "results/datasets/{dataset}/plots/pca/{dataset}.{ref}_all{dp}_{sites}-filts_pc3-4.svg",
             ]
         )
 
 if config["analyses"]["thetas_angsd"]:
     all_outputs.extend(
         expand(
-            "results/datasets/{{dataset}}/plots/thetas/{{dataset}}.{{ref}}_all{{dp}}.window_{win}_{step}.{stat}.pdf",
+            "results/datasets/{{dataset}}/plots/thetas/{{dataset}}.{{ref}}_all{{dp}}_{{sites}}-filts.window_{win}_{step}.{stat}.pdf",
             stat=["watterson", "pi", "tajima"],
             win=config["params"]["thetas"]["win_size"],
             step=config["params"]["thetas"]["win_step"],
@@ -104,11 +104,11 @@ if config["analyses"]["thetas_angsd"]:
 
 if config["analyses"]["fst_angsd"]["populations"]:
     all_outputs.append(
-        "results/datasets/{dataset}/plots/fst/{dataset}.{ref}_poppairs{dp}.fst.global.pdf",
+        "results/datasets/{dataset}/plots/fst/{dataset}.{ref}_poppairs{dp}_{sites}-filts.fst.global.pdf",
     )
     all_outputs.extend(
         expand(
-            "results/datasets/{{dataset}}/analyses/fst/{{dataset}}.{{ref}}_poppairs{{dp}}.fst.window_{win}_{step}.tsv",
+            "results/datasets/{{dataset}}/analyses/fst/{{dataset}}.{{ref}}_poppairs{{dp}}_{{sites}}-filts.fst.window_{win}_{step}.tsv",
             win=config["params"]["fst"]["win_size"],
             step=config["params"]["fst"]["win_step"],
         )
@@ -116,11 +116,11 @@ if config["analyses"]["fst_angsd"]["populations"]:
 
 if config["analyses"]["fst_angsd"]["individuals"]:
     all_outputs.append(
-        "results/datasets/{dataset}/plots/fst/{dataset}.{ref}_indpairs{dp}.fst.global.pdf",
+        "results/datasets/{dataset}/plots/fst/{dataset}.{ref}_indpairs{dp}_{sites}-filts.fst.global.pdf",
     )
     all_outputs.extend(
         expand(
-            "results/datasets/{{dataset}}/analyses/fst/{{dataset}}.{{ref}}_indpairs{{dp}}.fst.window_{win}_{step}.tsv",
+            "results/datasets/{{dataset}}/analyses/fst/{{dataset}}.{{ref}}_indpairs{{dp}}_{{sites}}-filts.fst.window_{win}_{step}.tsv",
             win=config["params"]["fst"]["win_size"],
             step=config["params"]["fst"]["win_step"],
         )
@@ -129,15 +129,15 @@ if config["analyses"]["fst_angsd"]["individuals"]:
 if config["analyses"]["heterozygosity_angsd"]:
     all_outputs.extend(
         [
-            "results/datasets/{dataset}/plots/heterozygosity/{dataset}.{ref}_all{dp}_heterozygosity.pdf",
-            "results/datasets/{dataset}/analyses/heterozygosity/{dataset}.{ref}_all{dp}_heterozygosity.html",
+            "results/datasets/{dataset}/plots/heterozygosity/{dataset}.{ref}_all{dp}_{sites}-filts_heterozygosity.pdf",
+            "results/datasets/{dataset}/analyses/heterozygosity/{dataset}.{ref}_all{dp}_{sites}-filts_heterozygosity.html",
         ]
     )
 
 if config["analyses"]["inbreeding_ngsf-hmm"]:
     all_outputs.extend(
         expand(
-            "results/datasets/{{dataset}}/plots/inbreeding/{{dataset}}.{{ref}}_all{{dp}}.{stat}.pdf",
+            "results/datasets/{{dataset}}/plots/inbreeding/{{dataset}}.{{ref}}_all{{dp}}_{{sites}}-filts.{stat}.pdf",
             stat=["froh", "rohreg"],
         )
     )
@@ -147,8 +147,8 @@ if config["analyses"]["admix_ngsadmix"]:
         all_outputs.extend(
             expand(
                 [
-                    "results/datasets/{{dataset}}/plots/evaladmix/{{dataset}}.{{ref}}_all_excl_pca-admix{{dp}}_K{kvalue}_evaladmix.html",
-                    "results/datasets/{{dataset}}/plots/ngsadmix/{{dataset}}.{{ref}}_all_excl_pca-admix{{dp}}_K{kvalue}.svg",
+                    "results/datasets/{{dataset}}/plots/evaladmix/{{dataset}}.{{ref}}_all_excl_pca-admix{{dp}}_{{sites}}-filts_K{kvalue}_evaladmix.html",
+                    "results/datasets/{{dataset}}/plots/ngsadmix/{{dataset}}.{{ref}}_all_excl_pca-admix{{dp}}_{{sites}}-filts_K{kvalue}.svg",
                 ],
                 kvalue=config["params"]["ngsadmix"]["kvalues"],
             )
@@ -157,8 +157,8 @@ if config["analyses"]["admix_ngsadmix"]:
         all_outputs.extend(
             expand(
                 [
-                    "results/datasets/{{dataset}}/plots/evaladmix/{{dataset}}.{{ref}}_all{{dp}}_K{kvalue}_evaladmix.html",
-                    "results/datasets/{{dataset}}/plots/ngsadmix/{{dataset}}.{{ref}}_all{{dp}}_K{kvalue}.svg",
+                    "results/datasets/{{dataset}}/plots/evaladmix/{{dataset}}.{{ref}}_all{{dp}}_{{sites}}-filts_K{kvalue}_evaladmix.html",
+                    "results/datasets/{{dataset}}/plots/ngsadmix/{{dataset}}.{{ref}}_all{{dp}}_{{sites}}-filts_K{kvalue}.svg",
                 ],
                 kvalue=config["params"]["ngsadmix"]["kvalues"],
             )
@@ -166,7 +166,7 @@ if config["analyses"]["admix_ngsadmix"]:
 
 if config["analyses"]["ibs_matrix"]:
     all_outputs.append(
-        "results/datasets/{dataset}/analyses/IBS/{dataset}.{ref}_all{dp}.ibsMat"
+        "results/datasets/{dataset}/analyses/IBS/{dataset}.{ref}_all{dp}_{sites}-filts.ibsMat"
     )
 
 
@@ -180,4 +180,5 @@ rule all:
             histsample=samples.index[samples["time"] == "historical"].tolist(),
             dataset=config["dataset"],
             dp=subsample,
+            sites=filters,
         ),

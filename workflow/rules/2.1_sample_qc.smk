@@ -200,9 +200,6 @@ rule summarize_ind_depth:
         "benchmarks/summarize_ind_depth/{prefix}{dataset}.{ref}_{sample}{dp}_{group}.log"
     conda:
         "../envs/r.yaml"
-    wildcard_constraints:
-        prefix="results/mapping/qc/ind_depth/unfiltered/|"
-        + "results/datasets/{dataset}/qc/ind_depth/filtered/",
     threads: lambda wildcards, attempt: attempt
     script:
         "../scripts/calc_depth.R"
@@ -248,7 +245,7 @@ rule combine_sample_qc:
     output:
         "results/datasets/{dataset}/qc/{dataset}.{ref}_all{dp}.sampleqc.tsv",
     log:
-        "log/datasets/{dataset}/combine_sample_qc/{dataset}.{ref}{dp}.log",
+        "logs/datasets/{dataset}/combine_sample_qc/{dataset}.{ref}{dp}.log",
     benchmark:
         "benchmarks/datasets/{dataset}/combine_sample_qc/{dataset}.{ref}{dp}.log"
     conda:
@@ -256,16 +253,16 @@ rule combine_sample_qc:
     shadow:
         "minimal"
     shell:
-        r"""
+        """
         (for i in {input}; do
             head -n 1 $i > ${{i}}.tmp
             tail -n +2 $i | sort -k1 >> ${{i}}.tmp
         done
 
-        cut -d '    ' -f 1 {input.inds}.tmp > {output}
+        cut -d '\t' -f 1 {input.inds}.tmp > {output}
 
         for i in {input}; do
-            cut -d '    ' -f 2- ${{i}}.tmp | paste {output} - > {output}.tmp
+            cut -d '\t' -f 2- ${{i}}.tmp | paste {output} - > {output}.tmp
             mv {output}.tmp {output}
         done) 2> {log}
         """

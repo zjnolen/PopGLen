@@ -367,8 +367,8 @@ def get_kinship(wildcards):
 def get_total_bed(wildcards):
     if wildcards.prefix == "results/mapping/qc/ind_depth/unfiltered/":
         return "results/ref/{ref}/beds/genome.bed"
-    elif wildcards.prefix == "results/datasets/{dataset}/qc/ind_depth/filtered/":
-        return "results/datasets/{dataset}/filters/combined/{dataset}.{ref}{dp}_allsites-filts.bed"
+    elif wildcards.prefix == f"results/datasets/{wildcards.dataset}/qc/ind_depth/filtered/":
+        return "results/datasets/{dataset}/filters/combined/{dataset}.{ref}{dp}_{group}.bed"
 
 
 ## Gather sample QC output files for concatenation

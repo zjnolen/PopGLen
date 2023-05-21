@@ -51,7 +51,7 @@ wildcard_constraints:
 
 # Accumulate desired output files from config file
 
-all_outputs = []
+all_outputs = ["results/datasets/{dataset}/qc/{dataset}.{ref}_all{dp}.sampleqc.html"]
 
 if config["analyses"]["qualimap"]:
     all_outputs.append("results/mapping/qc/qualimap/{sample}.{ref}/genome_results.txt")

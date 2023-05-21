@@ -15,7 +15,7 @@ min_version("7.25.0")
 
 # Create variables for software containers (for easier version updating)
 
-angsd_container = "docker://zjnolen/angsd:0.938"
+angsd_container = "docker://zjnolen/angsd:0.940"
 pcangsd_container = "docker://zjnolen/pcangsd:1.10"
 evaladmix_container = "docker://zjnolen/evaladmix:0.961"
 ngsf_hmm_container = "docker://zjnolen/ngsf-hmm:20200722-2df9690"

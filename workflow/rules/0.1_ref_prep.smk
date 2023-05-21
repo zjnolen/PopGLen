@@ -35,7 +35,7 @@ rule bwa_index:
     conda:
         "../envs/mapping.yaml"
     resources:
-        time=120,
+        runtime=120,
     benchmark:
         "benchmarks/ref/bwa_index/{ref}.log"
     shell:

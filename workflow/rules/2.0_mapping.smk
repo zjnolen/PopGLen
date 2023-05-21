@@ -21,7 +21,7 @@ rule bwa_mem_merged:
         "minimal"
     threads: lambda wildcards, attempt: attempt * 10
     resources:
-        time=lambda wildcards, attempt: attempt * 2880,
+        runtime=lambda wildcards, attempt: attempt * 2880,
     shell:
         """
         (bwa mem \
@@ -55,7 +55,7 @@ rule bwa_mem_paired:
         "minimal"
     threads: lambda wildcards, attempt: attempt * 10
     resources:
-        time=lambda wildcards, attempt: attempt * 2880,
+        runtime=lambda wildcards, attempt: attempt * 2880,
     shell:
         """
         (bwa mem \
@@ -86,7 +86,7 @@ rule mark_duplicates:
     resources:
         # can be memory intensive for big bam files, look into ways of 
         # allocating memory that will work on multiple clusters
-        time=lambda wildcards, attempt: attempt * 1440,
+        runtime=lambda wildcards, attempt: attempt * 1440,
     wrapper:
         "v1.17.2/bio/picard/markduplicates"
 
@@ -110,7 +110,7 @@ rule bam_clipoverlap:
         "minimal"
     threads: lambda wildcards, attempt: attempt * 2
     resources:
-        time=lambda wildcards, attempt: attempt * 1440,
+        runtime=lambda wildcards, attempt: attempt * 1440,
     shell:
         """
         (samtools sort -n -o {input.bam}.namesort.bam {input.bam}
@@ -146,7 +146,7 @@ rule dedup_merged:
     params:
         outdir=lambda w, output: os.path.dirname(output.bamfin),
     resources:
-        time=lambda wildcards, attempt: attempt * 1440,
+        runtime=lambda wildcards, attempt: attempt * 1440,
     shell:
         """
         (dedup -i {input} -m -u -o {params.outdir}
@@ -180,7 +180,7 @@ rule realignertargetcreator:
         "minimal"
     threads: lambda wildcards, attempt: attempt * 2
     resources:
-        time=lambda wildcards, attempt: attempt * 720,
+        runtime=lambda wildcards, attempt: attempt * 720,
     shell:
         """
         gatk3 -T RealignerTargetCreator -nt {threads} -I {input.bam[0]} \
@@ -208,7 +208,7 @@ rule indelrealigner:
         "minimal"
     threads: lambda wildcards, attempt: attempt * 4
     resources:
-        time=lambda wildcards, attempt: attempt * 1440,
+        runtime=lambda wildcards, attempt: attempt * 1440,
     shell:
         """
         gatk3 -Xmx{resources.mem_mb}m -T IndelRealigner -R {input.ref} \
@@ -281,7 +281,7 @@ rule samtools_subsample:
     params:
         dp=config["downsample_cov"],
     resources:
-        time=lambda wildcards, attempt: attempt * 720,
+        runtime=lambda wildcards, attempt: attempt * 720,
     shell:
         """
         dp=$(awk '{{print $2}}' {input.depth})

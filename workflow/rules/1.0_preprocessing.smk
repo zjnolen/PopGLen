@@ -20,7 +20,7 @@ rule fastp_mergedout:
         extra=config["params"]["fastp"]["extra"],
     threads: lambda wildcards, attempt: attempt * 2
     resources:
-        time=lambda wildcards, attempt: attempt * 240,
+        runtime=lambda wildcards, attempt: attempt * 240,
     shell:
         """
         fastp -w {threads} {params.extra} -m -i {input.r1} \
@@ -49,7 +49,7 @@ rule fastp_pairedout:
         extra=config["params"]["fastp"]["extra"],
     threads: lambda wildcards, attempt: attempt * 2
     resources:
-        time=lambda wildcards, attempt: attempt * 240,
+        runtime=lambda wildcards, attempt: attempt * 240,
     shell:
         """
         fastp -w {threads} {params.extra} -i {input.r1} \

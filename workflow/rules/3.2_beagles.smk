@@ -32,7 +32,7 @@ rule angsd_doGlf2:
         out=lambda w, output: os.path.splitext(output.arg)[0],
     threads: lambda wildcards, attempt: attempt
     resources:
-        time=lambda wildcards, attempt: attempt * 720,
+        runtime=lambda wildcards, attempt: attempt * 720,
     shell:
         """
         angsd -doGlf 2 -glf10_text {input.glf} {params.popopts} -doMaf 1 \
@@ -59,7 +59,7 @@ rule merge_beagle:
     conda:
         "../envs/shell.yaml"
     resources:
-        time=lambda wildcards, attempt: attempt * 60,
+        runtime=lambda wildcards, attempt: attempt * 60,
     shell:
         r"""
         (set +o pipefail;
@@ -89,7 +89,7 @@ rule merge_maf:
     conda:
         "../envs/shell.yaml"
     resources:
-        time=lambda wildcards, attempt: attempt * 60,
+        runtime=lambda wildcards, attempt: attempt * 60,
     shell:
         r"""
         (set +o pipefail;

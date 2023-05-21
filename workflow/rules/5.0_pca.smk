@@ -43,7 +43,7 @@ rule pca_pcangsd:
         prefix=lambda w, output: os.path.splitext(output.cov)[0],
     threads: lambda wildcards, attempt: attempt
     resources:
-        time=lambda wildcards, attempt: attempt * 60,
+        runtime=lambda wildcards, attempt: attempt * 60,
     shell:
         """
         pcangsd -b {input.beagle} -o {params.prefix} &> {log}

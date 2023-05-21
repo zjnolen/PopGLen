@@ -94,7 +94,7 @@ rule angsd_doGlf4:
         baseQ=config["baseQ"],
         out=lambda w, output: os.path.splitext(output.arg)[0],
     resources:
-        time=lambda wildcards, attempt: attempt * 360,
+        runtime=lambda wildcards, attempt: attempt * 360,
     threads: lambda wildcards, attempt: attempt * 2
     shell:
         """
@@ -155,7 +155,7 @@ rule popglf:
     params:
         tmpfile="{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.glf",
     resources:
-        time=360,
+        runtime=360,
     shell:
         """
         (zcat {input.sample_glfs[0]} | cut -f1-2 > {resources.tmpdir}/{params.tmpfile}

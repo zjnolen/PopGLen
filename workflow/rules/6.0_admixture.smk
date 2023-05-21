@@ -29,7 +29,7 @@ rule ngsAdmix:
         conv=config["params"]["ngsadmix"]["conv"],
     threads: 4
     resources:
-        time=lambda wildcards, attempt: attempt * 2880,
+        runtime=lambda wildcards, attempt: attempt * 2880,
     script:
         "../scripts/ngsadmix.sh"
 

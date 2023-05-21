@@ -22,7 +22,7 @@ rule ngsLD_estLD:
         ngsld_container
     threads: lambda wildcards, attempt: attempt
     resources:
-        time=lambda wildcards, attempt: attempt * 720,
+        runtime=lambda wildcards, attempt: attempt * 720,
     shell:
         r"""
         (zcat {input.beagle} | awk '{{print $1}}' | sed 's/\(.*\)_/\1\t/' \
@@ -58,7 +58,7 @@ rule ngsLD_prune_sites:
         "../envs/pruning.yaml"
     threads: lambda wildcards, attempt: attempt * 2
     resources:
-        time=lambda wildcards, attempt: attempt * 1440,
+        runtime=lambda wildcards, attempt: attempt * 1440,
     params:
         maxdist=50000,
         minweight=0.1,
@@ -87,7 +87,7 @@ rule prune_chunk_beagle:
     params:
         pruned="results/datasets/{dataset}/beagles/pruned/chunks/{dataset}{ref}_{population}{dp}_chunk{chunk}_{sites}-filts_pruned.beagle",
     resources:
-        time=lambda wildcards, attempt: attempt * 120,
+        runtime=lambda wildcards, attempt: attempt * 120,
     shell:
         r"""
         (set +o pipefail;
@@ -132,7 +132,7 @@ rule merge_pruned_beagles:
     conda:
         "../envs/shell.yaml"
     resources:
-        time=lambda wildcards, attempt: attempt * 60,
+        runtime=lambda wildcards, attempt: attempt * 60,
     shell:
         r"""
         (echo "cat file order:"

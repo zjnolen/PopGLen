@@ -43,7 +43,7 @@ rule qualimap:
     benchmark:
         "benchmarks/mapping/qualimap/{sample}.{ref}.log"
     resources:
-        time=360,
+        runtime=360,
     shell:
         """
         (unset DISPLAY
@@ -101,7 +101,7 @@ rule compile_endo_cont:
     conda:
         "../envs/shell.yaml"
     resources:
-        time=lambda wildcards, attempt: attempt * 15,
+        runtime=lambda wildcards, attempt: attempt * 15,
     shell:
         """
         (echo "sample    perc.endo    perc.prim.endo" > {output}
@@ -135,7 +135,7 @@ rule ind_unfiltered_depth:
         maxdepth=config["params"]["angsd"]["maxdepth"],
     threads: lambda wildcards, attempt: attempt
     resources:
-        time=lambda wildcards, attempt: attempt * 120,
+        runtime=lambda wildcards, attempt: attempt * 120,
     shell:
         """
         angsd -doDepth 1 -doCounts 1 -maxDepth {params.maxdepth} \
@@ -175,7 +175,7 @@ rule ind_filtered_depth:
         maxdepth=config["params"]["angsd"]["maxdepth"],
     threads: lambda wildcards, attempt: attempt
     resources:
-        time=lambda wildcards, attempt: attempt * 60,
+        runtime=lambda wildcards, attempt: attempt * 60,
     shell:
         """
         angsd -doDepth 1 -doCounts 1 -maxDepth {params.maxdepth} \

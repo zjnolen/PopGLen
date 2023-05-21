@@ -24,7 +24,7 @@ rule realSFS_saf2theta:
         out=lambda w, output: output.thetas.removesuffix(".thetas.gz"),
         fold=config["params"]["realsfs"]["fold"],
     resources:
-        time=lambda wildcards, attempt: attempt * 120,
+        runtime=lambda wildcards, attempt: attempt * 120,
     shell:
         """
         realSFS saf2theta {input.safidx} -sfs {input.sfs} -fold {params.fold} \
@@ -48,7 +48,7 @@ rule thetaStat:
     params:
         out=lambda w, output: os.path.splitext(output.thetas)[0],
     resources:
-        time=lambda wildcards, attempt: attempt * 120,
+        runtime=lambda wildcards, attempt: attempt * 120,
     shell:
         """
         thetaStat do_stat {input.thetasidx} -win {wildcards.win} -type 0 \

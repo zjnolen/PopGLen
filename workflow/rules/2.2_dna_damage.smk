@@ -42,7 +42,7 @@ rule damageprofiler:
         out=lambda w, output: os.path.dirname(output[0]),
     threads: lambda wildcards, attempt: attempt
     resources:
-        time=lambda wildcards, attempt: attempt * 60,
+        runtime=lambda wildcards, attempt: attempt * 60,
     shell:
         """
         damageprofiler -Xmx{resources.mem_mb}m -i {input.bam} -r {input.ref} \
@@ -69,7 +69,7 @@ rule mapDamage2_rescaling:
         mapdamage_container
     threads: 2
     resources:
-        time=1440,
+        runtime=1440,
     params:
         tmp="results/mapping/qc/mapdamage/{sample}.{ref}/{sample}.{ref}.rmdup.realn.rescaled.bam",
     shell:

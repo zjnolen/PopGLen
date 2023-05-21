@@ -28,7 +28,7 @@ rule angsd_doIBS:
         out=lambda w, output: os.path.splitext(output.arg)[0],
     threads: 8
     resources:
-        time=lambda wildcards, attempt: attempt * 2880,
+        runtime=lambda wildcards, attempt: attempt * 2880,
     shell:
         """
         angsd -doIBS {params.ibs} -bam {input.bamlist} -nThreads {threads} -doCounts 1 \

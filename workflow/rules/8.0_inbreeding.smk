@@ -23,7 +23,7 @@ rule ngsf_hmm:
         nind=lambda w: len(get_samples_from_pop(w.population)),
     threads: lambda wildcards, attempt: attempt * 10
     resources:
-        time=lambda wildcards, attempt: attempt * 2880,
+        runtime=lambda wildcards, attempt: attempt * 2880,
     script:
         "../scripts/ngsF-HMM.sh"
 

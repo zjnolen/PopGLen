@@ -32,7 +32,7 @@ rule angsd_doSaf:
         nind=lambda w: len(get_samples_from_pop(w.population)),
         out=lambda w, output: os.path.splitext(output.arg)[0],
     resources:
-        time=lambda wildcards, attempt: attempt * 180,
+        runtime=lambda wildcards, attempt: attempt * 180,
     threads: lambda wildcards, attempt: attempt * 2
     shell:
         """
@@ -75,7 +75,7 @@ rule realSFS_catsaf:
     params:
         out=lambda w, output: output[0].removesuffix(".saf.idx"),
     resources:
-        time=lambda wildcards, attempt: attempt * 60,
+        runtime=lambda wildcards, attempt: attempt * 60,
     shell:
         """
         realSFS cat {input.safs} -P 1 -outnames {params.out} 2> {log}

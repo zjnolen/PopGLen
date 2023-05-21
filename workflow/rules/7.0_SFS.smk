@@ -27,7 +27,7 @@ rule realSFS_1dSFS:
         fold=config["params"]["realsfs"]["fold"],
     threads: lambda wildcards, attempt: attempt * 2
     resources:
-        time=lambda wildcards, attempt: attempt * 120,
+        runtime=lambda wildcards, attempt: attempt * 120,
     shell:
         """
         realSFS {input.saf} -fold {params.fold} -P {threads} \
@@ -76,7 +76,7 @@ rule realSFS_2dSFS:
         fold=config["params"]["realsfs"]["fold"],
     threads: lambda wildcards, attempt: attempt * 2
     resources:
-        time=lambda wildcards, attempt: attempt * 180,
+        runtime=lambda wildcards, attempt: attempt * 180,
     shell:
         """
         realSFS {input.saf1} {input.saf2} -fold {params.fold} \

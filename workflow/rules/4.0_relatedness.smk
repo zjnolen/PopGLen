@@ -21,7 +21,7 @@ rule est_kinship_stats:
     conda:
         "../envs/r.yaml"
     resources:
-        time=lambda wildcards, attempt: attempt * 15,
+        runtime=lambda wildcards, attempt: attempt * 15,
     script:
         "../scripts/kinship.R"
 
@@ -41,7 +41,7 @@ rule compile_kinship_stats:
     conda:
         "../envs/shell.yaml"
     resources:
-        time=lambda wildcards, attempt: attempt * 15,
+        runtime=lambda wildcards, attempt: attempt * 15,
     shell:
         """
         (echo "ind1    ind2    R0    R1    KING" > {output}
@@ -89,7 +89,7 @@ rule ngsrelate:
     params:
         nind=lambda w: len(get_samples_from_pop("all")),
     resources:
-        time=lambda wildcards, attempt: attempt * 360,
+        runtime=lambda wildcards, attempt: attempt * 360,
     shell:
         r"""
         (nsites=$(zcat {input.beagle} | tail -n +2 | wc -l)

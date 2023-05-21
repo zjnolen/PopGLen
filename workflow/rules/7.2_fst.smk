@@ -31,7 +31,7 @@ rule realSFS_fst_index:
         out=lambda w, output: output.fstidx.removesuffix(".fst.idx"),
         fst=config["params"]["fst"]["whichFst"],
     resources:
-        time=lambda wildcards, attempt: attempt * 120,
+        runtime=lambda wildcards, attempt: attempt * 120,
     shell:
         """
         realSFS fst index -whichFst {params.fst} \
@@ -55,7 +55,7 @@ rule realSFS_fst_stats:
     benchmark:
         "benchmarks/{dataset}/realSFS/fst/stats/{dataset}.{ref}_{population1}-{population2}{dp}_{sites}-filts.log"
     resources:
-        time=lambda wildcards, attempt: attempt * 60,
+        runtime=lambda wildcards, attempt: attempt * 60,
     shell:
         r"""
         realSFS fst stats {input.fstidx} | \

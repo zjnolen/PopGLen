@@ -166,7 +166,7 @@ rule genmap_map:
         out=lambda w, output: os.path.splitext(output.bed)[0],
     threads: lambda wildcards, attempt: attempt
     resources:
-        time=lambda wildcards, attempt: attempt * 360,
+        runtime=lambda wildcards, attempt: attempt * 360,
     shell:
         """
         genmap map -K {params.K} -E {params.E} -I {input.fold} \
@@ -251,7 +251,7 @@ rule repeatmodeler:
         ref="{ref}",
     threads: 10
     resources:
-        time=10080,
+        runtime=10080,
     shadow:
         "minimal"
     shell:
@@ -280,7 +280,7 @@ rule repeatmasker:
         else input.lib,
     threads: 5
     resources:
-        time=720,
+        runtime=720,
     shadow:
         "shallow"
     shell:
@@ -342,7 +342,7 @@ rule angsd_depth:
         out=lambda w, output: os.path.splitext(output.arg)[0],
     threads: lambda wildcards, attempt: attempt * 2
     resources:
-        time=lambda wildcards, attempt: attempt * 720,
+        runtime=lambda wildcards, attempt: attempt * 720,
     shell:
         """
         (nInd=$(cat {input.bamlist} | wc -l | awk '{{print $1+1}}')
@@ -450,7 +450,7 @@ rule combine_depth_bed:
     shadow:
         "minimal"
     resources:
-        time=240,
+        runtime=240,
     shell:
         """
         # combine beds
@@ -501,7 +501,7 @@ rule angsd_missdata:
         out=lambda w, output: os.path.splitext(output.arg)[0],
     threads: lambda wildcards, attempt: attempt * 2
     resources:
-        time=lambda wildcards, attempt: attempt * 360,
+        runtime=lambda wildcards, attempt: attempt * 360,
     shell:
         """
         (minInd=$(echo {params.nind} \
@@ -577,7 +577,7 @@ rule combine_beds:
         "../envs/bedtools.yaml"
     threads: lambda wildcards, attempt: attempt * 2
     resources:
-        time=240,
+        runtime=240,
     shell:
         r"""
         (printf '%s\n' {input.filt} > {output.lis}
@@ -634,7 +634,7 @@ rule user_sites:
         "../envs/bedtools.yaml"
     threads: lambda wildcards, attempt: attempt * 2
     resources:
-        time=240,
+        runtime=240,
     shell:
         r"""
         (head -n -1 {input.sum} > {output.sum}

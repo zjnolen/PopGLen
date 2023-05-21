@@ -64,6 +64,7 @@ analyses:
 
 filter_beds:
   example: "config/example-filt.bed"
+  badexample: "config/badexample-filt.bed"
 
 only_filter_beds: false
 

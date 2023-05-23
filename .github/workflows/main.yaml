@@ -4,8 +4,12 @@ on:
   push:
     branches:
       - master
+    paths-ignore:
+      - '**/*.md'
   pull_request:
     branches_ignore: []
+    paths-ignore:
+      - '**/*.md'
 
 jobs:
   formatting:

@@ -112,6 +112,16 @@ Required configuration of the reference.
   - `min_size:` A size in bp (integer). All contigs below this size will be
     excluded from analysis.
 
+Reference genomes should be uncompressed, and contig names should be clear and
+concise. Currently, there are some issues parsing contig names with
+underscores, so please change these in your reference before running the
+pipeline. Alphanumeric characters, as well as `.` in contig names have been
+tested to work so far, other symbols have not been tested.
+
+Potentially the ability to use bgzipped genomes will be added, I just need to
+check that it works with all underlying tools. Currently, it will for sure not
+work, as calculating chunks is hard-coded to work on an uncompressed genome.
+
 #### Sample Set Configuration
 
 This will exclude individuals from analysis that are listed in the sample list.

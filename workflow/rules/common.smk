@@ -472,3 +472,21 @@ def get_bamlist_bais(wildcards):
         "results/datasets/{{dataset}}/bams/{sample}.{{ref}}{{dp}}.bam.bai",
         sample=get_samples_from_pop(pop),
     )
+
+
+# Get string to describe depth subsampling for report
+def dp_report(wildcards):
+    dp = wildcards.dp
+    if dp == "":
+        return {"Subsampling":"None"}
+    else:
+        return {"Subsampling":f"{dp.replace('.dp','')}X"}
+
+
+# Get string to describe units for Fst for report
+def unit_report(wildcards):
+    unit = wildcards.unit
+    if unit == "ind":
+        return {"Unit":"Individuals"}
+    elif unit == "pop":
+        return {"Unit":"Populations"}

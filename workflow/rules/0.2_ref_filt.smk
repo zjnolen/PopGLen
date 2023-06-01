@@ -657,17 +657,18 @@ rule user_sites:
 rule filter_summary_table:
     """Produce table from filter summary to incorporate into report"""
     input:
-        "results/datasets/{dataset}/filters/combined/{dataset}.{ref}{dp}_filts.sum",
+        "results/datasets/{dataset}/filters/combined/{dataset}.{ref}{dp}_{sites}-filts.sum",
     output:
         report(
-            "results/datasets/{dataset}/filters/combined/{dataset}.{ref}{dp}_filts.html",
+            "results/datasets/{dataset}/filters/combined/{dataset}.{ref}{dp}_{sites}-filts.html",
             category="Quality Control",
-            labels={"Topic": "Site filters", "Type": "Table"},
+            subcategory="Filtering Summary",
+            labels={"Filter": "{sites}", "Type": "Table"},
         ),
     log:
-        "logs/{dataset}/filters/combine/{dataset}.{ref}{dp}_tsv2html.log",
+        "logs/{dataset}/filters/combine/{dataset}.{ref}{dp}_{sites}-filts_tsv2html.log",
     benchmark:
-        "benchmarks/{dataset}/filters/combine/{dataset}.{ref}{dp}_tsv2html.log"
+        "benchmarks/{dataset}/filters/combine/{dataset}.{ref}{dp}_{sites}-filts_tsv2html.log"
     conda:
         "../envs/r-rectable.yaml"
     script:

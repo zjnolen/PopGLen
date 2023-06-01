@@ -8,7 +8,10 @@ rule fastp_mergedout:
         unpack(get_raw_fastq),
     output:
         merged="results/preprocessing/fastp/{sample}.merged.fastq.gz",
-        html="results/preprocessing/qc/fastp/{sample}_paired.html",
+        html=report("results/preprocessing/qc/fastp/{sample}_paired.html",
+            category="Quality Control",
+            subcategory="Trimming Reports",
+            labels={"Sample": "{sample}", "Type": "fastp Report"},),
         json="results/preprocessing/qc/fastp/{sample}_paired.json",
     log:
         "logs/preprocessing/fastp/{sample}.merged.log",
@@ -37,7 +40,10 @@ rule fastp_pairedout:
         paired=expand(
             "results/preprocessing/fastp/{{sample}}.{read}.fastq.gz", read=["R1", "R2"]
         ),
-        html="results/preprocessing/qc/fastp/{sample}_paired.html",
+        html=report("results/preprocessing/qc/fastp/{sample}_paired.html",
+            category="Quality Control",
+            subcategory="Trimming Reports",
+            labels={"Sample": "{sample}", "Type": "fastp Report"},),
         json="results/preprocessing/qc/fastp/{sample}_paired.json",
     log:
         "logs/preprocessing/fastp/{sample}.paired.log",

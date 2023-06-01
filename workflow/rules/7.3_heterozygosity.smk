@@ -17,11 +17,7 @@ rule heterozygosity:
         report(
             "results/datasets/{dataset}/plots/heterozygosity/{dataset}.{ref}_all{dp}_{sites}-filts_heterozygosity.pdf",
             category="Heterozygosity",
-            labels={
-                "Topic": "Heterozygosity",
-                "Subsampling": "{dp}",
-                "Type": "boxplot",
-            },
+            labels=lambda w: {"Filter": "{sites}", **dp_report(w), "Type": "Boxplot"}
         ),
     log:
         "logs/{dataset}/heterozygosity/{dataset}.{ref}_all{dp}_{sites}-filts_calc-plot.log",
@@ -43,7 +39,7 @@ rule heterozygosity_table:
         report(
             "results/datasets/{dataset}/analyses/heterozygosity/{dataset}.{ref}_all{dp}_{sites}-filts_heterozygosity.html",
             category="Heterozygosity",
-            labels={"Topic": "Heterozygosity", "Subsampling": "{dp}", "Type": "Table"},
+            labels=lambda w: {"Filter": "{sites}", **dp_report(w), "Type": "Boxplot"},
         ),
     log:
         "logs/{dataset}/heterozygosity/{dataset}.{ref}_all{dp}_{sites}-filts_tsv2html.log",

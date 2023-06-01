@@ -51,10 +51,15 @@ wildcard_constraints:
 
 # Accumulate desired output files from config file
 
-all_outputs = ["results/datasets/{dataset}/qc/{dataset}.{ref}_all{dp}.sampleqc.html"]
+all_outputs = [
+    "results/datasets/{dataset}/qc/{dataset}.{ref}_all{dp}.sampleqc.html",
+    "results/datasets/{dataset}/filters/combined/{dataset}.{ref}{dp}_{sites}-filts.html",
+]
 
 if config["analyses"]["qualimap"]:
-    all_outputs.append("results/mapping/qc/qualimap/{sample}.{ref}/genome_results.txt")
+    all_outputs.append(
+        "results/mapping/qc/qualimap/{sample}.{ref}/report.pdf"
+    )
 
 if config["analyses"]["damageprofiler"]:
     all_outputs.append(
@@ -95,7 +100,7 @@ if config["analyses"]["pca_pcangsd"]:
 if config["analyses"]["thetas_angsd"]:
     all_outputs.extend(
         expand(
-            "results/datasets/{{dataset}}/plots/thetas/{{dataset}}.{{ref}}_all{{dp}}_{{sites}}-filts.window_{win}_{step}.{stat}.pdf",
+            "results/datasets/{{dataset}}/plots/thetas/{{dataset}}.{{ref}}_all{{dp}}_{{sites}}-filts.window_{win}_{step}.density.{stat}.pdf",
             stat=["watterson", "pi", "tajima"],
             win=config["params"]["thetas"]["win_size"],
             step=config["params"]["thetas"]["win_step"],

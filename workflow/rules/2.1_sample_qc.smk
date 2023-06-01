@@ -32,10 +32,13 @@ rule qualimap:
     input:
         unpack(get_final_bam),
     output:
-        html="results/mapping/qc/qualimap/{sample}.{ref}/qualimapReport.html",
+        pdf=report("results/mapping/qc/qualimap/{sample}.{ref}/report.pdf",
+            category="Quality Control",
+            subcategory="Mapping Reports",
+            labels={"Sample":"{sample}", "Ref":"{ref}","Type":"Qualimap Report"}),
         txt="results/mapping/qc/qualimap/{sample}.{ref}/genome_results.txt",
     params:
-        out=lambda w, output: os.path.dirname(output.html),
+        outdir=lambda w, output: os.path.dirname(output.txt),
     conda:
         "../envs/qualimap.yaml"
     log:
@@ -49,7 +52,7 @@ rule qualimap:
         (unset DISPLAY
 
         qualimap bamqc --java-mem-size={resources.mem_mb}M -bam {input.bam} \
-            -outdir {params.out}) &> {log}
+            -outdir {params.outdir} -outformat pdf) &> {log}
         """
 
 
@@ -104,7 +107,7 @@ rule compile_endo_cont:
         runtime=lambda wildcards, attempt: attempt * 15,
     shell:
         """
-        (echo "sample    perc.endo    perc.prim.endo" > {output}
+        (printf "sample\tperc.endo\tperc.prim.endo\n" > {output}
         cat {input} >> {output}) 2> {log}
         """
 
@@ -230,7 +233,7 @@ rule merge_ind_depth:
     shell:
         """
         (cat {input.depth} > {output.dep}
-        echo "sample\t{wildcards.group}.depth.mean\t{wildcards.group}.depth.stdev" \
+        printf "sample\t{wildcards.group}.depth.mean\t{wildcards.group}.depth.stdev\n" \
             > {output.sum}
         cat {input.summary} >> {output.sum}) 2> {log}
         """
@@ -278,7 +281,8 @@ rule sample_qc_summary:
         report(
             "results/datasets/{dataset}/qc/{dataset}.{ref}_all{dp}.sampleqc.html",
             category="Quality Control",
-            labels={"Topic": "Sample QC", "Type": "Table"},
+            subcategory="Sample coverage and endogenous content",
+            labels={"Type": "Table"},
         ),
     log:
         "logs/{dataset}/combine_sample_qc/{dataset}.{ref}{dp}_tsv2html.log",

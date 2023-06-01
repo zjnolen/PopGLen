@@ -58,8 +58,9 @@ rule kinship_table_html:
     output:
         report(
             "results/datasets/{dataset}/analyses/kinship/waples2019/{dataset}.{ref}_all{dp}_{sites}-filts.kinship.html",
-            category="Kinship",
-            labels={"Topic": "Waples et al. 2019 R0,R1,KING", "Type": "Table"},
+            category="Relatedness",
+            subcategory="Waples et al. 2019 R0,R1,KING",
+            labels=lambda w: {"Filter": "{sites}", **dp_report(w), "Type": "Table"},
         ),
     log:
         "logs/{dataset}/kinship/waples2019/{dataset}.{ref}_all{dp}_{sites}-filts_tsv2html.log",
@@ -110,8 +111,9 @@ rule ngsrelate_summary:
     output:
         report(
             "results/datasets/{dataset}/analyses/kinship/ngsrelate/{dataset}.{ref}_all{dp}_{sites}-filts_relate.html",
-            category="Kinship",
-            labels={"Topic": "NgsRelate", "Type": "Table"},
+            category="Relatedness",
+            subcategory="NgsRelate",
+            labels=lambda w: {"Filter": "{sites}", **dp_report(w), "Type": "Table"}
         ),
     log:
         "logs/{dataset}/kinship/ngsrelate/{dataset}.{ref}_all{dp}_{sites}-filts_tsv2html.log",

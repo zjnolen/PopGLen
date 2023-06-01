@@ -478,15 +478,15 @@ def get_bamlist_bais(wildcards):
 def dp_report(wildcards):
     dp = wildcards.dp
     if dp == "":
-        return {"Subsampling":"None"}
+        return {"Subsampling": "None"}
     else:
-        return {"Subsampling":f"{dp.replace('.dp','')}X"}
+        return {"Subsampling": f"{dp.replace('.dp','')}X"}
 
 
 # Get string to describe units for Fst for report
 def unit_report(wildcards):
     unit = wildcards.unit
     if unit == "ind":
-        return {"Unit":"Individuals"}
+        return {"Unit": "Individuals"}
     elif unit == "pop":
-        return {"Unit":"Populations"}
+        return {"Unit": "Populations"}

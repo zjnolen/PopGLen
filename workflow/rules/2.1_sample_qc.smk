@@ -32,10 +32,12 @@ rule qualimap:
     input:
         unpack(get_final_bam),
     output:
-        pdf=report("results/mapping/qc/qualimap/{sample}.{ref}/report.pdf",
+        pdf=report(
+            "results/mapping/qc/qualimap/{sample}.{ref}/report.pdf",
             category="Quality Control",
             subcategory="Mapping Reports",
-            labels={"Sample":"{sample}", "Ref":"{ref}","Type":"Qualimap Report"}),
+            labels={"Sample": "{sample}", "Ref": "{ref}", "Type": "Qualimap Report"},
+        ),
         txt="results/mapping/qc/qualimap/{sample}.{ref}/genome_results.txt",
     params:
         outdir=lambda w, output: os.path.dirname(output.txt),

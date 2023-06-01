@@ -61,7 +61,12 @@ rule plot_pca:
         report(
             "results/datasets/{dataset}/plots/pca/{dataset}.{ref}_all{dp}_{sites}-filts_pc{xpc}-{ypc}.svg",
             category="PCA",
-            labels=lambda w: {"Filter":"{sites}", **dp_report(w), "PCs": "PC{xpc}-PC{ypc}", "Type": "Scatterplot"},
+            labels=lambda w: {
+                "Filter": "{sites}",
+                **dp_report(w),
+                "PCs": "PC{xpc}-PC{ypc}",
+                "Type": "Scatterplot",
+            },
         ),
     log:
         "logs/{dataset}/pcangsd/{dataset}.{ref}_all{dp}_{sites}-filts_pc{xpc}-{ypc}_plot.log",

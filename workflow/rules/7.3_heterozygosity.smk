@@ -17,7 +17,7 @@ rule heterozygosity:
         report(
             "results/datasets/{dataset}/plots/heterozygosity/{dataset}.{ref}_all{dp}_{sites}-filts_heterozygosity.pdf",
             category="Heterozygosity",
-            labels=lambda w: {"Filter": "{sites}", **dp_report(w), "Type": "Boxplot"}
+            labels=lambda w: {"Filter": "{sites}", **dp_report(w), "Type": "Boxplot"},
         ),
     log:
         "logs/{dataset}/heterozygosity/{dataset}.{ref}_all{dp}_{sites}-filts_calc-plot.log",

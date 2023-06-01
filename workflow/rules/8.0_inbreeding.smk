@@ -112,11 +112,11 @@ rule plot_froh:
         autos=get_auto_sum,
     output:
         plot=report(
-                "results/datasets/{dataset}/plots/inbreeding/{dataset}.{ref}_all{dp}_{sites}-filts.froh.pdf",
+            "results/datasets/{dataset}/plots/inbreeding/{dataset}.{ref}_all{dp}_{sites}-filts.froh.pdf",
             category="Inbreeding",
             labels=lambda w: {"Filter": "{sites}", **dp_report(w), "Type": "Barplot"},
         ),
-        tsv="results/datasets/{dataset}/plots/inbreeding/{dataset}.{ref}_all{dp}_{sites}-filts.froh.tsv"
+        tsv="results/datasets/{dataset}/plots/inbreeding/{dataset}.{ref}_all{dp}_{sites}-filts.froh.tsv",
     log:
         "logs/{dataset}/ngsF-HMM/{dataset}.{ref}_all{dp}_{sites}-filts_plot.log",
     benchmark:

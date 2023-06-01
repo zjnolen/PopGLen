@@ -57,9 +57,7 @@ all_outputs = [
 ]
 
 if config["analyses"]["qualimap"]:
-    all_outputs.append(
-        "results/mapping/qc/qualimap/{sample}.{ref}/report.pdf"
-    )
+    all_outputs.append("results/mapping/qc/qualimap/{sample}.{ref}/report.pdf")
 
 if config["analyses"]["damageprofiler"]:
     all_outputs.append(

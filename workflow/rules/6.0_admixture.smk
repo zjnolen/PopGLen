@@ -46,7 +46,12 @@ rule plot_admix:
             "results/datasets/{dataset}/plots/ngsadmix/{dataset}.{ref}_all{dp}_{sites}-filts_K{kvalue}.svg",
             category="Admixture",
             subcategory="NGSadmix",
-            labels=lambda w: {"Filter": "{sites}", **dp_report(w), "K-value": "{kvalue}", "Type": "Admixture plot"},
+            labels=lambda w: {
+                "Filter": "{sites}",
+                **dp_report(w),
+                "K-value": "{kvalue}",
+                "Type": "Admixture plot",
+            },
         ),
     log:
         "logs/{dataset}/ngsadmix/{dataset}.{ref}_all{dp}_{sites}-filts_K{kvalue}_plot.log",
@@ -94,7 +99,12 @@ rule plot_evalAdmix:
             "results/datasets/{dataset}/plots/evaladmix/{dataset}.{ref}_all{dp}_{sites}-filts_K{kvalue}_evaladmix.html",
             category="Admixture",
             subcategory="evalAdmix",
-            labels=lambda w: {"Filter": "{sites}", **dp_report(w), "K-value": "{kvalue}", "Type": "Admix Residuals Plot"},
+            labels=lambda w: {
+                "Filter": "{sites}",
+                **dp_report(w),
+                "K-value": "{kvalue}",
+                "Type": "Admix Residuals Plot",
+            },
         ),
     log:
         "logs/{dataset}/evaladmix/{dataset}.{ref}_all{dp}_{sites}-filts_K{kvalue}_plot.log",

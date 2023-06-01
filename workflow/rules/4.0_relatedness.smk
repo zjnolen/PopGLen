@@ -113,7 +113,7 @@ rule ngsrelate_summary:
             "results/datasets/{dataset}/analyses/kinship/ngsrelate/{dataset}.{ref}_all{dp}_{sites}-filts_relate.html",
             category="Relatedness",
             subcategory="NgsRelate",
-            labels=lambda w: {"Filter": "{sites}", **dp_report(w), "Type": "Table"}
+            labels=lambda w: {"Filter": "{sites}", **dp_report(w), "Type": "Table"},
         ),
     log:
         "logs/{dataset}/kinship/ngsrelate/{dataset}.{ref}_all{dp}_{sites}-filts_tsv2html.log",

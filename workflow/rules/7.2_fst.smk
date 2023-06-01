@@ -148,7 +148,12 @@ rule plot_fst:
             "results/datasets/{dataset}/plots/fst/{dataset}.{ref}_{unit}pairs{dp}_{sites}-filts.fst.global.pdf",
             category="Fst",
             subcategory="Global",
-            labels=lambda w: {"Filter":"{sites}", **dp_report(w), **unit_report(w), "Type":"Heatmap"},
+            labels=lambda w: {
+                "Filter": "{sites}",
+                **dp_report(w),
+                **unit_report(w),
+                "Type": "Heatmap",
+            },
         ),
     log:
         "logs/{dataset}/realSFS/fst/plot/{dataset}.{ref}_{unit}pairs{dp}_{sites}-filts.log",

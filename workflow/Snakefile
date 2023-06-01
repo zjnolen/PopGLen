@@ -138,12 +138,7 @@ if config["analyses"]["heterozygosity_angsd"]:
     )
 
 if config["analyses"]["inbreeding_ngsf-hmm"]:
-    all_outputs.extend(
-        expand(
-            "results/datasets/{{dataset}}/plots/inbreeding/{{dataset}}.{{ref}}_all{{dp}}_{{sites}}-filts.{stat}.pdf",
-            stat=["froh", "rohreg"],
-        )
-    )
+    all_outputs.append("results/datasets/{dataset}/plots/inbreeding/{dataset}.{ref}_all{dp}_{sites}-filts.froh.pdf")
 
 if config["analyses"]["admix_ngsadmix"]:
     if config["excl_pca-admix"]:

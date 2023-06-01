@@ -583,7 +583,7 @@ rule combine_beds:
         (printf '%s\n' {input.filt} > {output.lis}
         cat {input.gen} > {output.bed}
 
-        echo "Name    Length(bp)    Percent" > {output.sum}
+        printf "Name\tLength(bp)\tPercent\n" > {output.sum}
         cat {input.sum} >> {output.sum}
 
         for i in {input.filt}; do
@@ -637,7 +637,7 @@ rule user_sites:
         runtime=240,
     shell:
         r"""
-        (head -n -1 {input.sum} > {output.sum}
+        (sed \$d {input.sum} > {output.sum}
 
         siteslen=$(awk 'BEGIN{{SUM=0}}{{SUM+=$3-$2-1}}END{{print SUM}}' {input.newfilt})
         echo $siteslen $(awk -F "\t" '{{print $2}}' {input.gensum}) | \

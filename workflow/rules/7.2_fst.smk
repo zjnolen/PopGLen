@@ -105,7 +105,7 @@ rule aggregate_fst_global:
         scale="global",
     shell:
         """
-        (echo "pop1\tpop2\tunweight.fst\tweight.fst" > {output.glob}
+        (printf "pop1\tpop2\tunweight.fst\tweight.fst\n" > {output.glob}
         cat {input} >> {output.glob}) 2> {log}
         """
 
@@ -129,7 +129,7 @@ rule aggregate_fst_window:
         scale="window",
     shell:
         """
-        (echo "pop1\tpop2\twindow\tchr\twindow_center\tNsites\tweight.fst" \
+        (printf "pop1\tpop2\twindow\tchr\twindow_center\tNsites\tweight.fst\n" \
             > {output.window}
         for i in {input}; do
             tail -n +2 $i >> {output.window}

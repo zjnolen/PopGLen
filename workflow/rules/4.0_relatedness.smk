@@ -44,7 +44,7 @@ rule compile_kinship_stats:
         runtime=lambda wildcards, attempt: attempt * 15,
     shell:
         """
-        (echo "ind1    ind2    R0    R1    KING" > {output}
+        (printf "ind1\tind2\tR0\tR1\tKING\n" > {output}
         cat {input} >> {output}) 2> {log}
         """
 

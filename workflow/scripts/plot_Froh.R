@@ -40,19 +40,22 @@ aggregate_roh <- function(rohlist,poplist,samplelist,lenautos) {
 plot_roh <- function(aggroh,plotpre) {
   require(ggplot2)
 
-  ggplot(aggroh, aes(x=population,y=Froh,fill=minroh)) +
-    geom_bar(position="identity", stat="summary") +
+  ggplot(aggroh, aes(x=population,y=Froh)) +
+    geom_boxplot(outlier.shape = NA) +
+    geom_jitter(height = 0, width = 0.2) +
+    scale_y_continuous(limits = c(0, NA)) +
+    facet_wrap(~ minroh) +
     theme_classic()
   
   ggsave(paste0(plotpre,".froh.pdf"))
   
-  ggplot(aggroh, aes(x=Nroh,y=lenroh)) +
-    geom_point(aes(col=population)) +
-    geom_smooth(method='lm') +
-    theme_classic() +
-    facet_grid(cols = vars(minroh))
+  # ggplot(aggroh, aes(x=Nroh,y=lenroh)) +
+  #   geom_point(aes(col=population)) +
+  #   geom_smooth(method='lm') +
+  #   theme_classic() +
+  #   facet_grid(cols = vars(minroh))
 
-  ggsave(paste0(plotpre,".rohreg.pdf"))
+  # ggsave(paste0(plotpre,".rohreg.pdf"))
 
   write.table(aggroh, file = paste0(plotpre,".froh.tsv"), quote = FALSE,
     sep = "\t", row.names = FALSE, col.names = FALSE)

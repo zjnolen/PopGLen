@@ -111,13 +111,12 @@ rule plot_froh:
         inds="results/datasets/{dataset}/poplists/{dataset}_all.indiv.list",
         autos=get_auto_sum,
     output:
-        report(
-            expand(
-                "results/datasets/{{dataset}}/plots/inbreeding/{{dataset}}.{{ref}}_all{{dp}}_{{sites}}-filts.{stat}.pdf",
-                stat=["froh", "rohreg"],
-            ),
+        plot=report(
+                "results/datasets/{dataset}/plots/inbreeding/{dataset}.{ref}_all{dp}_{sites}-filts.froh.pdf",
             category="Inbreeding",
+            labels=lambda w: {"Filter": "{sites}", **dp_report(w), "Type": "Barplot"},
         ),
+        tsv="results/datasets/{dataset}/plots/inbreeding/{dataset}.{ref}_all{dp}_{sites}-filts.froh.tsv"
     log:
         "logs/{dataset}/ngsF-HMM/{dataset}.{ref}_all{dp}_{sites}-filts_plot.log",
     benchmark:
@@ -126,6 +125,6 @@ rule plot_froh:
         "../envs/r.yaml"
     params:
         popnames=pop_list,
-        outpre=lambda w, output: output[0].removesuffix(".froh.pdf"),
+        outpre=lambda w, output: output["plot"].removesuffix(".froh.pdf"),
     script:
         "../scripts/plot_Froh.R"

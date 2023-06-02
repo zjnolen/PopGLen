@@ -67,7 +67,7 @@ rule mapDamage2_rescaling:
         "benchmarks/mapping/mapdamage/{sample}.{ref}.log"
     container:
         mapdamage_container
-    threads: 4
+    threads: lambda w, attempt: attempt
     resources:
         runtime=1440,
     params:

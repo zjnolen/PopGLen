@@ -47,6 +47,7 @@ analyses:
   damageprofiler: true
   endogenous_content: true
   # population genomic analyses
+  ld_decay: false
   pca_pcangsd: false
   admix_ngsadmix: false
   relatedness: 

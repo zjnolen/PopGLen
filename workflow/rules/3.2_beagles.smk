@@ -83,9 +83,9 @@ rule merge_maf:
     output:
         maf="results/datasets/{dataset}/mafs/{dataset}.{ref}_{population}{dp}_{sites}-filts.mafs.gz",
     log:
-        "logs/{dataset}/angsd/doGlf2/{dataset}{ref}_{population}{dp}_{sites}-filts_merge-mafs.log",
+        "logs/{dataset}/angsd/doGlf2/{dataset}.{ref}_{population}{dp}_{sites}-filts_merge-mafs.log",
     benchmark:
-        "benchmarks/{dataset}/angsd/doGlf2/{dataset}{ref}_{population}{dp}_{sites}-filts_merge-mafs.log"
+        "benchmarks/{dataset}/angsd/doGlf2/{dataset}.{ref}_{population}{dp}_{sites}-filts_merge-mafs.log"
     conda:
         "../envs/shell.yaml"
     resources:

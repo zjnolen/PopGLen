@@ -21,7 +21,7 @@ evaladmix_container = "docker://zjnolen/evaladmix:0.961"
 ngsf_hmm_container = "docker://zjnolen/ngsf-hmm:20200722-2df9690"
 mapdamage_container = "docker://quay.io/biocontainers/mapdamage2:2.2.1--pyr40_0"
 ngsrelate_container = "docker://zjnolen/ngsrelate:20220925-ec95c8f"
-ngsld_container = "library://james-s-santangelo/ngsld/ngsld:1.1.1"
+ngsld_container = "docker://zjnolen/ngsld:1.1.1-abfc85c"
 
 
 # Define function for genome chunks to break up analysis (for parallelization)
@@ -331,6 +331,23 @@ def get_popopts(wildcards):
         )
     else:
         return "-doMajorMinor 3"
+
+
+## Get random sampling proportion depending on if LD decay is being calculated
+## or if LD pruning is being done
+def get_ngsld_sampling(wildcards):
+    if wildcards.path == "beagles/pruned/ngsLD":
+        return "1"
+    elif wildcards.path == "analyses/ngsLD/chunks":
+        return config["params"]["ngsld"]["rnd_sample"]
+
+
+## Get sample size for r^2 sample size corrections on LD decay
+def get_ngsld_n(wildcards):
+    if config["params"]["ngsld"]["n_correction"]:
+        return f"--n_ind {len(get_samples_from_pop(wildcards.population))}"
+    else:
+        return ""
 
 
 ## Remove requested individuals from beagle for pca and admix

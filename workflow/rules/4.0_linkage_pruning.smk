@@ -11,16 +11,20 @@ rule ngsLD_estLD:
         bamlist="results/datasets/{dataset}/bamlists/{dataset}.{ref}_{population}{dp}.bamlist",
     output:
         ld=temp(
-            "results/datasets/{dataset}/beagles/pruned/ngsLD/{dataset}{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.ld.gz"
+            "results/datasets/{dataset}/{path}/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.ld.gz"
         ),
-        pos="results/datasets/{dataset}/beagles/pruned/ngsLD/{dataset}{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.pos",
+        pos="results/datasets/{dataset}/{path}/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.pos",
     log:
-        "logs/{dataset}/ngsLD/estLD/{dataset}{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.log",
+        "logs/{dataset}/ngsLD/estLD/{path}/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.log",
     benchmark:
-        "benchmarks/{dataset}/ngsLD/estLD/{dataset}{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.log"
+        "benchmarks/{dataset}/ngsLD/estLD/{path}/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.log"
     container:
         ngsld_container
     threads: lambda wildcards, attempt: attempt
+    wildcard_constraints:
+        path="beagles/pruned/ngsLD|analyses/ngsLD/chunks"
+    params:
+        rnd_sample=get_ngsld_sampling
     resources:
         runtime=lambda wildcards, attempt: attempt * 720,
     shell:
@@ -36,7 +40,7 @@ rule ngsLD_estLD:
         else
             ngsLD --geno {input.beagle} --n_ind $nind --n_sites $nsites \
                 --pos {output.pos} --probs --n_threads {threads} \
-                | gzip > {output.ld}
+                --rnd_sample {params.rnd_sample} | gzip > {output.ld}
         fi) 2> {log}
         """
 
@@ -46,14 +50,14 @@ rule ngsLD_prune_sites:
     Prunes SNPs to produce a list of SNPs in linkage equilibrium.
     """
     input:
-        ld="results/datasets/{dataset}/beagles/pruned/ngsLD/{dataset}{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.ld.gz",
-        pos="results/datasets/{dataset}/beagles/pruned/ngsLD/{dataset}{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.pos",
+        ld="results/datasets/{dataset}/beagles/pruned/ngsLD/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.ld.gz",
+        pos="results/datasets/{dataset}/beagles/pruned/ngsLD/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.pos",
     output:
-        sites="results/datasets/{dataset}/beagles/pruned/ngsLD/{dataset}{ref}_{population}{dp}_chunk{chunk}_{sites}-filts_pruned.sites",
+        sites="results/datasets/{dataset}/beagles/pruned/ngsLD/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts_pruned.sites",
     log:
-        "logs/{dataset}/ngsLD/prune_sites/{dataset}{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.log",
+        "logs/{dataset}/ngsLD/prune_sites/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.log",
     benchmark:
-        "benchmarks/{dataset}/ngsLD/prune_sites/{dataset}{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.log"
+        "benchmarks/{dataset}/ngsLD/prune_sites/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.log"
     conda:
         "../envs/pruning.yaml"
     threads: lambda wildcards, attempt: attempt * 2
@@ -72,20 +76,20 @@ rule prune_chunk_beagle:
     """
     input:
         beagle="results/datasets/{dataset}/beagles/chunks/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.beagle.gz",
-        sites="results/datasets/{dataset}/beagles/pruned/ngsLD/{dataset}{ref}_all{dp}_chunk{chunk}_{sites}-filts_pruned.sites",
+        sites="results/datasets/{dataset}/beagles/pruned/ngsLD/{dataset}.{ref}_all{dp}_chunk{chunk}_{sites}-filts_pruned.sites",
     output:
         prunedgz="results/datasets/{dataset}/beagles/pruned/chunks/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts_pruned.beagle.gz",
     log:
-        "logs/{dataset}/ngsLD/prune_beagle/{dataset}{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.log",
+        "logs/{dataset}/ngsLD/prune_beagle/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.log",
     benchmark:
-        "benchmarks/{dataset}/ngsLD/prune_beagle/{dataset}{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.log"
+        "benchmarks/{dataset}/ngsLD/prune_beagle/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.log"
     conda:
         "../envs/shell.yaml"
     shadow:
         "minimal"
     threads: lambda wildcards, attempt: attempt * 10
     params:
-        pruned="results/datasets/{dataset}/beagles/pruned/chunks/{dataset}{ref}_{population}{dp}_chunk{chunk}_{sites}-filts_pruned.beagle",
+        pruned="results/datasets/{dataset}/beagles/pruned/chunks/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts_pruned.beagle",
     resources:
         runtime=lambda wildcards, attempt: attempt * 120,
     shell:

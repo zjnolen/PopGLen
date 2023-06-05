@@ -16,9 +16,9 @@ rule angsd_doIBS:
         ibsmat="results/datasets/{dataset}/analyses/IBS/{dataset}.{ref}_{population}{dp}_{sites}-filts.ibsMat",
         arg="results/datasets/{dataset}/analyses/IBS/{dataset}.{ref}_{population}{dp}_{sites}-filts.arg",
     log:
-        "logs/{dataset}/angsd/doIBS/{dataset}{ref}_{population}{dp}_{sites}-filts.log",
+        "logs/{dataset}/angsd/doIBS/{dataset}.{ref}_{population}{dp}_{sites}-filts.log",
     benchmark:
-        "benchmarks/{dataset}/angsd/doIBS/{dataset}{ref}_{population}{dp}_{sites}-filts.log"
+        "benchmarks/{dataset}/angsd/doIBS/{dataset}.{ref}_{population}{dp}_{sites}-filts.log"
     container:
         angsd_container
     params:

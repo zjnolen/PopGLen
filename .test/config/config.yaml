@@ -47,6 +47,7 @@ analyses:
   damageprofiler: true
   endogenous_content: true
   # population genomic analyses
+  ld_decay: true
   pca_pcangsd: true
   admix_ngsadmix: true
   relatedness: 
@@ -88,6 +89,10 @@ params:
     extra: "-C 50 -uniqueOnly 1"
     snp_pval: "1e-6"
     min_maf: 0.05
+  ngsld:
+    rnd_sample: 0.9 # For fitting LD curve only - pruning will always use all sites regardless of what is set here
+    fit_extra: "--fit_level 3 --plot_data"
+    n_correction: True # Do correction for 1-parameter r^2 fitting
   realsfs:
     fold: 1 # Should only be set to 1 for now
     sfsboot: 100

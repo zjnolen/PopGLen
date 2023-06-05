@@ -39,7 +39,7 @@ rule heterozygosity_table:
         report(
             "results/datasets/{dataset}/analyses/heterozygosity/{dataset}.{ref}_all{dp}_{sites}-filts_heterozygosity.html",
             category="Heterozygosity",
-            labels=lambda w: {"Filter": "{sites}", **dp_report(w), "Type": "Boxplot"},
+            labels=lambda w: {"Filter": "{sites}", **dp_report(w), "Type": "Table"},
         ),
     log:
         "logs/{dataset}/heterozygosity/{dataset}.{ref}_all{dp}_{sites}-filts_tsv2html.log",

@@ -22,9 +22,9 @@ rule ngsLD_estLD:
         ngsld_container
     threads: lambda wildcards, attempt: attempt
     wildcard_constraints:
-        path="beagles/pruned/ngsLD|analyses/ngsLD/chunks"
+        path="beagles/pruned/ngsLD|analyses/ngsLD/chunks",
     params:
-        rnd_sample=get_ngsld_sampling
+        rnd_sample=get_ngsld_sampling,
     resources:
         runtime=lambda wildcards, attempt: attempt * 720,
     shell:

@@ -20,10 +20,10 @@ rule combine_LD_files:
 
 rule fit_LD_decay:
     input:
-        "results/datasets/{dataset}/analyses/ngsLD/{dataset}.{ref}_{population}{dp}_{sites}-filts.ld.gz"
+        "results/datasets/{dataset}/analyses/ngsLD/{dataset}.{ref}_{population}{dp}_{sites}-filts.ld.gz",
     output:
         plot="results/datasets/{dataset}/plots/LD_decay/{dataset}.{ref}_{population}{dp}_{sites}-filts.LDdecay.svg",
-        fit="results/datasets/{dataset}/analyses/ngsLD/{dataset}.{ref}_{population}{dp}_{sites}-filts.ld-decay-fit.txt"
+        fit="results/datasets/{dataset}/analyses/ngsLD/{dataset}.{ref}_{population}{dp}_{sites}-filts.ld-decay-fit.txt",
     log:
         "logs/{dataset}/ngsLD/fit_LD_decay/{dataset}.{ref}_{population}{dp}_{sites}-filts.log",
     benchmark:
@@ -35,7 +35,7 @@ rule fit_LD_decay:
         runtime=lambda w, attempt: attempt * 120,
     params:
         extra=config["params"]["ngsld"]["fit_extra"],
-        nind=get_ngsld_n
+        nind=get_ngsld_n,
     shell:
         """
         echo {input} | fit_LDdecay.R {params.extra} {params.nind} --out {output.plot} \

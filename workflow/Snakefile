@@ -71,8 +71,12 @@ if config["analyses"]["endogenous_content"]:
     )
 
 if config["analyses"]["ld_decay"]:
-    all_outputs.extend(expand("results/datasets/{{dataset}}/plots/LD_decay/{{dataset}}.{{ref}}_{population}{{dp}}_{{sites}}-filts.LDdecay.svg",
-        population=pop_list+["all"]))
+    all_outputs.extend(
+        expand(
+            "results/datasets/{{dataset}}/plots/LD_decay/{{dataset}}.{{ref}}_{population}{{dp}}_{{sites}}-filts.LDdecay.svg",
+            population=pop_list + ["all"],
+        )
+    )
 
 if config["analyses"]["relatedness"]["ngsrelate"]:
     all_outputs.append(

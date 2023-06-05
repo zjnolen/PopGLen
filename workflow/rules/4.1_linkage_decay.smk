@@ -22,7 +22,16 @@ rule fit_LD_decay:
     input:
         "results/datasets/{dataset}/analyses/ngsLD/{dataset}.{ref}_{population}{dp}_{sites}-filts.ld.gz",
     output:
-        plot="results/datasets/{dataset}/plots/LD_decay/{dataset}.{ref}_{population}{dp}_{sites}-filts.LDdecay.svg",
+        plot=report(
+            "results/datasets/{dataset}/plots/LD_decay/{dataset}.{ref}_{population}{dp}_{sites}-filts.LDdecay.svg",
+            category="Linkage Disequilibrium Decay",
+            subcategory="{sites}",
+            labels=lambda w: {
+                "Population": "{population}",
+                **dp_report(w),
+                "Type": "Regression Plot",
+            },
+        ),
         fit="results/datasets/{dataset}/analyses/ngsLD/{dataset}.{ref}_{population}{dp}_{sites}-filts.ld-decay-fit.txt",
     log:
         "logs/{dataset}/ngsLD/fit_LD_decay/{dataset}.{ref}_{population}{dp}_{sites}-filts.log",

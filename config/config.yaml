@@ -89,6 +89,8 @@ params:
     snp_pval: "1e-6"
     min_maf: 0.05
   ngsld:
+    max_kb_dist_pruning: 100
+    max_kb_dist_sampling: 4000
     rnd_sample: 0.1 # For fitting LD curve only - pruning will always use all sites regardless of what is set here
     fit_extra: ""
     n_correction: False # Do correction for 1-parameter r^2 fitting

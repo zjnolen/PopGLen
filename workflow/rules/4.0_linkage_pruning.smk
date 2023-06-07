@@ -25,6 +25,7 @@ rule ngsLD_estLD:
         path="beagles/pruned/ngsLD|analyses/ngsLD/chunks",
     params:
         rnd_sample=get_ngsld_sampling,
+        max_kb_dist=get_ngsld_maxdist,
     resources:
         runtime=lambda wildcards, attempt: attempt * 720,
     shell:
@@ -40,7 +41,8 @@ rule ngsLD_estLD:
         else
             ngsLD --geno {input.beagle} --n_ind $nind --n_sites $nsites \
                 --pos {output.pos} --probs --n_threads {threads} \
-                --rnd_sample {params.rnd_sample} | gzip > {output.ld}
+                --max_kb_dist {params.max_kb_dist} --rnd_sample {params.rnd_sample} \
+                | gzip > {output.ld}
         fi) 2> {log}
         """
 

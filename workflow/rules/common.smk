@@ -344,7 +344,7 @@ def get_ngsld_sampling(wildcards):
 
 # Get maximum distance in kb for which LD is calculated with ngsLD. Higher distances may
 # be desireable for LD decay and Ne estimationg than for pruning, so they're separated
-def get_ngsld_sampling(wildcards):
+def get_ngsld_maxdist(wildcards):
     if wildcards.path == "beagles/pruned/ngsLD":
         return config["params"]["ngsld"]["max_kb_dist_pruning"]
     elif wildcards.path == "analyses/ngsLD/chunks":

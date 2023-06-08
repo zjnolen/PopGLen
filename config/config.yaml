@@ -47,6 +47,7 @@ analyses:
   damageprofiler: true
   endogenous_content: true
   # population genomic analyses
+  estimate_ld: false
   ld_decay: false
   pca_pcangsd: false
   admix_ngsadmix: false
@@ -89,11 +90,14 @@ params:
     snp_pval: "1e-6"
     min_maf: 0.05
   ngsld:
+    max_kb_dist_est-ld: 4000
+    max_kb_dist_decay: 100
     max_kb_dist_pruning: 100
-    max_kb_dist_sampling: 4000
-    rnd_sample: 0.1 # For fitting LD curve only - pruning will always use all sites regardless of what is set here
-    fit_extra: ""
-    n_correction: False # Do correction for 1-parameter r^2 fitting
+    rnd_sample_est-ld: 0.001
+    rnd_sample_decay: 0.001
+    fit_LDdecay_extra: "--fit_level 100 --fit_boot 100 --plot_size 3,6 --plot_data --plot_no_legend --plot_y_lim 0.5"
+    fit_LDdecay_n_correction: true
+    pruning_min-weight: 0.1
   realsfs:
     fold: 1 # Should only be set to 1 for now
     sfsboot: 100

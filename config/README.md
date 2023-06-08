@@ -180,6 +180,17 @@ settings for each analysis are set in the next section.
     with Damageprofiler (`true`/`false`)
   - `endogenous_content:` Estimate endogenous content (proportion of reads
     mapping to reference) for all samples (`true`/`false`)
+  - `estimate_ld:` Estimate pairwise linkage disquilibrium between sites with
+    ngsLD for each popualation and the whole dataset. Note, only set this if
+    you want to generate the LD estimates for use in downstream analyses
+    outside this workflow. Other analyses within this workflow that require LD
+    estimates (LD decay/pruning) will function properly regardless of the
+    setting here. (`true`/`false`)
+  - `ld_decay:` Use ngsLD to plot LD decay curves for each population and for
+    the dataset as a whole (`true`/`false`)
+  - `pca_pcangsd:` Perform Principal Component Analysis with PCAngsd
+    (`true`/`false`)
+  - `admix_ngsadmix:` Perform admixture analysis with NGSadmix (`true`/`false`)
   - `relatedness:` Can be performed multiple ways, set one or both of the below
     options
     - `ngsrelate:` Co-estimate inbreeding and pairwise relatedness with
@@ -189,9 +200,6 @@ settings for each analysis are set in the next section.
       needed to build the workflow DAG if you have many samples. As a form of
       this method is implemented in NGSrelate, so it may be more efficient to
       only enable that. (`true`/`false`)
-  - `pca_pcangsd:` Perform Principal Component Analysis with PCAngsd
-    (`true`/`false`)
-  - `admix_ngsadmix:` Perform admixture analysis with NGSadmix (`true`/`false`)
   - `thetas_angsd:` Estimate pi, theta, and Tajima's D for each population in
     windows across the genome using ANGSD (`true`/`false`)
   - `heterozygosity_angsd:` Estimate individual genome-wide heterozygosity
@@ -210,6 +218,47 @@ settings for each analysis are set in the next section.
     homozygosity over a certain length. (`true`/`false`)
   - `ibs_matrix:` Estimate pairwise identity by state distance between all
     samples using ANGSD. (`true`/`false`)
+
+#### Filter Sets
+
+By default, this workflow will perform all analyses requested in the above
+section on all sites that pass the filters set in the above section. These
+outputs will contain `allsites-filts` in the filename and in the report.
+However, many times, it is useful to perform an analysis on different subsets
+of sites, for instance, to compare results for genic vs. intergenic regions,
+neutral sites, exons vs. introns, etc. Here, users can set an arbitrary number
+of additional filters using BED files. For each BED file supplied, the contents
+will be intersected with the sites passing the filters set in the above
+section, and all analyses will be performed additionally using those sites.
+
+For instance, given a BED file containing putatively neutral sites, one could
+set the following:
+
+```
+filter_beds:
+  neutral-sites: "resources/neutral_sites.bed"
+```
+
+In this case, for each requested analysis, in addition to the `allsites-filts`
+output, a `neutral-filts` (named after the key assigned to the BED file in
+`config.yaml`) output will also be generated, containing the results for sites
+within the specified BED file that passed any set filters.
+
+More than one BED file can be set, up to an arbitrary number:
+```
+filter_beds:
+  neutral: "resources/neutral_sites.bed"
+  intergenic: "resources/intergenic_sites.bed"
+  introns: "resources/introns.bed"
+```
+
+It may also sometimes be desireable to skip analyses on `allsites-filts`, say
+if you are trying to only generate diversity estimates or generate SFS for a
+set of neutral sites you supply. To skip running any analyses for
+`allsites-filts` and only perform them for the BED files you supply, you can
+set `only_filter_beds: true` in the config file. This may also be useful in the
+event you have a set of already filtered sites, and want to run the workflow on
+those, ignoring any of the built in filter options by setting them to `false`.
 
 #### Software Configuration
 
@@ -252,6 +301,30 @@ or a pull request and I'll gladly put it in.
     - `snp_pval:` The p-value to use for calling SNPs (float, [docs](http://www.popgen.dk/angsd/index.php/SNP_calling))
     - `min_maf:` The minimum minor allele frequency required to call a SNP.
       (float, [docs](http://www.popgen.dk/angsd/index.php/Allele_Frequencies))
+  - `ngsld:` Settings for ngsLD ([docs](https://github.com/fgvieira/ngsLD))
+    - `max_kb_dist_est-ld:` For the LD estimates generated when setting
+      `estimate_ld: true` above, set the maximum distance between sites in kb
+      that LD will be estimated for (`--max_kb_dist` in ngsLD, integer)
+    - `max_kb_dist_decay:` The same as `max_kb_dist_est-ld:`, but used when
+      estimating LD decay when setting `ld_decay: true` above (integer)
+    - `max_kb_dist_pruning:` The same as `max_kb_dist_est-ld:`, but used when
+      linkage pruning SNPs as inputs for PCA, Admix, and Inbreeding analyses.
+      Any positions above this distance will be assumed to be in linkage
+      equilibrium during the pruning process (integer)
+    - `rnd_sample_est-ld:` For the LD estimates generated when setting
+      `estimate_ld: true` above, randomly sample this proportion of pairwise
+      linkage estimates rather than estimating all (`--rnd_sample` in ngsLD, 
+      float)
+    - `rnd_sample_decay:` The same as `rnd_sample_est-ld:`, but used when
+      estimating LD decay when setting `ld_decay: true` above (float)
+    - `fit_LDdecay_extra:` Additional plotting arguments to pass to
+      `fit_LDdecay.R` when estimating LD decay (string)
+    - `fit_LDdecay_n_correction:` When estimating LD decay, should the sample
+      size corrected r^2 model be used? (`true`/`false`, `true` is the
+      equivalent of passing a sample size to `fit_LDdecay.R` in ngsLD using
+      `--n_ind`)
+    - `pruning_min-weight:` The minimum r^2 to assume two positions are in
+      linkage disequilibrium when pruning (float)
   - `realSFS:` Settings for realSFS
     - `fold:` Whether or not to fold the produced SFS (0 or 1, [docs](http://www.popgen.dk/angsd/index.php/SFS_Estimation)) **NOTE:** I have not implemented
       the use of an ancestral reference into this workflow, so this should

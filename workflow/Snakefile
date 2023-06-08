@@ -13,8 +13,9 @@ include: "rules/2.2_dna_damage.smk"
 include: "rules/3.0_genotype_likelihoods.smk"
 include: "rules/3.1_safs.smk"
 include: "rules/3.2_beagles.smk"
-include: "rules/4.0_linkage_pruning.smk"
-include: "rules/4.1_linkage_decay.smk"
+include: "rules/4.0_estimate_LD.smk"
+include: "rules/4.1_linkage_pruning.smk"
+include: "rules/4.2_linkage_decay.smk"
 include: "rules/5.0_relatedness.smk"
 include: "rules/6.0_pca.smk"
 include: "rules/6.1_admixture.smk"
@@ -68,6 +69,16 @@ if config["analyses"]["damageprofiler"]:
 if config["analyses"]["endogenous_content"]:
     all_outputs.append(
         "results/datasets/{dataset}/qc/endogenous_content/{dataset}.{ref}_all.endo.tsv"
+    )
+
+if config["analyses"]["estimate_ld"]:
+    all_outputs.extend(
+        expand(
+            "results/datasets/{{dataset}}/analyses/ngsLD/{{dataset}}.{{ref}}_{population}{{dp}}_{{sites}}-filts.ld_maxkbdist-{maxkb}_rndsample-{rndsmp}.gz",
+            population=pop_list + ["all"],
+            maxkb=config["params"]["ngsld"]["max_kb_dist_est-ld"],
+            rndsmp=config["params"]["ngsld"]["rnd_sample_est-ld"],
+        )
     )
 
 if config["analyses"]["ld_decay"]:

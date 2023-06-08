@@ -1,50 +1,5 @@
-# Calculates pairwise linkage disequilibrium between sites and prunes to generate
+# Uses pairwise linkage disequilibrium between sites and prunes to generate
 # a list of positions in linkage equilibrium, i.e. independent SNPs.
-
-
-rule ngsLD_estLD:
-    """
-    Estimates pairwise linkage disequilibrium between SNPs.
-    """
-    input:
-        beagle="results/datasets/{dataset}/beagles/chunks/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.beagle.gz",
-        bamlist="results/datasets/{dataset}/bamlists/{dataset}.{ref}_{population}{dp}.bamlist",
-    output:
-        ld=temp(
-            "results/datasets/{dataset}/{path}/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.ld.gz"
-        ),
-        pos="results/datasets/{dataset}/{path}/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.pos",
-    log:
-        "logs/{dataset}/ngsLD/estLD/{path}/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.log",
-    benchmark:
-        "benchmarks/{dataset}/ngsLD/estLD/{path}/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.log"
-    container:
-        ngsld_container
-    threads: lambda wildcards, attempt: attempt
-    wildcard_constraints:
-        path="beagles/pruned/ngsLD|analyses/ngsLD/chunks",
-    params:
-        rnd_sample=get_ngsld_sampling,
-        max_kb_dist=get_ngsld_maxdist,
-    resources:
-        runtime=lambda wildcards, attempt: attempt * 720,
-    shell:
-        r"""
-        (zcat {input.beagle} | awk '{{print $1}}' | sed 's/\(.*\)_/\1\t/' \
-            | tail -n +2 > {output.pos}
-        
-        nsites=$(cat {output.pos} | wc -l)
-
-        nind=$(cat {input.bamlist} | wc -l | awk '{{print $1+1}}')
-        if [[ $nsites == 0 ]]; then
-            touch {output.ld}
-        else
-            ngsLD --geno {input.beagle} --n_ind $nind --n_sites $nsites \
-                --pos {output.pos} --probs --n_threads {threads} \
-                --max_kb_dist {params.max_kb_dist} --rnd_sample {params.rnd_sample} \
-                | gzip > {output.ld}
-        fi) 2> {log}
-        """
 
 
 rule ngsLD_prune_sites:
@@ -52,8 +7,14 @@ rule ngsLD_prune_sites:
     Prunes SNPs to produce a list of SNPs in linkage equilibrium.
     """
     input:
-        ld="results/datasets/{dataset}/beagles/pruned/ngsLD/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.ld.gz",
-        pos="results/datasets/{dataset}/beagles/pruned/ngsLD/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.pos",
+        ld=expand(
+            "results/datasets/{{dataset}}/beagles/pruned/ngsLD/{{dataset}}.{{ref}}_{{population}}{{dp}}_chunk{{chunk}}_{{sites}}-filts.ld_maxkbdist-{maxkb}_rndsample-1.gz",
+            maxkb=config["params"]["ngsld"]["max_kb_dist_pruning"],
+        )[0],
+        pos=expand(
+            "results/datasets/{{dataset}}/beagles/pruned/ngsLD/{{dataset}}.{{ref}}_{{population}}{{dp}}_chunk{{chunk}}_{{sites}}-filts.ld_maxkbdist-{maxkb}_rndsample-1.pos",
+            maxkb=config["params"]["ngsld"]["max_kb_dist_pruning"],
+        )[0],
     output:
         sites="results/datasets/{dataset}/beagles/pruned/ngsLD/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts_pruned.sites",
     log:
@@ -66,8 +27,8 @@ rule ngsLD_prune_sites:
     resources:
         runtime=lambda wildcards, attempt: attempt * 1440,
     params:
-        maxdist=50000,
-        minweight=0.1,
+        maxdist=lambda w: str(config["params"]["ngsld"]["max_kb_dist_pruning"]) + "000",
+        minweight=config["params"]["ngsld"]["pruning_min-weight"],
     script:
         "../scripts/prune_ngsLD.py"
 

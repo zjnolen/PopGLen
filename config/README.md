@@ -234,7 +234,7 @@ section, and all analyses will be performed additionally using those sites.
 For instance, given a BED file containing putatively neutral sites, one could
 set the following:
 
-```
+```yaml
 filter_beds:
   neutral-sites: "resources/neutral_sites.bed"
 ```
@@ -245,7 +245,8 @@ output, a `neutral-filts` (named after the key assigned to the BED file in
 within the specified BED file that passed any set filters.
 
 More than one BED file can be set, up to an arbitrary number:
-```
+
+```yaml
 filter_beds:
   neutral: "resources/neutral_sites.bed"
   intergenic: "resources/intergenic_sites.bed"
@@ -313,7 +314,7 @@ or a pull request and I'll gladly put it in.
       equilibrium during the pruning process (integer)
     - `rnd_sample_est-ld:` For the LD estimates generated when setting
       `estimate_ld: true` above, randomly sample this proportion of pairwise
-      linkage estimates rather than estimating all (`--rnd_sample` in ngsLD, 
+      linkage estimates rather than estimating all (`--rnd_sample` in ngsLD,
       float)
     - `rnd_sample_decay:` The same as `rnd_sample_est-ld:`, but used when
       estimating LD decay when setting `ld_decay: true` above (float)

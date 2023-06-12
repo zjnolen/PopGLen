@@ -79,7 +79,7 @@ rule plot_thetas:
         ),
         pi=report(
             "results/datasets/{dataset}/plots/thetas/{dataset}.{ref}_all{dp}_{sites}-filts.window_{win}_{step}.density.pi.pdf",
-            category="Nucleotide Diveristy (Pi)",
+            category="Nucleotide Diversity (Pi)",
             labels=lambda w: {
                 "Filter": "{sites}",
                 **dp_report(w),
@@ -99,6 +99,10 @@ rule plot_thetas:
                 "Type": "Violin Plot",
             },
         ),
+        tables=expand(
+            "results/datasets/{{dataset}}/analyses/thetas/{{dataset}}.{{ref}}_all{{dp}}_{{sites}}-filts.window_{{win}}_{{step}}.{stat}.mean.tsv",
+            stat=["watterson", "tajima", "pi"],
+        ),
     log:
         "logs/{dataset}/thetaStat/{dataset}.{ref}_all{dp}_{sites}-filts.{win}_{step}.plot.log",
     benchmark:
@@ -107,6 +111,34 @@ rule plot_thetas:
         "../envs/r.yaml"
     params:
         popnames=pop_list,
-        outpre=lambda w, output: output["watterson"].removesuffix(".watterson.pdf"),
+        plotpre=lambda w, output: output["watterson"].removesuffix(".watterson.pdf"),
+        tabpre=lambda w, output: output["tables"][0].removesuffix(".watterson.mean.tsv"),
+        minsites=config["params"]["thetas"]["minsites"],
     script:
         "../scripts/plot_thetas.R"
+
+
+rule theta_tables:
+    """
+    Converts Theta table to html.
+    """
+    input:
+        "results/datasets/{dataset}/analyses/thetas/{dataset}.{ref}_all{dp}_{sites}-filts.window_{win}_{step}.{stat}.mean.tsv",
+    output:
+        report(
+            "results/datasets/{dataset}/analyses/thetas/{dataset}.{ref}_all{dp}_{sites}-filts.window_{win}_{step}.{stat}.mean.html",
+            category=lambda w: theta_report(w),
+            labels=lambda w: {
+                "Filter": "{sites}",
+                **dp_report(w),
+                "Win size": "{win}bp",
+                "Win step": "{step}bp",
+                "Type": "Table (Means)",
+            },
+        ),
+    log:
+        "logs/{dataset}/thetaStat/{dataset}.{ref}_all{dp}_{sites}-filts.{win}_{step}.{stat}_tsv2html.log",
+    conda:
+        "../envs/r-rectable.yaml"
+    script:
+        "../scripts/tsv2html.Rmd"

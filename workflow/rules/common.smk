@@ -507,3 +507,14 @@ def unit_report(wildcards):
         return {"Unit": "Individuals"}
     elif unit == "pop":
         return {"Unit": "Populations"}
+
+
+# Get string to describe summary statistic for thetas for report
+def theta_report(wildcards):
+    stat = wildcards.stat
+    if stat == "watterson":
+        return "Watterson's Theta"
+    elif stat == "pi":
+        return "Nucleotide Diversity (Pi)"
+    elif stat == "tajima":
+        return "Tajima's D"

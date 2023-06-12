@@ -118,7 +118,7 @@ if config["analyses"]["pca_pcangsd"]:
 if config["analyses"]["thetas_angsd"]:
     all_outputs.extend(
         expand(
-            "results/datasets/{{dataset}}/plots/thetas/{{dataset}}.{{ref}}_all{{dp}}_{{sites}}-filts.window_{win}_{step}.density.{stat}.pdf",
+            "results/datasets/{{dataset}}/analyses/thetas/{{dataset}}.{{ref}}_all{{dp}}_{{sites}}-filts.window_{win}_{step}.{stat}.mean.html",
             stat=["watterson", "pi", "tajima"],
             win=config["params"]["thetas"]["win_size"],
             step=config["params"]["thetas"]["win_step"],

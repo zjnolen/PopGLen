@@ -109,6 +109,7 @@ params:
   thetas:
     win_size: 10000
     win_step: 5000
+    minsites: 1000
   ngsadmix:
     kvalues: [1,2,3,4]
     reps: 100

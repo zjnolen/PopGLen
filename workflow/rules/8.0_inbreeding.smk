@@ -57,24 +57,14 @@ rule convert_ibd:
         # complete.
 
         # first, create the index file
-        n_contigs=$(awk '{{print $1}}' {input.pos} | uniq | wc -l) 2>> {log}
-        awk '{{print $1}}' {input.pos} | uniq > {input.pos}.contigs 2>> {log}
-        seq $n_contigs > {input.pos}.contigs.idx 2>> {log}
+        n_contigs=$(awk '{{print $1}}' {input.pos} | uniq | wc -l)
+        awk '{{print $1}}' {input.pos} | uniq > {input.pos}.contigs
+        seq $n_contigs > {input.pos}.contigs.idx
+        paste -d "\t" {input.pos}.contigs {input.pos}.contigs.idx > {input.pos}.index
         
         # create index based pos file, adapted from:
-        # Glenn Jackman - https://stackoverflow.com/a/7198895
-        awk '
-            FILENAME == ARGV[1] {{ listA[$1] = FNR; next }}
-            FILENAME == ARGV[2] {{ listB[FNR] = $1; next }}
-            {{
-                for (i = 1; i <= NF; i++) {{
-                    if ($1 in listA) {{
-                           $1 = listB[listA[$i]]
-                    }}
-                }}
-                print
-            }}' \
-        {input.pos}.contigs {input.pos}.contigs.idx {input.pos} \
+        # Jaypal Singh - https://stackoverflow.com/a/22253586
+        awk 'NR==FNR{{a[$1]=$2;next}}{{$1=a[$1]}}1' {input.pos}.index {input.pos} \
             > {input.pos}.tmp
 
         convert_ibd.pl --pos_file {input.pos}.tmp \
@@ -82,18 +72,7 @@ rule convert_ibd:
             > {output.roh}.tmp
         
         # Revert back to original contig name:
-        awk '
-            FILENAME == ARGV[1] {{ listA[$1] = FNR; next }}
-            FILENAME == ARGV[2] {{ listB[FNR] = $1; next }}
-            {{
-                for (i = 1; i <= NF; i++) {{
-                    if ($1 in listA) {{
-                           $1 = listB[listA[$i]]
-                    }}
-                }}
-                print
-            }}' \
-        {input.pos}.contigs.idx {input.pos}.contigs {output.roh}.tmp \
+        awk 'NR==FNR{{a[$2]=$1;next}}{{$1=a[$1]}}1' {input.pos}.index {output.roh}.tmp \
             > {output.roh}) 2> {log}
         """
 

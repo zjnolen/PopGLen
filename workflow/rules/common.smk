@@ -410,6 +410,16 @@ def get_sample_qcs(wildcards):
     return dic
 
 
+## Get a list of all pairwise combos of a set of items
+def pairwise_combos(items):
+    combos = list(itertools.combinations(items, 2))
+    # sort pops alphebetically, this ensures that should new pops be added
+    # after generating some SFS, the reordering of the combinations won't
+    # lead to generating identical SFS with the populations swapped
+    combos = [sorted(pair) for pair in combos]
+    return combos
+
+
 ## Get fst tables for population aggregation, returning all pairwise combinations of
 ## individuals or populations, for global or windowed estimates
 def get_fst(wildcards):
@@ -417,11 +427,7 @@ def get_fst(wildcards):
         unit = samples.index
     elif wildcards.unit == "pop":
         unit = pop_list
-    combos = list(itertools.combinations(unit, 2))
-    # sort pops alphebetically, this ensures that should new pops be added
-    # after generating some SFS, the reordering of the combinations won't
-    # lead to generating identical SFS with the populations swapped
-    combos = [sorted(pair) for pair in combos]
+    combos = pairwise_combos(unit)
     pop1 = [pair[0] for pair in combos]
     pop2 = [pair[1] for pair in combos]
     if wildcards.scale == "global":

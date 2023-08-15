@@ -1,3 +1,5 @@
+sink(file(snakemake@log[[1]], open="wt"), type = "message")
+
 library(ggplot2)
 
 plot_pca <- function(cov, pop, xpc, ypc, plotout){

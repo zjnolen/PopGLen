@@ -18,3 +18,12 @@ logs
 # ignore unique sample and config files
 config/config_*.yaml
 config/samples_*.tsv
+# ignore vagrant stuff for testing VM
+.vagrant
+Vagrantfile
+# ignore reports folder
+reports
+# ignore dev containers for vscode
+.devcontainer
+# ignore benchmarks
+benchmarks

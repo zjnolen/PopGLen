@@ -4,10 +4,14 @@
 # Execute with whatever arguments you would give to ngsadmix and it will run
 # replicates until they converge or a maximum number is reached
 
+# This version of the script has been modified for compatibility with a 
+# snakemake workflow, look at previous commits of this file to get a more 
+# generalized version.
+
 # Depends on: NGSadmix (case sensitive) in $PATH
 
 # Author: Zachary J. Nolen
-# Last updated: 2022-05-05
+# Last updated: 2023-05-16
 
 
 # If you would like to change the settings of this wrapper, export the
@@ -19,6 +23,9 @@
 # $reps - The maximum number of replicates to perform if convergence is not
 # reached (default 100)
 #
+# $minreps - The minimum number of replicates to perform before assessing if 
+# convergence is reached (default 10)
+
 # $conv - The number of top replicates to assess convergence of (default 3)
 #
 # $thresh - The maximum range of likelihoods for the top $conv replicates to 
@@ -31,46 +38,28 @@
 ### Housekeeping ####
 #####################
 
-# Define function to make printing to stderr easy
+(# Define function to make printing to stderr easy
 echoerr() { echo "$@" 1>&2; }
 
 # Make it so stuff fails more often
 set -eo pipefail
 
-#####################
-## Parse Arguments ##
-#####################
+################################
+## Import Snakemake Arguments ##
+################################
 
-# Parse arguments and divide up between what will be passed to ngsadmix 
-# and what will be used for wrapper processing. Method adapted from this
-# useful answer on stack overflow: https://stackoverflow.com/a/14203146
+beagle="${snakemake_input[beagle]}"
+extra="${snakemake_params[extra]}"
+kvalue="${snakemake_wildcards[kvalue]}"
+threads="${snakemake[threads]}"
+outpre="${snakemake_params[prefix]}"
+reps="${snakemake_params[reps]}"
+minreps="${snakemake_params[minreps]}"
+thresh="${snakemake_params[thresh]}"
+conv="${snakemake_params[conv]}"
+TMPDIR="${snakemake_resources[tmpdir]}"
 
-passedargs=()
-
-while [[ $# -gt 0 ]]; do
-  case $1 in
-    -o|-outfiles)
-      outpre="$2"
-      shift # past argument
-      shift # past value
-      ;;
-	-resume)
-	  resume=1
-	  shift
-	  ;;
-    -*|--*)
-      passedargs+=("$1 $2")
-	  shift
-	  shift
-      ;;
-    *)
-      passedargs+=("$1") # save positional arg
-      shift # past argument
-      ;;
-  esac
-done
-
-passedargs=${passedargs[@]}
+passedargs="-likes $beagle $extra -K $kvalue -P $threads"
 
 # log what happened
 echoerr "The following options will be passed to ngsadmix, please make sure"
@@ -86,9 +75,6 @@ outfile=$(basename $outpre)
 outdir=$(dirname $outpre)
 
 # temp directory
-if [ -z $TMPDIR ]; then
-    TMPDIR=$HOME/scratch
-fi
 temp=$TMPDIR/ngsadmix_opt_$outfile
 mkdir -p $temp
 
@@ -118,53 +104,61 @@ echoerr
 
 # set maximum number of replicates to perform before stopping if not 
 # converged
-if [ -z $reps ]; then
+if [ -z "$reps" ] || [ "$reps" = "None" ]; then
 	reps=100
 else
-	echoerr 'WARNING: $reps has been modified from the default.'
+	echoerr 'WARNING: $reps may have been modified from the default.'
+	echoerr '$reps is now set to: '"$reps."
+	echoerr 'Ignore if this change was intentional.'
+	echoerr
+fi
+
+if [ -z $minreps ] || [ "$minreps" = "None" ]; then
+	minreps=20
+else
+	echoerr 'WARNING: $minreps may have been modified from the default.'
+	echoerr '$minreps is now set to: '"$minreps."
 	echoerr 'Ignore if this change was intentional.'
 	echoerr
 fi
 
 # set maximum range between top reps in likelihood units to qualify reps
 # as reaching convergance
-if [ -z $thresh ]; then
+if [ -z $thresh ] || [ "$thresh" = "None" ]; then
 	thresh=2
 else
-	echoerr 'WARNING: $thresh has been modified from the default.'
+	echoerr 'WARNING: $thresh may have been modified from the default.'
+	echoerr '$thresh is now set to: '"$thresh."
 	echoerr 'Ignore if this change was intentional.'
 	echoerr
 fi
 
 # set the minimum number of top replicates that must be within the value 
 # $thresh to qualify as converged
-if [ -z $conv ]; then
+if [ -z $conv ] || [ "$conv" = "None" ]; then
 	conv=3
 else
-	echoerr 'WARNING: $conv has been modified from the default.'
+	echoerr 'WARNING: $conv may have been modified from the default.'
+	echoerr '$conv is now set to: '"$conv."
 	echoerr 'Ignore if this change was intentional.'
 	echoerr
 fi
 
 # log what got set
-echoerr "Beginning ngsadmix replicates, will perform replicate runs until"
-echoerr "the top $conv runs are within $thresh log-likelihood units of each"
-echoerr "other or until $reps replicates have finished. If you'd like to"
-echoerr 'change these convergence criteria, edit the $reps, $thresh, or'
-echoerr '$conv variables in the wrapper or export them before starting.'
+if (( $(echo "$thresh > 0" | bc -l) )); then
+echoerr "Beginning ngsadmix replicates, will perform replicate runs until "
+echoerr "until $reps replicates have finished. If you'd like to change "
+echoerr 'these convergence criteria, edit the reps, thresh, or conv '
+echoerr 'variables in the snakemake config.'
 echoerr
-
-# Maybe one day I will add resuming a terminated run, but I don't have a good
-# way to save the best likelihood from the previous run without it being a 
-# false positive of convergence. Maybe temp names?
-
-# if [ $resume == "1" ]; then
-# 	echoerr "Picking up from previous interrupted run at the last completed"
-# 	echoerr "replicate. WARNING: I won't check to make sure your inputs or"
-# 	echoerr "options are the same since the last run, so please be sure of"
-# 	echoerr "this or start over by removing the -resume option."
-# 	echoerr
-# fi
+else
+echoerr "Beginning ngsadmix replicates, will perform replicate runs until "
+echoerr "the top $conv runs are within $thresh log-likelihood units of each "
+echoerr "other or until $reps replicates have finished. If you'd like to "
+echoerr 'change these convergence criteria, edit the reps, thresh, or '
+echoerr 'conv variables in the snakemake config.'
+echoerr
+fi
 
 #####################
 ## Run the wrapper ##
@@ -172,23 +166,23 @@ echoerr
 
 # set log file where replicate likelihoods will be stored and assessed from
 templog=$temp/${outfile}_optimization_wrapper.log
-permlog=$outdir/${outfile}_optimization_wrapper.log
-
-# initialize the log and make the temporary directory for kept results
-> $permlog
-> $templog
+permlog="${snakemake_output[log]}"
 mkdir -p $temp/bestrep
+> $templog
+> $permlog
 
 # run replicates of ngsadmix until we hit either convergence or $reps
 for i in $(seq 1 $reps); do
-	# check if loop should break when convergence is reached
-	if (( "$i" > "10" )); then
-		# sort likelihoods, see if top three are within $thresh of each other
-		# and break if so
-		diff=$(sort -k2gr $templog | head -n 3 | awk '{print $2}' | \
-				tr '\n' ' ' | awk '{print $1-$3}')
-		if (( $(echo $diff $thresh | awk '{print $1 <= $2}') )); then
-			break
+	if (( $(echo "$thresh > 0" | bc -l) )); then
+		# check if loop should break when convergence is reached
+		if (( "$i" > "$minreps" )); then
+			# sort likelihoods, see if top three are within $thresh of each other
+			# and break if so
+			diff=$(sort -k3gr $templog | head -n 3 | awk '{print $3}' | \
+					tr '\n' ' ' | awk '{print $1-$3}')
+			if (( $(echo $diff $thresh | awk '{print $1 <= $2}') )); then
+				break
+			fi
 		fi
 	fi
 
@@ -198,18 +192,25 @@ for i in $(seq 1 $reps); do
 
 	# run replicate
 	echoerr "Beginning replicate $i..."
-	NGSadmix $passedargs -o $reptemp/$outfile -seed $RANDOM
+	seed=$RANDOM
+	NGSadmix $passedargs -o $reptemp/$outfile -seed $seed
 
 	# add likelihood to log
 	like=$(grep 'best like=' $reptemp/$outfile.log | sed 's/=/ /g' | \
 			awk '{print $3}')
-	echo "$i	$like" >> $templog
+	echo "$i	$seed	$like" >> $templog
 	cp $templog $permlog
 
 	# if better than previous reps, store results
-	bestrep=$(sort -k2gr $templog | head -n 1 | awk '{print $1}')
+	bestrep=$(sort -k3gr $templog | head -n 1 | awk '{print $1}')
 	if [ "$bestrep" == "$i" ]; then
+		echoerr "Updating best replicate..."
+		echoerr "WARNING: If the script is cancelled before I say 'Done!' "
+		echoerr "there may be a mismatch in the optimization log and saved "
+		echoerr "best replicate."
 		mv $reptemp/* $temp/bestrep/
+		mv $temp/bestrep/* $outdir/
+		echoerr "Done!"
 	fi
 
 	# delete replicate folder
@@ -217,7 +218,7 @@ for i in $(seq 1 $reps); do
 
 done
 
-diff=$(sort -k2gr $permlog | head -n 3 | awk '{print $2}' | tr '\n' ' ' | \
+diff=$(sort -k3gr $permlog | head -n 3 | awk '{print $3}' | tr '\n' ' ' | \
 	awk '{print $1-$3}')
 
 if (( $(echo $diff $thresh | awk '{print $1 <= $2}') )); then
@@ -234,14 +235,8 @@ else
 	echoerr
 fi
 
-echoerr "Moving best likelihood results to output folder..."
-mv $temp/bestrep/* $outdir/
-
-echoerr "Done!"
-echoerr
-
 echoerr "Final checks to make sure you have the right files..."
-bestlike=$(sort -k2gr $templog | head -n 1 | awk '{print $2}')
+bestlike=$(sort -k3gr $templog | head -n 1 | awk '{print $3}')
 yourlike=$(grep 'best like=' $outpre.log | sed 's/=/ /g' | \
 			awk '{print $3}')
 
@@ -253,4 +248,4 @@ else
 	echoerr "run."
 	echoerr "best like = $bestlike; output like = $yourlike"
 	exit -1
-fi
+fi) 2> "$snakemake_log[0]"

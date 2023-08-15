@@ -2,6 +2,6 @@ channels:
   - conda-forge
   - bioconda
 dependencies:
-  - python >3
-  - graph-tool
-  - pandas
+  - python =3.11.*
+  - graph-tool =2.55
+  - pandas =2.0.1

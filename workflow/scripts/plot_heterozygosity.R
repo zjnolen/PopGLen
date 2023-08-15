@@ -1,3 +1,5 @@
+sink(file(snakemake@log[[1]], open="wt"), type = "message")
+
 aggregate_heterozygosity <- function(sfslist,pop) {
 
   s <- as.data.frame(read.table(pop, header = TRUE))

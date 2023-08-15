@@ -1,0 +1,59 @@
+name: Tests
+
+on:
+  push:
+    branches:
+      - master
+    paths-ignore:
+      - '**/*.md'
+  pull_request:
+    branches_ignore: []
+    paths-ignore:
+      - '**/*.md'
+
+jobs:
+  formatting:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout with submodules
+      uses: actions/checkout@v3.5.2
+    - name: Formatting
+      uses: github/super-linter@v5
+      env:
+        VALIDATE_ALL_CODEBASE: false
+        DEFAULT_BRANCH: master
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        VALIDATE_SNAKEMAKE_SNAKEFMT: true
+  linting:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3.5.2
+    - name: Linting
+      uses: snakemake/snakemake-github-action@v1.24.0
+      with:
+        snakefile: "workflow/Snakefile"
+        args: "--configfile .test/config/config.yaml --lint"
+
+  run-workflow:
+    runs-on: ubuntu-latest
+    needs:
+      - linting
+      - formatting
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3.5.2
+    - name: Set up conda environment and singularity
+      uses: mamba-org/provision-with-micromamba@v15
+      with:
+        environment-file: environment.yaml
+        extra-specs: |
+          singularity
+    - name: Test workflow
+      shell: bash -l {0}
+      run: |
+        snakemake --directory .test --configfile .test/config/config.yaml --use-conda --show-failed-logs --cores 2 --conda-cleanup-pkgs cache --use-singularity --default-resources mem_mb=1000
+    - name: Test report
+      uses: snakemake/snakemake-github-action@v1.24.0
+      with:
+        snakefile: "workflow/Snakefile"
+        args: "--configfile .test/config/config.yaml --report report.html"

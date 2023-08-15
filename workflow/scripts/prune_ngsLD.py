@@ -1,13 +1,22 @@
 #!/usr/bin/env python3
 #
-# Maintained by Zachary J. Nolen
+# prune_ngsLD.py - Prunes SNPs from ngsLD output to produce a list of 
+# sites in linkage equilibrium.
 #
-# Copyright Zachary J. Nolen
+# Zachary J. Nolen
 #
 # This script aims to prune SNPs from pairwise linkage disequilibrium 
-# measurements output by ngsLD. Runtime scales well with dataset size, 
-# but is not multithreaded. Memory usage seems to require RAM equivalent 
-# to ~60-90% of uncompressed input file size.
+# estimates output by ngsLD. Not multithreaded, so only assign 
+# multiple cores if required to increase memory allowance on your 
+# cluster. Memory usage seems to require RAM equivalent to ~60-90% of 
+# uncompressed input file size. Runtime depends on number of pairwise 
+# comparisons, so it may be best to break up input into linkage groups, 
+# prune per group, and merge afterwards. Assumes input first two fields 
+# of input are the two positions under comparison in each line.
+
+# Requires: python > 3, graph-tool, pandas
+
+# This version has been adapted for usage within a snakemake workflow
 
 ####### Housekeeping #######
 
@@ -19,15 +28,21 @@ import sys
 parser = argparse.ArgumentParser(description='Prunes SNPs from ngsLD output to produce a list of sites in linkage equilibrium.')
 
 parser.add_argument("--input",
-					help="The .ld output file from ngsLD to be pruned. Can also be gzipped.",
-					default=sys.stdin)
+					help="The .ld output file from ngsLD to be pruned. Can also be gzipped. [STDIN]",
+					default=snakemake.input["ld"])
 parser.add_argument("--output",
-					help="The file to output pruned SNPs to.",
-					default=sys.stdout)
-parser.add_argument("--max_dist", help="Maximum distance in bp between nodes to assume they are connected.")
-parser.add_argument("--min_weight", help="Minimum weight of an edge to assume nodes are connected.")
+					help="The file to output pruned SNPs to. [STDOUT]",
+					default=snakemake.output["sites"])
+parser.add_argument("--field_dist", help="Field from input with distances. [3]", default=3)
+parser.add_argument("--field_weight", help="Field from input with weights. [7]", default=7)
+parser.add_argument("--max_dist", help="Maximum distance in bp between nodes to assume they are connected.", default=snakemake.params["maxdist"])
+parser.add_argument("--min_weight", help="Minimum weight of an edge to assume nodes are connected.", default=snakemake.params["minweight"])
 parser.add_argument("--weight_type", help="How to calculate most connected node: sum of (a)bsolute edges' weight [default], sum of (e)dges' weight, or (n)umber of connections.", default="a")
 parser.add_argument("--keep_heavy", help="Keep 'heaviest' nodes, instead of removing them (default)", action='store_true')
+parser.add_argument("--print_excl", help="File to dump excluded nodes.")
+parser.add_argument("--subset", help="File with node IDs to include (one per line).")
+parser.add_argument("--weight_precision", help=argparse.SUPPRESS, default=4)
+parser.add_argument("--debug", help="Print heaviest node and its weight to STDERR to help debugging.", action='store_true')
 args = parser.parse_args()
 
 # import remaining necessary modules
@@ -36,6 +51,8 @@ import csv
 import pandas as pd
 from graph_tool.all import *
 import gzip
+from pathlib import Path
+import os
 
 # log start time
 begin_time = datetime.datetime.now()
@@ -48,19 +65,50 @@ def is_gz_file(filepath):
     with open(filepath, 'rb') as test_f:
         return test_f.read(2) == b'\x1f\x8b'
 
+def gz_size(fname):
+    with gzip.open(fname, 'rb') as f:
+        return f.seek(0, whence=2)
+
+# find out how many columns are in input
+if is_gz_file(args.input):
+	if gz_size(args.input) == 0:
+		Path(args.output).touch()
+		sys.exit()
+	else:
+		with gzip.open(args.input, mode="rt") as f:
+			reader = csv.reader(f,delimiter="\t")
+			ncol = len(next(reader))
+elif os.stat(args.input).st_size == 0:
+	Path(args.output).touch()
+	sys.exit()
+else:
+	with open(args.input) as f:
+		reader = csv.reader(f,delimiter="\t")
+		ncol = len(next(reader))
+		
+# set up properties based on input size (forces unused columns
+# to smaller object type to reduce memory usage)
+eprop_type_list = ["bool"] * (ncol-2)
+eprop_name_list = ["na"] * (ncol-2)
+
+eprop_type_list[int(args.field_dist)-3] = "int32_t"
+eprop_name_list[int(args.field_dist)-3] = "dist"
+eprop_type_list[int(args.field_weight)-3] = "double"
+eprop_name_list[int(args.field_weight)-3] = "weight"
+
 # read input into graph object, whether compressed or not
 if is_gz_file(args.input):
 	with gzip.open(args.input, mode="rt") as f:
 		print("Reading in data...", file=sys.stderr)
 		G = load_graph_from_csv(f, directed = False, 
-			eprop_types = ["int32_t","bool","bool","bool","double"],
-			eprop_names = ["dist","na","na","na","r2"], hashed = True, 
+			eprop_types = eprop_type_list,
+			eprop_names = eprop_name_list, hashed = True, 
 			csv_options = {'delimiter': '\t'})
 else:
 	print("Reading in data...", file=sys.stderr)
 	G = load_graph_from_csv(args.input, directed = False, 
-		eprop_types = ["int32_t","bool","bool","bool","double"],
-		eprop_names = ["dist","na","na","na","r2"], hashed = True, 
+		eprop_types = eprop_type_list,
+		eprop_names = eprop_name_list, hashed = True, 
 		csv_options = {'delimiter': '\t'})
 
 ####### Filter graph #######
@@ -68,17 +116,15 @@ else:
 # get rid of unused properties (other weight measures) from graph
 del G.ep["na"]
 
-# scale weights by preferred weight method from arguments
+# use absolute weight if requested
 if args.weight_type == "a":
-	map_property_values(G.ep["r2"], G.ep["r2"], lambda x: abs(x))
-elif args.weight_type == "n":
-	map_property_values(G.ep["r2"], G.ep["r2"], lambda x: 1)
+	map_property_values(G.ep["weight"], G.ep["weight"], lambda x: abs(x))
 
 # create properties needed to filter out edges where dist > threshold and
 # weight < threshold
 drop_dist = G.new_edge_property("bool")
-drop_r2 = G.new_edge_property("bool")
-weight = G.new_vertex_property("double")
+drop_weight = G.new_edge_property("bool")
+weight = G.new_vertex_property("int")
 
 # determine which edges to filter by dist and weight based on input arguments
 if args.max_dist:
@@ -89,12 +135,24 @@ if args.max_dist:
 	G.clear_filters()
 if args.min_weight:
 	print("Filtering edges by weight...", file=sys.stderr)
-	map_property_values(G.ep["r2"], drop_r2, lambda x: x < float(args.min_weight))
-	G.set_edge_filter(drop_r2, inverted=True)
+	map_property_values(G.ep["weight"], drop_weight, lambda x: x < float(args.min_weight))
+	G.set_edge_filter(drop_weight, inverted=True)
 	G.purge_edges()
 	G.clear_filters()
 
+# convert filtered weights to number of edges if requested
+if args.weight_type == "n":
+	map_property_values(G.ep["weight"], G.ep["weight"], lambda x: 1)
+
 ####### Prune graph #######
+
+# subset sites if requested
+if args.subset:
+	with open(args.subset) as f:
+		subset_nodes = f.read().splitlines()
+	for i in G.get_vertices():
+		if G.vp["name"][i] not in subset_nodes:
+			G.remove_vertex(find_vertex(G, G.vp["name"], G.vp["name"][i]), fast = True)
 
 # print out messages at start of pruning describing starting point and method
 if args.keep_heavy:
@@ -106,7 +164,17 @@ else:
 print("Starting with "+str(G.num_vertices())+" positions with "+
 	str(G.num_edges())+" edges between them...", file=sys.stderr)
 
-# prune while edges > 0; uncomment print lines for some debugging
+# set up data frame for storing dropped nodes if requested
+if args.print_excl:
+	dropped = []
+
+# convert edge weights to integer
+weight_precision = int(args.weight_precision)
+weight_precision = 10 ** weight_precision
+edge_weight = G.new_edge_property("int")
+map_property_values(G.ep["weight"], edge_weight, lambda x: int(x * weight_precision))
+
+# prune while edges > 0
 while True:
 	nodes = G.num_vertices()
 	edges = G.num_edges()
@@ -115,19 +183,22 @@ while True:
 	if (nodes % 1000 == 0) and nodes > 0:
 		print(str(nodes)+" positions remaining with "+str(edges)+
 			" edges between them...", file=sys.stderr)
-	#print("Nodes remaining = "+str(nodes), file=sys.stderr)
-	#print("Edges remaining = "+str(edges), file=sys.stderr)
-	incident_edges_op(G, "out", "sum", G.ep["r2"], weight)
+	incident_edges_op(G, "out", "sum", edge_weight, weight)
 	max_weight = max(weight)
-	#print("Heaviest node weight = "+str(max_weight), file=sys.stderr)
 	heavy = find_vertex(G, weight, max_weight)
+	heavy = sorted(heavy, key = lambda x: G.vp["name"][x].lower())[0]
+
+	if args.debug:
+		print("Max weight node and weight: "+str(G.vp["name"][heavy])+" "+str(max_weight), file=sys.stderr)
 	if args.keep_heavy:
-		#print("Dropping heavy neighbors...", file=sys.stderr)
-		heavy_neighbors = G.get_out_neighbors(heavy[0])
+		heavy_neighbors = G.get_out_neighbors(heavy)
+		if args.print_excl:
+			dropped=dropped+[G.vp["name"][i] for i in heavy_neighbors]
 		G.remove_vertex(heavy_neighbors, fast = True)
 	else:
-		#print("Dropping heavy...", file=sys.stderr)
-		G.remove_vertex(heavy[0], fast = True)
+		if args.print_excl:
+			dropped=dropped+[G.vp["name"][heavy]]
+		G.remove_vertex(heavy, fast = True)
 
 ####### Output creation #######
 
@@ -139,9 +210,20 @@ pruned_df = pruned_df[0].str.split(pat=":", expand = True)
 pruned_df.columns = ['chr','pos']
 pruned_df.chr = pruned_df.chr.astype('string')
 pruned_df.pos = pruned_df.pos.astype('int')
-pruned_df = pruned_df.sort_values('pos')
+pruned_df = pruned_df.sort_values(['chr','pos'])
 pruned_df.to_csv(args.output, sep="_", quoting=csv.QUOTE_NONE, 
 	header = False, index = False)
+
+if args.print_excl:
+	print("Exporting dropped positions to file...", file=sys.stderr)
+	dropped_df = pd.DataFrame(dropped)
+	dropped_df = dropped_df[0].str.split(pat=":", expand = True)
+	dropped_df.columns = ['chr','pos']
+	dropped_df.chr = dropped_df.chr.astype('string')
+	dropped_df.pos = dropped_df.pos.astype('int')
+	dropped_df = dropped_df.sort_values(['chr','pos'])
+	dropped_df.to_csv(args.print_excl, sep=":", quoting=csv.QUOTE_NONE, 
+		header = False, index = False)
 
 print("Total runtime: "+str(datetime.datetime.now() - begin_time),
 	file=sys.stderr)

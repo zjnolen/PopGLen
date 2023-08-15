@@ -1,0 +1,19 @@
+---
+output: html_document
+---
+
+```{r, echo = FALSE}
+sink(file(snakemake@log[[1]], open="wt"), type = "message")
+
+library(reactable)
+library(data.table)
+
+dt <- fread(snakemake@input[[1]], header = TRUE)
+reactable(dt, 
+	searchable = TRUE, 
+	filterable = TRUE, 
+	showPageSizeOptions = TRUE,
+	defaultPageSize = 25,
+	resizable = TRUE,
+	wrap = FALSE)
+```

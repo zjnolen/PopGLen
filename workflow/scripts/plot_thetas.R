@@ -1,4 +1,6 @@
-combine_pestPG <- function(pestPGlist, popnames) {
+sink(file(snakemake@log[[1]], open="wt"), type = "message")
+
+combine_pestPG <- function(pestPGlist, popnames, minsites) {
 
   combined <- c()
   
@@ -16,6 +18,7 @@ combine_pestPG <- function(pestPGlist, popnames) {
 
   combined$pop <- as.factor(combined$pop)
   combined$pop <- factor(combined$pop, levels = sort(unique(combined$pop)))
+  combined <- combined[combined$nSites >= minsites,]
   return(combined)
 
 }
@@ -52,6 +55,28 @@ plot_thetas <- function(pestPGcomb, plotpre) {
 
 }
 
-combined <- combine_pestPG(snakemake@input,snakemake@params[["popnames"]])
+theta_table <- function(pestPGcomb, tabpre) {
 
-plot_thetas(combined,snakemake@params[["outpre"]])
+  require(Hmisc)
+  
+  pestPGcomb$watterson <- pestPGcomb$tW/pestPGcomb$nSites
+  watterson <- aggregate(pestPGcomb$watterson, list(sites = pestPGcomb$pop), FUN=function(x) {smean.cl.boot(x, B = 2000)})
+  watterson <- cbind(Population = watterson$sites, as.data.frame.matrix(watterson$x, row.names = NULL))
+  write.table(watterson, file = paste0(tabpre,".watterson.mean.tsv"), quote=FALSE, sep = '\t', row.names = FALSE)
+
+  pestPGcomb$pi <- pestPGcomb$tP/pestPGcomb$nSites
+  pi <- aggregate(pestPGcomb$pi, list(sites = pestPGcomb$pop), FUN=function(x) {smean.cl.boot(x, B = 2000)})
+  pi <- cbind(Population = pi$sites, as.data.frame.matrix(pi$x, row.names = NULL))
+  write.table(pi, file = paste0(tabpre,".pi.mean.tsv"), quote=FALSE, sep = '\t', row.names = FALSE)
+
+
+  tajima <- aggregate(pestPGcomb$Tajima, list(sites = pestPGcomb$pop), FUN=function(x) {smean.cl.boot(x, B = 2000)})
+  tajima <- cbind(Population = tajima$sites, as.data.frame.matrix(tajima$x, row.names = NULL))
+  write.table(tajima, file = paste0(tabpre,".tajima.mean.tsv"), quote=FALSE, sep = '\t', row.names = FALSE)
+
+}
+
+combined <- combine_pestPG(snakemake@input,snakemake@params[["popnames"]],snakemake@params[["minsites"]])
+
+plot_thetas(combined,snakemake@params[["plotpre"]])
+theta_table(combined,snakemake@params[["tabpre"]])

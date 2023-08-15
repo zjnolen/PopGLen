@@ -1,0 +1,11 @@
+channels:
+  - conda-forge
+  - bioconda
+
+dependencies:
+  - gawk
+  - coreutils
+  - bc
+  - gzip
+  - grep
+  - perl

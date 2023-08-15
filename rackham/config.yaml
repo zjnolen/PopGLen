@@ -1,0 +1,13 @@
+restart-times: 3
+local-cores: 1
+use-conda: true
+use-singularity: true
+jobs: 999
+keep-going: true
+max-threads: 20
+slurm: true
+default-resources:
+  - "mem_mb=(threads*6400)"
+  - "runtime=60"
+  - "slurm_account=<your slurm account here>"
+  - "slurm_partition=core"

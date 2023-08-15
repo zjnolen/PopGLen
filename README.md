@@ -35,6 +35,15 @@ Potentially the ability to use bgzipped genomes will be added, I just need to ch
 it works with all underlying tools. Currently, it will for sure not work, as calculating
 chunks is hard-coded to work on an uncompressed genome.
 
+### Running on a cluster
+
+Development was done on UPPMAX's Rackham cluster, and a simple profile is included in
+the [`rackham`](rackham) folder to simplify running this workflow through SLURM there.
+For running on other SLURM based cluster configs, this file should largely work with a
+few minor modifications of the defaults. See
+[Snakemake's cluster support documentation](https://snakemake.readthedocs.io/en/stable/executing/cluster.html)
+for information on how to adapt the profile for other HPC environments.
+
 ## Features
 
 Currently, the pipeline performs the following tasks:

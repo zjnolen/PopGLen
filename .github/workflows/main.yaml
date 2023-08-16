@@ -12,6 +12,23 @@ on:
       - '**/*.md'
 
 jobs:
+  build:
+    name: Build my artifact
+    runs-on: ubuntu-latest
+    steps:
+      - name: Maximize build space
+        uses: easimon/maximize-build-space@master
+        with:
+          root-reserve-mb: 512
+          swap-size-mb: 1024
+          remove-dotnet: 'true'
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Build
+        run: |
+          echo "Free space:"
+          df -h
   formatting:
     runs-on: ubuntu-latest
     steps:

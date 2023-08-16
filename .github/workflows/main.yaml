@@ -22,8 +22,10 @@ jobs:
           root-reserve-mb: 512
           swap-size-mb: 1024
           remove-dotnet: 'true'
-      - name: Checkout
-        uses: actions/checkout@v2
+          remove-android: 'true'
+          remove-haskell: 'true'
+          remove-codeql: 'true'
+          remove-docker-images: 'true'
 
       - name: Build
         run: |
@@ -31,6 +33,8 @@ jobs:
           df -h
   formatting:
     runs-on: ubuntu-latest
+    needs:
+      - build
     steps:
     - name: Checkout with submodules
       uses: actions/checkout@v3.5.2
@@ -43,8 +47,9 @@ jobs:
         VALIDATE_SNAKEMAKE_SNAKEFMT: true
   linting:
     runs-on: ubuntu-latest
+    needs:
+      - build
     steps:
-    - uses: actions/checkout@v3.5.2
     - name: Linting
       uses: snakemake/snakemake-github-action@v1.24.0
       with:
@@ -57,14 +62,16 @@ jobs:
       - linting
       - formatting
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3.5.2
     - name: Set up conda environment and singularity
       uses: mamba-org/provision-with-micromamba@v15
       with:
         environment-file: environment.yaml
         extra-specs: |
           singularity
+    - name: Before space
+        run: |
+          echo "Free space:"
+          df -h
     - name: Test workflow
       shell: bash -l {0}
       run: |
@@ -74,3 +81,7 @@ jobs:
       with:
         snakefile: "workflow/Snakefile"
         args: "--configfile .test/config/config.yaml --report report.html"
+    - name: After space
+        run: |
+          echo "Free space:"
+          df -h

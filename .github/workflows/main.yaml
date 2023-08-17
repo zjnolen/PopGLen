@@ -54,14 +54,18 @@ jobs:
       run: |
         echo "Free space:"
         df -h
+        pwd
     - name: Checkout repository
       uses: actions/checkout@v3.5.2
+    - name: Check working directory
+      run: |
+        pwd
     - name: Set up conda environment and singularity
-      uses: mamba-org/provision-with-micromamba@v15
+      uses: mamba-org/setup-micromamba@v1.4
       with:
         environment-file: environment.yaml
         extra-specs: |
-          singularity
+          apptainer
     - name: Test workflow
       shell: bash -l {0}
       run: |

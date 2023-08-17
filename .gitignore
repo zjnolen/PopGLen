@@ -21,8 +21,9 @@ config/samples_*.tsv
 # ignore vagrant stuff for testing VM
 .vagrant
 Vagrantfile
-# ignore reports folder
+# ignore reports folder and test report
 reports
+.test/report.html
 # ignore dev containers for vscode
 .devcontainer
 # ignore benchmarks

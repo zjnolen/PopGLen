@@ -56,3 +56,7 @@ jobs:
       shell: bash -l {0}
       run: |
         snakemake --directory .test --configfile .test/config/config.yaml --cores 2 --report report.html
+    - name: After space
+      run: |
+        echo "Free space:"
+        df -h

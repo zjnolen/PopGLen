@@ -64,7 +64,7 @@ jobs:
       uses: mamba-org/setup-micromamba@v1
       with:
         environment-file: environment.yaml
-        extra-specs: |
+        create-args: >-
           apptainer
     - name: Test workflow
       shell: bash -l {0}

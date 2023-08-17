@@ -1,4 +1,6 @@
 usage:
   software-stack-deployment:
+    conda: false
+    singularity: false
     singularity+conda: true
   report: true

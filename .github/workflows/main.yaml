@@ -51,12 +51,8 @@ jobs:
     - name: Test workflow
       shell: bash -l {0}
       run: |
-        snakemake --all-temp --directory .test --configfile .test/config/config.yaml --use-conda --show-failed-logs --cores 2 --conda-cleanup-pkgs cache --use-singularity --default-resources mem_mb=1000
+        snakemake --directory .test --configfile .test/config/config.yaml --use-conda --show-failed-logs --cores 2 --conda-cleanup-pkgs cache --use-singularity --default-resources mem_mb=1000
     - name: Test report
       shell: bash -l {0}
       run: |
         snakemake --directory .test --configfile .test/config/config.yaml --cores 2 --report report.html
-    - name: After space
-      run: |
-        echo "Free space:"
-        df -h

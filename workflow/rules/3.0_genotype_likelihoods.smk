@@ -161,7 +161,7 @@ rule popglf:
         (zcat {input.sample_glfs[0]} | cut -f1-2 > {resources.tmpdir}/{params.tmpfile}
         for i in {input.sample_glfs}; do
             echo "Adding $i to glf..."
-            zcat $i | cut -f3-12 | paste -d '    ' {resources.tmpdir}/{params.tmpfile} - > {resources.tmpdir}/{params.tmpfile}.tmp
+            zcat $i | cut -f3-12 | paste -d '\t' {resources.tmpdir}/{params.tmpfile} - > {resources.tmpdir}/{params.tmpfile}.tmp
             mv {resources.tmpdir}/{params.tmpfile}.tmp {resources.tmpdir}/{params.tmpfile}
         done
         echo "Gzipping final glf..."

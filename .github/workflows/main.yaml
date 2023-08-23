@@ -50,8 +50,6 @@ jobs:
         remove-haskell: 'true'
         remove-codeql: 'true'
         remove-docker-images: 'true'
-    - name: Move temp directory
-      shell: 
     - name: Checkout repository
       uses: actions/checkout@v3.5.2
     - name: Set up conda environment and singularity

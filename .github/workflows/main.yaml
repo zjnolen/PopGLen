@@ -40,20 +40,33 @@ jobs:
       - linting
       - formatting
     steps:
+    - name: Maximize build space
+      uses: easimon/maximize-build-space@master
+      with:
+        root-reserve-mb: 1024
+        swap-size-mb: 1024
+        overprovision-lvm: 'true'
+        remove-dotnet: 'true'
+        remove-android: 'true'
+        remove-haskell: 'true'
+        remove-codeql: 'true'
+        remove-docker-images: 'true'
     - name: Checkout repository
       uses: actions/checkout@v3.5.2
     - name: Set up conda environment and singularity
-      uses: mamba-org/provision-with-micromamba@v15
+      uses: mamba-org/setup-micromamba@v1
       with:
         environment-file: environment.yaml
-        extra-specs: |
-          singularity
+        create-args: >-
+          apptainer
     - name: Test workflow
       shell: bash -l {0}
       run: |
+        mkdir -p temp
+        workdir=$(pwd -P)
+        TMPDIR=$workdir/temp
         snakemake --directory .test --configfile .test/config/config.yaml --use-conda --show-failed-logs --cores 2 --conda-cleanup-pkgs cache --use-singularity --default-resources mem_mb=1000
     - name: Test report
-      uses: snakemake/snakemake-github-action@v1.24.0
-      with:
-        snakefile: "workflow/Snakefile"
-        args: "--configfile .test/config/config.yaml --report report.html"
+      shell: bash -l {0}
+      run: |
+        snakemake --directory .test --configfile .test/config/config.yaml --cores 2 --report report.html

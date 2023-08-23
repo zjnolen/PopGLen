@@ -40,6 +40,18 @@ jobs:
       - linting
       - formatting
     steps:
+    - name: Maximize build space
+      uses: easimon/maximize-build-space@master
+      with:
+        root-reserve-mb: 1024
+        swap-size-mb: 1024
+        remove-dotnet: 'true'
+        remove-android: 'true'
+        remove-haskell: 'true'
+        remove-codeql: 'true'
+        remove-docker-images: 'true'
+    - name: Move temp directory
+      shell: 
     - name: Checkout repository
       uses: actions/checkout@v3.5.2
     - name: Set up conda environment and singularity
@@ -51,6 +63,9 @@ jobs:
     - name: Test workflow
       shell: bash -l {0}
       run: |
+        mkdir -p temp
+        workdir=$(pwd -P)
+        TMPDIR=$workdir/temp
         snakemake --directory .test --configfile .test/config/config.yaml --use-conda --show-failed-logs --cores 2 --conda-cleanup-pkgs cache --use-singularity --default-resources mem_mb=1000
     - name: Test report
       shell: bash -l {0}

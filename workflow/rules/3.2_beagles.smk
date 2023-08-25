@@ -11,7 +11,8 @@ rule angsd_doGlf2:
     input:
         glf=get_glf,
         fai="results/ref/{ref}/{ref}.fa.fai",
-        sites=get_snpset,
+        sites="results/datasets/{dataset}/filters/combined/{dataset}.{ref}{dp}_{sites}-filts.sites",
+        sitesidx="results/datasets/{dataset}/filters/combined/{dataset}.{ref}{dp}_{sites}-filts.sites.idx",
     output:
         beagle=temp(
             "results/datasets/{dataset}/beagles/chunks/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.beagle.gz"
@@ -27,7 +28,8 @@ rule angsd_doGlf2:
     container:
         angsd_container
     params:
-        popopts=get_popopts,
+        snp_pval=config["params"]["angsd"]["snp_pval"],
+        minmaf=config["params"]["angsd"]["min_maf"],
         nind=lambda w: len(get_samples_from_pop(w.population)),
         out=lambda w, output: os.path.splitext(output.arg)[0],
     threads: lambda wildcards, attempt: attempt
@@ -35,9 +37,10 @@ rule angsd_doGlf2:
         runtime=lambda wildcards, attempt: attempt * 720,
     shell:
         """
-        angsd -doGlf 2 -glf10_text {input.glf} {params.popopts} -doMaf 1 \
-            -nThreads {threads} -sites {input.sites[0]} -fai {input.fai} \
-            -nInd {params.nind} -out {params.out} &> {log}
+        angsd -doGlf 2 -glf10_text {input.glf} -doMajorMinor 1 -doMaf 1 \
+            -SNP_pval {params.snp_pval} -minMaf {params.minmaf} -nThreads {threads} \
+            -sites {input.sites} -fai {input.fai} -nInd {params.nind} \
+            -out {params.out} &> {log}
         """
 
 

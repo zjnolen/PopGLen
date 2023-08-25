@@ -144,9 +144,9 @@ rule dedup_merged:
 rule realignertargetcreator:
     """Create intervals database for GATK Indel Realigner"""
     input:
-        bam=get_dedup_bam,
+        unpack(get_dedup_bam),
         ref="results/ref/{ref}/{ref}.fa",
-        dic="results/ref/{ref}/{ref}.dict",
+        dict="results/ref/{ref}/{ref}.dict",
         fai="results/ref/{ref}/{ref}.fa.fai",
     output:
         intervals="results/mapping/indelrealign/{sample}.{ref}.rmdup.intervals",
@@ -154,47 +154,32 @@ rule realignertargetcreator:
         "logs/mapping/gatk/realignertargetcreator/{sample}.{ref}.log",
     benchmark:
         "benchmarks/mapping/gatk/realignertargetcreator/{sample}.{ref}.log"
-    conda:
-        "../envs/gatk.yaml"
-    shadow:
-        "minimal"
     threads: lambda wildcards, attempt: attempt * 2
     resources:
         runtime=lambda wildcards, attempt: attempt * 720,
-    shell:
-        """
-        gatk3 -T RealignerTargetCreator -nt {threads} -I {input.bam[0]} \
-            -R {input.ref} -o {output.intervals} 2> {log}
-        """
+    wrapper:
+        "v2.6.0/bio/gatk3/realignertargetcreator"
 
 
 rule indelrealigner:
     """Realign reads around indels"""
     input:
-        bam=get_dedup_bam,
-        intervals="results/mapping/indelrealign/{sample}.{ref}.rmdup.intervals",
+        unpack(get_dedup_bam),
+        target_intervals="results/mapping/indelrealign/{sample}.{ref}.rmdup.intervals",
         ref="results/ref/{ref}/{ref}.fa",
-        dic="results/ref/{ref}/{ref}.dict",
+        dict="results/ref/{ref}/{ref}.dict",
         fai="results/ref/{ref}/{ref}.fa.fai",
     output:
-        realigned="results/mapping/bams/{sample}.{ref}.rmdup.realn.bam",
+        bam="results/mapping/bams/{sample}.{ref}.rmdup.realn.bam"
     log:
         "logs/mapping/gatk/indelrealigner/{sample}.{ref}.log",
     benchmark:
         "benchmarks/mapping/gatk/indelrealigner/{sample}.{ref}.log"
-    conda:
-        "../envs/gatk.yaml"
-    shadow:
-        "minimal"
     threads: lambda wildcards, attempt: attempt * 4
     resources:
         runtime=lambda wildcards, attempt: attempt * 1440,
-    shell:
-        """
-        gatk3 -Xmx{resources.mem_mb}m -T IndelRealigner -R {input.ref} \
-            -I {input.bam[0]} -targetIntervals {input.intervals} \
-            -o {output.realigned} 2> {log}
-        """
+    wrapper:
+        "v2.6.0/bio/gatk3/indelrealigner"
 
 
 rule samtools_index:

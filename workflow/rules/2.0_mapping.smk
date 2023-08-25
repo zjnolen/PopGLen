@@ -192,12 +192,8 @@ rule samtools_index:
         "logs/mapping/samtools/index/{prefix}.log",
     benchmark:
         "benchmarks/mapping/samtools/index/{prefix}.log"
-    conda:
-        "../envs/samtools.yaml"
-    shell:
-        """
-        samtools index {input} 2> {log}
-        """
+    wrapper:
+        "v2.6.0/bio/samtools/index"
 
 
 rule symlink_bams:

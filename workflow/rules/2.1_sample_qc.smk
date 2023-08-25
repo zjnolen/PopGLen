@@ -17,12 +17,8 @@ rule samtools_flagstat:
         "logs/mapping/samtools/flagstat/{prefix}.log",
     benchmark:
         "benchmarks/mapping/samtools/flagstat/{prefix}.log"
-    conda:
-        "../envs/samtools.yaml"
-    shell:
-        """
-        samtools flagstat {input} > {output} 2> {log}
-        """
+    wrapper:
+        "v2.6.0/bio/samtools/flagstat"
 
 
 rule qualimap:

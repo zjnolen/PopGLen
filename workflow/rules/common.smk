@@ -249,15 +249,15 @@ def get_read_group(wildcards):
 def get_dedup_bam(wildcards):
     s = wildcards.sample
     if s in samples.index[samples.time == "historical"]:
-        return [
-            "results/mapping/dedup/{sample}.{ref}.merged.rmdup.bam",
-            "results/mapping/dedup/{sample}.{ref}.merged.rmdup.bam.bai",
-        ]
+        return {
+            "bam": "results/mapping/dedup/{sample}.{ref}.merged.rmdup.bam",
+            "bai": "results/mapping/dedup/{sample}.{ref}.merged.rmdup.bam.bai",
+        }
     elif s in samples.index[samples.time == "modern"]:
-        return [
-            "results/mapping/dedup/{sample}.{ref}.clipped.rmdup.bam",
-            "results/mapping/dedup/{sample}.{ref}.clipped.rmdup.bam.bai",
-        ]
+        return {
+            "bam": "results/mapping/dedup/{sample}.{ref}.clipped.rmdup.bam",
+            "bai": "results/mapping/dedup/{sample}.{ref}.clipped.rmdup.bam.bai",
+        }
 
 
 ## Determine if bam should use Picard or DeDup for duplicate removal

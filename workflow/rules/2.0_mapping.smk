@@ -4,39 +4,29 @@
 rule bwa_mem_merged:
     """Map collapsed read pairs for historical samples to reference genome"""
     input:
-        merged="results/preprocessing/fastp/{sample}.merged.fastq.gz",
+        reads="results/preprocessing/fastp/{sample}.merged.fastq.gz",
         ref="results/ref/{ref}/{ref}.fa",
         idx=rules.bwa_index.output,
     output:
-        bam=temp("results/mapping/mapped/{sample}.{ref}.merged.bam"),
+        temp("results/mapping/mapped/{sample}.{ref}.merged.bam"),
     log:
         "logs/mapping/bwa_mem/{sample}.{ref}.merged.log",
     benchmark:
         "benchmarks/mapping/bwa_mem/{sample}.{ref}.merged.log"
     params:
-        rg=get_read_group,
-    conda:
-        "../envs/mapping.yaml"
-    shadow:
-        "minimal"
+        extra=lambda w: f"{get_read_group(w)}",
+        sort="samtools",
     threads: lambda wildcards, attempt: attempt * 10
     resources:
         runtime=lambda wildcards, attempt: attempt * 2880,
-    shell:
-        """
-        (bwa mem \
-            -t {threads} \
-            {params.rg} \
-            {input.ref} \
-            {input.merged} | \
-        samtools sort -o {output.bam}) 2> {log}
-        """
+    wrapper:
+        "v2.6.0/bio/bwa-mem2/mem"
 
 
 rule bwa_mem_paired:
     """Map trimmed paired reads from modern samples to reference genome"""
     input:
-        paired=expand(
+        reads=expand(
             "results/preprocessing/fastp/{{sample}}.{read}.fastq.gz", read=["R1", "R2"]
         ),
         ref="results/ref/{ref}/{ref}.fa",
@@ -48,23 +38,13 @@ rule bwa_mem_paired:
     benchmark:
         "benchmarks/mapping/bwa_mem/{sample}.{ref}.paired.log"
     params:
-        rg=get_read_group,
-    conda:
-        "../envs/mapping.yaml"
-    shadow:
-        "minimal"
+        extra=lambda w: f"{get_read_group(w)}",
+        sort="samtools",
     threads: lambda wildcards, attempt: attempt * 10
     resources:
         runtime=lambda wildcards, attempt: attempt * 2880,
-    shell:
-        """
-        (bwa mem \
-            -t {threads} \
-            {params.rg} \
-            {input.ref} \
-            {input.paired} | \
-        samtools sort -o {output.bam}) 2> {log}
-        """
+    wrapper:
+        "v2.6.0/bio/bwa-mem2/mem"
 
 
 rule mark_duplicates:

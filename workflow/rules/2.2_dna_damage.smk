@@ -73,7 +73,7 @@ rule mapDamage2_rescaling:
     benchmark:
         "benchmarks/mapping/mapdamage/{sample}.{ref}.log"
     params:
-        extra="--rescale --no-stats",
+        extra="--rescale",
     resources:
         runtime=1440,
         mem_mb=lambda w, attempt: attempt * 6400,

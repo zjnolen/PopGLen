@@ -1,6 +1,0 @@
-channels:
-  - conda-forge
-  - bioconda
-
-dependencies:
-  - qualimap =2.2.2a

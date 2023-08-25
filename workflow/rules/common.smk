@@ -303,36 +303,6 @@ def get_glf(wildcards):
         return "results/datasets/{dataset}/glfs/chunks/{dataset}.{ref}_{population}{dp}_chunk{chunk}_allsites-filts.glf.gz"
 
 
-## Get options for making beagle files. Depends on whether the beagle file is
-## for the whole dataset (all filtered sites go in and SNPs are called) or for
-## a single population (SNPs previously found in whole dataset go in)
-def get_snpset(wildcards):
-    pop = wildcards.population
-    if pop == "all":
-        return [
-            "results/datasets/{dataset}/filters/combined/{dataset}.{ref}{dp}_{sites}-filts.sites",
-            "results/datasets/{dataset}/filters/combined/{dataset}.{ref}{dp}_{sites}-filts.sites.idx",
-        ]
-    else:
-        return [
-            "results/datasets/{dataset}/filters/snps/{dataset}.{ref}{dp}_{sites}-filts_snps.sites",
-            "results/datasets/{dataset}/filters/snps/{dataset}.{ref}{dp}_{sites}-filts_snps.sites.idx",
-        ]
-
-
-def get_popopts(wildcards):
-    pop = wildcards.population
-    if pop == "all":
-        return (
-            "-doMajorMinor 1 -SNP_pval "
-            + str(config["params"]["angsd"]["snp_pval"])
-            + " -minMaf "
-            + str(config["params"]["angsd"]["min_maf"])
-        )
-    else:
-        return "-doMajorMinor 3"
-
-
 ## Get random sampling proportion depending on if LD decay is being calculated
 ## or if LD pruning is being done
 def get_ngsld_sampling(wildcards):

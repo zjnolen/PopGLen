@@ -53,8 +53,6 @@ rule fastp_pairedout:
         "logs/preprocessing/fastp/{sample}.paired.log",
     benchmark:
         "benchmarks/preprocessing/fastp/{sample}.paired.log"
-    conda:
-        "../envs/fastp.yaml"
     params:
         extra=config["params"]["fastp"]["extra"],
     threads: lambda wildcards, attempt: attempt * 2

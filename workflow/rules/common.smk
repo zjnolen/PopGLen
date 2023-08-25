@@ -128,7 +128,7 @@ if any(config["filter_beds"].values()):
 ## Get fastq inputs for fastp
 def get_raw_fastq(wildcards):
     unit = units.loc[wildcards.sample, ["fq1", "fq2"]]
-    return {"r1": unit.fq1, "r2": unit.fq2}
+    return {"sample": [unit.fq1, unit.fq2]}
 
 
 # Reference
@@ -249,15 +249,15 @@ def get_read_group(wildcards):
 def get_dedup_bam(wildcards):
     s = wildcards.sample
     if s in samples.index[samples.time == "historical"]:
-        return [
-            "results/mapping/dedup/{sample}.{ref}.merged.rmdup.bam",
-            "results/mapping/dedup/{sample}.{ref}.merged.rmdup.bam.bai",
-        ]
+        return {
+            "bam": "results/mapping/dedup/{sample}.{ref}.merged.rmdup.bam",
+            "bai": "results/mapping/dedup/{sample}.{ref}.merged.rmdup.bam.bai",
+        }
     elif s in samples.index[samples.time == "modern"]:
-        return [
-            "results/mapping/dedup/{sample}.{ref}.clipped.rmdup.bam",
-            "results/mapping/dedup/{sample}.{ref}.clipped.rmdup.bam.bai",
-        ]
+        return {
+            "bam": "results/mapping/dedup/{sample}.{ref}.clipped.rmdup.bam",
+            "bai": "results/mapping/dedup/{sample}.{ref}.clipped.rmdup.bam.bai",
+        }
 
 
 ## Determine if bam should use Picard or DeDup for duplicate removal

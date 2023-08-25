@@ -4,39 +4,29 @@
 rule bwa_mem_merged:
     """Map collapsed read pairs for historical samples to reference genome"""
     input:
-        merged="results/preprocessing/fastp/{sample}.merged.fastq.gz",
+        reads="results/preprocessing/fastp/{sample}.merged.fastq.gz",
         ref="results/ref/{ref}/{ref}.fa",
         idx=rules.bwa_index.output,
     output:
-        bam=temp("results/mapping/mapped/{sample}.{ref}.merged.bam"),
+        temp("results/mapping/mapped/{sample}.{ref}.merged.bam"),
     log:
         "logs/mapping/bwa_mem/{sample}.{ref}.merged.log",
     benchmark:
         "benchmarks/mapping/bwa_mem/{sample}.{ref}.merged.log"
     params:
-        rg=get_read_group,
-    conda:
-        "../envs/mapping.yaml"
-    shadow:
-        "minimal"
+        extra=lambda w: f"{get_read_group(w)}",
+        sort="samtools",
     threads: lambda wildcards, attempt: attempt * 10
     resources:
         runtime=lambda wildcards, attempt: attempt * 2880,
-    shell:
-        """
-        (bwa mem \
-            -t {threads} \
-            {params.rg} \
-            {input.ref} \
-            {input.merged} | \
-        samtools sort -o {output.bam}) 2> {log}
-        """
+    wrapper:
+        "v2.6.0/bio/bwa-mem2/mem"
 
 
 rule bwa_mem_paired:
     """Map trimmed paired reads from modern samples to reference genome"""
     input:
-        paired=expand(
+        reads=expand(
             "results/preprocessing/fastp/{{sample}}.{read}.fastq.gz", read=["R1", "R2"]
         ),
         ref="results/ref/{ref}/{ref}.fa",
@@ -48,23 +38,13 @@ rule bwa_mem_paired:
     benchmark:
         "benchmarks/mapping/bwa_mem/{sample}.{ref}.paired.log"
     params:
-        rg=get_read_group,
-    conda:
-        "../envs/mapping.yaml"
-    shadow:
-        "minimal"
+        extra=lambda w: f"{get_read_group(w)}",
+        sort="samtools",
     threads: lambda wildcards, attempt: attempt * 10
     resources:
         runtime=lambda wildcards, attempt: attempt * 2880,
-    shell:
-        """
-        (bwa mem \
-            -t {threads} \
-            {params.rg} \
-            {input.ref} \
-            {input.paired} | \
-        samtools sort -o {output.bam}) 2> {log}
-        """
+    wrapper:
+        "v2.6.0/bio/bwa-mem2/mem"
 
 
 rule mark_duplicates:
@@ -113,13 +93,13 @@ rule bam_clipoverlap:
         runtime=lambda wildcards, attempt: attempt * 1440,
     shell:
         """
-        (samtools sort -n -o {input.bam}.namesort.bam {input.bam}
+        (samtools sort -n -T {resources.tmpdir} -o {input.bam}.namesort.bam {input.bam}
         fgbio -Xmx{resources.mem_mb}m ClipBam \
                 -i {input.bam}.namesort.bam \
                 -r {input.ref} -m {output.met} \
                 --clip-overlapping-reads=true \
                 -o {output.bam}.namesort.bam
-        samtools sort -o {output.bam} {output.bam}.namesort.bam
+        samtools sort -T {resources.tmpdir} -o {output.bam} {output.bam}.namesort.bam
         samtools index {output.bam}) 2> {log}
         """
 
@@ -150,7 +130,7 @@ rule dedup_merged:
     shell:
         """
         (dedup -i {input} -m -u -o {params.outdir}
-        samtools sort -o {output.bamfin} {output.bam}
+        samtools sort -T {resources.tmpdir} -o {output.bamfin} {output.bam}
         samtools index {output.bamfin}
         mv {params.outdir}/{wildcards.sample}.{wildcards.ref}.merged.dedup.json \
             {output.json}
@@ -164,9 +144,9 @@ rule dedup_merged:
 rule realignertargetcreator:
     """Create intervals database for GATK Indel Realigner"""
     input:
-        bam=get_dedup_bam,
+        unpack(get_dedup_bam),
         ref="results/ref/{ref}/{ref}.fa",
-        dic="results/ref/{ref}/{ref}.dict",
+        dict="results/ref/{ref}/{ref}.dict",
         fai="results/ref/{ref}/{ref}.fa.fai",
     output:
         intervals="results/mapping/indelrealign/{sample}.{ref}.rmdup.intervals",
@@ -174,47 +154,32 @@ rule realignertargetcreator:
         "logs/mapping/gatk/realignertargetcreator/{sample}.{ref}.log",
     benchmark:
         "benchmarks/mapping/gatk/realignertargetcreator/{sample}.{ref}.log"
-    conda:
-        "../envs/gatk.yaml"
-    shadow:
-        "minimal"
     threads: lambda wildcards, attempt: attempt * 2
     resources:
         runtime=lambda wildcards, attempt: attempt * 720,
-    shell:
-        """
-        gatk3 -T RealignerTargetCreator -nt {threads} -I {input.bam[0]} \
-            -R {input.ref} -o {output.intervals} 2> {log}
-        """
+    wrapper:
+        "v2.6.0/bio/gatk3/realignertargetcreator"
 
 
 rule indelrealigner:
     """Realign reads around indels"""
     input:
-        bam=get_dedup_bam,
-        intervals="results/mapping/indelrealign/{sample}.{ref}.rmdup.intervals",
+        unpack(get_dedup_bam),
+        target_intervals="results/mapping/indelrealign/{sample}.{ref}.rmdup.intervals",
         ref="results/ref/{ref}/{ref}.fa",
-        dic="results/ref/{ref}/{ref}.dict",
+        dict="results/ref/{ref}/{ref}.dict",
         fai="results/ref/{ref}/{ref}.fa.fai",
     output:
-        realigned="results/mapping/bams/{sample}.{ref}.rmdup.realn.bam",
+        bam="results/mapping/bams/{sample}.{ref}.rmdup.realn.bam",
     log:
         "logs/mapping/gatk/indelrealigner/{sample}.{ref}.log",
     benchmark:
         "benchmarks/mapping/gatk/indelrealigner/{sample}.{ref}.log"
-    conda:
-        "../envs/gatk.yaml"
-    shadow:
-        "minimal"
     threads: lambda wildcards, attempt: attempt * 4
     resources:
         runtime=lambda wildcards, attempt: attempt * 1440,
-    shell:
-        """
-        gatk3 -Xmx{resources.mem_mb}m -T IndelRealigner -R {input.ref} \
-            -I {input.bam[0]} -targetIntervals {input.intervals} \
-            -o {output.realigned} 2> {log}
-        """
+    wrapper:
+        "v2.6.0/bio/gatk3/indelrealigner"
 
 
 rule samtools_index:
@@ -227,12 +192,8 @@ rule samtools_index:
         "logs/mapping/samtools/index/{prefix}.log",
     benchmark:
         "benchmarks/mapping/samtools/index/{prefix}.log"
-    conda:
-        "../envs/samtools.yaml"
-    shell:
-        """
-        samtools index {input} 2> {log}
-        """
+    wrapper:
+        "v2.6.0/bio/samtools/index"
 
 
 rule symlink_bams:

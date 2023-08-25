@@ -59,21 +59,23 @@ rule mapDamage2_rescaling:
         bam="results/mapping/bams/{sample}.{ref}.rmdup.realn.bam",
         ref="results/ref/{ref}/{ref}.fa",
     output:
-        outdir=directory("results/mapping/qc/mapdamage/{sample}.{ref}/"),
-        rescaled="results/mapping/bams/{sample}.{ref}.rmdup.realn.rescaled.bam",
+        log="results/mapping/qc/mapdamage/{sample}.{ref}/Runtime_log.txt",
+        GtoA3p="results/mapping/qc/mapdamage/{sample}.{ref}/3pGtoA_freq.txt",
+        CtoT5p="results/mapping/qc/mapdamage/{sample}.{ref}/5pCtoT_freq.txt",
+        dnacomp="results/mapping/qc/mapdamage/{sample}.{ref}/dnacomp.txt",
+        frag_misincorp="results/mapping/qc/mapdamage/{sample}.{ref}/Fragmisincorporation_plot.pdf",
+        len="results/mapping/qc/mapdamage/{sample}.{ref}/Length_plot.pdf",
+        lg_dist="results/mapping/qc/mapdamage/{sample}.{ref}/lgdistribution.txt",
+        misincorp="results/mapping/qc/mapdamage/{sample}.{ref}/misincorporation.txt",
+        rescaled_bam="results/mapping/bams/{sample}.{ref}.rmdup.realn.rescaled.bam",
     log:
         "logs/mapping/mapdamage/{sample}.{ref}.log",
     benchmark:
         "benchmarks/mapping/mapdamage/{sample}.{ref}.log"
-    container:
-        mapdamage_container
-    threads: lambda w, attempt: attempt
+    params:
+        extra="--rescale",
     resources:
         runtime=1440,
-    params:
-        tmp="results/mapping/qc/mapdamage/{sample}.{ref}/{sample}.{ref}.rmdup.realn.rescaled.bam",
-    shell:
-        """
-        (mapDamage -i {input.bam} -r {input.ref} -d {output.outdir} --rescale
-        mv {params.tmp} {output.rescaled}) &> {log}
-        """
+        mem_mb=lambda w, attempt: attempt * 6400,
+    wrapper:
+        "v2.6.0/bio/mapdamage2"

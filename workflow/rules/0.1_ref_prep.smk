@@ -29,7 +29,14 @@ rule bwa_index:
     input:
         "results/ref/{ref}/{ref}.fa",
     output:
-        multiext("results/ref/{ref}/{ref}.fa", ".0123", ".amb", ".ann", ".bwt.2bit.64", ".pac"),
+        multiext(
+            "results/ref/{ref}/{ref}.fa",
+            ".0123",
+            ".amb",
+            ".ann",
+            ".bwt.2bit.64",
+            ".pac",
+        ),
     log:
         "logs/ref/bwa_index/{ref}.log",
     resources:

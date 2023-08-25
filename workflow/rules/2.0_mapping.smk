@@ -170,7 +170,7 @@ rule indelrealigner:
         dict="results/ref/{ref}/{ref}.dict",
         fai="results/ref/{ref}/{ref}.fa.fai",
     output:
-        bam="results/mapping/bams/{sample}.{ref}.rmdup.realn.bam"
+        bam="results/mapping/bams/{sample}.{ref}.rmdup.realn.bam",
     log:
         "logs/mapping/gatk/indelrealigner/{sample}.{ref}.log",
     benchmark:

@@ -93,13 +93,13 @@ rule bam_clipoverlap:
         runtime=lambda wildcards, attempt: attempt * 1440,
     shell:
         """
-        (samtools sort -n -o {input.bam}.namesort.bam {input.bam}
+        (samtools sort -n -T {resources.tmpdir} -o {input.bam}.namesort.bam {input.bam}
         fgbio -Xmx{resources.mem_mb}m ClipBam \
                 -i {input.bam}.namesort.bam \
                 -r {input.ref} -m {output.met} \
                 --clip-overlapping-reads=true \
                 -o {output.bam}.namesort.bam
-        samtools sort -o {output.bam} {output.bam}.namesort.bam
+        samtools sort -T {resources.tmpdir} -o {output.bam} {output.bam}.namesort.bam
         samtools index {output.bam}) 2> {log}
         """
 
@@ -130,7 +130,7 @@ rule dedup_merged:
     shell:
         """
         (dedup -i {input} -m -u -o {params.outdir}
-        samtools sort -o {output.bamfin} {output.bam}
+        samtools sort -T {resources.tmpdir} -o {output.bamfin} {output.bam}
         samtools index {output.bamfin}
         mv {params.outdir}/{wildcards.sample}.{wildcards.ref}.merged.dedup.json \
             {output.json}

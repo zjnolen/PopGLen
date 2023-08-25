@@ -128,7 +128,7 @@ if any(config["filter_beds"].values()):
 ## Get fastq inputs for fastp
 def get_raw_fastq(wildcards):
     unit = units.loc[wildcards.sample, ["fq1", "fq2"]]
-    return {"r1": unit.fq1, "r2": unit.fq2}
+    return {"sample": [unit.fq1, unit.fq2]}
 
 
 # Reference

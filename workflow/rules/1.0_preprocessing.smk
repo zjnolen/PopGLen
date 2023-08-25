@@ -7,6 +7,12 @@ rule fastp_mergedout:
     input:
         unpack(get_raw_fastq),
     output:
+        trimmed=temp(
+            expand(
+                "results/preprocessing/fastp/{{sample}}.{read}.discard.fastq.gz",
+                read=["R1", "R2"],
+            )
+        ),
         merged="results/preprocessing/fastp/{sample}.merged.fastq.gz",
         html=report(
             "results/preprocessing/qc/fastp/{sample}_paired.html",
@@ -19,19 +25,13 @@ rule fastp_mergedout:
         "logs/preprocessing/fastp/{sample}.merged.log",
     benchmark:
         "benchmarks/preprocessing/fastp/{sample}.merged.log"
-    conda:
-        "../envs/fastp.yaml"
     params:
-        extra=config["params"]["fastp"]["extra"],
+        extra=config["params"]["fastp"]["extra"] + " --merge",
     threads: lambda wildcards, attempt: attempt * 2
     resources:
         runtime=lambda wildcards, attempt: attempt * 240,
-    shell:
-        """
-        fastp -w {threads} {params.extra} -m -i {input.r1} \
-            -I {input.r2} --merged_out {output.merged} \
-            -j {output.json} -h {output.html} 2> {log}
-        """
+    wrapper:
+        "v2.5.0/bio/fastp"
 
 
 rule fastp_pairedout:
@@ -39,7 +39,7 @@ rule fastp_pairedout:
     input:
         unpack(get_raw_fastq),
     output:
-        paired=expand(
+        trimmed=expand(
             "results/preprocessing/fastp/{{sample}}.{read}.fastq.gz", read=["R1", "R2"]
         ),
         html=report(
@@ -60,9 +60,5 @@ rule fastp_pairedout:
     threads: lambda wildcards, attempt: attempt * 2
     resources:
         runtime=lambda wildcards, attempt: attempt * 240,
-    shell:
-        """
-        fastp -w {threads} {params.extra} -i {input.r1} \
-            -I {input.r2} -o {output.paired[0]} -O {output.paired[1]} \
-            -j {output.json} -h {output.html} 2> {log}
-        """
+    wrapper:
+        "v2.5.0/bio/fastp"

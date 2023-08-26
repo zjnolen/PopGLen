@@ -29,13 +29,13 @@ rule bwa_index:
     input:
         "results/ref/{ref}/{ref}.fa",
     output:
-        multiext(
+        idx=multiext(
             "results/ref/{ref}/{ref}.fa",
-            ".0123",
             ".amb",
             ".ann",
-            ".bwt.2bit.64",
+            ".bwt",
             ".pac",
+            ".sa",
         ),
     log:
         "logs/ref/bwa_index/{ref}.log",
@@ -44,7 +44,7 @@ rule bwa_index:
     benchmark:
         "benchmarks/ref/bwa_index/{ref}.log"
     wrapper:
-        "v2.6.0/bio/bwa-mem2/index"
+        "v2.6.0/bio/bwa/index"
 
 
 rule samtools_faidx:

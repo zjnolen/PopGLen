@@ -15,12 +15,12 @@ rule bwa_mem_merged:
         "benchmarks/mapping/bwa_mem/{sample}.{ref}.merged.log"
     params:
         extra=lambda w: f"{get_read_group(w)}",
-        sort="samtools",
+        sorting="samtools",
     threads: lambda wildcards, attempt: attempt * 10
     resources:
         runtime=lambda wildcards, attempt: attempt * 2880,
     wrapper:
-        "v2.6.0/bio/bwa-mem2/mem"
+        "v2.6.0/bio/bwa/mem"
 
 
 rule bwa_mem_paired:
@@ -39,12 +39,12 @@ rule bwa_mem_paired:
         "benchmarks/mapping/bwa_mem/{sample}.{ref}.paired.log"
     params:
         extra=lambda w: f"{get_read_group(w)}",
-        sort="samtools",
+        sorting="samtools",
     threads: lambda wildcards, attempt: attempt * 10
     resources:
         runtime=lambda wildcards, attempt: attempt * 2880,
     wrapper:
-        "v2.6.0/bio/bwa-mem2/mem"
+        "v2.6.0/bio/bwa/mem"
 
 
 rule mark_duplicates:

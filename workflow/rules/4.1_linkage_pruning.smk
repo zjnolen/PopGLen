@@ -35,7 +35,7 @@ rule ngsLD_prune_sites:
         if [[ $size == 0 ]]; then
             touch {output.sites}
         else
-            zcat {input.ld} | prune_graph --verbose --weight-filter -n {threads} \
+            zcat {input.ld} | prune_graph --verbose -n {threads} --weight-filter \
                 "column_3 > {params.maxdist} || column_7 > {params.minweight}" \
                 --weight-field "column_7" | tr ":" "_" > {output.sites}
         fi) 2> {log}

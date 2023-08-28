@@ -23,9 +23,9 @@ rule ngsLD_prune_sites:
         "benchmarks/{dataset}/ngsLD/prune_sites/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.log"
     container:
         prune_graph_container
-    threads: lambda wildcards, attempt: attempt * 2
+    threads: lambda wildcards, attempt: attempt
     resources:
-        runtime=lambda wildcards, attempt: attempt * 1440,
+        runtime=lambda wildcards, attempt: attempt * 120,
     params:
         maxdist=lambda w: str(config["params"]["ngsld"]["max_kb_dist_pruning"]) + "000",
         minweight=config["params"]["ngsld"]["pruning_min-weight"],
@@ -35,7 +35,7 @@ rule ngsLD_prune_sites:
         if [[ $size == 0 ]]; then
             touch {output.sites}
         else
-            zcat {input.ld} | prune_graph --verbose --weight-filter \
+            zcat {input.ld} | prune_graph --verbose --weight-filter -n {threads} \
                 "column_3 > {params.maxdist} || column_7 > {params.minweight}" \
                 --weight-field "column_7" | tr ":" "_" > {output.sites}
         fi) 2> {log}
@@ -59,7 +59,7 @@ rule prune_chunk_beagle:
         "../envs/shell.yaml"
     shadow:
         "minimal"
-    threads: lambda wildcards, attempt: attempt * 10
+    threads: lambda wildcards, attempt: attempt
     params:
         pruned="results/datasets/{dataset}/beagles/pruned/chunks/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts_pruned.beagle",
     resources:

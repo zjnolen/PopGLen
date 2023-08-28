@@ -44,6 +44,12 @@ few minor modifications of the defaults. See
 [Snakemake's cluster support documentation](https://snakemake.readthedocs.io/en/stable/executing/cluster.html)
 for information on how to adapt the profile for other HPC environments.
 
+#### Notes on resources
+
+As Rackham ties memory reservations to cpu reservations, the resource allocation for
+rules is mostly done through threads currently. In the future thread and memory
+resources will be more explicitly defined.
+
 ## Features
 
 Currently, the pipeline performs the following tasks:

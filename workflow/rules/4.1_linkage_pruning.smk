@@ -21,25 +21,16 @@ rule ngsLD_prune_sites:
         "logs/{dataset}/ngsLD/prune_sites/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.log",
     benchmark:
         "benchmarks/{dataset}/ngsLD/prune_sites/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.log"
-    container:
-        prune_graph_container
-    threads: lambda wildcards, attempt: attempt
+    conda:
+        "../envs/pruning.yaml"
+    threads: lambda wildcards, attempt: attempt*4
     resources:
-        runtime=lambda wildcards, attempt: attempt * 120,
+        runtime=lambda wildcards, attempt: attempt * 720,
     params:
         maxdist=lambda w: str(config["params"]["ngsld"]["max_kb_dist_pruning"]) + "000",
         minweight=config["params"]["ngsld"]["pruning_min-weight"],
-    shell:
-        """
-        (size=$(gzip -l {input.ld} | awk 'NR==2 {{print $2}}')
-        if [[ $size == 0 ]]; then
-            touch {output.sites}
-        else
-            zcat {input.ld} | prune_graph --verbose -n {threads} --weight-filter \
-                "column_3 > {params.maxdist} || column_7 > {params.minweight}" \
-                --weight-field "column_7" | tr ":" "_" > {output.sites}
-        fi) 2> {log}
-        """
+    script:
+        "../scripts/prune_ngsLD.py"
 
 
 rule prune_chunk_beagle:

@@ -23,7 +23,7 @@ rule ngsLD_prune_sites:
         "benchmarks/{dataset}/ngsLD/prune_sites/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.log"
     conda:
         "../envs/pruning.yaml"
-    threads: lambda wildcards, attempt: attempt*4
+    threads: lambda wildcards, attempt: attempt * 4
     resources:
         runtime=lambda wildcards, attempt: attempt * 720,
     params:
@@ -60,9 +60,9 @@ rule prune_chunk_beagle:
         (set +o pipefail;
         zcat {input.beagle} | head -n 1 > {params.pruned}
         
-        join -t $'\t' <(sort -k1,1 {input.sites}) <(zcat {input.beagle} | sort -k1,1) | \
-            sed 's/_/\t/' | sort -k1,1 -k2,2n | sed 's/\t/_/' \
-            >> {params.pruned}
+        join -t $'\t' <(sort -k1,1 <(sed 's/:/_/g' {input.sites})) \
+            <(zcat {input.beagle} | sort -k1,1) | sed 's/_/\t/' | sort -k1,1 -k2,2n | \
+            sed 's/\t/_/' >> {params.pruned}
 
         gzip -c {params.pruned} > {output.prunedgz}
 

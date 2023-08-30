@@ -293,13 +293,13 @@ def get_endo_cont_stat(wildcards):
 
 
 def get_glf(wildcards):
-    if config["only_filter_beds"]:
-        return "results/datasets/{dataset}/glfs/chunks/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.glf.gz"
-    elif config["only_filter_beds"] and not any(config["filter_beds"].values()):
+    if config["only_filter_beds"] and not any(config["filter_beds"].values()):
         raise ValueError(
             f"Config invalid - 'only_filter_beds' cannot be true without supplying bed "
             f"files to at least one 'filter_beds' key."
         )
+    elif config["only_filter_beds"]:
+        return "results/datasets/{dataset}/glfs/chunks/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.glf.gz"
     else:
         return "results/datasets/{dataset}/glfs/chunks/{dataset}.{ref}_{population}{dp}_chunk{chunk}_allsites-filts.glf.gz"
 

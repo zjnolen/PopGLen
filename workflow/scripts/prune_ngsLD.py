@@ -16,6 +16,9 @@
 
 # Requires: python > 3, graph-tool, pandas
 
+# Slightly modified from version on ngsLD repository to accommodate automated
+# running with snakemake pipeline
+
 ####### Housekeeping #######
 
 # import modules needed to show help info
@@ -49,6 +52,8 @@ import csv
 import pandas as pd
 from graph_tool.all import *
 import gzip
+from pathlib import Path
+import os
 
 # log start time
 begin_time = datetime.datetime.now()
@@ -61,11 +66,22 @@ def is_gz_file(filepath):
     with open(filepath, 'rb') as test_f:
         return test_f.read(2) == b'\x1f\x8b'
 
+def gz_size(fname):
+    with gzip.open(fname, 'rb') as f:
+        return f.seek(0, whence=2)
+
 # find out how many columns are in input
 if is_gz_file(args.input):
-	with gzip.open(args.input, mode="rt") as f:
-		reader = csv.reader(f,delimiter="\t")
-		ncol = len(next(reader))
+	if gz_size(args.input) == 0:
+		Path(args.output).touch()
+		sys.exit()
+	else:
+		with gzip.open(args.input, mode="rt") as f:
+			reader = csv.reader(f,delimiter="\t")
+			ncol = len(next(reader))
+elif os.stat(args.input).st_size == 0:
+	Path(args.output).touch()
+	sys.exit()
 else:
 	with open(args.input) as f:
 		reader = csv.reader(f,delimiter="\t")

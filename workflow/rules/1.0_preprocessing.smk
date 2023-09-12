@@ -9,22 +9,27 @@ rule fastp_mergedout:
     output:
         trimmed=temp(
             expand(
-                "results/preprocessing/fastp/{{sample}}.{read}.discard.fastq.gz",
+                "results/preprocessing/fastp/{{sample}}_{{unit}}_{{lib}}.{read}.discard.fastq.gz",
                 read=["R1", "R2"],
             )
         ),
-        merged="results/preprocessing/fastp/{sample}.merged.fastq.gz",
+        merged="results/preprocessing/fastp/{sample}_{unit}_{lib}.merged.fastq.gz",
         html=report(
-            "results/preprocessing/qc/fastp/{sample}_paired.html",
+            "results/preprocessing/qc/fastp/{sample}_{unit}_{lib}_paired.html",
             category="Quality Control",
             subcategory="Trimming Reports",
-            labels={"Sample": "{sample}", "Type": "fastp Report"},
+            labels={
+                "Sample": "{sample}",
+                "Unit": "{unit}",
+                "Lib": "{lib}",
+                "Type": "fastp Report",
+            },
         ),
-        json="results/preprocessing/qc/fastp/{sample}_paired.json",
+        json="results/preprocessing/qc/fastp/{sample}_{unit}_{lib}_paired.json",
     log:
-        "logs/preprocessing/fastp/{sample}.merged.log",
+        "logs/preprocessing/fastp/{sample}_{unit}_{lib}.merged.log",
     benchmark:
-        "benchmarks/preprocessing/fastp/{sample}.merged.log"
+        "benchmarks/preprocessing/fastp/{sample}_{unit}_{lib}.merged.log"
     params:
         extra=config["params"]["fastp"]["extra"] + " --merge",
     threads: lambda wildcards, attempt: attempt * 2
@@ -40,19 +45,25 @@ rule fastp_pairedout:
         unpack(get_raw_fastq),
     output:
         trimmed=expand(
-            "results/preprocessing/fastp/{{sample}}.{read}.fastq.gz", read=["R1", "R2"]
+            "results/preprocessing/fastp/{{sample}}_{{unit}}_{{lib}}.{read}.fastq.gz",
+            read=["R1", "R2"],
         ),
         html=report(
-            "results/preprocessing/qc/fastp/{sample}_paired.html",
+            "results/preprocessing/qc/fastp/{sample}_{unit}_{lib}_paired.html",
             category="Quality Control",
             subcategory="Trimming Reports",
-            labels={"Sample": "{sample}", "Type": "fastp Report"},
+            labels={
+                "Sample": "{sample}",
+                "Unit": "{unit}",
+                "Lib": "{lib}",
+                "Type": "fastp Report",
+            },
         ),
-        json="results/preprocessing/qc/fastp/{sample}_paired.json",
+        json="results/preprocessing/qc/fastp/{sample}_{unit}_{lib}_paired.json",
     log:
-        "logs/preprocessing/fastp/{sample}.paired.log",
+        "logs/preprocessing/fastp/{sample}_{unit}_{lib}.paired.log",
     benchmark:
-        "benchmarks/preprocessing/fastp/{sample}.paired.log"
+        "benchmarks/preprocessing/fastp/{sample}_{unit}_{lib}.paired.log"
     params:
         extra=config["params"]["fastp"]["extra"],
     threads: lambda wildcards, attempt: attempt * 2

@@ -127,8 +127,13 @@ if any(config["filter_beds"].values()):
 
 ## Get fastq inputs for fastp
 def get_raw_fastq(wildcards):
-    unit = units.loc[wildcards.sample, ["fq1", "fq2"]]
-    return {"sample": [unit.fq1, unit.fq2]}
+    unit = units.loc[
+        (units["sample"] == wildcards.sample)
+        & (units["unit"] == wildcards.unit)
+        & (units["lib"] == wildcards.lib),
+        ["fq1", "fq2"],
+    ]
+    return {"sample": [unit.fq1[0], unit.fq2[0]]}
 
 
 # Reference
@@ -238,10 +243,25 @@ def get_newfilt(wildcards):
 
 ## Get read groups for mapping
 def get_read_group(wildcards):
-    return r"-R '@RG\tID:{unit}\tSM:{sample}\tLB:{sample}\tPL:{platform}'".format(
-        unit=units.loc[wildcards.sample, "unit"],
+    return r"-R '@RG\tID:{unit}\tSM:{sample}\tLB:{lib}\tPL:{platform}'".format(
+        unit=wildcards.unit,
         sample=wildcards.sample,
-        platform=units.loc[wildcards.sample, "platform"],
+        lib=wildcards.lib,
+        platform=units.loc[
+            (units["sample"] == wildcards.sample)
+            & (units["unit"] == wildcards.unit)
+            & (units["lib"] == wildcards.lib),
+            "platform",
+        ][0],
+    )
+
+
+## Get single unit/lib bams for merging
+def get_sample_bams(wildcards):
+    reads = units.loc[wildcards.sample]
+    combos = reads["sample"] + "_" + reads["unit"] + "_" + reads["lib"]
+    return expand(
+        "results/mapping/mapped/{combo}.{{ref}}.{{pairing}}.bam", combo=combos
     )
 
 

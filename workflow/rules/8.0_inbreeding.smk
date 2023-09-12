@@ -48,32 +48,8 @@ rule convert_ibd:
         "minimal"
     shell:
         """
-        (tail -n +2 {input.inds} > {input.inds}.tmp
-
-        # convert_ibd.pl drops warnings when chromosomes have non-numeric 
-        # names, and may not handle them well. As a work around, a numeric 
-        # index of chromosome names is created, then the names replaced with 
-        # these numbers. Then returns their names after the conversion is 
-        # complete.
-
-        # first, create the index file
-        n_contigs=$(awk '{{print $1}}' {input.pos} | uniq | wc -l)
-        awk '{{print $1}}' {input.pos} | uniq > {input.pos}.contigs
-        seq $n_contigs > {input.pos}.contigs.idx
-        paste -d "\t" {input.pos}.contigs {input.pos}.contigs.idx > {input.pos}.index
-        
-        # create index based pos file, adapted from:
-        # Jaypal Singh - https://stackoverflow.com/a/22253586
-        awk 'NR==FNR{{a[$1]=$2;next}}{{$1=a[$1]}}1' {input.pos}.index {input.pos} \
-            > {input.pos}.tmp
-
-        convert_ibd.pl --pos_file {input.pos}.tmp \
-            --ind_file {input.inds}.tmp    --ibd_pos_file {input.ibd} \
-            > {output.roh}.tmp
-        
-        # Revert back to original contig name:
-        awk 'NR==FNR{{a[$2]=$1;next}}{{$1=a[$1]}}1' {input.pos}.index {output.roh}.tmp \
-            > {output.roh}) 2> {log}
+        convert_ibd.pl --pos {input.pos} --ind {input.inds} \
+            --ibd_pos {input.ibd} > {output.roh} 2> {log}
         """
 
 

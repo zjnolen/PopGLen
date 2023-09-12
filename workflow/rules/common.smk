@@ -18,11 +18,10 @@ min_version("7.25.0")
 angsd_container = "docker://zjnolen/angsd:0.940"
 pcangsd_container = "docker://zjnolen/pcangsd:1.10"
 evaladmix_container = "docker://zjnolen/evaladmix:0.961"
-ngsf_hmm_container = "docker://zjnolen/ngsf-hmm:20200722-2df9690"
+ngsf_hmm_container = "docker://zjnolen/ngsf-hmm:1.1.0"
 mapdamage_container = "docker://quay.io/biocontainers/mapdamage2:2.2.1--pyr40_0"
 ngsrelate_container = "docker://zjnolen/ngsrelate:20220925-ec95c8f"
 ngsld_container = "docker://zjnolen/ngsld:1.2.0"
-prune_graph_container = "docker://zjnolen/prune_graph:0.3.2-e453587"
 
 
 # Define function for genome chunks to break up analysis (for parallelization)

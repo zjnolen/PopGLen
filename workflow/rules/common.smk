@@ -21,7 +21,8 @@ evaladmix_container = "docker://zjnolen/evaladmix:0.961"
 ngsf_hmm_container = "docker://zjnolen/ngsf-hmm:20200722-2df9690"
 mapdamage_container = "docker://quay.io/biocontainers/mapdamage2:2.2.1--pyr40_0"
 ngsrelate_container = "docker://zjnolen/ngsrelate:20220925-ec95c8f"
-ngsld_container = "docker://zjnolen/ngsld:1.1.1-abfc85c"
+ngsld_container = "docker://zjnolen/ngsld:1.2.0"
+prune_graph_container = "docker://zjnolen/prune_graph:0.3.2-e453587"
 
 
 # Define function for genome chunks to break up analysis (for parallelization)
@@ -292,13 +293,13 @@ def get_endo_cont_stat(wildcards):
 
 
 def get_glf(wildcards):
-    if config["only_filter_beds"]:
-        return "results/datasets/{dataset}/glfs/chunks/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.glf.gz"
-    elif config["only_filter_beds"] and not any(config["filter_beds"].values()):
+    if config["only_filter_beds"] and not any(config["filter_beds"].values()):
         raise ValueError(
             f"Config invalid - 'only_filter_beds' cannot be true without supplying bed "
             f"files to at least one 'filter_beds' key."
         )
+    elif config["only_filter_beds"]:
+        return "results/datasets/{dataset}/glfs/chunks/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.glf.gz"
     else:
         return "results/datasets/{dataset}/glfs/chunks/{dataset}.{ref}_{population}{dp}_chunk{chunk}_allsites-filts.glf.gz"
 

@@ -37,7 +37,7 @@ rule ngsLD_estLD:
 
         nind=$(cat {input.bamlist} | wc -l | awk '{{print $1+1}}')
         if [[ $nsites == 0 ]]; then
-            touch {output.ld}
+            > {output.ld}
         else
             ngsLD --geno {input.beagle} --n_ind $nind --n_sites $nsites \
                 --pos {output.pos} --probs --n_threads {threads} \

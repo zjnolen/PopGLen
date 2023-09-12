@@ -259,7 +259,7 @@ def get_read_group(wildcards):
 ## Get single unit/lib bams for merging
 def get_sample_bams(wildcards):
     reads = units.loc[wildcards.sample]
-    combos = reads["sample"] + "_" + reads["unit"] + "_" + reads["lib"]
+    combos = reads[["sample", "unit", "lib"]].agg("_".join, axis=1)
     return expand(
         "results/mapping/mapped/{combo}.{{ref}}.{{pairing}}.bam", combo=combos
     )

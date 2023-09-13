@@ -99,7 +99,7 @@ samples = samples.drop(config["exclude_ind"])
 
 # Load unit sheet
 
-units = pd.read_table(config["units"]).set_index("sample", drop=False)
+units = pd.read_table(config["units"])
 
 
 # Get a list of all the populations
@@ -131,8 +131,8 @@ def get_raw_fastq(wildcards):
         (units["sample"] == wildcards.sample)
         & (units["unit"] == wildcards.unit)
         & (units["lib"] == wildcards.lib),
-        ["fq1", "fq2"],
-    ]
+        ["sample", "fq1", "fq2"],
+    ].set_index("sample")
     return {"sample": [unit.fq1[0], unit.fq2[0]]}
 
 
@@ -252,13 +252,13 @@ def get_read_group(wildcards):
             & (units["unit"] == wildcards.unit)
             & (units["lib"] == wildcards.lib),
             "platform",
-        ][0],
+        ].to_list(),
     )
 
 
 ## Get single unit/lib bams for merging
 def get_sample_bams(wildcards):
-    reads = units.loc[wildcards.sample]
+    reads = units.loc[units["sample"] == wildcards.sample]
     combos = reads[["sample", "unit", "lib"]].agg("_".join, axis=1)
     return expand(
         "results/mapping/mapped/{combo}.{{ref}}.{{pairing}}.bam", combo=combos

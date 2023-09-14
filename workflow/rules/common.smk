@@ -18,10 +18,10 @@ min_version("7.25.0")
 angsd_container = "docker://zjnolen/angsd:0.940"
 pcangsd_container = "docker://zjnolen/pcangsd:1.10"
 evaladmix_container = "docker://zjnolen/evaladmix:0.961"
-ngsf_hmm_container = "docker://zjnolen/ngsf-hmm:20200722-2df9690"
+ngsf_hmm_container = "docker://zjnolen/ngsf-hmm:1.1.0"
 mapdamage_container = "docker://quay.io/biocontainers/mapdamage2:2.2.1--pyr40_0"
 ngsrelate_container = "docker://zjnolen/ngsrelate:20220925-ec95c8f"
-ngsld_container = "docker://zjnolen/ngsld:1.1.1-abfc85c"
+ngsld_container = "docker://zjnolen/ngsld:1.2.0"
 
 
 # Define function for genome chunks to break up analysis (for parallelization)
@@ -99,7 +99,7 @@ samples = samples.drop(config["exclude_ind"])
 
 # Load unit sheet
 
-units = pd.read_table(config["units"]).set_index("sample", drop=False)
+units = pd.read_table(config["units"])
 
 
 # Get a list of all the populations
@@ -127,8 +127,13 @@ if any(config["filter_beds"].values()):
 
 ## Get fastq inputs for fastp
 def get_raw_fastq(wildcards):
-    unit = units.loc[wildcards.sample, ["fq1", "fq2"]]
-    return {"r1": unit.fq1, "r2": unit.fq2}
+    unit = units.loc[
+        (units["sample"] == wildcards.sample)
+        & (units["unit"] == wildcards.unit)
+        & (units["lib"] == wildcards.lib),
+        ["sample", "fq1", "fq2"],
+    ].set_index("sample")
+    return {"sample": [unit.fq1[0], unit.fq2[0]]}
 
 
 # Reference
@@ -238,10 +243,25 @@ def get_newfilt(wildcards):
 
 ## Get read groups for mapping
 def get_read_group(wildcards):
-    return r"-R '@RG\tID:{unit}\tSM:{sample}\tLB:{sample}\tPL:{platform}'".format(
-        unit=units.loc[wildcards.sample, "unit"],
+    return r"-R '@RG\tID:{unit}\tSM:{sample}\tLB:{lib}\tPL:{platform}'".format(
+        unit=wildcards.unit,
         sample=wildcards.sample,
-        platform=units.loc[wildcards.sample, "platform"],
+        lib=wildcards.lib,
+        platform=units.loc[
+            (units["sample"] == wildcards.sample)
+            & (units["unit"] == wildcards.unit)
+            & (units["lib"] == wildcards.lib),
+            "platform",
+        ].to_list(),
+    )
+
+
+## Get single unit/lib bams for merging
+def get_sample_bams(wildcards):
+    reads = units.loc[units["sample"] == wildcards.sample]
+    combos = reads[["sample", "unit", "lib"]].agg("_".join, axis=1)
+    return expand(
+        "results/mapping/mapped/{combo}.{{ref}}.{{pairing}}.bam", combo=combos
     )
 
 
@@ -249,15 +269,15 @@ def get_read_group(wildcards):
 def get_dedup_bam(wildcards):
     s = wildcards.sample
     if s in samples.index[samples.time == "historical"]:
-        return [
-            "results/mapping/dedup/{sample}.{ref}.merged.rmdup.bam",
-            "results/mapping/dedup/{sample}.{ref}.merged.rmdup.bam.bai",
-        ]
+        return {
+            "bam": "results/mapping/dedup/{sample}.{ref}.merged.rmdup.bam",
+            "bai": "results/mapping/dedup/{sample}.{ref}.merged.rmdup.bam.bai",
+        }
     elif s in samples.index[samples.time == "modern"]:
-        return [
-            "results/mapping/dedup/{sample}.{ref}.clipped.rmdup.bam",
-            "results/mapping/dedup/{sample}.{ref}.clipped.rmdup.bam.bai",
-        ]
+        return {
+            "bam": "results/mapping/dedup/{sample}.{ref}.clipped.rmdup.bam",
+            "bai": "results/mapping/dedup/{sample}.{ref}.clipped.rmdup.bam.bai",
+        }
 
 
 ## Determine if bam should use Picard or DeDup for duplicate removal
@@ -292,45 +312,15 @@ def get_endo_cont_stat(wildcards):
 
 
 def get_glf(wildcards):
-    if config["only_filter_beds"]:
-        return "results/datasets/{dataset}/glfs/chunks/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.glf.gz"
-    elif config["only_filter_beds"] and not any(config["filter_beds"].values()):
+    if config["only_filter_beds"] and not any(config["filter_beds"].values()):
         raise ValueError(
             f"Config invalid - 'only_filter_beds' cannot be true without supplying bed "
             f"files to at least one 'filter_beds' key."
         )
+    elif config["only_filter_beds"]:
+        return "results/datasets/{dataset}/glfs/chunks/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.glf.gz"
     else:
         return "results/datasets/{dataset}/glfs/chunks/{dataset}.{ref}_{population}{dp}_chunk{chunk}_allsites-filts.glf.gz"
-
-
-## Get options for making beagle files. Depends on whether the beagle file is
-## for the whole dataset (all filtered sites go in and SNPs are called) or for
-## a single population (SNPs previously found in whole dataset go in)
-def get_snpset(wildcards):
-    pop = wildcards.population
-    if pop == "all":
-        return [
-            "results/datasets/{dataset}/filters/combined/{dataset}.{ref}{dp}_{sites}-filts.sites",
-            "results/datasets/{dataset}/filters/combined/{dataset}.{ref}{dp}_{sites}-filts.sites.idx",
-        ]
-    else:
-        return [
-            "results/datasets/{dataset}/filters/snps/{dataset}.{ref}{dp}_{sites}-filts_snps.sites",
-            "results/datasets/{dataset}/filters/snps/{dataset}.{ref}{dp}_{sites}-filts_snps.sites.idx",
-        ]
-
-
-def get_popopts(wildcards):
-    pop = wildcards.population
-    if pop == "all":
-        return (
-            "-doMajorMinor 1 -SNP_pval "
-            + str(config["params"]["angsd"]["snp_pval"])
-            + " -minMaf "
-            + str(config["params"]["angsd"]["min_maf"])
-        )
-    else:
-        return "-doMajorMinor 3"
 
 
 ## Get random sampling proportion depending on if LD decay is being calculated

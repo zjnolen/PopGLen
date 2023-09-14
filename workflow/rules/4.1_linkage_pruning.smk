@@ -25,7 +25,7 @@ rule ngsLD_prune_sites:
         "../envs/pruning.yaml"
     threads: lambda wildcards, attempt: attempt * 2
     resources:
-        runtime=lambda wildcards, attempt: attempt * 1440,
+        runtime=lambda wildcards, attempt: attempt * 2880,
     params:
         maxdist=lambda w: str(config["params"]["ngsld"]["max_kb_dist_pruning"]) + "000",
         minweight=config["params"]["ngsld"]["pruning_min-weight"],
@@ -39,7 +39,7 @@ rule prune_chunk_beagle:
     """
     input:
         beagle="results/datasets/{dataset}/beagles/chunks/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.beagle.gz",
-        sites="results/datasets/{dataset}/beagles/pruned/ngsLD/{dataset}.{ref}_all{dp}_chunk{chunk}_{sites}-filts_pruned.sites",
+        sites="results/datasets/{dataset}/beagles/pruned/ngsLD/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts_pruned.sites",
     output:
         prunedgz="results/datasets/{dataset}/beagles/pruned/chunks/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts_pruned.beagle.gz",
     log:
@@ -50,7 +50,7 @@ rule prune_chunk_beagle:
         "../envs/shell.yaml"
     shadow:
         "minimal"
-    threads: lambda wildcards, attempt: attempt * 10
+    threads: lambda wildcards, attempt: attempt
     params:
         pruned="results/datasets/{dataset}/beagles/pruned/chunks/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts_pruned.beagle",
     resources:
@@ -60,9 +60,9 @@ rule prune_chunk_beagle:
         (set +o pipefail;
         zcat {input.beagle} | head -n 1 > {params.pruned}
         
-        join -t $'\t' <(sort -k1,1 {input.sites}) <(zcat {input.beagle} | sort -k1,1) | \
-            sed 's/_/\t/' | sort -k1,1 -k2,2n | sed 's/\t/_/' \
-            >> {params.pruned}
+        join -t $'\t' <(sort -k1,1 <(sed 's/:/_/g' {input.sites})) \
+            <(zcat {input.beagle} | sort -k1,1) | sed 's/_/\t/' | sort -k1,1 -k2,2n | \
+            sed 's/\t/_/' >> {params.pruned}
 
         gzip -c {params.pruned} > {output.prunedgz}
 

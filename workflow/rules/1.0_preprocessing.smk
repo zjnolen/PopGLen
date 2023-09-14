@@ -7,31 +7,36 @@ rule fastp_mergedout:
     input:
         unpack(get_raw_fastq),
     output:
-        merged="results/preprocessing/fastp/{sample}.merged.fastq.gz",
+        trimmed=temp(
+            expand(
+                "results/preprocessing/fastp/{{sample}}_{{unit}}_{{lib}}.{read}.discard.fastq.gz",
+                read=["R1", "R2"],
+            )
+        ),
+        merged="results/preprocessing/fastp/{sample}_{unit}_{lib}.merged.fastq.gz",
         html=report(
-            "results/preprocessing/qc/fastp/{sample}_paired.html",
+            "results/preprocessing/qc/fastp/{sample}_{unit}_{lib}_paired.html",
             category="Quality Control",
             subcategory="Trimming Reports",
-            labels={"Sample": "{sample}", "Type": "fastp Report"},
+            labels={
+                "Sample": "{sample}",
+                "Unit": "{unit}",
+                "Lib": "{lib}",
+                "Type": "fastp Report",
+            },
         ),
-        json="results/preprocessing/qc/fastp/{sample}_paired.json",
+        json="results/preprocessing/qc/fastp/{sample}_{unit}_{lib}_paired.json",
     log:
-        "logs/preprocessing/fastp/{sample}.merged.log",
+        "logs/preprocessing/fastp/{sample}_{unit}_{lib}.merged.log",
     benchmark:
-        "benchmarks/preprocessing/fastp/{sample}.merged.log"
-    conda:
-        "../envs/fastp.yaml"
+        "benchmarks/preprocessing/fastp/{sample}_{unit}_{lib}.merged.log"
     params:
-        extra=config["params"]["fastp"]["extra"],
+        extra=config["params"]["fastp"]["extra"] + " --merge",
     threads: lambda wildcards, attempt: attempt * 2
     resources:
         runtime=lambda wildcards, attempt: attempt * 240,
-    shell:
-        """
-        fastp -w {threads} {params.extra} -m -i {input.r1} \
-            -I {input.r2} --merged_out {output.merged} \
-            -j {output.json} -h {output.html} 2> {log}
-        """
+    wrapper:
+        "v2.5.0/bio/fastp"
 
 
 rule fastp_pairedout:
@@ -39,30 +44,30 @@ rule fastp_pairedout:
     input:
         unpack(get_raw_fastq),
     output:
-        paired=expand(
-            "results/preprocessing/fastp/{{sample}}.{read}.fastq.gz", read=["R1", "R2"]
+        trimmed=expand(
+            "results/preprocessing/fastp/{{sample}}_{{unit}}_{{lib}}.{read}.fastq.gz",
+            read=["R1", "R2"],
         ),
         html=report(
-            "results/preprocessing/qc/fastp/{sample}_paired.html",
+            "results/preprocessing/qc/fastp/{sample}_{unit}_{lib}_paired.html",
             category="Quality Control",
             subcategory="Trimming Reports",
-            labels={"Sample": "{sample}", "Type": "fastp Report"},
+            labels={
+                "Sample": "{sample}",
+                "Unit": "{unit}",
+                "Lib": "{lib}",
+                "Type": "fastp Report",
+            },
         ),
-        json="results/preprocessing/qc/fastp/{sample}_paired.json",
+        json="results/preprocessing/qc/fastp/{sample}_{unit}_{lib}_paired.json",
     log:
-        "logs/preprocessing/fastp/{sample}.paired.log",
+        "logs/preprocessing/fastp/{sample}_{unit}_{lib}.paired.log",
     benchmark:
-        "benchmarks/preprocessing/fastp/{sample}.paired.log"
-    conda:
-        "../envs/fastp.yaml"
+        "benchmarks/preprocessing/fastp/{sample}_{unit}_{lib}.paired.log"
     params:
         extra=config["params"]["fastp"]["extra"],
     threads: lambda wildcards, attempt: attempt * 2
     resources:
         runtime=lambda wildcards, attempt: attempt * 240,
-    shell:
-        """
-        fastp -w {threads} {params.extra} -i {input.r1} \
-            -I {input.r2} -o {output.paired[0]} -O {output.paired[1]} \
-            -j {output.json} -h {output.html} 2> {log}
-        """
+    wrapper:
+        "v2.5.0/bio/fastp"

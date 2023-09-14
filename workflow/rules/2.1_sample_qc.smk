@@ -17,12 +17,8 @@ rule samtools_flagstat:
         "logs/mapping/samtools/flagstat/{prefix}.log",
     benchmark:
         "benchmarks/mapping/samtools/flagstat/{prefix}.log"
-    conda:
-        "../envs/samtools.yaml"
-    shell:
-        """
-        samtools flagstat {input} > {output} 2> {log}
-        """
+    wrapper:
+        "v2.6.0/bio/samtools/flagstat"
 
 
 rule qualimap:
@@ -32,6 +28,7 @@ rule qualimap:
     input:
         unpack(get_final_bam),
     output:
+        directory("results/mapping/qc/qualimap/{sample}.{ref}"),
         pdf=report(
             "results/mapping/qc/qualimap/{sample}.{ref}/report.pdf",
             category="Quality Control",
@@ -40,22 +37,15 @@ rule qualimap:
         ),
         txt="results/mapping/qc/qualimap/{sample}.{ref}/genome_results.txt",
     params:
-        outdir=lambda w, output: os.path.dirname(output.txt),
-    conda:
-        "../envs/qualimap.yaml"
+        extra="-outformat pdf",
     log:
         "logs/mapping/qualimap/{sample}.{ref}.log",
     benchmark:
         "benchmarks/mapping/qualimap/{sample}.{ref}.log"
     resources:
         runtime=360,
-    shell:
-        """
-        (unset DISPLAY
-
-        qualimap bamqc --java-mem-size={resources.mem_mb}M -bam {input.bam} \
-            -outdir {params.outdir} -outformat pdf) &> {log}
-        """
+    wrapper:
+        "v2.6.0/bio/qualimap/bamqc"
 
 
 rule endo_cont:

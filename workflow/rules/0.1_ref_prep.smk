@@ -29,19 +29,22 @@ rule bwa_index:
     input:
         "results/ref/{ref}/{ref}.fa",
     output:
-        multiext("results/ref/{ref}/{ref}.fa", ".amb", ".ann", ".bwt", ".pac", ".sa"),
+        idx=multiext(
+            "results/ref/{ref}/{ref}.fa",
+            ".amb",
+            ".ann",
+            ".bwt",
+            ".pac",
+            ".sa",
+        ),
     log:
         "logs/ref/bwa_index/{ref}.log",
-    conda:
-        "../envs/mapping.yaml"
     resources:
         runtime=120,
     benchmark:
         "benchmarks/ref/bwa_index/{ref}.log"
-    shell:
-        """
-        bwa index {input} 2> {log}
-        """
+    wrapper:
+        "v2.6.0/bio/bwa/index"
 
 
 rule samtools_faidx:
@@ -52,14 +55,10 @@ rule samtools_faidx:
         "results/ref/{ref}/{ref}.fa.fai",
     log:
         "logs/ref/samtools_faidx/{ref}.log",
-    conda:
-        "../envs/samtools.yaml"
     benchmark:
         "benchmarks/ref/samtools_faidx/{ref}.log"
-    shell:
-        """
-        samtools faidx {input} 2> {log}
-        """
+    wrapper:
+        "v2.4.0/bio/samtools/faidx"
 
 
 rule ref_chunking:
@@ -88,12 +87,7 @@ rule picard_dict:
         "results/ref/{ref}/{ref}.dict",
     log:
         "logs/ref/picard_dict/{ref}.log",
-    conda:
-        "../envs/picard.yaml"
     benchmark:
         "benchmarks/ref/picard_dict/{ref}.log"
-    shell:
-        r"""
-        picard CreateSequenceDictionary -Xmx{resources.mem_mb}m \
-            R={input} O={output} 2> {log}
-        """
+    wrapper:
+        "v2.4.0/bio/picard/createsequencedictionary"

@@ -16,7 +16,8 @@
 
 # Requires: python > 3, graph-tool, pandas
 
-# This version has been adapted for usage within a snakemake workflow
+# Slightly modified from version on ngsLD repository to accommodate automated
+# running with snakemake pipeline
 
 ####### Housekeeping #######
 
@@ -211,7 +212,7 @@ pruned_df.columns = ['chr','pos']
 pruned_df.chr = pruned_df.chr.astype('string')
 pruned_df.pos = pruned_df.pos.astype('int')
 pruned_df = pruned_df.sort_values(['chr','pos'])
-pruned_df.to_csv(args.output, sep="_", quoting=csv.QUOTE_NONE, 
+pruned_df.to_csv(args.output, sep=":", quoting=csv.QUOTE_NONE, 
 	header = False, index = False)
 
 if args.print_excl:

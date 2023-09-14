@@ -38,19 +38,18 @@ tab separated:
 
 - `sample` - The sample name, same as in `samples.tsv`.
 - `unit` - This is used to fill out the `ID` read group in the bam file. It
-  must be unique within each BAM file, so the same sample shouldn't have the
-  same unit for more than one set of fastq reads. I have not implemented
-  multiple lanes or libraries per sample in this pipeline (yet), so any value
-  will currently work, but a good format might be `library_id.sequencer_barcode.lane`.
-- `platform` - This is used to fill out the `PL` read group. Put what you'd want
-  there. Usually `ILLUMINA` for Illumina platforms.
+  must be unique to each read group, so the same sample shouldn't have the
+  same unit for more than one sequencing run. A good format might be
+  `sequencer_barcode.lane`. Optical duplicates will be removed within units.
+- `lib` - This is used to fill out the `LB` read group. This should be a unique
+  identifier for each sample library. Sequencing runs from the same library,
+  but different runs, will have the same value in `lib`, but different in
+  `unit`.
+- `platform` - This is used to fill out the `PL` read group. Put what you'd
+  want there. Usually `ILLUMINA` for Illumina platforms.
 - `fq1` and `fq2` - The absolute or relative paths from the working directory
   to the raw fastq files for the sample. Currently the pipeline only supports
   paired-end sequencing, single end may be added down the line.
-
-Note, as I have not implemented multiple libraries per sample, I haven't put
-the `LB` read group in. This will be added in the future when multiple library
-support is added.
 
 ## Configuration file
 

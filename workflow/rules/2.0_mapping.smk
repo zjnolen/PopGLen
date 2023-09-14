@@ -4,15 +4,15 @@
 rule bwa_mem_merged:
     """Map collapsed read pairs for historical samples to reference genome"""
     input:
-        reads="results/preprocessing/fastp/{sample}.merged.fastq.gz",
+        reads="results/preprocessing/fastp/{sample}_{unit}_{lib}.merged.fastq.gz",
         ref="results/ref/{ref}/{ref}.fa",
         idx=rules.bwa_index.output,
     output:
-        temp("results/mapping/mapped/{sample}.{ref}.merged.bam"),
+        temp("results/mapping/mapped/{sample}_{unit}_{lib}.{ref}.merged.bam"),
     log:
-        "logs/mapping/bwa_mem/{sample}.{ref}.merged.log",
+        "logs/mapping/bwa_mem/{sample}_{unit}_{lib}.{ref}.merged.log",
     benchmark:
-        "benchmarks/mapping/bwa_mem/{sample}.{ref}.merged.log"
+        "benchmarks/mapping/bwa_mem/{sample}_{unit}_{lib}.{ref}.merged.log"
     params:
         extra=lambda w: f"{get_read_group(w)}",
         sorting="samtools",
@@ -27,16 +27,17 @@ rule bwa_mem_paired:
     """Map trimmed paired reads from modern samples to reference genome"""
     input:
         reads=expand(
-            "results/preprocessing/fastp/{{sample}}.{read}.fastq.gz", read=["R1", "R2"]
+            "results/preprocessing/fastp/{{sample}}_{{unit}}_{{lib}}.{read}.fastq.gz",
+            read=["R1", "R2"],
         ),
         ref="results/ref/{ref}/{ref}.fa",
         idx=rules.bwa_index.output,
     output:
-        bam=temp("results/mapping/mapped/{sample}.{ref}.paired.bam"),
+        bam=temp("results/mapping/mapped/{sample}_{unit}_{lib}.{ref}.paired.bam"),
     log:
-        "logs/mapping/bwa_mem/{sample}.{ref}.paired.log",
+        "logs/mapping/bwa_mem/{sample}_{unit}_{lib}.{ref}.paired.log",
     benchmark:
-        "benchmarks/mapping/bwa_mem/{sample}.{ref}.paired.log"
+        "benchmarks/mapping/bwa_mem/{sample}_{unit}_{lib}.{ref}.paired.log"
     params:
         extra=lambda w: f"{get_read_group(w)}",
         sorting="samtools",
@@ -45,6 +46,24 @@ rule bwa_mem_paired:
         runtime=lambda wildcards, attempt: attempt * 2880,
     wrapper:
         "v2.6.0/bio/bwa/mem"
+
+
+rule samtools_merge:
+    input:
+        get_sample_bams,
+    output:
+        bam="results/mapping/mapped/{sample}.{ref}.{pairing}.bam",
+    log:
+        "logs/mapping/samtools/merge/{sample}.{ref}.{pairing}.log",
+    benchmark:
+        "benchmarks/mapping/samtools/{sample}.{ref}.{pairing}.log"
+    threads: lambda wildcards, attempt: attempt * 4
+    wildcard_constraints:
+        pairing="merged|paired",
+    resources:
+        runtime=lambda wildcards, attempt: attempt * 720,
+    wrapper:
+        "v2.6.0/bio/samtools/merge"
 
 
 rule mark_duplicates:

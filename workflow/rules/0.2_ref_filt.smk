@@ -351,9 +351,10 @@ rule angsd_depth:
         (nInd=$(cat {input.bamlist} | wc -l | awk '{{print $1+1}}')
         maxDP=$(echo 1000 $nInd | awk '{{print $1 * $2}}')
 
-        angsd -bam {input.bamlist} -nThreads {threads} -rf {input.regions} \
-            -minMapQ {params.mapQ} -minQ {params.baseQ} -doCounts 1 -dumpCounts 1 \
-            {params.extra} -doDepth 1 -maxDepth $maxDP -out {params.out}) 2> {log}
+        angsd -bam {input.bamlist} -nThreads {threads} -rf {input.regions} 
+            -ref {input.ref} -minMapQ {params.mapQ} -minQ {params.baseQ} -doCounts 1 \
+            -dumpCounts 1 {params.extra} -doDepth 1 -maxDepth $maxDP \
+            -out {params.out}) 2> {log}
         """
 
 

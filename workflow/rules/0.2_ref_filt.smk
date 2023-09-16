@@ -339,6 +339,9 @@ rule angsd_depth:
     container:
         angsd_container
     params:
+        extra=config["params"]["angsd"]["extra"],
+        mapQ=config["mapQ"],
+        baseQ=config["baseQ"],
         out=lambda w, output: os.path.splitext(output.arg)[0],
     threads: lambda wildcards, attempt: attempt * 2
     resources:

@@ -12,12 +12,11 @@ qlow <- genome.dp.cumsum[length(genome.dp.cumsum)]*snakemake@params[["lower"]]
 upper <- min(which(genome.dp.cumsum > qup))
 lower <- min(which(genome.dp.cumsum > qlow))
 
-quants <- c(lower, upper)
-
 df <- data.frame(matrix(nrow = length(genome.dp), ncol = 0))
 df$dp <- seq(from = 0, to = length(genome.dp)-1)
 df$count <- genome.dp
 mean <- with(df, mean(rep(x = dp, times = count)))
 median <- with(df, median(rep(x = dp, times = count)))
+quants <- as.integer(c(median/2, median*1.5))
 toprint <- c(mean,as.integer(quants),median)
 write(toprint, snakemake@output[[1]])

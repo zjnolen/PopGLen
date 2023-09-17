@@ -7,8 +7,8 @@ chrom.dp.table <- read.table(snakemake@input[[1]], header = FALSE)
 genome.dp <- colSums(chrom.dp.table)
 genome.dp.cumsum <- cumsum(as.numeric(genome.dp))
 
-qup <- genome.dp.cumsum[length(genome.dp.cumsum)]*snakemake@params[["lower"]]
-qlow <- genome.dp.cumsum[length(genome.dp.cumsum)]*snakemake@params[["upper"]]
+qup <- genome.dp.cumsum[length(genome.dp.cumsum)]*snakemake@params[["upper"]]
+qlow <- genome.dp.cumsum[length(genome.dp.cumsum)]*snakemake@params[["lower"]]
 upper <- min(which(genome.dp.cumsum > qup))
 lower <- min(which(genome.dp.cumsum > qlow))
 

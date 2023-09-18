@@ -13,6 +13,12 @@ import csv
 
 min_version("7.25.0")
 
+# Load default configfile
+
+
+configfile: "config/config.yaml"
+
+
 # Create variables for software containers (for easier version updating)
 
 angsd_container = "docker://zjnolen/angsd:0.940"

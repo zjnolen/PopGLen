@@ -39,7 +39,7 @@ analyses:
     local_lib:
     dfam_lib:
     build_lib: true
-  extreme_depth: true
+  extreme_depth: [0.5, 1.5]
   dataset_missing_data: 0.5
   population_missing_data: 0.5
   # quality control

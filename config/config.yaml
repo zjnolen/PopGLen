@@ -39,7 +39,9 @@ analyses:
     local_lib:
     dfam_lib:
     build_lib: true
-  extreme_depth: true
+  extreme_depth:
+    median: [0.5, 1.5]
+    quantile:
   dataset_missing_data: 0.8
   population_missing_data: 0.8
   # quality control
@@ -75,6 +77,7 @@ mapQ: 30
 baseQ: 30
 
 params:
+
   genmap:
     K: "100"
     E: "2"

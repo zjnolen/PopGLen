@@ -394,8 +394,8 @@ rule summarize_depths:
     conda:
         "../envs/r.yaml"
     params:
-        lower=0.025,
-        upper=0.975,
+        lower=config["analyses"]["extreme_depth"][0],
+        upper=config["analyses"]["extreme_depth"][1],
     threads: lambda wildcards, attempt: attempt * 2
     script:
         "../scripts/depth_extremes.R"

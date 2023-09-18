@@ -1,6 +1,6 @@
 # Genotype likelihood population genomics pipeline
 
-This workflow aimmed at processing raw sequencing reads and calculating
+This workflow is aimed at processing raw sequencing reads and calculating
 population genomic statistics within a genotype likelihood framework. As it is
 focused on GL methods, it has options to adapt the workflow for processing data
 with low or variable coverage and/or contains historical/ancient samples with
@@ -97,6 +97,7 @@ libraries
   for the entire dataset, and subsets at certain coverage ranges, then merged)
 - Exclusion of sites based on data missingness across dataset and/or per
   population
+- Filter using any number of additional user-defined BED files
 
 ### GL based population genomic analyses
 
@@ -121,6 +122,7 @@ variance in depth between groups.
 
 **Analyses:**
 
+- Estimation of linkage disequilibrium across genome and LD decay using ngsLD
 - Linkage pruning where relevant with ngsLD
 - PCA with PCAngsd
 - Admixture with NGSAdmix
@@ -135,6 +137,9 @@ variance in depth between groups.
   (**NOTE** This is currently only possible for samples that are within a
   population sampling, not for lone samples which will always return an
   inbreeding coefficient of 0)
+- Pairwise $F_{ST}$ between all populations or individuals in user defined
+  sliding windows with ANGSD
+- Identity by state (IBS) matrix between all samples using ANGSD
 
 ### Planned
 

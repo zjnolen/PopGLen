@@ -32,7 +32,7 @@ jobs:
       uses: snakemake/snakemake-github-action@v1.24.0
       with:
         snakefile: "workflow/Snakefile"
-        args: "--configfile .test/config/config.yaml --lint"
+        args: "--lint"
 
   run-workflow:
     runs-on: ubuntu-latest

@@ -297,7 +297,7 @@ rule repeat_sum:
         gff="results/ref/{ref}/repeatmasker/{ref}.fa.out.gff",
     output:
         sum="results/ref/{ref}/repeatmasker/{ref}.fa.out.gff.sum",
-        bed="results/ref/{ref}/repeatmasker/{ref}.fa.out.bed"
+        bed="results/ref/{ref}/repeatmasker/{ref}.fa.out.bed",
     log:
         "logs/ref/repeatmasker/summarize_gff/{ref}.log",
     benchmark:

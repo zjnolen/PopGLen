@@ -51,6 +51,9 @@ def chunkify(reference_fasta, chunk_size):
         + config["reference"]["exclude"],
         inplace=True,
     )
+    # Set to 1 chunk if no chunk size provided
+    if not chunk_size:
+        chunk_size = sum(df["length"]) + 1
     # Error out if configured chunk size is smaller than the largest contig
     if chunk_size < max(df["length"]):
         raise ValueError(
@@ -89,7 +92,6 @@ def chunkify(reference_fasta, chunk_size):
 
 chunks = chunkify(config["reference"]["fasta"], config["chunk_size"])
 chunklist = list(range(1, len(chunks) + 1))
-
 
 # Load sample sheet
 
@@ -317,16 +319,16 @@ def get_endo_cont_stat(wildcards):
 ## GLs for entire genome when only a subset is desired.
 
 
-def get_glf(wildcards):
-    if config["only_filter_beds"] and not any(config["filter_beds"].values()):
-        raise ValueError(
-            f"Config invalid - 'only_filter_beds' cannot be true without supplying bed "
-            f"files to at least one 'filter_beds' key."
-        )
-    elif config["only_filter_beds"]:
-        return "results/datasets/{dataset}/glfs/chunks/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.glf.gz"
-    else:
-        return "results/datasets/{dataset}/glfs/chunks/{dataset}.{ref}_{population}{dp}_chunk{chunk}_allsites-filts.glf.gz"
+# def get_glf(wildcards):
+#     if config["only_filter_beds"] and not any(config["filter_beds"].values()):
+#         raise ValueError(
+#             f"Config invalid - 'only_filter_beds' cannot be true without supplying bed "
+#             f"files to at least one 'filter_beds' key."
+#         )
+#     elif config["only_filter_beds"]:
+#         return "results/datasets/{dataset}/glfs/chunks/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.glf.gz"
+#     else:
+#         return "results/datasets/{dataset}/glfs/chunks/{dataset}.{ref}_{population}{dp}_chunk{chunk}_allsites-filts.glf.gz"
 
 
 ## Get random sampling proportion depending on if LD decay is being calculated

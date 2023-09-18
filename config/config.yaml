@@ -11,10 +11,10 @@ dataset: "dataset_name"
 chunk_size:
 
 reference:
-  name: "ref_name"
-  fasta: "path/to/ref.fa"
-  mito: []
-  sex-linked: []
+  name: "testref" 
+  fasta: ".test/data/ref/testref.fa"
+  mito: ["chrM"]
+  sex-linked: ["chrZ"]
   exclude: []
   min_size:
 
@@ -39,9 +39,7 @@ analyses:
     local_lib:
     dfam_lib:
     build_lib: true
-  extreme_depth:
-    median: [0.5, 1.5]
-    quantile:
+  extreme_depth: [0.5, 1.5]
   dataset_missing_data: 0.8
   population_missing_data: 0.8
   # quality control

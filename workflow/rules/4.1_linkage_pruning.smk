@@ -23,9 +23,9 @@ rule ngsLD_prune_sites:
         "benchmarks/{dataset}/ngsLD/prune_sites/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.log"
     conda:
         "../envs/pruning.yaml"
-    threads: lambda wildcards, attempt: attempt * 2
+    threads: lambda wildcards, attempt: attempt * 3
     resources:
-        runtime=lambda wildcards, attempt: attempt * 2880,
+        runtime=lambda wildcards, attempt: attempt * 10800,
     params:
         maxdist=lambda w: str(config["params"]["ngsld"]["max_kb_dist_pruning"]) + "000",
         minweight=config["params"]["ngsld"]["pruning_min-weight"],

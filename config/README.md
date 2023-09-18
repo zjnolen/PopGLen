@@ -57,7 +57,8 @@ tab separated:
 will put what analyses, filters, and options you want. Below I describe the
 configuration options. The [`config.yaml`](config.yaml) in this repository
 serves as a template, but includes some 'default' parameters that may be good
-starting points for some users.
+starting points for some users. If `--configfile` is not specified in the
+snakemake command, the workflow will default to `config/config.yaml`.
 
 ### Configuration options
 
@@ -95,8 +96,9 @@ Required configuration of the reference.
   'chunks' of contigs of this size to parallelize processing. This size should
   be larger than the largest contig in your genome. A larger number means fewer
   jobs that run longer. A smaller number means more jobs that run shorter. The
-  best fit will depend on the referenceand the compute resources you have
-  available.
+  best fit will depend on the reference and the compute resources you have
+  available. Leaving this blank will not divide the reference up into chunks
+  (but this isn't optimized yet, so it will do a couple unnecessary steps).
 
 - `reference:`
   - `name:` A name for your reference genome, will go in the file names.

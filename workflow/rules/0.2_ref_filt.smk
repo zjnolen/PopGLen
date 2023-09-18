@@ -297,15 +297,17 @@ rule repeat_sum:
         gff="results/ref/{ref}/repeatmasker/{ref}.fa.out.gff",
     output:
         sum="results/ref/{ref}/repeatmasker/{ref}.fa.out.gff.sum",
+        bed="results/ref/{ref}/repeatmasker/{ref}.fa.out.bed",
     log:
         "logs/ref/repeatmasker/summarize_gff/{ref}.log",
     benchmark:
         "benchmarks/ref/repeatmasker/summarize_gff/{ref}.log"
     conda:
-        "../envs/shell.yaml"
+        "../envs/bedtools.yaml"
     shell:
         r"""
-        (len=$(awk 'BEGIN{{SUM=0}}{{SUM+=$5-$4-1}}END{{print SUM}}' {input.gff})
+        (bedtools merge -i {input.gff} > {output.bed}
+        len=$(awk 'BEGIN{{SUM=0}}{{SUM+=$3-$2}}END{{print SUM}}' {output.bed})
         echo $len $(awk -F "\t" '{{print $2}}' {input.sum}) | \
             awk '{{print "Repeats\t"$2-$1"\t"($2-$1)/$2*100}}' > {output.sum}) &> {log}
         """
@@ -339,6 +341,9 @@ rule angsd_depth:
     container:
         angsd_container
     params:
+        extra=config["params"]["angsd"]["extra"],
+        mapQ=config["mapQ"],
+        baseQ=config["baseQ"],
         out=lambda w, output: os.path.splitext(output.arg)[0],
     threads: lambda wildcards, attempt: attempt * 2
     resources:
@@ -349,8 +354,9 @@ rule angsd_depth:
         maxDP=$(echo 1000 $nInd | awk '{{print $1 * $2}}')
 
         angsd -bam {input.bamlist} -nThreads {threads} -rf {input.regions} \
-            -doCounts 1 -dumpCounts 1 -doDepth 1 -maxDepth $maxDP -out {params.out}
-        ) 2> {log}
+            -ref {input.ref} -minMapQ {params.mapQ} -minQ {params.baseQ} -doCounts 1 \
+            -dumpCounts 1 {params.extra} -doDepth 1 -maxDepth $maxDP \
+            -out {params.out}) 2> {log}
         """
 
 
@@ -388,8 +394,8 @@ rule summarize_depths:
     conda:
         "../envs/r.yaml"
     params:
-        lower=0.025,
-        upper=0.975,
+        lower=config["analyses"]["extreme_depth"][0],
+        upper=config["analyses"]["extreme_depth"][1],
     threads: lambda wildcards, attempt: attempt * 2
     script:
         "../scripts/depth_extremes.R"

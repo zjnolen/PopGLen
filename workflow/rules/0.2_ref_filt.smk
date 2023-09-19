@@ -599,7 +599,7 @@ rule combine_beds:
             cat $i >> {output.sum}
         done
 
-        filtlen=$(awk 'BEGIN{{SUM=0}}{{SUM+=$3-$2-1}}END{{print SUM}}' \
+        filtlen=$(awk 'BEGIN{{SUM=0}}{{SUM+=$3-$2}}END{{print SUM}}' \
             {output.bed})
         echo $filtlen $(awk -F "\t" '{{print $2}}' {input.sum}) | \
             awk '{{print "Combined\t"$1"\t"$1/$2*100}}' >> {output.sum}
@@ -643,14 +643,14 @@ rule user_sites:
         r"""
         (sed \$d {input.sum} > {output.sum}
 
-        siteslen=$(awk 'BEGIN{{SUM=0}}{{SUM+=$3-$2-1}}END{{print SUM}}' {input.newfilt})
+        siteslen=$(awk 'BEGIN{{SUM=0}}{{SUM+=$3-$2}}END{{print SUM}}' {input.newfilt})
         echo $siteslen $(awk -F "\t" '{{print $2}}' {input.gensum}) | \
             awk '{{print "{wildcards.sites}-filts\t"$1"\t"$1/$2*100}}' \
             >> {output.sum}
         bedtools subtract -a {input.gen} -b {input.newfilt} > {output.tmp}
         bedtools subtract -a {input.allfilt} -b {output.tmp} > {output.bed}
 
-        filtlen=$(awk 'BEGIN{{SUM=0}}{{SUM+=$3-$2-1}}END{{print SUM}}' {output.bed})
+        filtlen=$(awk 'BEGIN{{SUM=0}}{{SUM+=$3-$2}}END{{print SUM}}' {output.bed})
         echo $filtlen $(awk -F "\t" '{{print $2}}' {input.gensum}) | \
             awk '{{print "Combined\t"$1"\t"$1/$2*100}}' >> {output.sum}
         

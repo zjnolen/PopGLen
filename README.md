@@ -156,12 +156,20 @@ corresponding to priority:
 
 ## Workflow directed action graph
 
-Here is a rough graph of the workflow with some rules removed for readability.
-It will at some point get a readability improvement when the workflow is
-finalized! This is also not really how it looks in the current version, but
-it is a close approximation of the flow as of now.
+Below is a graph of the workflow with most of the analyses enabled. This is
+generated directly by Snakemake, though I have removed the `all`, `popfile`,
+and `link_ref` rules to improve readability, as they are not needed to
+understand the analysis flow. A more condensed, readable diagram will be added
+shortly.
 
-![A directed action graph (DAG) of the main workflow](dag.svg)
+In general, there a few stages that can be seen grouping here. A mapping stage
+at the top, ending with `symlink_bams`, followed by the creation of a set of
+filters for the dataset that ends with `combine_beds`. Afterwards, population
+genetic analyses are performed in primarily two pathways - allele frequency
+based results (starting with `angsd_doSaf_sample/pop`) and SNP based results
+(starting with `angsd_doGlf2` (beagle)).
+
+![A directed action graph (DAG) of the main workflow](images/rulegraph.svg)
 
 ## Acknowledgements
 

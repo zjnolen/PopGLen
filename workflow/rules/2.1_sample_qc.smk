@@ -99,7 +99,7 @@ rule compile_endo_cont:
         runtime=lambda wildcards, attempt: attempt * 15,
     shell:
         """
-        (printf "sample\tperc.endo\tperc.prim.endo\n" > {output}
+        (printf "sample\tperc.map\tperc.prim.map\n" > {output}
         cat {input} >> {output}) 2> {log}
         """
 

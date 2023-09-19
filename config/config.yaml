@@ -45,7 +45,6 @@ analyses:
   # quality control
   qualimap: true
   damageprofiler: true
-  endogenous_content: true
   # population genomic analyses
   estimate_ld: false
   ld_decay: false

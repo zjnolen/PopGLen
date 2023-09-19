@@ -66,11 +66,6 @@ if config["analyses"]["damageprofiler"]:
         "results/mapping/qc/damageprofiler/{histsample}.{ref}/dmgprof.json"
     )
 
-if config["analyses"]["endogenous_content"]:
-    all_outputs.append(
-        "results/datasets/{dataset}/qc/endogenous_content/{dataset}.{ref}_all.endo.tsv"
-    )
-
 if config["analyses"]["estimate_ld"]:
     all_outputs.extend(
         expand(

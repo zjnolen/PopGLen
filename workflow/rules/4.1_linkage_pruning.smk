@@ -25,7 +25,7 @@ rule ngsLD_prune_sites:
         "../envs/pruning.yaml"
     threads: lambda wildcards, attempt: attempt * 3
     resources:
-        runtime=lambda wildcards, attempt: attempt * 10800,
+        runtime=lambda wildcards, attempt: attempt * 4320,
     params:
         maxdist=lambda w: str(config["params"]["ngsld"]["max_kb_dist_pruning"]) + "000",
         minweight=config["params"]["ngsld"]["pruning_min-weight"],

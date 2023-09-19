@@ -288,7 +288,7 @@ def get_dedup_bam(wildcards):
         }
 
 
-## Determine if bam should use Picard or DeDup for duplicate removal
+## Determine if bam needs DNA damage rescaling
 def get_final_bam(wildcards):
     s = wildcards.sample
     if s in samples.index[samples.time == "historical"]:
@@ -398,13 +398,8 @@ def get_sample_qcs(wildcards):
             "results/datasets/{{dataset}}/qc/ind_depth/filtered/{{dataset}}.{{ref}}_all{{dp}}_{sites}-filts.depth.sum",
             sites=filters,
         ),
+        "endo": "results/datasets/{dataset}/qc/endogenous_content/{dataset}.{ref}_all.endo.tsv",
     }
-    if config["analyses"]["endogenous_content"]:
-        dic.update(
-            {
-                "endo": "results/datasets/{dataset}/qc/endogenous_content/{dataset}.{ref}_all.endo.tsv"
-            }
-        )
     return dic
 
 

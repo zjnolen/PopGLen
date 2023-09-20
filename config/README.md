@@ -136,14 +136,6 @@ to exclude them where necessary.
   Admixture analyses. Useful for close relatives that violate the assumptions
   of these analyses, but that you want in others. Should be a list in [].
 
-#### Downsampling Configuration
-
-- `downsample_cov:` An integer describing the mean filtered coverage to
-  downsample all BAMs to. If included, this will perform all analyses twice,
-  once with the full BAMs and once with the downsampled BAMs. This is useful
-  if you have highly variable coverage, and you want to see if effects still
-  are present when all individuals have low coverage.
-
 #### Analysis Selection
 
 Here, you will define which analyses you will perform. It is useful to start
@@ -168,7 +160,11 @@ settings for each analysis are set in the next section.
     - `build_lib:` Use RepeatModeler to build a library of repeats from the
       reference itself, then filter them from analysis (`true`/`false`).
   - `extreme_depth:` Filter out sites with extremely high or low global
-    sequencing depth (i.e. top and bottom 2.5%). (`true`/`false`)
+    sequencing depth (`[lower, upper]`). The value of `lower` (float) will be
+    multiplied by the median global depth to create a lower global depth
+    threshold, and `upper` will do the same to creat an upper threshold. This
+    is done for all samples, as well as separately for depth groupings defined
+    in samples file.
   - `dataset_missing_data:` A floating point value between 0 and 1. Sites with
     data for fewer than this proportion of individuals across the whole dataset
     will be filtered out.
@@ -178,9 +174,10 @@ settings for each analysis are set in the next section.
   - `qualimap:` Perform Qualimap bamqc on bam files for general quality stats
     (`true`/`false`)
   - `damageprofiler:` Estimate post-mortem DNA damage on historical samples
-    with Damageprofiler (`true`/`false`)
-  - `endogenous_content:` Estimate endogenous content (proportion of reads
-    mapping to reference) for all samples (`true`/`false`)
+    with Damageprofiler (`true`/`false`) NOTE: This just adds the addition of
+    Damageprofiler to the already default output of MapDamage. DNA damage will
+    always be estimated and rescaled by MapDamage for samples marked as
+    'historical'
   - `estimate_ld:` Estimate pairwise linkage disquilibrium between sites with
     ngsLD for each popualation and the whole dataset. Note, only set this if
     you want to generate the LD estimates for use in downstream analyses
@@ -328,9 +325,9 @@ or a pull request and I'll gladly put it in.
     - `pruning_min-weight:` The minimum r^2 to assume two positions are in
       linkage disequilibrium when pruning (float)
   - `realSFS:` Settings for realSFS
-    - `fold:` Whether or not to fold the produced SFS (0 or 1, [docs](http://www.popgen.dk/angsd/index.php/SFS_Estimation)) **NOTE:** I have not implemented
-      the use of an ancestral reference into this workflow, so this should
-      always be set to 1 until I implement this.
+    - `fold:` Whether or not to fold the produced SFS (0 or 1, [docs](http://www.popgen.dk/angsd/index.php/SFS_Estimation))
+      **NOTE:** I have not implemented the use of an ancestral reference into
+      this workflow, so this should always be set to 1 until I implement this.
     - `sfsboot:` Doesn't work now, but when it does it will produce this many
       bootstrapped SFS per population and population pair (integer)
   - `fst:` Settings for $F_{ST}$ calculation in ANGSD
@@ -345,7 +342,8 @@ or a pull request and I'll gladly put it in.
     - `win_step:` Window step size in bp for sliding window analysis (integer)
   - `ngsadmix:` Settings for admixture analysis with NGSadmix. This analysis is
     performed for a set of K groupings, and each K has several replicates
-    performed. Replicates will continue until a set of N highest likelihood replicates converge, or the number of replicates reaches an upper threshold
+    performed. Replicates will continue until a set of N highest likelihood
+    replicates converge, or the number of replicates reaches an upper threshold
     set here. Defaults for `reps`, `minreps`, `thresh`, and `conv` can be left
     as default for most.
     - `kvalues:` A list of values of K to fit the data to (list of integers)

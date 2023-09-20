@@ -24,10 +24,6 @@ exclude_ind: []
 
 excl_pca-admix: []
 
-#==================== Downsampling Configuration ======================#
-
-downsample_cov:
-
 #====================== Analysis Selection ============================#
 
 populations: []

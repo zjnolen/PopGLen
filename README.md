@@ -59,7 +59,9 @@ thread and memory resources will be more explicitly defined. For now, if you
 find that the workflow is over/underbooking a given resource, you can adjust
 the resource reservations in your run profile. See the commented section in
 the [`rackham/config.yaml`](rackham/config.yaml) config to see an example of
-this.
+this. Right now, memory is only ever defined through threads, so you may need
+to lower the threads and add a memory resource to some rules using this method
+in order to optimize them for your system.
 
 ## Features
 

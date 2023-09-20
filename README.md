@@ -42,15 +42,24 @@ work, as calculating chunks is hard-coded to work on an uncompressed genome.
 Development was done on UPPMAX's Rackham cluster, and a simple profile is
 included in the [`rackham`](rackham) folder to simplify running this workflow
 through SLURM there. For running on other SLURM based cluster configs, this
-file should largely work with a few minor modifications of the defaults. See
-[Snakemake's cluster support documentation](https://snakemake.readthedocs.io/en/stable/executing/cluster.html)
-for information on how to adapt the profile for other HPC environments.
+file should largely work with a few minor modifications of the defaults.
+Primarily, this means ensuring that the resources make sense for your system,
+i.e. changing the default partition and account. Not changing the default
+memory may result in over-reserving memory in some cases, but a quick fix would
+be to change `6400` to whatever the default memory reserved per cpu is on your
+HPC (though then you might need to up the threads requested fo in some rules).
+See [Snakemake's cluster support documentation](https://snakemake.readthedocs.io/en/stable/executing/cluster.html)
+for information on how to adapt the profile for your HPC environment.
 
-#### Notes on resources
+#### Resources (and what to do if the workflow is over/underbooking resources)
 
 As Rackham ties memory reservations to cpu reservations, the resource
 allocation for rules is mostly done through threads currently. In the future
-thread and memory resources will be more explicitly defined.
+thread and memory resources will be more explicitly defined. For now, if you
+find that the workflow is over/underbooking a given resource, you can adjust
+the resource reservations in your run profile. See the commented section in
+the [`rackham/config.yaml`](rackham/config.yaml) config to see an example of
+this.
 
 ## Features
 

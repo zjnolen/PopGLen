@@ -8,10 +8,8 @@ degraded DNA. It is under active development, so new features will be added.
 
 ## Getting Started
 
-To run this workflow, you'll need paired-end raw sequencing data and a
-reference genome to map it to. Currently, the workflow is only compatiblity
-with datasets containing only a single library and paired-end sequencing run
-per sample, and reference genomes must be uncompressed.
+To run this workflow, you'll need paired-end raw sequencing data and an
+uncompressed reference genome to map it to.
 
 To run the workflow, you will need to be working on a machine with the
 following:

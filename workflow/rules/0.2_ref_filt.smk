@@ -417,6 +417,7 @@ if config["analyses"]["extreme_depth"]:
             "benchmarks/{dataset}/filters/depth/bed/{dataset}.{ref}_{population}{dp}.log"
         conda:
             "../envs/bedtools.yaml"
+        threads: lambda wildcards, attempt: attempt
         shell:
             r"""
             (lower=$(awk '{{print $2}}' {input.quants})

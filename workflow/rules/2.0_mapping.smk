@@ -52,7 +52,7 @@ rule samtools_merge:
     input:
         get_sample_bams,
     output:
-        bam="results/mapping/mapped/{sample}.{ref}.{pairing}.bam",
+        bam=temp("results/mapping/mapped/{sample}.{ref}.{pairing}.bam"),
     log:
         "logs/mapping/samtools/merge/{sample}.{ref}.{pairing}.log",
     benchmark:

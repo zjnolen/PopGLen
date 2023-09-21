@@ -13,7 +13,7 @@ rule fastp_mergedout:
                 read=["R1", "R2"],
             )
         ),
-        merged="results/preprocessing/fastp/{sample}_{unit}_{lib}.merged.fastq.gz",
+        merged=temp("results/preprocessing/fastp/{sample}_{unit}_{lib}.merged.fastq.gz"),
         html=report(
             "results/preprocessing/qc/fastp/{sample}_{unit}_{lib}_paired.html",
             category="Quality Control",
@@ -44,9 +44,11 @@ rule fastp_pairedout:
     input:
         unpack(get_raw_fastq),
     output:
-        trimmed=expand(
-            "results/preprocessing/fastp/{{sample}}_{{unit}}_{{lib}}.{read}.fastq.gz",
-            read=["R1", "R2"],
+        trimmed=temp(
+            expand(
+                "results/preprocessing/fastp/{{sample}}_{{unit}}_{{lib}}.{read}.fastq.gz",
+                read=["R1", "R2"],
+            )
         ),
         html=report(
             "results/preprocessing/qc/fastp/{sample}_{unit}_{lib}_paired.html",

@@ -21,7 +21,7 @@ rule ngsf_hmm:
     params:
         out=lambda w, output: os.path.splitext(output.pos)[0],
         nind=lambda w: len(get_samples_from_pop(w.population)),
-    threads: lambda wildcards, attempt: attempt * 10
+    threads: lambda w: len(get_samples_from_pop(w.population))
     resources:
         runtime=lambda wildcards, attempt: attempt * 2880,
     script:

@@ -19,6 +19,10 @@ combine_pestPG <- function(pestPGlist, popnames, minsites) {
   combined$pop <- as.factor(combined$pop)
   combined$pop <- factor(combined$pop, levels = sort(unique(combined$pop)))
   combined <- combined[combined$nSites >= minsites,]
+  combined$Tajima <- sapply(
+    combined$Tajima,
+    function(x) replace(x, is.infinite(x), NA)
+  )
   return(combined)
 
 }
@@ -60,17 +64,17 @@ theta_table <- function(pestPGcomb, tabpre) {
   require(Hmisc)
   
   pestPGcomb$watterson <- pestPGcomb$tW/pestPGcomb$nSites
-  watterson <- aggregate(pestPGcomb$watterson, list(sites = pestPGcomb$pop), FUN=function(x) {smean.cl.boot(x, B = 2000)})
+  watterson <- aggregate(pestPGcomb$watterson, list(sites = pestPGcomb$pop), FUN=function(x) {smean.cl.boot(x, B = 2000, na.rm = TRUE)})
   watterson <- cbind(Population = watterson$sites, as.data.frame.matrix(watterson$x, row.names = NULL))
   write.table(watterson, file = paste0(tabpre,".watterson.mean.tsv"), quote=FALSE, sep = '\t', row.names = FALSE)
 
   pestPGcomb$pi <- pestPGcomb$tP/pestPGcomb$nSites
-  pi <- aggregate(pestPGcomb$pi, list(sites = pestPGcomb$pop), FUN=function(x) {smean.cl.boot(x, B = 2000)})
+  pi <- aggregate(pestPGcomb$pi, list(sites = pestPGcomb$pop), FUN=function(x) {smean.cl.boot(x, B = 2000, na.rm = TRUE)})
   pi <- cbind(Population = pi$sites, as.data.frame.matrix(pi$x, row.names = NULL))
   write.table(pi, file = paste0(tabpre,".pi.mean.tsv"), quote=FALSE, sep = '\t', row.names = FALSE)
 
 
-  tajima <- aggregate(pestPGcomb$Tajima, list(sites = pestPGcomb$pop), FUN=function(x) {smean.cl.boot(x, B = 2000)})
+  tajima <- aggregate(pestPGcomb$Tajima, list(sites = pestPGcomb$pop), FUN=function(x) {smean.cl.boot(x, B = 2000, na.rm = TRUE)})
   tajima <- cbind(Population = tajima$sites, as.data.frame.matrix(tajima$x, row.names = NULL))
   write.table(tajima, file = paste0(tabpre,".tajima.mean.tsv"), quote=FALSE, sep = '\t', row.names = FALSE)
 

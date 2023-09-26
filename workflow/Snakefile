@@ -49,6 +49,7 @@ wildcard_constraints:
     ),
     dp=(subsample[0] + "|.{0}" if len(subsample) == 2 else ".{0}"),
     chunk="[0-9]+",
+    sites="|".join(filters),
 
 
 # Accumulate desired output files from config file

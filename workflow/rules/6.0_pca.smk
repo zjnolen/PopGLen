@@ -30,13 +30,13 @@ rule pca_pcangsd:
     Produces covariance matrix from SNP genotype likelihood data with PCAngsd.
     """
     input:
-        beagle="results/datasets/{dataset}/beagles/pruned/{dataset}.{ref}_all{dp}_{sites}-filts_pruned.beagle.gz",
+        beagle="results/datasets/{dataset}/beagles/pruned/{dataset}.{ref}_{population}{dp}_{sites}-filts_pruned.beagle.gz",
     output:
-        cov="results/datasets/{dataset}/analyses/pcangsd/{dataset}.{ref}_all{dp}_{sites}-filts.cov",
+        cov="results/datasets/{dataset}/analyses/pcangsd/{dataset}.{ref}_{population}{dp}_{sites}-filts.cov",
     log:
-        "logs/{dataset}/pcangsd/{dataset}.{ref}_all{dp}_{sites}-filts.log",
+        "logs/{dataset}/pcangsd/{dataset}.{ref}_{population}{dp}_{sites}-filts.log",
     benchmark:
-        "benchmarks/{dataset}/pcangsd/{dataset}.{ref}_all{dp}_{sites}-filts.log"
+        "benchmarks/{dataset}/pcangsd/{dataset}.{ref}_{population}{dp}_{sites}-filts.log"
     container:
         pcangsd_container
     params:
@@ -55,11 +55,11 @@ rule plot_pca:
     Plots PCA for various pairs of PCs.
     """
     input:
-        "results/datasets/{dataset}/analyses/pcangsd/{dataset}.{ref}_all{dp}_{sites}-filts.cov",
-        "results/datasets/{dataset}/poplists/{dataset}_all.indiv.list",
+        "results/datasets/{dataset}/analyses/pcangsd/{dataset}.{ref}_{population}{dp}_{sites}-filts.cov",
+        "results/datasets/{dataset}/poplists/{dataset}_{population}.indiv.list",
     output:
         report(
-            "results/datasets/{dataset}/plots/pca/{dataset}.{ref}_all{dp}_{sites}-filts_pc{xpc}-{ypc}.svg",
+            "results/datasets/{dataset}/plots/pca/{dataset}.{ref}_{population}{dp}_{sites}-filts_pc{xpc}-{ypc}.svg",
             category="PCA",
             labels=lambda w: {
                 "Filter": "{sites}",
@@ -69,9 +69,9 @@ rule plot_pca:
             },
         ),
     log:
-        "logs/{dataset}/pcangsd/{dataset}.{ref}_all{dp}_{sites}-filts_pc{xpc}-{ypc}_plot.log",
+        "logs/{dataset}/pcangsd/{dataset}.{ref}_{population}{dp}_{sites}-filts_pc{xpc}-{ypc}_plot.log",
     benchmark:
-        "benchmarks/{dataset}/pcangsd/{dataset}.{ref}_all{dp}_{sites}-filts_pc{xpc}-{ypc}_plot.log"
+        "benchmarks/{dataset}/pcangsd/{dataset}.{ref}_{population}{dp}_{sites}-filts_pc{xpc}-{ypc}_plot.log"
     conda:
         "../envs/r.yaml"
     script:

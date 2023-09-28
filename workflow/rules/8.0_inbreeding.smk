@@ -48,7 +48,7 @@ rule convert_ibd:
         "minimal"
     shell:
         """
-        convert_ibd.pl --pos {input.pos} --ind {input.inds} \
+        convert_ibd.pl --pos {input.pos} --ind <(tail -n +2 {input.inds}) \
             --ibd_pos {input.ibd} > {output.roh} 2> {log}
         """
 

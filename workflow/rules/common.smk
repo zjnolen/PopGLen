@@ -82,9 +82,9 @@ def chunkify(reference_fasta, chunk_size):
                 # new_df = df.iloc[0:0, :].copy()
                 total = row["length"]
             included.append(row)
-            if n + 1 == len(df):
-                new_df = pd.DataFrame(included)
-                dfs.append(new_df)
+        if ((n + 1) == len(df)) and included:
+            new_df = pd.DataFrame(included)
+            dfs.append(new_df)
     return dfs
 
 

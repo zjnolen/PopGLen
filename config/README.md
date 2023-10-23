@@ -189,15 +189,40 @@ settings for each analysis are set in the next section.
   - `pca_pcangsd:` Perform Principal Component Analysis with PCAngsd
     (`true`/`false`)
   - `admix_ngsadmix:` Perform admixture analysis with NGSadmix (`true`/`false`)
-  - `relatedness:` Can be performed multiple ways, set one or both of the below
-    options
+  - `relatedness:` Can be performed multiple ways, set any combination of the
+    three options below. Note, that I've mostly incorporated these with the
+    R0/R1/KING kinship methods in Waples et al. 2019, *Mol. Ecol.* in mind.
+    These methods differ slightly from how they implement this method, and will
+    give slightly more/less accurate estimates of kinship depending on your
+    reference's relationship to your samples. `ibsrelate_ibs` uses the
+    probabilities of all possible genotypes, so should be the most accurate
+    regardless, but can use a lot of memory and take a long time with many
+    samples. `ibsrelate_sfs` is a bit more efficient, as it does things in a
+    pairwise fashion in parallel, but may be biased if the segregating alleles
+    in your populations are not represented in the reference. `ngsrelate` uses
+    several methods, one of which is similar to `ibsrelate_sfs`, but may be
+    less accurate due to incorporating in less data. In my experience,
+    NGSrelate is suitable to identify up to third degree relatives in the
+    dataset, but only if the exact relationship can be somewhat uncertain (i.e.
+    you don't need to know the difference between, say, parent/offspring and
+    full sibling pairs, or between second degree and third degree relatives).
+    IBSrelate_sfs can get you greater accuracy, but may erroneously inflate
+    kinship if your datset has many alleles not represented in your reference.
+    If you notice, for instance, a large number of third degree relatives
+    (KING ~0.03 - 0.07) in your dataset that is not expected, it may be worth
+    trying the IBS based method (`ibsrelate_ibs`).
     - `ngsrelate:` Co-estimate inbreeding and pairwise relatedness with
       NGSrelate (`true`/`false`)
-    - `waples2019:` Estimate pairwise relatedness with the methods from Waples
-      et al. 2019, *Mol. Ecol.*. Enabling this can greatly increase the time
-      needed to build the workflow DAG if you have many samples. As a form of
-      this method is implemented in NGSrelate, so it may be more efficient to
-      only enable that. (`true`/`false`)
+    - `ibsrelate_ibs:` Estimate pairwise relatedness with the IBS based method
+      from Waples et al. 2019, *Mol. Ecol.*. This can use a lot of memory, as
+      it has genotype likelihoods for all sites from all samples loaded into
+      memory, so it is done per 'chunk', which still takes a lot of time and
+      memory. (`true`/`false`)
+    - `ibsrelate_sfs:` Estimate pairwise relatedness with the SFS based method
+      from Waples et al. 2019, *Mol. Ecol.*. Enabling this can greatly increase
+      the time needed to build the workflow DAG if you have many samples. As a
+      form of this method is implemented in NGSrelate, it may be more
+      efficient to only enable that. (`true`/`false`)
   - `thetas_angsd:` Estimate pi, theta, and Tajima's D for each population in
     windows across the genome using ANGSD (`true`/`false`)
   - `heterozygosity_angsd:` Estimate individual genome-wide heterozygosity
@@ -291,12 +316,20 @@ or a pull request and I'll gladly put it in.
       at `1000`. (integer, [docs](http://www.popgen.dk/angsd/index.php/Depth))
     - `extra:` Additional options to pass to ANGSD during genotype likelihood
       calculation. This is primarily useful for adding BAM input filters. Note
-      that `--remove_bads` and `-only_proper_pairs` are enabled by default, and
-      the default config for this workflow adds `-C 50 -uniqueOnly 1`, and the
-      workflow uses the above specified mapping and base quality filters, which
-      all together should be good filtering for many. As such, `-trim` and
-      `-baq` may be the main additional desireable options to the default
-      config. (string, [docs](http://www.popgen.dk/angsd/index.php/Input#BAM.2FCRAM))
+      that `--remove_bads` and `-only_proper_pairs` are enabled by default, so
+      they only need to be included if you want to turn them off. I've also
+      found that for some datasets, `-C 50` and `-baq 1` can create a strong
+      relationship between sample depth and detected diversity, effectively
+      removing the benefits of ANGSD for low/variable depth data. I recommend
+      that these aren't included unless you know you need them, and even then,
+      I'd recommend plotting `heterozygosity ~ sample depth` to ensure there is
+      not any relationship. Since the workflow uses bwa to map, `-uniqueOnly 1`
+      doesn't do anything if your minimum mapping quality is > 0. Don't put
+      mapping and base quality thresholds here either, it will use the ones
+      defined above automatically. Although historical samples will have DNA
+      damaged assessed and to some extent, corrected, it may be useful to put
+      `-noTrans 1` or `-trim INT` here if you're interested in stricter filters
+      for degraded DNA. (string, [docs](http://www.popgen.dk/angsd/index.php/Input#BAM.2FCRAM))
     - `snp_pval:` The p-value to use for calling SNPs (float, [docs](http://www.popgen.dk/angsd/index.php/SNP_calling))
     - `min_maf:` The minimum minor allele frequency required to call a SNP.
       (float, [docs](http://www.popgen.dk/angsd/index.php/Allele_Frequencies))

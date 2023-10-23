@@ -370,7 +370,7 @@ def get_kinship(wildcards):
     ind1 = [pair[0] for pair in combos]
     ind2 = [pair[1] for pair in combos]
     return expand(
-        "results/datasets/{{dataset}}/analyses/kinship/waples2019/{{dataset}}.{{ref}}_{ind1}-{ind2}{{dp}}_{{sites}}-filts.kinship",
+        "results/datasets/{{dataset}}/analyses/kinship/ibsrelate_sfs/{{dataset}}.{{ref}}_{ind1}-{ind2}{{dp}}_{{sites}}-filts.kinship",
         zip,
         ind1=ind1,
         ind2=ind2,

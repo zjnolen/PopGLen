@@ -90,9 +90,14 @@ if config["analyses"]["relatedness"]["ngsrelate"]:
         "results/datasets/{dataset}/analyses/kinship/ngsrelate/{dataset}.{ref}_all{dp}_{sites}-filts_relate.html"
     )
 
-if config["analyses"]["relatedness"]["waples2019"]:
+if config["analyses"]["relatedness"]["ibsrelate_sfs"]:
     all_outputs.append(
-        "results/datasets/{dataset}/analyses/kinship/waples2019/{dataset}.{ref}_all{dp}_{sites}-filts.kinship.html"
+        "results/datasets/{dataset}/analyses/kinship/ibsrelate_sfs/{dataset}.{ref}_all{dp}_{sites}-filts.kinship.html"
+    )
+
+if config["analyses"]["relatedness"]["ibsrelate_ibs"]:
+    all_outputs.append(
+        "results/datasets/{dataset}/analyses/kinship/ibsrelate_ibs/{dataset}.{ref}_all{dp}_{sites}-filts.kinship.html"
     )
 
 if config["analyses"]["pca_pcangsd"]:

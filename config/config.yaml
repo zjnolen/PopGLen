@@ -48,7 +48,8 @@ analyses:
   admix_ngsadmix: false
   relatedness: 
     ngsrelate: false
-    waples2019: false
+    ibsrelate_ibs: false
+    ibsrelate_sfs: false
   thetas_angsd: false
   heterozygosity_angsd: false
   fst_angsd:

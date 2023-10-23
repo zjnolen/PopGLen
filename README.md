@@ -135,7 +135,7 @@ variance in depth between groups.
 - Linkage pruning where relevant with ngsLD
 - PCA with PCAngsd
 - Admixture with NGSAdmix
-- Relatedness using NgsRelate and methods from Waples et al. 2019, *Mol. Ecol.*
+- Relatedness using NgsRelate and IBSrelate
 - 1D and 2D Site frequency spectrum production with ANGSD
 - Neutrality statistics per population (Watterson's theta, pairwise pi,
   Tajima's D) in user defined sliding windows with ANGSD

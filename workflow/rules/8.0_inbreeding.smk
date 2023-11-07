@@ -21,7 +21,7 @@ rule ngsf_hmm:
     params:
         out=lambda w, output: os.path.splitext(output.pos)[0],
         nind=lambda w: len(get_samples_from_pop(w.population)),
-    threads: lambda wildcards, attempt: attempt * 10
+    threads: lambda w: len(get_samples_from_pop(w.population))
     resources:
         runtime=lambda wildcards, attempt: attempt * 2880,
     script:
@@ -48,7 +48,7 @@ rule convert_ibd:
         "minimal"
     shell:
         """
-        convert_ibd.pl --pos {input.pos} --ind {input.inds} \
+        convert_ibd.pl --pos {input.pos} --ind <(tail -n +2 {input.inds}) \
             --ibd_pos {input.ibd} > {output.roh} 2> {log}
         """
 

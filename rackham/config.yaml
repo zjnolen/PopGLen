@@ -11,3 +11,22 @@ default-resources:
   - "runtime=60"
   - "slurm_account=<your slurm account here>"
   - "slurm_partition=core"
+
+# Example code for altering rule specific resources (these are not actual
+# suggested resources, just examples of how to change them)
+# If you see a job is failing due to time limits or memory, or is
+# overbooking cpus/memory, try adjusting the resource allocation as below.
+
+# # Change the default threads for a rule
+# set-threads:
+#   - ngsLD_prune_sites=1
+#   - bwa_mem_merged=20
+#   - bam_clipoverlap=2
+
+# # Change the default resources for a rule
+# set-resources:
+#   - ngsLD_prune_sites:mem_mb=20000
+#   - ngsLD_prune_sites:runtime="10d"
+#   - bwa_mem_merged:mem_mb=3000
+#   - bam_clipoverlap=10000
+#   - bam_clipoverlap:runtime="4h"

@@ -2,7 +2,7 @@
 # method from Waples et al. 2019, MolEcol
 
 
-rule est_kinship_stats:
+rule est_kinship_stats_sfs:
     """
     Uses the equations from Waples et al. 2019, MolEcol to estimate R0, R1, and KING-
     robust kinship between all sample pairings.
@@ -10,11 +10,11 @@ rule est_kinship_stats:
     input:
         sfs="results/datasets/{dataset}/analyses/sfs/{dataset}.{ref}_{ind1}-{ind2}{dp}_{sites}-filts.sfs",
     output:
-        "results/datasets/{dataset}/analyses/kinship/waples2019/{dataset}.{ref}_{ind1}-{ind2}{dp}_{sites}-filts.kinship",
+        "results/datasets/{dataset}/analyses/kinship/ibsrelate_sfs/{dataset}.{ref}_{ind1}-{ind2}{dp}_{sites}-filts.kinship",
     log:
-        "logs/{dataset}/kinship/waples2019/{dataset}.{ref}_{ind1}-{ind2}{dp}_{sites}-filts_kinship.log",
+        "logs/{dataset}/kinship/ibsrelate_sfs/{dataset}.{ref}_{ind1}-{ind2}{dp}_{sites}-filts_kinship.log",
     benchmark:
-        "benchmarks/{dataset}/kinship/waples2019/{dataset}.{ref}_{ind1}-{ind2}{dp}_{sites}-filts_kinship.log"
+        "benchmarks/{dataset}/kinship/ibsrelate_sfs/{dataset}.{ref}_{ind1}-{ind2}{dp}_{sites}-filts_kinship.log"
     wildcard_constraints:
         ind1="|".join([i for i in samples.index.tolist()]),
         ind2="|".join([i for i in samples.index.tolist()]),
@@ -23,21 +23,21 @@ rule est_kinship_stats:
     resources:
         runtime=lambda wildcards, attempt: attempt * 15,
     script:
-        "../scripts/kinship.R"
+        "../scripts/kinship_sfs.R"
 
 
-rule compile_kinship_stats:
+rule compile_kinship_stats_sfs:
     """
     Compiles kinship stats for all pairs into a single table.
     """
     input:
         get_kinship,
     output:
-        "results/datasets/{dataset}/analyses/kinship/waples2019/{dataset}.{ref}_all{dp}_{sites}-filts.kinship",
+        "results/datasets/{dataset}/analyses/kinship/ibsrelate_sfs/{dataset}.{ref}_all{dp}_{sites}-filts.kinship",
     log:
-        "logs/{dataset}/kinship/waples2019/{dataset}.{ref}_all{dp}_{sites}-filts_compile-stats.log",
+        "logs/{dataset}/kinship/ibsrelate_sfs/{dataset}.{ref}_all{dp}_{sites}-filts_compile-stats.log",
     benchmark:
-        "benchmarks/{dataset}/kinship/waples2019/{dataset}.{ref}_all{dp}_{sites}-filts_compile-stats.log"
+        "benchmarks/{dataset}/kinship/ibsrelate_sfs/{dataset}.{ref}_all{dp}_{sites}-filts_compile-stats.log"
     conda:
         "../envs/shell.yaml"
     resources:
@@ -49,23 +49,109 @@ rule compile_kinship_stats:
         """
 
 
+rule doGlf1_ibsrelate:
+    input:
+        bam="results/datasets/{dataset}/bamlists/{dataset}.{ref}_{population}{dp}.bamlist",
+        bams=get_bamlist_bams,
+        bais=get_bamlist_bais,
+        ref="results/ref/{ref}/{ref}.fa",
+        regions="results/datasets/{dataset}/filters/chunks/{ref}_chunk{chunk}.rf",
+        sites="results/datasets/{dataset}/filters/combined/{dataset}.{ref}_{sites}-filts.sites",
+        idx="results/datasets/{dataset}/filters/combined/{dataset}.{ref}_{sites}-filts.sites.idx",
+    output:
+        glf=temp(
+            "results/datasets/{dataset}/glfs/chunks/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.glf.gz"
+        ),
+        arg="results/datasets/{dataset}/glfs/chunks/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.arg",
+    log:
+        "logs/{dataset}/angsd/doGlf1/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.log",
+    benchmark:
+        "benchmarks/{dataset}/angsd/doGlf1/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.log"
+    container:
+        angsd_container
+    params:
+        gl_model=config["params"]["angsd"]["gl_model"],
+        extra=config["params"]["angsd"]["extra"],
+        mapQ=config["mapQ"],
+        baseQ=config["baseQ"],
+        out=lambda w, output: os.path.splitext(output.arg)[0],
+    resources:
+        runtime=lambda wildcards, attempt: attempt * 360,
+    threads: lambda wildcards, attempt: attempt * 2
+    shell:
+        """
+        angsd -doGlf 1 -bam {input.bam} -GL {params.gl_model} -ref {input.ref} \
+            -nThreads {threads} {params.extra} -minMapQ {params.mapQ} \
+            -minQ {params.baseQ} -sites {input.sites} -rf {input.regions} \
+            -out {params.out} &> {log}
+        """
+
+
+rule ibsrelate:
+    input:
+        "results/datasets/{dataset}/glfs/chunks/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.glf.gz",
+    output:
+        "results/datasets/{dataset}/analyses/kinship/ibsrelate_ibs/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.ibspair",
+    log:
+        "logs/{dataset}/angsd/ibsrelate_ibs/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.log",
+    benchmark:
+        "benchmarks/{dataset}/angsd/ibsrelate_ibs/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.log"
+    container:
+        angsd_container
+    params:
+        nind=lambda w: len(get_samples_from_pop(w.population)),
+        maxsites=config["chunk_size"],
+        out=lambda w, output: os.path.splitext(output[0])[0],
+    resources:
+        runtime="7d",
+    threads: lambda wildcards, attempt: attempt * 10
+    shell:
+        """
+        ibs -glf {input} -model 0 -nInd {params.nind} -allpairs 1 \
+            -m {params.maxsites} -outFileName {params.out}
+        """
+
+
+rule est_kinship_stats_ibs:
+    """
+    Uses the equations from Waples et al. 2019, MolEcol to estimate R0, R1, and KING-
+    robust kinship between all sample pairings.
+    """
+    input:
+        ibs=expand(
+            "results/datasets/{{dataset}}/analyses/kinship/ibsrelate_ibs/{{dataset}}.{{ref}}_{{population}}{{dp}}_chunk{chunk}_{{sites}}-filts.ibspair",
+            chunk=chunklist,
+        ),
+        inds="results/datasets/{dataset}/poplists/{dataset}_all.indiv.list",
+    output:
+        "results/datasets/{dataset}/analyses/kinship/ibsrelate_ibs/{dataset}.{ref}_{population}{dp}_{sites}-filts.kinship",
+    log:
+        "logs/{dataset}/kinship/ibsrelate_ibs/{dataset}.{ref}_{population}{dp}_{sites}-filts_kinship.log",
+    benchmark:
+        "benchmarks/{dataset}/kinship/ibsrelate_ibs/{dataset}.{ref}_{population}{dp}_{sites}-filts_kinship.log"
+    conda:
+        "../envs/r.yaml"
+    script:
+        "../scripts/kinship_ibs.R"
+
+
 rule kinship_table_html:
     """
     Converts kinship table to html for report.
     """
     input:
-        "results/datasets/{dataset}/analyses/kinship/waples2019/{dataset}.{ref}_all{dp}_{sites}-filts.kinship",
+        "results/datasets/{dataset}/analyses/kinship/ibsrelate_{type}/{dataset}.{ref}_all{dp}_{sites}-filts.kinship",
     output:
         report(
-            "results/datasets/{dataset}/analyses/kinship/waples2019/{dataset}.{ref}_all{dp}_{sites}-filts.kinship.html",
+            "results/datasets/{dataset}/analyses/kinship/ibsrelate_{type}/{dataset}.{ref}_all{dp}_{sites}-filts.kinship.html",
             category="Relatedness",
-            subcategory="Waples et al. 2019 R0,R1,KING",
+            subcategory="IBSrelate - {type}",
             labels=lambda w: {"Filter": "{sites}", **dp_report(w), "Type": "Table"},
         ),
     log:
-        "logs/{dataset}/kinship/waples2019/{dataset}.{ref}_all{dp}_{sites}-filts_tsv2html.log",
+        "logs/{dataset}/kinship/ibsrelate_{type}/{dataset}.{ref}_all{dp}_{sites}-filts_tsv2html.log",
     benchmark:
-        "benchmarks/{dataset}/kinship/waples2019/{dataset}.{ref}_all{dp}_{sites}-filts_tsv2html.log"
+        "benchmarks/{dataset}/kinship/ibsrelate_{type}/{dataset}.{ref}_all{dp}_{sites}-filts_tsv2html.log"
     conda:
         "../envs/r-rectable.yaml"
     script:

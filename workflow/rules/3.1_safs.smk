@@ -1,16 +1,18 @@
 # Rules for creating site allele frequency files used by ANGSD
 
 
-rule angsd_doSaf:
+rule angsd_doSaf_pop:
     """
     Generate a site allele frequency file for a given population and genome chunk.
     """
     input:
-        glf=get_glf,
-        fai="results/ref/{ref}/{ref}.fa.fai",
-        anc="results/ref/{ref}/{ref}.fa",
-        sites="results/datasets/{dataset}/filters/combined/{dataset}.{ref}{dp}_{sites}-filts.sites",
-        idx="results/datasets/{dataset}/filters/combined/{dataset}.{ref}{dp}_{sites}-filts.sites.idx",
+        bam="results/datasets/{dataset}/bamlists/{dataset}.{ref}_{population}{dp}.bamlist",
+        bams=get_bamlist_bams,
+        bais=get_bamlist_bais,
+        ref="results/ref/{ref}/{ref}.fa",
+        regions="results/datasets/{dataset}/filters/chunks/{ref}_chunk{chunk}.rf",
+        sites="results/datasets/{dataset}/filters/combined/{dataset}.{ref}_{sites}-filts.sites",
+        idx="results/datasets/{dataset}/filters/combined/{dataset}.{ref}_{sites}-filts.sites.idx",
     output:
         saf=temp(
             "results/datasets/{dataset}/safs/chunks/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.saf.gz"
@@ -28,17 +30,28 @@ rule angsd_doSaf:
         "benchmarks/{dataset}/angsd/doSaf/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.log"
     container:
         angsd_container
+    wildcard_constraints:
+        population="|".join(
+            ["all"]
+            + ["all_excl_pca-admix"]
+            + [i for i in samples.population.values.tolist()]
+            + [i for i in samples.depth.values.tolist()]
+        ),
     params:
-        nind=lambda w: len(get_samples_from_pop(w.population)),
+        gl_model=config["params"]["angsd"]["gl_model"],
+        extra=config["params"]["angsd"]["extra"],
+        mapQ=config["mapQ"],
+        baseQ=config["baseQ"],
         out=lambda w, output: os.path.splitext(output.arg)[0],
     resources:
         runtime=lambda wildcards, attempt: attempt * 180,
     threads: lambda wildcards, attempt: attempt * 2
     shell:
         """
-        angsd -doSaf 1 -glf10_text {input.glf} -anc {input.anc} -nThreads 1 \
-            -fai {input.fai} -nInd {params.nind} -sites {input.sites} \
-            -out {params.out} &> {log}
+        angsd -doSaf 1 -bam {input.bam} -GL {params.gl_model} -ref {input.ref} \
+            -nThreads {threads} {params.extra} -minMapQ {params.mapQ} \
+            -minQ {params.baseQ} -sites {input.sites} -anc {input.ref} \
+            -rf {input.regions} -out {params.out} &> {log}
         """
 
 
@@ -72,6 +85,13 @@ rule realSFS_catsaf:
         "benchmarks/{dataset}/realSFS/cat/{dataset}.{ref}_{population}{dp}_{sites}-filts.log"
     container:
         angsd_container
+    wildcard_constraints:
+        population="|".join(
+            ["all"]
+            + ["all_excl_pca-admix"]
+            + [i for i in samples.population.values.tolist()]
+            + [i for i in samples.depth.values.tolist()]
+        ),
     params:
         out=lambda w, output: output[0].removesuffix(".saf.idx"),
     resources:
@@ -79,4 +99,46 @@ rule realSFS_catsaf:
     shell:
         """
         realSFS cat {input.safs} -P 1 -outnames {params.out} 2> {log}
+        """
+
+
+rule angsd_doSaf_sample:
+    """
+    Generate a site allele frequency file for a given downsampled population and genome
+    chunk.
+    """
+    input:
+        bam="results/datasets/{dataset}/bamlists/{dataset}.{ref}_{population}{dp}.bamlist",
+        bams=get_bamlist_bams,
+        bais=get_bamlist_bais,
+        ref="results/ref/{ref}/{ref}.fa",
+        sites="results/datasets/{dataset}/filters/combined/{dataset}.{ref}_{sites}-filts.sites",
+        idx="results/datasets/{dataset}/filters/combined/{dataset}.{ref}_{sites}-filts.sites.idx",
+    output:
+        saf="results/datasets/{dataset}/safs/{dataset}.{ref}_{population}{dp}_{sites}-filts.saf.gz",
+        safidx="results/datasets/{dataset}/safs/{dataset}.{ref}_{population}{dp}_{sites}-filts.saf.idx",
+        safpos="results/datasets/{dataset}/safs/{dataset}.{ref}_{population}{dp}_{sites}-filts.saf.pos.gz",
+        arg="results/datasets/{dataset}/safs/{dataset}.{ref}_{population}{dp}_{sites}-filts.arg",
+    log:
+        "logs/{dataset}/angsd/doSaf/{dataset}.{ref}_{population}{dp}_{sites}-filts.log",
+    benchmark:
+        "benchmarks/{dataset}/angsd/doSaf/{dataset}.{ref}_{population}{dp}_{sites}-filts.log"
+    container:
+        angsd_container
+    wildcard_constraints:
+        population="|".join([i for i in samples.index.tolist()]),
+    params:
+        gl_model=config["params"]["angsd"]["gl_model"],
+        extra=config["params"]["angsd"]["extra"],
+        mapQ=config["mapQ"],
+        baseQ=config["baseQ"],
+        out=lambda w, output: os.path.splitext(output.arg)[0],
+    resources:
+        runtime="120m",
+    shell:
+        """
+        (angsd -doSaf 1 -bam {input.bam} -GL {params.gl_model} -ref {input.ref} \
+            -nThreads {threads} {params.extra} -minMapQ {params.mapQ} \
+            -minQ {params.baseQ} -sites {input.sites} -anc {input.ref} \
+            -out {params.out}) &> {log}
         """

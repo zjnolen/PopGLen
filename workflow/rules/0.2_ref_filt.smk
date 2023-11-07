@@ -297,181 +297,186 @@ rule repeat_sum:
         gff="results/ref/{ref}/repeatmasker/{ref}.fa.out.gff",
     output:
         sum="results/ref/{ref}/repeatmasker/{ref}.fa.out.gff.sum",
+        bed="results/ref/{ref}/repeatmasker/{ref}.fa.out.bed",
     log:
         "logs/ref/repeatmasker/summarize_gff/{ref}.log",
     benchmark:
         "benchmarks/ref/repeatmasker/summarize_gff/{ref}.log"
     conda:
-        "../envs/shell.yaml"
+        "../envs/bedtools.yaml"
     shell:
         r"""
-        (len=$(awk 'BEGIN{{SUM=0}}{{SUM+=$5-$4-1}}END{{print SUM}}' {input.gff})
+        (bedtools merge -i {input.gff} > {output.bed}
+        len=$(awk 'BEGIN{{SUM=0}}{{SUM+=$3-$2}}END{{print SUM}}' {output.bed})
         echo $len $(awk -F "\t" '{{print $2}}' {input.sum}) | \
             awk '{{print "Repeats\t"$2-$1"\t"($2-$1)/$2*100}}' > {output.sum}) &> {log}
         """
 
 
-rule angsd_depth:
-    """Estimate global depth for different subsets of samples, performed in chunks"""
-    input:
-        bamlist="results/datasets/{dataset}/bamlists/{dataset}.{ref}_{population}{dp}.bamlist",
-        regions="results/datasets/{dataset}/filters/chunks/{ref}_chunk{chunk}.rf",
-        ref="results/ref/{ref}/{ref}.fa",
-        bams=get_bamlist_bams,
-        bais=get_bamlist_bais,
-    output:
-        posgz=temp(
-            "results/datasets/{dataset}/filters/depth/{dataset}.{ref}_{population}{dp}_chunk{chunk}.pos.gz"
-        ),
-        hist=temp(
-            "results/datasets/{dataset}/filters/depth/{dataset}.{ref}_{population}{dp}_chunk{chunk}.depthGlobal"
-        ),
-        samphist=temp(
-            "results/datasets/{dataset}/filters/depth/{dataset}.{ref}_{population}{dp}_chunk{chunk}.depthSample"
-        ),
-        arg=temp(
-            "results/datasets/{dataset}/filters/depth/{dataset}.{ref}_{population}{dp}_chunk{chunk}.arg"
-        ),
-    log:
-        "logs/{dataset}/filters/depth/{dataset}.{ref}_{population}{dp}_chunk{chunk}.log",
-    benchmark:
-        "benchmarks/{dataset}/filters/depth/{dataset}.{ref}_{population}{dp}_chunk{chunk}.log"
-    container:
-        angsd_container
-    params:
-        out=lambda w, output: os.path.splitext(output.arg)[0],
-    threads: lambda wildcards, attempt: attempt * 2
-    resources:
-        runtime=lambda wildcards, attempt: attempt * 720,
-    shell:
+if config["analyses"]["extreme_depth"]:
+
+    rule angsd_depth:
+        """Estimate global depth for different subsets of samples, performed in chunks"""
+        input:
+            bamlist="results/datasets/{dataset}/bamlists/{dataset}.{ref}_{population}{dp}.bamlist",
+            regions="results/datasets/{dataset}/filters/chunks/{ref}_chunk{chunk}.rf",
+            ref="results/ref/{ref}/{ref}.fa",
+            bams=get_bamlist_bams,
+            bais=get_bamlist_bais,
+        output:
+            posgz=temp(
+                "results/datasets/{dataset}/filters/depth/{dataset}.{ref}_{population}{dp}_chunk{chunk}.pos.gz"
+            ),
+            hist=temp(
+                "results/datasets/{dataset}/filters/depth/{dataset}.{ref}_{population}{dp}_chunk{chunk}.depthGlobal"
+            ),
+            samphist=temp(
+                "results/datasets/{dataset}/filters/depth/{dataset}.{ref}_{population}{dp}_chunk{chunk}.depthSample"
+            ),
+            arg=temp(
+                "results/datasets/{dataset}/filters/depth/{dataset}.{ref}_{population}{dp}_chunk{chunk}.arg"
+            ),
+        log:
+            "logs/{dataset}/filters/depth/{dataset}.{ref}_{population}{dp}_chunk{chunk}.log",
+        benchmark:
+            "benchmarks/{dataset}/filters/depth/{dataset}.{ref}_{population}{dp}_chunk{chunk}.log"
+        container:
+            angsd_container
+        params:
+            extra=config["params"]["angsd"]["extra"],
+            mapQ=config["mapQ"],
+            baseQ=config["baseQ"],
+            out=lambda w, output: os.path.splitext(output.arg)[0],
+        threads: lambda wildcards, attempt: attempt * 2
+        resources:
+            runtime=lambda wildcards, attempt: attempt * 720,
+        shell:
+            """
+            (nInd=$(cat {input.bamlist} | wc -l | awk '{{print $1+1}}')
+            maxDP=$(echo 1000 $nInd | awk '{{print $1 * $2}}')
+
+            angsd -bam {input.bamlist} -nThreads {threads} -rf {input.regions} \
+                -ref {input.ref} -minMapQ {params.mapQ} -minQ {params.baseQ} -doCounts 1 \
+                -dumpCounts 1 {params.extra} -doDepth 1 -maxDepth $maxDP \
+                -out {params.out}) 2> {log}
+            """
+
+    rule combine_depths:
+        """Merge global depth files across chunks"""
+        input:
+            lambda w: expand(
+                "results/datasets/{{dataset}}/filters/depth/{{dataset}}.{{ref}}_{{population}}{{dp}}_chunk{chunk}.depthGlobal",
+                chunk=chunklist,
+            ),
+        output:
+            "results/datasets/{dataset}/filters/depth/{dataset}.{ref}_{population}{dp}.depthGlobal",
+        log:
+            "logs/{dataset}/filters/depth/{dataset}.{ref}_{population}{dp}_combined.log",
+        benchmark:
+            "benchmarks/{dataset}/filters/depth/{dataset}.{ref}_{population}{dp}_combined.log"
+        conda:
+            "../envs/shell.yaml"
+        shell:
+            """
+            cat {input} > {output} 2> {log}
+            """
+
+    rule summarize_depths:
+        """Estimate mean and bounds of middle 95% of the global depth distribution"""
+        input:
+            "results/datasets/{dataset}/filters/depth/{dataset}.{ref}_{population}{dp}.depthGlobal",
+        output:
+            "results/datasets/{dataset}/filters/depth/{dataset}.{ref}_{population}{dp}_depth.summary",
+        log:
+            "logs/{dataset}/filters/depth/{dataset}.{ref}_{population}{dp}_depth_extremes.log",
+        benchmark:
+            "benchmarks/{dataset}/filters/depth/{dataset}.{ref}_{population}{dp}_depth_extremes.log"
+        conda:
+            "../envs/r.yaml"
+        params:
+            lower=config["analyses"]["extreme_depth"][0],
+            upper=config["analyses"]["extreme_depth"][1],
+        threads: lambda wildcards, attempt: attempt * 2
+        script:
+            "../scripts/depth_extremes.R"
+
+    rule depth_bed:
+        """Create a bed file containing regions of extreme depth in a subset"""
+        input:
+            genbed="results/ref/{ref}/beds/genome.bed",
+            quants="results/datasets/{dataset}/filters/depth/{dataset}.{ref}_{population}{dp}_depth.summary",
+            pos=lambda w: expand(
+                "results/datasets/{{dataset}}/filters/depth/{{dataset}}.{{ref}}_{{population}}{{dp}}_chunk{chunk}.pos.gz",
+                chunk=chunklist,
+            ),
+        output:
+            "results/datasets/{dataset}/filters/depth/{dataset}.{ref}_{population}{dp}_extreme-depth.bed",
+        log:
+            "logs/{dataset}/filters/depth/bed/{dataset}.{ref}_{population}{dp}.log",
+        benchmark:
+            "benchmarks/{dataset}/filters/depth/bed/{dataset}.{ref}_{population}{dp}.log"
+        conda:
+            "../envs/bedtools.yaml"
+        threads: lambda wildcards, attempt: attempt
+        shell:
+            r"""
+            (lower=$(awk '{{print $2}}' {input.quants})
+            upper=$(awk '{{print $3}}' {input.quants})
+            for i in {input.pos}; do
+                zcat $i | tail -n +2 | \
+                awk -v lower=$lower -v upper=$upper '$3 > lower && $3 < upper'
+            done | \
+            awk '{{print $1"\t"$2-1"\t"$2}}' > {output}
+            bedtools merge -i {output} > {output}.tmp
+            bedtools subtract -a {input.genbed} -b {output}.tmp > {output}
+            rm {output}.tmp) 2> {log}
+            """
+
+    rule combine_depth_bed:
         """
-        (nInd=$(cat {input.bamlist} | wc -l | awk '{{print $1+1}}')
-        maxDP=$(echo 1000 $nInd | awk '{{print $1 * $2}}')
-
-        angsd -bam {input.bamlist} -nThreads {threads} -rf {input.regions} \
-            -doCounts 1 -dumpCounts 1 -doDepth 1 -maxDepth $maxDP -out {params.out}
-        ) 2> {log}
+        Combine beds for each subset to get a set of regions with extreme depth in any
+        subset
         """
+        input:
+            beds=expand(
+                "results/datasets/{{dataset}}/filters/depth/{{dataset}}.{{ref}}_{population}{{dp}}_extreme-depth.bed",
+                population=["all"] + list(set(samples.depth.values)),
+            ),
+            gensum="results/ref/{ref}/beds/genome.bed.sum",
+        output:
+            bed="results/datasets/{dataset}/filters/depth/{dataset}.{ref}{dp}_extreme-depth.bed",
+            sum="results/datasets/{dataset}/filters/depth/{dataset}.{ref}{dp}_extreme-depth.bed.sum",
+        log:
+            "logs/{dataset}/filters/depth/bed/{dataset}.{ref}{dp}_combine-bed.log",
+        benchmark:
+            "benchmarks/{dataset}/filters/depth/bed/{dataset}.{ref}{dp}_combine-bed.log"
+        conda:
+            "../envs/bedtools.yaml"
+        shadow:
+            "minimal"
+        resources:
+            runtime=240,
+        shell:
+            """
+            # combine beds
+            (cat {input.beds} > {output.bed}.tmp
+            sort -k1,1 -k2,2n {output.bed}.tmp > {output.bed}.tmp.sort
+            rm {output.bed}.tmp
 
+            bedtools merge -i {output.bed}.tmp.sort > {output.bed}
+            rm {output.bed}.tmp.sort
 
-rule combine_depths:
-    """Merge global depth files across chunks"""
-    input:
-        lambda w: expand(
-            "results/datasets/{{dataset}}/filters/depth/{{dataset}}.{{ref}}_{{population}}{{dp}}_chunk{chunk}.depthGlobal",
-            chunk=chunklist,
-        ),
-    output:
-        "results/datasets/{dataset}/filters/depth/{dataset}.{ref}_{population}{dp}.depthGlobal",
-    log:
-        "logs/{dataset}/filters/depth/{dataset}.{ref}_{population}{dp}_combined.log",
-    benchmark:
-        "benchmarks/{dataset}/filters/depth/{dataset}.{ref}_{population}{dp}_combined.log"
-    conda:
-        "../envs/shell.yaml"
-    shell:
-        """
-        cat {input} > {output} 2> {log}
-        """
-
-
-rule summarize_depths:
-    """Estimate mean and bounds of middle 95% of the global depth distribution"""
-    input:
-        "results/datasets/{dataset}/filters/depth/{dataset}.{ref}_{population}{dp}.depthGlobal",
-    output:
-        "results/datasets/{dataset}/filters/depth/{dataset}.{ref}_{population}{dp}_depth.summary",
-    log:
-        "logs/{dataset}/filters/depth/{dataset}.{ref}_{population}{dp}_depth_extremes.log",
-    benchmark:
-        "benchmarks/{dataset}/filters/depth/{dataset}.{ref}_{population}{dp}_depth_extremes.log"
-    conda:
-        "../envs/r.yaml"
-    params:
-        lower=0.025,
-        upper=0.975,
-    threads: lambda wildcards, attempt: attempt * 2
-    script:
-        "../scripts/depth_extremes.R"
-
-
-rule depth_bed:
-    """Create a bed file containing regions of extreme depth in a subset"""
-    input:
-        genbed="results/ref/{ref}/beds/genome.bed",
-        quants="results/datasets/{dataset}/filters/depth/{dataset}.{ref}_{population}{dp}_depth.summary",
-        pos=lambda w: expand(
-            "results/datasets/{{dataset}}/filters/depth/{{dataset}}.{{ref}}_{{population}}{{dp}}_chunk{chunk}.pos.gz",
-            chunk=chunklist,
-        ),
-    output:
-        "results/datasets/{dataset}/filters/depth/{dataset}.{ref}_{population}{dp}_extreme-depth.bed",
-    log:
-        "logs/{dataset}/filters/depth/bed/{dataset}.{ref}_{population}{dp}.log",
-    benchmark:
-        "benchmarks/{dataset}/filters/depth/bed/{dataset}.{ref}_{population}{dp}.log"
-    conda:
-        "../envs/bedtools.yaml"
-    shell:
-        r"""
-        (lower=$(awk '{{print $2}}' {input.quants})
-        upper=$(awk '{{print $3}}' {input.quants})
-        for i in {input.pos}; do
-            zcat $i | tail -n +2 | \
-            awk -v lower=$lower -v upper=$upper '$3 > lower && $3 < upper'
-        done | \
-        awk '{{print $1"\t"$2-1"\t"$2}}' > {output}
-        bedtools merge -i {output} > {output}.tmp
-        bedtools subtract -a {input.genbed} -b {output}.tmp > {output}
-        rm {output}.tmp) 2> {log}
-        """
-
-
-rule combine_depth_bed:
-    """
-    Combine beds for each subset to get a set of regions with extreme depth in any
-    subset
-    """
-    input:
-        beds=expand(
-            "results/datasets/{{dataset}}/filters/depth/{{dataset}}.{{ref}}_{population}{{dp}}_extreme-depth.bed",
-            population=["all"] + list(set(samples.depth.values)),
-        ),
-        gensum="results/ref/{ref}/beds/genome.bed.sum",
-    output:
-        bed="results/datasets/{dataset}/filters/depth/{dataset}.{ref}{dp}_extreme-depth.bed",
-        sum="results/datasets/{dataset}/filters/depth/{dataset}.{ref}{dp}_extreme-depth.bed.sum",
-    log:
-        "logs/{dataset}/filters/depth/bed/{dataset}.{ref}{dp}_combine-bed.log",
-    benchmark:
-        "benchmarks/{dataset}/filters/depth/bed/{dataset}.{ref}{dp}_combine-bed.log"
-    conda:
-        "../envs/bedtools.yaml"
-    shadow:
-        "minimal"
-    resources:
-        runtime=240,
-    shell:
-        """
-        # combine beds
-        (cat {input.beds} > {output.bed}.tmp
-        sort -k1,1 -k2,2n {output.bed}.tmp > {output.bed}.tmp.sort
-        rm {output.bed}.tmp
-
-        bedtools merge -i {output.bed}.tmp.sort > {output.bed}
-        rm {output.bed}.tmp.sort
-
-        # summarize bed
-        len=$(awk 'BEGIN{{SUM=0}}{{SUM+=$3-$2}}END{{print SUM}}' {output.bed})
-        echo $len $(awk -F "\t" '{{print $2}}' {input.gensum}) | \
-            awk '{{print "Depth\t"$2-$1"\t"($2-$1)/$2*100}}' \
-            > {output.sum}) 2> {log}
-        """
+            # summarize bed
+            len=$(awk 'BEGIN{{SUM=0}}{{SUM+=$3-$2}}END{{print SUM}}' {output.bed})
+            echo $len $(awk -F "\t" '{{print $2}}' {input.gensum}) | \
+                awk '{{print "Depth\t"$2-$1"\t"($2-$1)/$2*100}}' \
+                > {output.sum}) 2> {log}
+            """
 
 
 rule angsd_missdata:
     """
-    Print sites with data for more than a set proportion of individuals per population 
+    Print sites with data for more than a set proportion of individuals per population
     and across the whole dataset
     """
     input:
@@ -559,7 +564,7 @@ rule missdata_bed:
 
 rule combine_beds:
     """
-    Subtract all the BED files produced above from the whole genome BED to get a list 
+    Subtract all the BED files produced above from the whole genome BED to get a list
     of filtered sites to use for analyses
     """
     input:
@@ -595,7 +600,7 @@ rule combine_beds:
             cat $i >> {output.sum}
         done
 
-        filtlen=$(awk 'BEGIN{{SUM=0}}{{SUM+=$3-$2-1}}END{{print SUM}}' \
+        filtlen=$(awk 'BEGIN{{SUM=0}}{{SUM+=$3-$2}}END{{print SUM}}' \
             {output.bed})
         echo $filtlen $(awk -F "\t" '{{print $2}}' {input.sum}) | \
             awk '{{print "Combined\t"$1"\t"$1/$2*100}}' >> {output.sum}
@@ -639,14 +644,14 @@ rule user_sites:
         r"""
         (sed \$d {input.sum} > {output.sum}
 
-        siteslen=$(awk 'BEGIN{{SUM=0}}{{SUM+=$3-$2-1}}END{{print SUM}}' {input.newfilt})
+        siteslen=$(awk 'BEGIN{{SUM=0}}{{SUM+=$3-$2}}END{{print SUM}}' {input.newfilt})
         echo $siteslen $(awk -F "\t" '{{print $2}}' {input.gensum}) | \
             awk '{{print "{wildcards.sites}-filts\t"$1"\t"$1/$2*100}}' \
             >> {output.sum}
         bedtools subtract -a {input.gen} -b {input.newfilt} > {output.tmp}
         bedtools subtract -a {input.allfilt} -b {output.tmp} > {output.bed}
 
-        filtlen=$(awk 'BEGIN{{SUM=0}}{{SUM+=$3-$2-1}}END{{print SUM}}' {output.bed})
+        filtlen=$(awk 'BEGIN{{SUM=0}}{{SUM+=$3-$2}}END{{print SUM}}' {output.bed})
         echo $filtlen $(awk -F "\t" '{{print $2}}' {input.gensum}) | \
             awk '{{print "Combined\t"$1"\t"$1/$2*100}}' >> {output.sum}
         

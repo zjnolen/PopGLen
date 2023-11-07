@@ -49,6 +49,7 @@ wildcard_constraints:
     ),
     dp=(subsample[0] + "|.{0}" if len(subsample) == 2 else ".{0}"),
     chunk="[0-9]+",
+    sites="|".join(filters),
 
 
 # Accumulate desired output files from config file
@@ -64,11 +65,6 @@ if config["analyses"]["qualimap"]:
 if config["analyses"]["damageprofiler"]:
     all_outputs.append(
         "results/mapping/qc/damageprofiler/{histsample}.{ref}/dmgprof.json"
-    )
-
-if config["analyses"]["endogenous_content"]:
-    all_outputs.append(
-        "results/datasets/{dataset}/qc/endogenous_content/{dataset}.{ref}_all.endo.tsv"
     )
 
 if config["analyses"]["estimate_ld"]:
@@ -94,9 +90,14 @@ if config["analyses"]["relatedness"]["ngsrelate"]:
         "results/datasets/{dataset}/analyses/kinship/ngsrelate/{dataset}.{ref}_all{dp}_{sites}-filts_relate.html"
     )
 
-if config["analyses"]["relatedness"]["waples2019"]:
+if config["analyses"]["relatedness"]["ibsrelate_sfs"]:
     all_outputs.append(
-        "results/datasets/{dataset}/analyses/kinship/waples2019/{dataset}.{ref}_all{dp}_{sites}-filts.kinship.html"
+        "results/datasets/{dataset}/analyses/kinship/ibsrelate_sfs/{dataset}.{ref}_all{dp}_{sites}-filts.kinship.html"
+    )
+
+if config["analyses"]["relatedness"]["ibsrelate_ibs"]:
+    all_outputs.append(
+        "results/datasets/{dataset}/analyses/kinship/ibsrelate_ibs/{dataset}.{ref}_all{dp}_{sites}-filts.kinship.html"
     )
 
 if config["analyses"]["pca_pcangsd"]:

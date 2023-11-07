@@ -1,6 +1,6 @@
 # Genotype likelihood population genomics pipeline
 
-This workflow aimmed at processing raw sequencing reads and calculating
+This workflow is aimed at processing raw sequencing reads and calculating
 population genomic statistics within a genotype likelihood framework. As it is
 focused on GL methods, it has options to adapt the workflow for processing data
 with low or variable coverage and/or contains historical/ancient samples with
@@ -8,10 +8,8 @@ degraded DNA. It is under active development, so new features will be added.
 
 ## Getting Started
 
-To run this workflow, you'll need paired-end raw sequencing data and a
-reference genome to map it to. Currently, the workflow is only compatiblity
-with datasets containing only a single library and paired-end sequencing run
-per sample, and reference genomes must be uncompressed.
+To run this workflow, you'll need paired-end raw sequencing data and an
+uncompressed reference genome to map it to.
 
 To run the workflow, you will need to be working on a machine with the
 following:
@@ -42,15 +40,26 @@ work, as calculating chunks is hard-coded to work on an uncompressed genome.
 Development was done on UPPMAX's Rackham cluster, and a simple profile is
 included in the [`rackham`](rackham) folder to simplify running this workflow
 through SLURM there. For running on other SLURM based cluster configs, this
-file should largely work with a few minor modifications of the defaults. See
-[Snakemake's cluster support documentation](https://snakemake.readthedocs.io/en/stable/executing/cluster.html)
-for information on how to adapt the profile for other HPC environments.
+file should largely work with a few minor modifications of the defaults.
+Primarily, this means ensuring that the resources make sense for your system,
+i.e. changing the default partition and account. Not changing the default
+memory may result in over-reserving memory in some cases, but a quick fix would
+be to change `6400` to whatever the default memory reserved per cpu is on your
+HPC (though then you might need to up the threads requested fo in some rules).
+See [Snakemake's cluster support documentation](https://snakemake.readthedocs.io/en/stable/executing/cluster.html)
+for information on how to adapt the profile for your HPC environment.
 
-#### Notes on resources
+#### Resources (and what to do if the workflow is over/underbooking resources)
 
 As Rackham ties memory reservations to cpu reservations, the resource
 allocation for rules is mostly done through threads currently. In the future
-thread and memory resources will be more explicitly defined.
+thread and memory resources will be more explicitly defined. For now, if you
+find that the workflow is over/underbooking a given resource, you can adjust
+the resource reservations in your run profile. See the commented section in
+the [`rackham/config.yaml`](rackham/config.yaml) config to see an example of
+this. Right now, memory is only ever defined through threads, so you may need
+to lower the threads and add a memory resource to some rules using this method
+in order to optimize them for your system.
 
 ## Features
 
@@ -97,6 +106,7 @@ libraries
   for the entire dataset, and subsets at certain coverage ranges, then merged)
 - Exclusion of sites based on data missingness across dataset and/or per
   population
+- Filter using any number of additional user-defined BED files
 
 ### GL based population genomic analyses
 
@@ -121,10 +131,11 @@ variance in depth between groups.
 
 **Analyses:**
 
+- Estimation of linkage disequilibrium across genome and LD decay using ngsLD
 - Linkage pruning where relevant with ngsLD
 - PCA with PCAngsd
 - Admixture with NGSAdmix
-- Relatedness using NgsRelate and methods from Waples et al. 2019, *Mol. Ecol.*
+- Relatedness using NgsRelate and IBSrelate
 - 1D and 2D Site frequency spectrum production with ANGSD
 - Neutrality statistics per population (Watterson's theta, pairwise pi,
   Tajima's D) in user defined sliding windows with ANGSD
@@ -135,6 +146,9 @@ variance in depth between groups.
   (**NOTE** This is currently only possible for samples that are within a
   population sampling, not for lone samples which will always return an
   inbreeding coefficient of 0)
+- Pairwise $F_{ST}$ between all populations or individuals in user defined
+  sliding windows with ANGSD
+- Identity by state (IBS) matrix between all samples using ANGSD
 
 ### Planned
 
@@ -151,12 +165,20 @@ corresponding to priority:
 
 ## Workflow directed action graph
 
-Here is a rough graph of the workflow with some rules removed for readability.
-It will at some point get a readability improvement when the workflow is
-finalized! This is also not really how it looks in the current version, but
-it is a close approximation of the flow as of now.
+Below is a graph of the workflow with most of the analyses enabled. This is
+generated directly by Snakemake, though I have removed the `all`, `popfile`,
+and `link_ref` rules to improve readability, as they are not needed to
+understand the analysis flow. A more condensed, readable diagram will be added
+shortly.
 
-![A directed action graph (DAG) of the main workflow](dag.svg)
+In general, there a few stages that can be seen grouping here. A mapping stage
+at the top, ending with `symlink_bams`, followed by the creation of a set of
+filters for the dataset that ends with `combine_beds`. Afterwards, population
+genetic analyses are performed in primarily two pathways - allele frequency
+based results (starting with `angsd_doSaf_sample/pop`) and SNP based results
+(starting with `angsd_doGlf2` (beagle)).
+
+![A directed action graph (DAG) of the main workflow](images/rulegraph.svg)
 
 ## Acknowledgements
 

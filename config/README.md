@@ -57,7 +57,8 @@ tab separated:
 will put what analyses, filters, and options you want. Below I describe the
 configuration options. The [`config.yaml`](config.yaml) in this repository
 serves as a template, but includes some 'default' parameters that may be good
-starting points for some users.
+starting points for some users. If `--configfile` is not specified in the
+snakemake command, the workflow will default to `config/config.yaml`.
 
 ### Configuration options
 
@@ -95,8 +96,9 @@ Required configuration of the reference.
   'chunks' of contigs of this size to parallelize processing. This size should
   be larger than the largest contig in your genome. A larger number means fewer
   jobs that run longer. A smaller number means more jobs that run shorter. The
-  best fit will depend on the referenceand the compute resources you have
-  available.
+  best fit will depend on the reference and the compute resources you have
+  available. Leaving this blank will not divide the reference up into chunks
+  (but this isn't optimized yet, so it will do a couple unnecessary steps).
 
 - `reference:`
   - `name:` A name for your reference genome, will go in the file names.
@@ -134,14 +136,6 @@ to exclude them where necessary.
   Admixture analyses. Useful for close relatives that violate the assumptions
   of these analyses, but that you want in others. Should be a list in [].
 
-#### Downsampling Configuration
-
-- `downsample_cov:` An integer describing the mean filtered coverage to
-  downsample all BAMs to. If included, this will perform all analyses twice,
-  once with the full BAMs and once with the downsampled BAMs. This is useful
-  if you have highly variable coverage, and you want to see if effects still
-  are present when all individuals have low coverage.
-
 #### Analysis Selection
 
 Here, you will define which analyses you will perform. It is useful to start
@@ -166,7 +160,11 @@ settings for each analysis are set in the next section.
     - `build_lib:` Use RepeatModeler to build a library of repeats from the
       reference itself, then filter them from analysis (`true`/`false`).
   - `extreme_depth:` Filter out sites with extremely high or low global
-    sequencing depth (i.e. top and bottom 2.5%). (`true`/`false`)
+    sequencing depth (`[lower, upper]`). The value of `lower` (float) will be
+    multiplied by the median global depth to create a lower global depth
+    threshold, and `upper` will do the same to creat an upper threshold. This
+    is done for all samples, as well as separately for depth groupings defined
+    in samples file.
   - `dataset_missing_data:` A floating point value between 0 and 1. Sites with
     data for fewer than this proportion of individuals across the whole dataset
     will be filtered out.
@@ -176,9 +174,10 @@ settings for each analysis are set in the next section.
   - `qualimap:` Perform Qualimap bamqc on bam files for general quality stats
     (`true`/`false`)
   - `damageprofiler:` Estimate post-mortem DNA damage on historical samples
-    with Damageprofiler (`true`/`false`)
-  - `endogenous_content:` Estimate endogenous content (proportion of reads
-    mapping to reference) for all samples (`true`/`false`)
+    with Damageprofiler (`true`/`false`) NOTE: This just adds the addition of
+    Damageprofiler to the already default output of MapDamage. DNA damage will
+    always be estimated and rescaled by MapDamage for samples marked as
+    'historical'
   - `estimate_ld:` Estimate pairwise linkage disquilibrium between sites with
     ngsLD for each popualation and the whole dataset. Note, only set this if
     you want to generate the LD estimates for use in downstream analyses
@@ -190,15 +189,40 @@ settings for each analysis are set in the next section.
   - `pca_pcangsd:` Perform Principal Component Analysis with PCAngsd
     (`true`/`false`)
   - `admix_ngsadmix:` Perform admixture analysis with NGSadmix (`true`/`false`)
-  - `relatedness:` Can be performed multiple ways, set one or both of the below
-    options
+  - `relatedness:` Can be performed multiple ways, set any combination of the
+    three options below. Note, that I've mostly incorporated these with the
+    R0/R1/KING kinship methods in Waples et al. 2019, *Mol. Ecol.* in mind.
+    These methods differ slightly from how they implement this method, and will
+    give slightly more/less accurate estimates of kinship depending on your
+    reference's relationship to your samples. `ibsrelate_ibs` uses the
+    probabilities of all possible genotypes, so should be the most accurate
+    regardless, but can use a lot of memory and take a long time with many
+    samples. `ibsrelate_sfs` is a bit more efficient, as it does things in a
+    pairwise fashion in parallel, but may be biased if the segregating alleles
+    in your populations are not represented in the reference. `ngsrelate` uses
+    several methods, one of which is similar to `ibsrelate_sfs`, but may be
+    less accurate due to incorporating in less data. In my experience,
+    NGSrelate is suitable to identify up to third degree relatives in the
+    dataset, but only if the exact relationship can be somewhat uncertain (i.e.
+    you don't need to know the difference between, say, parent/offspring and
+    full sibling pairs, or between second degree and third degree relatives).
+    IBSrelate_sfs can get you greater accuracy, but may erroneously inflate
+    kinship if your datset has many alleles not represented in your reference.
+    If you notice, for instance, a large number of third degree relatives
+    (KING ~0.03 - 0.07) in your dataset that is not expected, it may be worth
+    trying the IBS based method (`ibsrelate_ibs`).
     - `ngsrelate:` Co-estimate inbreeding and pairwise relatedness with
       NGSrelate (`true`/`false`)
-    - `waples2019:` Estimate pairwise relatedness with the methods from Waples
-      et al. 2019, *Mol. Ecol.*. Enabling this can greatly increase the time
-      needed to build the workflow DAG if you have many samples. As a form of
-      this method is implemented in NGSrelate, so it may be more efficient to
-      only enable that. (`true`/`false`)
+    - `ibsrelate_ibs:` Estimate pairwise relatedness with the IBS based method
+      from Waples et al. 2019, *Mol. Ecol.*. This can use a lot of memory, as
+      it has genotype likelihoods for all sites from all samples loaded into
+      memory, so it is done per 'chunk', which still takes a lot of time and
+      memory. (`true`/`false`)
+    - `ibsrelate_sfs:` Estimate pairwise relatedness with the SFS based method
+      from Waples et al. 2019, *Mol. Ecol.*. Enabling this can greatly increase
+      the time needed to build the workflow DAG if you have many samples. As a
+      form of this method is implemented in NGSrelate, it may be more
+      efficient to only enable that. (`true`/`false`)
   - `thetas_angsd:` Estimate pi, theta, and Tajima's D for each population in
     windows across the genome using ANGSD (`true`/`false`)
   - `heterozygosity_angsd:` Estimate individual genome-wide heterozygosity
@@ -292,12 +316,20 @@ or a pull request and I'll gladly put it in.
       at `1000`. (integer, [docs](http://www.popgen.dk/angsd/index.php/Depth))
     - `extra:` Additional options to pass to ANGSD during genotype likelihood
       calculation. This is primarily useful for adding BAM input filters. Note
-      that `--remove_bads` and `-only_proper_pairs` are enabled by default, and
-      the default config for this workflow adds `-C 50 -uniqueOnly 1`, and the
-      workflow uses the above specified mapping and base quality filters, which
-      all together should be good filtering for many. As such, `-trim` and
-      `-baq` may be the main additional desireable options to the default
-      config. (string, [docs](http://www.popgen.dk/angsd/index.php/Input#BAM.2FCRAM))
+      that `--remove_bads` and `-only_proper_pairs` are enabled by default, so
+      they only need to be included if you want to turn them off. I've also
+      found that for some datasets, `-C 50` and `-baq 1` can create a strong
+      relationship between sample depth and detected diversity, effectively
+      removing the benefits of ANGSD for low/variable depth data. I recommend
+      that these aren't included unless you know you need them, and even then,
+      I'd recommend plotting `heterozygosity ~ sample depth` to ensure there is
+      not any relationship. Since the workflow uses bwa to map, `-uniqueOnly 1`
+      doesn't do anything if your minimum mapping quality is > 0. Don't put
+      mapping and base quality thresholds here either, it will use the ones
+      defined above automatically. Although historical samples will have DNA
+      damaged assessed and to some extent, corrected, it may be useful to put
+      `-noTrans 1` or `-trim INT` here if you're interested in stricter filters
+      for degraded DNA. (string, [docs](http://www.popgen.dk/angsd/index.php/Input#BAM.2FCRAM))
     - `snp_pval:` The p-value to use for calling SNPs (float, [docs](http://www.popgen.dk/angsd/index.php/SNP_calling))
     - `min_maf:` The minimum minor allele frequency required to call a SNP.
       (float, [docs](http://www.popgen.dk/angsd/index.php/Allele_Frequencies))
@@ -326,9 +358,9 @@ or a pull request and I'll gladly put it in.
     - `pruning_min-weight:` The minimum r^2 to assume two positions are in
       linkage disequilibrium when pruning (float)
   - `realSFS:` Settings for realSFS
-    - `fold:` Whether or not to fold the produced SFS (0 or 1, [docs](http://www.popgen.dk/angsd/index.php/SFS_Estimation)) **NOTE:** I have not implemented
-      the use of an ancestral reference into this workflow, so this should
-      always be set to 1 until I implement this.
+    - `fold:` Whether or not to fold the produced SFS (0 or 1, [docs](http://www.popgen.dk/angsd/index.php/SFS_Estimation))
+      **NOTE:** I have not implemented the use of an ancestral reference into
+      this workflow, so this should always be set to 1 until I implement this.
     - `sfsboot:` Doesn't work now, but when it does it will produce this many
       bootstrapped SFS per population and population pair (integer)
   - `fst:` Settings for $F_{ST}$ calculation in ANGSD
@@ -343,7 +375,8 @@ or a pull request and I'll gladly put it in.
     - `win_step:` Window step size in bp for sliding window analysis (integer)
   - `ngsadmix:` Settings for admixture analysis with NGSadmix. This analysis is
     performed for a set of K groupings, and each K has several replicates
-    performed. Replicates will continue until a set of N highest likelihood replicates converge, or the number of replicates reaches an upper threshold
+    performed. Replicates will continue until a set of N highest likelihood
+    replicates converge, or the number of replicates reaches an upper threshold
     set here. Defaults for `reps`, `minreps`, `thresh`, and `conv` can be left
     as default for most.
     - `kvalues:` A list of values of K to fit the data to (list of integers)

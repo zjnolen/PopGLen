@@ -13,6 +13,12 @@ import csv
 
 min_version("7.25.0")
 
+# Load default configfile
+
+
+configfile: "config/config.yaml"
+
+
 # Create variables for software containers (for easier version updating)
 
 angsd_container = "docker://zjnolen/angsd:0.940"
@@ -45,6 +51,9 @@ def chunkify(reference_fasta, chunk_size):
         + config["reference"]["exclude"],
         inplace=True,
     )
+    # Set to 1 chunk if no chunk size provided
+    if not chunk_size:
+        chunk_size = sum(df["length"]) + 1
     # Error out if configured chunk size is smaller than the largest contig
     if chunk_size < max(df["length"]):
         raise ValueError(
@@ -73,9 +82,9 @@ def chunkify(reference_fasta, chunk_size):
                 # new_df = df.iloc[0:0, :].copy()
                 total = row["length"]
             included.append(row)
-            if n + 1 == len(df):
-                new_df = pd.DataFrame(included)
-                dfs.append(new_df)
+        if ((n + 1) == len(df)) and included:
+            new_df = pd.DataFrame(included)
+            dfs.append(new_df)
     return dfs
 
 
@@ -83,7 +92,6 @@ def chunkify(reference_fasta, chunk_size):
 
 chunks = chunkify(config["reference"]["fasta"], config["chunk_size"])
 chunklist = list(range(1, len(chunks) + 1))
-
 
 # Load sample sheet
 
@@ -280,7 +288,7 @@ def get_dedup_bam(wildcards):
         }
 
 
-## Determine if bam should use Picard or DeDup for duplicate removal
+## Determine if bam needs DNA damage rescaling
 def get_final_bam(wildcards):
     s = wildcards.sample
     if s in samples.index[samples.time == "historical"]:
@@ -311,16 +319,16 @@ def get_endo_cont_stat(wildcards):
 ## GLs for entire genome when only a subset is desired.
 
 
-def get_glf(wildcards):
-    if config["only_filter_beds"] and not any(config["filter_beds"].values()):
-        raise ValueError(
-            f"Config invalid - 'only_filter_beds' cannot be true without supplying bed "
-            f"files to at least one 'filter_beds' key."
-        )
-    elif config["only_filter_beds"]:
-        return "results/datasets/{dataset}/glfs/chunks/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.glf.gz"
-    else:
-        return "results/datasets/{dataset}/glfs/chunks/{dataset}.{ref}_{population}{dp}_chunk{chunk}_allsites-filts.glf.gz"
+# def get_glf(wildcards):
+#     if config["only_filter_beds"] and not any(config["filter_beds"].values()):
+#         raise ValueError(
+#             f"Config invalid - 'only_filter_beds' cannot be true without supplying bed "
+#             f"files to at least one 'filter_beds' key."
+#         )
+#     elif config["only_filter_beds"]:
+#         return "results/datasets/{dataset}/glfs/chunks/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.glf.gz"
+#     else:
+#         return "results/datasets/{dataset}/glfs/chunks/{dataset}.{ref}_{population}{dp}_chunk{chunk}_allsites-filts.glf.gz"
 
 
 ## Get random sampling proportion depending on if LD decay is being calculated
@@ -362,7 +370,7 @@ def get_kinship(wildcards):
     ind1 = [pair[0] for pair in combos]
     ind2 = [pair[1] for pair in combos]
     return expand(
-        "results/datasets/{{dataset}}/analyses/kinship/waples2019/{{dataset}}.{{ref}}_{ind1}-{ind2}{{dp}}_{{sites}}-filts.kinship",
+        "results/datasets/{{dataset}}/analyses/kinship/ibsrelate_sfs/{{dataset}}.{{ref}}_{ind1}-{ind2}{{dp}}_{{sites}}-filts.kinship",
         zip,
         ind1=ind1,
         ind2=ind2,
@@ -390,13 +398,8 @@ def get_sample_qcs(wildcards):
             "results/datasets/{{dataset}}/qc/ind_depth/filtered/{{dataset}}.{{ref}}_all{{dp}}_{sites}-filts.depth.sum",
             sites=filters,
         ),
+        "endo": "results/datasets/{dataset}/qc/endogenous_content/{dataset}.{ref}_all.endo.tsv",
     }
-    if config["analyses"]["endogenous_content"]:
-        dic.update(
-            {
-                "endo": "results/datasets/{dataset}/qc/endogenous_content/{dataset}.{ref}_all.endo.tsv"
-            }
-        )
     return dic
 
 

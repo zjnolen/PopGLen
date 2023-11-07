@@ -39,13 +39,12 @@ analyses:
     local_lib:
     dfam_lib:
     build_lib: true
-  extreme_depth: true
+  extreme_depth: [0.5, 1.5]
   dataset_missing_data: 0.5
   population_missing_data: 0.5
   # quality control
   qualimap: true
   damageprofiler: true
-  endogenous_content: true
   # population genomic analyses
   estimate_ld: true
   ld_decay: true
@@ -53,7 +52,8 @@ analyses:
   admix_ngsadmix: true
   relatedness: 
     ngsrelate: true
-    waples2019: true
+    ibsrelate_ibs: true
+    ibsrelate_sfs: true
   thetas_angsd: true
   heterozygosity_angsd: true
   fst_angsd:
@@ -87,7 +87,7 @@ params:
   angsd:
     gl_model: 2 # gl_model - 1=SAMtools, 2=GATK, 3=SOAPsnp, 4=SYK
     maxdepth: 1000
-    extra: "-C 50 -uniqueOnly 1"
+    extra: ""
     snp_pval: "1e-6"
     min_maf: 0.05
   ngsld:

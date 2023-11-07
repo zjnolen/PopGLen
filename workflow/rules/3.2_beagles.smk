@@ -9,10 +9,13 @@ rule angsd_doGlf2:
     population beagle files, even if a population is fixed for a certain allele.
     """
     input:
-        glf=get_glf,
-        fai="results/ref/{ref}/{ref}.fa.fai",
-        sites="results/datasets/{dataset}/filters/combined/{dataset}.{ref}{dp}_{sites}-filts.sites",
-        sitesidx="results/datasets/{dataset}/filters/combined/{dataset}.{ref}{dp}_{sites}-filts.sites.idx",
+        bam="results/datasets/{dataset}/bamlists/{dataset}.{ref}_{population}{dp}.bamlist",
+        bams=get_bamlist_bams,
+        bais=get_bamlist_bais,
+        ref="results/ref/{ref}/{ref}.fa",
+        regions="results/datasets/{dataset}/filters/chunks/{ref}_chunk{chunk}.rf",
+        sites="results/datasets/{dataset}/filters/combined/{dataset}.{ref}_{sites}-filts.sites",
+        idx="results/datasets/{dataset}/filters/combined/{dataset}.{ref}_{sites}-filts.sites.idx",
     output:
         beagle=temp(
             "results/datasets/{dataset}/beagles/chunks/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.beagle.gz"
@@ -28,6 +31,10 @@ rule angsd_doGlf2:
     container:
         angsd_container
     params:
+        gl_model=config["params"]["angsd"]["gl_model"],
+        extra=config["params"]["angsd"]["extra"],
+        mapQ=config["mapQ"],
+        baseQ=config["baseQ"],
         snp_pval=config["params"]["angsd"]["snp_pval"],
         minmaf=config["params"]["angsd"]["min_maf"],
         nind=lambda w: len(get_samples_from_pop(w.population)),
@@ -37,10 +44,11 @@ rule angsd_doGlf2:
         runtime=lambda wildcards, attempt: attempt * 720,
     shell:
         """
-        angsd -doGlf 2 -glf10_text {input.glf} -doMajorMinor 1 -doMaf 1 \
-            -SNP_pval {params.snp_pval} -minMaf {params.minmaf} -nThreads {threads} \
-            -sites {input.sites} -fai {input.fai} -nInd {params.nind} \
-            -out {params.out} &> {log}
+        angsd -doGlf 2 -bam {input.bam} -GL {params.gl_model} -ref {input.ref} \
+            -doMajorMinor 1 -doMaf 1 -SNP_pval {params.snp_pval} \
+            -minMaf {params.minmaf} -nThreads {threads} {params.extra} \
+            -minMapQ {params.mapQ} -minQ {params.baseQ} -sites {input.sites} \
+            -rf {input.regions} -out {params.out} &> {log}
         """
 
 

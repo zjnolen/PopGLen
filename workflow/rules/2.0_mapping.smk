@@ -194,7 +194,7 @@ rule bam_clipoverlap:
     output:
         bam="results/mapping/bams/{sample}.{ref}.rmdup.realn.clip.bam",
         # met="results/mapping/qc/fgbio_clipbam/{sample}.{ref}.fgbio_clip.metrics",
-        log="results/mapping/qc/bamutil_clipoverlap/{sample}.{ref}.clipoverlap.stats"
+        log="results/mapping/qc/bamutil_clipoverlap/{sample}.{ref}.clipoverlap.stats",
     log:
         # "logs/mapping/fgbio/clipbam/{sample}.{ref}.log",
         "logs/mapping/bamutil/clipoverlap/{sample}.{ref}.log",

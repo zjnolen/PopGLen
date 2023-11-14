@@ -33,6 +33,9 @@ downsample_cov:
 populations: []
 
 analyses:
+  # mapping options
+  mapping:
+    historical_only_collapsed: true
   # filtering
   genmap: true
   repeatmasker:
@@ -81,7 +84,9 @@ params:
     E: "2"
     map_thresh: 1
   fastp:
-    extra: "-p -g --overlap_len_require 15"
+    extra: "-p -g" # don't put --merge or --overlap_len_require here, they're implicit
+    min_overlap_mod: 30
+    min_overlap_hist: 15
   picard:
     MarkDuplicates: "--REMOVE_DUPLICATES true --OPTICAL_DUPLICATE_PIXEL_DISTANCE 2500"
   angsd:

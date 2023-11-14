@@ -150,6 +150,15 @@ settings for each analysis are set in the next section.
   analyses
 
 - `analyses:`
+  - `mapping:`
+    - `historical_only_collapsed:` Historical samples are expected to have
+      fragmented DNA. Overlapping (i.e. short) read pairs are collapsed in this
+      workflow, and while both overlapping and non-overlapping read pairs are
+      mapped for modern samples, setting this option to `true` will only map
+      the collapsed, overlapping read pairs for historical samples. This can
+      help avoid mapping contaminants, as longer fragments are likely from more
+      recent, non-endogenous DNA. However, in the event you want to map both,
+      you can set this to `false`. (`true`/`false`)
   - `genmap:` Filter out sites with low mappability estimated by Genmap
   (`true`/`false`)
   - `repeatmasker:` (NOTE: Only one of the three options should be filled/true)

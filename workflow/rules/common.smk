@@ -144,6 +144,15 @@ def get_raw_fastq(wildcards):
     return {"sample": [unit.fq1[0], unit.fq2[0]]}
 
 
+## Get minimum overlap to collapse read pairs per sample
+def get_min_overlap(wildcards):
+    s = wildcards.sample
+    if s in samples.index[samples.time == "historical"]:
+        return config["params"]["fastp"]["min_overlap_hist"]
+    elif s in samples.index[samples.time == "modern"]:
+        return config["params"]["fastp"]["min_overlap_mod"]
+
+
 # Reference
 
 
@@ -274,18 +283,21 @@ def get_sample_bams(wildcards):
 
 
 ## Select which duplicate removal process the bam goes through
-def get_dedup_bam(wildcards):
-    s = wildcards.sample
-    if s in samples.index[samples.time == "historical"]:
-        return {
-            "bam": "results/mapping/dedup/{sample}.{ref}.merged.rmdup.bam",
-            "bai": "results/mapping/dedup/{sample}.{ref}.merged.rmdup.bam.bai",
-        }
-    elif s in samples.index[samples.time == "modern"]:
-        return {
-            "bam": "results/mapping/dedup/{sample}.{ref}.clipped.rmdup.bam",
-            "bai": "results/mapping/dedup/{sample}.{ref}.clipped.rmdup.bam.bai",
-        }
+def get_dedup_bams(wildcards):
+    if config["analyses"]["mapping"]["historical_only_collapsed"]:
+        s = wildcards.sample
+        if s in samples.index[samples.time == "historical"]:
+            return ["results/mapping/dedup/{sample}.{ref}.merged.rmdup.bam"]
+        elif s in samples.index[samples.time == "modern"]:
+            return [
+                "results/mapping/dedup/{sample}.{ref}.paired.rmdup.bam",
+                "results/mapping/dedup/{sample}.{ref}.merged.rmdup.bam",
+            ]
+    else:
+        return [
+            "results/mapping/dedup/{sample}.{ref}.paired.rmdup.bam",
+            "results/mapping/dedup/{sample}.{ref}.merged.rmdup.bam",
+        ]
 
 
 ## Determine if bam needs DNA damage rescaling
@@ -293,23 +305,31 @@ def get_final_bam(wildcards):
     s = wildcards.sample
     if s in samples.index[samples.time == "historical"]:
         return {
-            "bam": "results/mapping/bams/{sample}.{ref}.rmdup.realn.rescaled.bam",
-            "bai": "results/mapping/bams/{sample}.{ref}.rmdup.realn.rescaled.bam.bai",
+            "bam": "results/mapping/bams/{sample}.{ref}.rmdup.realn.clip.rescaled.bam",
+            "bai": "results/mapping/bams/{sample}.{ref}.rmdup.realn.clip.rescaled.bam.bai",
         }
     elif s in samples.index[samples.time == "modern"]:
         return {
-            "bam": "results/mapping/bams/{sample}.{ref}.rmdup.realn.bam",
-            "bai": "results/mapping/bams/{sample}.{ref}.rmdup.realn.bam.bai",
+            "bam": "results/mapping/bams/{sample}.{ref}.rmdup.realn.clip.bam",
+            "bai": "results/mapping/bams/{sample}.{ref}.rmdup.realn.clip.bam.bai",
         }
 
 
 ## Get flagstat file for endogenous content calculation
 def get_endo_cont_stat(wildcards):
     s = wildcards.sample
-    if s in samples.index[samples.time == "modern"]:
-        return "results/mapping/mapped/{sample}.{ref}.paired.flagstat"
-    elif s in samples.index[samples.time == "historical"]:
-        return "results/mapping/mapped/{sample}.{ref}.merged.flagstat"
+    if (config["analyses"]["mapping"]["historical_only_collapsed"]) and (
+        s in samples.index[samples.time == "historical"]
+    ):
+        return {
+            "paired": "results/mapping/mapped/{sample}.{ref}.merged.flagstat",
+            "merged": "results/mapping/mapped/{sample}.{ref}.merged.flagstat",
+        }
+    else:
+        return {
+            "paired": "results/mapping/mapped/{sample}.{ref}.paired.flagstat",
+            "merged": "results/mapping/mapped/{sample}.{ref}.merged.flagstat",
+        }
 
 
 # ANGSD
@@ -343,7 +363,8 @@ def get_ngsld_sampling(wildcards):
 ## Get sample size for r^2 sample size corrections on LD decay
 def get_ngsld_n(wildcards):
     if config["params"]["ngsld"]["fit_LDdecay_n_correction"]:
-        return f"--n_ind {len(get_samples_from_pop(wildcards.population))}"
+        nind = len(get_samples_from_pop(wildcards.population))
+        return f"--n_ind {nind}"
     else:
         return ""
 

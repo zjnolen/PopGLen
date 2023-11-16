@@ -48,7 +48,7 @@ rule bwa_mem_paired:
         "v2.6.0/bio/bwa/mem"
 
 
-rule samtools_merge:
+rule samtools_merge_units:
     input:
         get_sample_bams,
     output:
@@ -90,39 +90,6 @@ rule mark_duplicates:
         "v1.17.2/bio/picard/markduplicates"
 
 
-rule bam_clipoverlap:
-    """Clip overlapping reads in paired end bam files"""
-    input:
-        bam="results/mapping/dedup/{sample}.{ref}.paired.rmdup.bam",
-        ref="results/ref/{ref}/{ref}.fa",
-    output:
-        bam=temp("results/mapping/dedup/{sample}.{ref}.clipped.rmdup.bam"),
-        bai=temp("results/mapping/dedup/{sample}.{ref}.clipped.rmdup.bam.bai"),
-        met="results/mapping/qc/fgbio_clipbam/{sample}.{ref}.fgbio_clip.metrics",
-    log:
-        "logs/mapping/fgbio/clipbam/{sample}.{ref}.log",
-    benchmark:
-        "benchmarks/mapping/fgbio/clipbam/{sample}.{ref}.log"
-    conda:
-        "../envs/fgbio.yaml"
-    shadow:
-        "minimal"
-    threads: lambda wildcards, attempt: attempt * 2
-    resources:
-        runtime=lambda wildcards, attempt: attempt * 1440,
-    shell:
-        """
-        (samtools sort -n -T {resources.tmpdir} -o {input.bam}.namesort.bam {input.bam}
-        fgbio -Xmx{resources.mem_mb}m ClipBam \
-                -i {input.bam}.namesort.bam \
-                -r {input.ref} -m {output.met} \
-                --clip-overlapping-reads=true \
-                -o {output.bam}.namesort.bam
-        samtools sort -T {resources.tmpdir} -o {output.bam} {output.bam}.namesort.bam
-        samtools index {output.bam}) 2> {log}
-        """
-
-
 rule dedup_merged:
     """Remove duplicates from collapsed read bam files"""
     input:
@@ -160,10 +127,27 @@ rule dedup_merged:
         """
 
 
+rule samtools_merge_dedup:
+    input:
+        get_dedup_bams,
+    output:
+        bam=temp("results/mapping/dedup/{sample}.{ref}.rmdup.bam"),
+    log:
+        "logs/mapping/samtools/merge/{sample}.{ref}.rmdup.log",
+    benchmark:
+        "benchmarks/mapping/samtools/{sample}.{ref}.rmdup.log"
+    threads: lambda wildcards, attempt: attempt * 4
+    resources:
+        runtime=lambda wildcards, attempt: attempt * 720,
+    wrapper:
+        "v2.6.0/bio/samtools/merge"
+
+
 rule realignertargetcreator:
     """Create intervals database for GATK Indel Realigner"""
     input:
-        unpack(get_dedup_bam),
+        bam="results/mapping/dedup/{sample}.{ref}.rmdup.bam",
+        bai="results/mapping/dedup/{sample}.{ref}.rmdup.bam.bai",
         ref="results/ref/{ref}/{ref}.fa",
         dict="results/ref/{ref}/{ref}.dict",
         fai="results/ref/{ref}/{ref}.fa.fai",
@@ -183,13 +167,14 @@ rule realignertargetcreator:
 rule indelrealigner:
     """Realign reads around indels"""
     input:
-        unpack(get_dedup_bam),
+        bam="results/mapping/dedup/{sample}.{ref}.rmdup.bam",
+        bai="results/mapping/dedup/{sample}.{ref}.rmdup.bam.bai",
         target_intervals="results/mapping/indelrealign/{sample}.{ref}.rmdup.intervals",
         ref="results/ref/{ref}/{ref}.fa",
         dict="results/ref/{ref}/{ref}.dict",
         fai="results/ref/{ref}/{ref}.fa.fai",
     output:
-        bam="results/mapping/bams/{sample}.{ref}.rmdup.realn.bam",
+        bam=temp("results/mapping/indelrealign/{sample}.{ref}.rmdup.realn.bam"),
     log:
         "logs/mapping/gatk/indelrealigner/{sample}.{ref}.log",
     benchmark:
@@ -201,12 +186,53 @@ rule indelrealigner:
         "v2.6.0/bio/gatk3/indelrealigner"
 
 
+rule bam_clipoverlap:
+    """Clip overlapping reads in paired end bam files"""
+    input:
+        bam="results/mapping/indelrealign/{sample}.{ref}.rmdup.realn.bam",
+        ref="results/ref/{ref}/{ref}.fa",
+    output:
+        bam="results/mapping/bams/{sample}.{ref}.rmdup.realn.clip.bam",
+        # met="results/mapping/qc/fgbio_clipbam/{sample}.{ref}.fgbio_clip.metrics",
+        log="results/mapping/qc/bamutil_clipoverlap/{sample}.{ref}.clipoverlap.stats",
+    log:
+        # "logs/mapping/fgbio/clipbam/{sample}.{ref}.log",
+        "logs/mapping/bamutil/clipoverlap/{sample}.{ref}.log",
+    benchmark:
+        # "benchmarks/mapping/fgbio/clipbam/{sample}.{ref}.log"
+        "benchmarks/mapping/bamutil/clipoverlap/{sample}.{ref}.log"
+    conda:
+        # "../envs/fgbio.yaml"
+        "../envs/bamutil.yaml"
+    shadow:
+        "minimal"
+    threads: lambda wildcards, attempt: attempt * 2
+    resources:
+        runtime=lambda wildcards, attempt: attempt * 1440,
+    # shell:
+    #     """
+    #     (samtools sort -n -T {resources.tmpdir} -o {input.bam}.namesort.bam {input.bam}
+    #     fgbio -Xmx{resources.mem_mb}m ClipBam \
+    #             -i {input.bam}.namesort.bam \
+    #             -r {input.ref} -m {output.met} \
+    #             --clip-overlapping-reads=true \
+    #             -o {output.bam}.namesort.bam
+    #     samtools sort -T {resources.tmpdir} -o {output.bam} {output.bam}.namesort.bam
+    #     samtools index {output.bam}) 2> {log}
+    #     """
+    shell:
+        """
+        bam clipOverlap --in {input.bam} --out {output.bam} --stats 2> {log}
+        cat {log} > {output.log}
+        """
+
+
 rule samtools_index:
     """Index bam files """
     input:
-        "results/mapping/bams/{prefix}.bam",
+        "results/mapping/{prefix}.bam",
     output:
-        "results/mapping/bams/{prefix}.bam.bai",
+        "results/mapping/{prefix}.bam.bai",
     log:
         "logs/mapping/samtools/index/{prefix}.log",
     benchmark:

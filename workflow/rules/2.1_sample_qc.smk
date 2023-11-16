@@ -54,28 +54,17 @@ rule endo_cont:
     content.
     """
     input:
-        get_endo_cont_stat,
+        unpack(get_endo_cont_stat),
     output:
-        "results/mapping/qc/endogenous_content/{sample}.{ref}.endo",
+        endo="results/mapping/qc/endogenous_content/{sample}.{ref}.endo",
     conda:
         "../envs/shell.yaml"
     log:
         "logs/mapping/endogenous_content/{sample}.{ref}.log",
     benchmark:
         "benchmarks/mapping/endogenous_content/{sample}.{ref}.log"
-    shell:
-        r"""
-        (total=$(grep -E "^[0-9]+ \+ [0-9]+ in total" {input} \
-            | awk '{{print $1}}')
-        mapped=$(grep -E "^[0-9]+ \+ [0-9]+ mapped" {input} \
-            | awk '{{print $1}}')
-        primary=$(grep -E "^[0-9]+ \+ [0-9]+ primary mapped" {input} \
-            | awk '{{print $1}}')
-
-        echo $total $mapped $primary {wildcards.sample} | \
-            awk '{{printf "%s\t%.3f\t%.3f\n",$4,$2/$1*100,$3/$1*100}}' \
-            > {output}) 2> {log}
-        """
+    script:
+        "../scripts/calc_endocont.sh"
 
 
 rule compile_endo_cont:
@@ -99,7 +88,7 @@ rule compile_endo_cont:
         runtime=lambda wildcards, attempt: attempt * 15,
     shell:
         """
-        (printf "sample\tperc.map\tperc.prim.map\n" > {output}
+        (printf "sample\tperc.merged.map\tperc.paired.map\tperc.total.map\n" > {output}
         cat {input} >> {output}) 2> {log}
         """
 

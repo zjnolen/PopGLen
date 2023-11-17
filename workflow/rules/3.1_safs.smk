@@ -40,6 +40,7 @@ rule angsd_doSaf_pop:
     params:
         gl_model=config["params"]["angsd"]["gl_model"],
         extra=config["params"]["angsd"]["extra"],
+        extra_saf=config["params"]["angsd"]["extra_saf"],
         mapQ=config["mapQ"],
         baseQ=config["baseQ"],
         out=lambda w, output: os.path.splitext(output.arg)[0],
@@ -51,7 +52,7 @@ rule angsd_doSaf_pop:
         angsd -doSaf 1 -bam {input.bam} -GL {params.gl_model} -ref {input.ref} \
             -nThreads {threads} {params.extra} -minMapQ {params.mapQ} \
             -minQ {params.baseQ} -sites {input.sites} -anc {input.ref} \
-            -rf {input.regions} -out {params.out} &> {log}
+            {params.extra_saf} -rf {input.regions} -out {params.out} &> {log}
         """
 
 
@@ -130,6 +131,7 @@ rule angsd_doSaf_sample:
     params:
         gl_model=config["params"]["angsd"]["gl_model"],
         extra=config["params"]["angsd"]["extra"],
+        extra_saf=config["params"]["angsd"]["extra_saf"],
         mapQ=config["mapQ"],
         baseQ=config["baseQ"],
         out=lambda w, output: os.path.splitext(output.arg)[0],
@@ -140,5 +142,5 @@ rule angsd_doSaf_sample:
         (angsd -doSaf 1 -bam {input.bam} -GL {params.gl_model} -ref {input.ref} \
             -nThreads {threads} {params.extra} -minMapQ {params.mapQ} \
             -minQ {params.baseQ} -sites {input.sites} -anc {input.ref} \
-            -out {params.out}) &> {log}
+            {params.extra_saf} -out {params.out}) &> {log}
         """

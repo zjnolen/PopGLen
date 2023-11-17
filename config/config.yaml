@@ -95,6 +95,8 @@ params:
     gl_model: 2 # gl_model - 1=SAMtools, 2=GATK, 3=SOAPsnp, 4=SYK
     maxdepth: 1000
     extra: ""
+    extra_saf: ""
+    extra_beagle: ""
     snp_pval: "1e-6"
     min_maf: 0.05
   ngsld:

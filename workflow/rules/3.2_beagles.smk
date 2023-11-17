@@ -33,6 +33,7 @@ rule angsd_doGlf2:
     params:
         gl_model=config["params"]["angsd"]["gl_model"],
         extra=config["params"]["angsd"]["extra"],
+        extra_beagle=config["params"]["angsd"]["extra_beagle"],
         mapQ=config["mapQ"],
         baseQ=config["baseQ"],
         snp_pval=config["params"]["angsd"]["snp_pval"],
@@ -48,7 +49,7 @@ rule angsd_doGlf2:
             -doMajorMinor 1 -doMaf 1 -SNP_pval {params.snp_pval} \
             -minMaf {params.minmaf} -nThreads {threads} {params.extra} \
             -minMapQ {params.mapQ} -minQ {params.baseQ} -sites {input.sites} \
-            -rf {input.regions} -out {params.out} &> {log}
+            {params.extra_beagle} -rf {input.regions} -out {params.out} &> {log}
         """
 
 

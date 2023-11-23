@@ -36,7 +36,7 @@ hist(with(df, rep(x = dp, times = count)),
   ),
   xlab = "Global Depth",
   ylab = "Count",
-  xlim = c(0,genome.dp.cumsum[length(genome.dp.cumsum)]*0.995)
+  xlim = c(0,genome.dp.cumsum[length(genome.dp.cumsum)]*0.995),
   breaks = 100
 )
 abline(v=quants[1], col = "red")

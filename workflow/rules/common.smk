@@ -206,12 +206,37 @@ def get_bed_filts(wildcards):
         bedsum.append("results/ref/{ref}/repeatmasker/{ref}.fa.out.gff.sum")
     # add global depth extremes filter if set
     if config["analyses"]["extreme_depth"]:
-        bedin.append(
-            "results/datasets/{dataset}/filters/depth/{dataset}.{ref}{dp}_extreme-depth.bed"
-        )
-        bedsum.append(
-            "results/datasets/{dataset}/filters/depth/{dataset}.{ref}{dp}_extreme-depth.bed.sum"
-        )
+        if (
+            not config["params"]["extreme_depth_filt"]["filt-on-dataset"]
+            and not config["params"]["extreme_depth_filt"]["filt-on-depth-classes"]
+        ):
+            raise ValueError(
+                f"Config invalid - extreme_depth filter is set to true, but neither "
+                f"filt-on-dataset or filt-on-depth-classes is set to true in the "
+                f"params, so no groups are defined for the filter to act on. Please "
+                f"set the filter to false if you do not want to filter on depth. If "
+                f"you do, please set the categories the filter will happen on."
+            )
+        if config["params"]["extreme_depth_filt"]["filt-on-dataset"]:
+            bedin.append(
+                "results/datasets/{dataset}/filters/depth/{dataset}.{ref}_all{dp}_extreme-depth.bed"
+            )
+            bedsum.append(
+                "results/datasets/{dataset}/filters/depth/{dataset}.{ref}_all{dp}_extreme-depth.bed.sum"
+            )
+        if config["params"]["extreme_depth_filt"]["filt-on-depth-classes"]:
+            bedin.extend(
+                expand(
+                    "results/datasets/{{dataset}}/filters/depth/{{dataset}}.{{ref}}_{population}{{dp}}_extreme-depth.bed",
+                    population=list(set(samples.depth.values)),
+                )
+            )
+            bedsum.extend(
+                expand(
+                    "results/datasets/{{dataset}}/filters/depth/{{dataset}}.{{ref}}_{population}{{dp}}_extreme-depth.bed.sum",
+                    population=list(set(samples.depth.values)),
+                )
+            )
     # add dataset level missing data filter if set
     if config["analyses"]["dataset_missing_data"]:
         bedin.extend(

@@ -169,11 +169,8 @@ settings for each analysis are set in the next section.
     - `build_lib:` Use RepeatModeler to build a library of repeats from the
       reference itself, then filter them from analysis (`true`/`false`).
   - `extreme_depth:` Filter out sites with extremely high or low global
-    sequencing depth (`[lower, upper]`). The value of `lower` (float) will be
-    multiplied by the median global depth to create a lower global depth
-    threshold, and `upper` will do the same to creat an upper threshold. This
-    is done for all samples, as well as separately for depth groupings defined
-    in samples file.
+    sequencing depth. Set the parameters for this filtering in the `params`
+    section of the yaml. (`true`/`false`)
   - `dataset_missing_data:` A floating point value between 0 and 1. Sites with
     data for fewer than this proportion of individuals across the whole dataset
     will be filtered out.
@@ -312,6 +309,28 @@ or a pull request and I'll gladly put it in.
     - `map_thresh:` A threshold mappability score. Sites with a mappability
       score below this threshold are filtered out if GenMap is enabled.
       (integer/float, 0-1)
+  - `extreme_depth_filt:` Parameters for excluding sites based on extreme high
+    and/or low global depth. The final sites list will contain only sites that
+    pass the filters for all categories requested (i.e the whole dataset
+    and/or the depth categories set in samples.tsv).
+    - `method:` Whether you will generate extreme thresholds as a multiple of
+      the median global depth (`"median"`) or as percentiles of the
+      global depth distribution (`"percentile"`)
+    - `bounds:` The bounds of the depth cutoff, defined as a numeric list. For
+      the median method, the values will be multiplied by the median of the
+      distribution to set the thresholds (i.e. `[0.5,1.5]` would generate
+      a lower threshold at 0.5\*median and an upper at 1.5\*median). For the
+      percentile method, these define the lower and upper percentiles to filter
+      out (i.e [0.01,0.99] would remove the lower and upper 1% of the depth
+      distributions). (`[ FLOAT, FLOAT]`)
+    - `filt-on-dataset:` Whether to perform this filter on the dataset as a
+      whole (may want to set to false if your dataset global depth distribution
+      is multi-modal). (`true`/`false`)
+    - `filt-on-depth-classes:` Whether to perform this filter on the depth
+      classes defined in the samples.tsv file. This will generate a global
+      depth distribution for samples in the same category, and perform the
+      filtering on these distributions independently. Then, the sites that pass
+      for all the classes will be included. (`true`/`false`)
   - `fastp:`
     - `extra:` Additional options to pass to fastp trimming. (string)
   - `picard:`

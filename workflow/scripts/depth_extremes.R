@@ -12,9 +12,9 @@ df$dp <- seq(from = 0, to = length(genome.dp)-1)
 df$count <- genome.dp
 mean <- with(df, mean(rep(x = dp, times = count)))
 median <- with(df, median(rep(x = dp, times = count)))
+genome.dp.cumsum <- cumsum(as.numeric(genome.dp))
 
 if (snakemake@params[["method"]] == "percentile") {
-  genome.dp.cumsum <- cumsum(as.numeric(genome.dp))
   qup <- genome.dp.cumsum[length(genome.dp.cumsum)]*snakemake@params[["upper"]]
   qlow <- genome.dp.cumsum[length(genome.dp.cumsum)]*snakemake@params[["lower"]]
   upper <- min(which(genome.dp.cumsum > qup))
@@ -36,6 +36,7 @@ hist(with(df, rep(x = dp, times = count)),
   ),
   xlab = "Global Depth",
   ylab = "Count",
+  xlim = c(0,genome.dp.cumsum[length(genome.dp.cumsum)]*0.995)
   breaks = 100
 )
 abline(v=quants[1], col = "red")

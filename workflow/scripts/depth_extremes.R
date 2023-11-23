@@ -28,7 +28,9 @@ if (snakemake@params[["method"]] == "percentile") {
 }
 
 svg(file=snakemake@output[["plot"]])
-hist(with(df, rep(x = dp, times = count)),
+xlim <- min(which(genome.dp.cumsum > genome.dp.cumsum[length(genome.dp.cumsum)]*0.995))
+cov <- with(df, rep(x = dp, times = count))
+hist(cov[cov <= xlim],
   main = paste0(
     "Global depth distribution ",
     snakemake@wildcards[["population"]],
@@ -36,7 +38,6 @@ hist(with(df, rep(x = dp, times = count)),
   ),
   xlab = "Global Depth",
   ylab = "Count",
-  xlim = c(0,min(which(genome.dp.cumsum > genome.dp.cumsum[length(genome.dp.cumsum)]*0.995))),
   breaks = 100
 )
 abline(v=quants[1], col = "red")

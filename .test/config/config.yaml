@@ -42,7 +42,7 @@ analyses:
     local_lib:
     dfam_lib:
     build_lib: true
-  extreme_depth: [0.5, 1.5]
+  extreme_depth: true
   dataset_missing_data: 0.5
   population_missing_data: 0.5
   # quality control
@@ -83,6 +83,11 @@ params:
     K: "100"
     E: "2"
     map_thresh: 1
+  extreme_depth_filt:
+    method: "median"
+    bounds: [ 0.5, 1.5 ]
+    filt-on-dataset: true
+    filt-on-depth-classes: true
   fastp:
     extra: "-p -g" # don't put --merge or --overlap_len_require here, they're implicit
     min_overlap_mod: 30

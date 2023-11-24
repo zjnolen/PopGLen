@@ -386,7 +386,13 @@ if config["analyses"]["extreme_depth"]:
         input:
             "results/datasets/{dataset}/filters/depth/{dataset}.{ref}_{population}{dp}.depthGlobal",
         output:
-            "results/datasets/{dataset}/filters/depth/{dataset}.{ref}_{population}{dp}_depth.summary",
+            summ="results/datasets/{dataset}/filters/depth/{dataset}.{ref}_{population}{dp}_depth.summary",
+            plot=report(
+                "results/datasets/{dataset}/plots/depth_dist/{dataset}.{ref}_{population}{dp}_depth.svg",
+                category="Quality Control",
+                subcategory="Depth distributions and filters",
+                labels={"Subset": "{population}", "Type": "Histogram"},
+            ),
         log:
             "logs/{dataset}/filters/depth/{dataset}.{ref}_{population}{dp}_depth_extremes.log",
         benchmark:
@@ -394,8 +400,9 @@ if config["analyses"]["extreme_depth"]:
         conda:
             "../envs/r.yaml"
         params:
-            lower=config["analyses"]["extreme_depth"][0],
-            upper=config["analyses"]["extreme_depth"][1],
+            lower=config["params"]["extreme_depth_filt"]["bounds"][0],
+            upper=config["params"]["extreme_depth_filt"]["bounds"][1],
+            method=config["params"]["extreme_depth_filt"]["method"],
         threads: lambda wildcards, attempt: attempt * 2
         script:
             "../scripts/depth_extremes.R"
@@ -404,13 +411,15 @@ if config["analyses"]["extreme_depth"]:
         """Create a bed file containing regions of extreme depth in a subset"""
         input:
             genbed="results/ref/{ref}/beds/genome.bed",
+            gensum="results/ref/{ref}/beds/genome.bed.sum",
             quants="results/datasets/{dataset}/filters/depth/{dataset}.{ref}_{population}{dp}_depth.summary",
             pos=lambda w: expand(
                 "results/datasets/{{dataset}}/filters/depth/{{dataset}}.{{ref}}_{{population}}{{dp}}_chunk{chunk}.pos.gz",
                 chunk=chunklist,
             ),
         output:
-            "results/datasets/{dataset}/filters/depth/{dataset}.{ref}_{population}{dp}_extreme-depth.bed",
+            bed="results/datasets/{dataset}/filters/depth/{dataset}.{ref}_{population}{dp}_extreme-depth.bed",
+            sum="results/datasets/{dataset}/filters/depth/{dataset}.{ref}_{population}{dp}_extreme-depth.bed.sum",
         log:
             "logs/{dataset}/filters/depth/bed/{dataset}.{ref}_{population}{dp}.log",
         benchmark:
@@ -426,52 +435,59 @@ if config["analyses"]["extreme_depth"]:
                 zcat $i | tail -n +2 | \
                 awk -v lower=$lower -v upper=$upper '$3 > lower && $3 < upper'
             done | \
-            awk '{{print $1"\t"$2-1"\t"$2}}' > {output}
-            bedtools merge -i {output} > {output}.tmp
-            bedtools subtract -a {input.genbed} -b {output}.tmp > {output}
-            rm {output}.tmp) 2> {log}
-            """
-
-    rule combine_depth_bed:
-        """
-        Combine beds for each subset to get a set of regions with extreme depth in any
-        subset
-        """
-        input:
-            beds=expand(
-                "results/datasets/{{dataset}}/filters/depth/{{dataset}}.{{ref}}_{population}{{dp}}_extreme-depth.bed",
-                population=["all"] + list(set(samples.depth.values)),
-            ),
-            gensum="results/ref/{ref}/beds/genome.bed.sum",
-        output:
-            bed="results/datasets/{dataset}/filters/depth/{dataset}.{ref}{dp}_extreme-depth.bed",
-            sum="results/datasets/{dataset}/filters/depth/{dataset}.{ref}{dp}_extreme-depth.bed.sum",
-        log:
-            "logs/{dataset}/filters/depth/bed/{dataset}.{ref}{dp}_combine-bed.log",
-        benchmark:
-            "benchmarks/{dataset}/filters/depth/bed/{dataset}.{ref}{dp}_combine-bed.log"
-        conda:
-            "../envs/bedtools.yaml"
-        shadow:
-            "minimal"
-        resources:
-            runtime=240,
-        shell:
-            """
-            # combine beds
-            (cat {input.beds} > {output.bed}.tmp
-            sort -k1,1 -k2,2n {output.bed}.tmp > {output.bed}.tmp.sort
+            awk '{{print $1"\t"$2-1"\t"$2}}' > {output.bed}
+            bedtools merge -i {output.bed} > {output.bed}.tmp
+            bedtools subtract -a {input.genbed} -b {output.bed}.tmp > {output.bed}
             rm {output.bed}.tmp
-
-            bedtools merge -i {output.bed}.tmp.sort > {output.bed}
-            rm {output.bed}.tmp.sort
-
+            
             # summarize bed
             len=$(awk 'BEGIN{{SUM=0}}{{SUM+=$3-$2}}END{{print SUM}}' {output.bed})
             echo $len $(awk -F "\t" '{{print $2}}' {input.gensum}) | \
-                awk '{{print "Depth\t"$2-$1"\t"($2-$1)/$2*100}}' \
+                awk '{{print "Depth ({wildcards.population})\t"$2-$1"\t"($2-$1)/$2*100}}' \
                 > {output.sum}) 2> {log}
             """
+
+
+# rule combine_depth_bed:
+#     """
+#     Combine beds for each subset to get a set of regions with extreme depth in any
+#     subset
+#     """
+#     input:
+#         beds=expand(
+#             "results/datasets/{{dataset}}/filters/depth/{{dataset}}.{{ref}}_{population}{{dp}}_extreme-depth.bed",
+#             population=["all"] + list(set(samples.depth.values)),
+#         ),
+#         gensum="results/ref/{ref}/beds/genome.bed.sum",
+#     output:
+#         bed="results/datasets/{dataset}/filters/depth/{dataset}.{ref}{dp}_extreme-depth.bed",
+#         sum="results/datasets/{dataset}/filters/depth/{dataset}.{ref}{dp}_extreme-depth.bed.sum",
+#     log:
+#         "logs/{dataset}/filters/depth/bed/{dataset}.{ref}{dp}_combine-bed.log",
+#     benchmark:
+#         "benchmarks/{dataset}/filters/depth/bed/{dataset}.{ref}{dp}_combine-bed.log"
+#     conda:
+#         "../envs/bedtools.yaml"
+#     shadow:
+#         "minimal"
+#     resources:
+#         runtime=240,
+#     shell:
+#         """
+#         # combine beds
+#         (cat {input.beds} > {output.bed}.tmp
+#         sort -k1,1 -k2,2n {output.bed}.tmp > {output.bed}.tmp.sort
+#         rm {output.bed}.tmp
+
+#         bedtools merge -i {output.bed}.tmp.sort > {output.bed}
+#         rm {output.bed}.tmp.sort
+
+#         # summarize bed
+#         len=$(awk 'BEGIN{{SUM=0}}{{SUM+=$3-$2}}END{{print SUM}}' {output.bed})
+#         echo $len $(awk -F "\t" '{{print $2}}' {input.gensum}) | \
+#             awk '{{print "Depth\t"$2-$1"\t"($2-$1)/$2*100}}' \
+#             > {output.sum}) 2> {log}
+#         """
 
 
 rule angsd_missdata:

@@ -39,7 +39,7 @@ analyses:
   mapping:
     historical_only_collapsed: true
   # filtering
-  genmap: true
+  pileup-mappability: true
   repeatmasker:
     local_lib:
     dfam_lib:
@@ -79,7 +79,7 @@ only_filter_beds: false
 mapQ: 30
 baseQ: 30
 
-params:: true
+params: true
   genmap:
     K: "100"
     E: "2"

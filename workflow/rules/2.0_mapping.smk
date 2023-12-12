@@ -80,7 +80,7 @@ rule bwa_mem_paired:
     benchmark:
         "benchmarks/mapping/bwa_mem/{sample}_{unit}_{lib}.{ref}.paired.log"
     params:
-        extra=lambda w: f"{get_read_group(w)}",
+        extra=lambda w: f"-R {get_read_group(w)}",
         sorting="samtools",
     threads: lambda wildcards, attempt: attempt * 10
     resources:

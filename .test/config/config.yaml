@@ -37,7 +37,7 @@ analyses:
   mapping:
     historical_only_collapsed: true
   # filtering
-  genmap: true
+  pileup-mappability: true
   repeatmasker:
     local_lib:
     dfam_lib:

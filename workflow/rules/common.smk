@@ -197,9 +197,23 @@ def get_bed_filts(wildcards):
             "results/datasets/{dataset}/filters/sex-link_mito_excl/{ref}_excl.bed.sum"
         )
     # add mappability filter if set
-    if config["analyses"]["genmap"]:
-        bedin.append("results/datasets/{dataset}/filters/lowmap/{ref}_lowmap.bed")
-        bedsum.append("results/datasets/{dataset}/filters/lowmap/{ref}_lowmap.bed.sum")
+    if config["analyses"]["pileup-mappability"]:
+        bedin.extend(
+            expand(
+                "results/datasets/{{dataset}}/filters/pileupmap/{{ref}}_k{k}_e{e}_{thresh}.bed",
+                k=config["params"]["genmap"]["K"],
+                e=config["params"]["genmap"]["E"],
+                thresh=config["params"]["genmap"]["map_thresh"],
+            )
+        )
+        bedsum.extend(
+            expand(
+                "results/datasets/{{dataset}}/filters/pileupmap/{{ref}}_k{k}_e{e}_{thresh}.bed.sum",
+                k=config["params"]["genmap"]["K"],
+                e=config["params"]["genmap"]["E"],
+                thresh=config["params"]["genmap"]["map_thresh"],
+            )
+        )
     # add repeat filter if set
     if any(config["analyses"]["repeatmasker"].values()):
         bedin.append("results/ref/{ref}/repeatmasker/{ref}.fa.out.gff")

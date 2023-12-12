@@ -153,52 +153,101 @@ rule genmap_map:
         fold=rules.genmap_index.output.fold,
         files=rules.genmap_index.output.files,
     output:
-        bed="results/ref/{ref}/genmap/map/{ref}.bedgraph",
+        bed="results/ref/{ref}/genmap/map/{ref}_k{k}_e{e}.bedgraph",
     log:
-        "logs/ref/genmap/map/{ref}.log",
-    log:
-        "benchmarks/ref/genmap/map/{ref}.log",
+        "logs/ref/genmap/map/{ref}_k{k}_e{e}.log",
+    benchmark:
+        "benchmarks/ref/genmap/map/{ref}_k{k}_e{e}.log"
     conda:
         "../envs/genmap.yaml"
     params:
-        K=config["params"]["genmap"]["K"],
-        E=config["params"]["genmap"]["E"],
         out=lambda w, output: os.path.splitext(output.bed)[0],
     threads: lambda wildcards, attempt: attempt
     resources:
         runtime=lambda wildcards, attempt: attempt * 360,
     shell:
         """
-        genmap map -K {params.K} -E {params.E} -I {input.fold} \
+        genmap map -K {wildcards.k} -E {wildcards.e} -I {input.fold} \
             -O {params.out} -bg &> {log}
+        """
+
+
+rule windowgen:
+    """
+    Generate sliding windows across the genome to average mappability over.
+    """
+    input:
+        bed="results/ref/{ref}/beds/genome.bed",
+    output:
+        bed="results/ref/{ref}/genmap/pileup/{ref}_genome_windows_k{k}.bed",
+    log:
+        "logs/ref/genmap/windowgen/{ref}_k{k}.log",
+    benchmark:
+        "benchmarks/ref/genmap/windowgen/{ref}_k{k}.log"
+    conda:
+        "../envs/bedtools.yaml"
+    resources:
+        runtime=720,
+    shell:
+        """
+        bedtools makewindows -b {input.bed} -w {wildcards.k} -s 1 > {output.bed} 2> {log}
+        """
+
+
+rule pileup_mappability:
+    """
+    Generates a bed file containing the pileup mappability of a site, i.e. the
+    mean mappability of all possible kmers mapping to it.
+    """
+    input:
+        bed="results/ref/{ref}/genmap/pileup/{ref}_genome_windows_k{k}.bed",
+        bgr="results/ref/{ref}/genmap/map/{ref}_k{k}_e{e}.bedgraph",
+    output:
+        bed="results/ref/{ref}/genmap/pileup/{ref}_pileup_mappability_k{k}_e{e}.bed",
+        tmp=temp("results/ref/{ref}/genmap/map/{ref}_k{k}_e{e}.bedgraph.tmp"),
+    log:
+        "logs/ref/genmap/pileupmap/{ref}_k{k}_e{e}.log",
+    benchmark:
+        "benchmarks/ref/genmap/pileupmap/{ref}_k{k}_e{e}.log"
+    conda:
+        "../envs/bedops.yaml"
+    resources:
+        runtime=720,
+    shell:
+        r"""
+        awk '{{print $1"\t"$2"\t"$3"\t"$2"-"$3"\t"$4}}' {input.bgr} > {output.tmp}
+        bedmap --echo --wmean {input.bed} {output.tmp} | tr "|" "\t" | \
+            awk '{{print $1"\t"$3-1"\t"$3"\t"$4}}' > {output.bed} 2> {log}
         """
 
 
 rule genmap_filt_bed:
     """Create a bed containing all sites with a mappability below a set threshold"""
     input:
-        genbed="results/ref/{ref}/genmap/map/{ref}.bedgraph",
+        genbed="results/ref/{ref}/genmap/pileup/{ref}_pileup_mappability_k{k}_e{e}.bed",
         gensum="results/ref/{ref}/beds/genome.bed.sum",
     output:
-        bed="results/datasets/{dataset}/filters/lowmap/{ref}_lowmap.bed",
-        sum="results/datasets/{dataset}/filters/lowmap/{ref}_lowmap.bed.sum",
+        bed="results/datasets/{dataset}/filters/pileupmap/{ref}_k{k}_e{e}_{thresh}.bed",
+        tmp="results/datasets/{dataset}/filters/pileupmap/{ref}_k{k}_e{e}_{thresh}.bed.tmp",
+        sum="results/datasets/{dataset}/filters/pileupmap/{ref}_k{k}_e{e}_{thresh}.bed.sum",
     log:
-        "logs/{dataset}/filters/lowmap/{ref}_lowmap.log",
+        "logs/{dataset}/filters/pileupmap/{ref}_k{k}_e{e}_{thresh}.log",
     benchmark:
-        "benchmarks/{dataset}/filters/lowmap/{ref}_lowmap.log"
+        "benchmarks/{dataset}/filters/pileupmap/{ref}_k{k}_e{e}_{thresh}.log"
     conda:
-        "../envs/shell.yaml"
+        "../envs/bedtools.yaml"
     params:
         thresh=config["params"]["genmap"]["map_thresh"],
     shell:
         r"""
         # generate bed
-        (awk '$4 < {params.thresh}' {input.genbed} > {output.bed}
+        (awk '$4 < {params.thresh}' {input.genbed} > {output.tmp}
+        bedtools merge -i {output.tmp} > {output.bed}
 
         #summarize bed
         len=$(awk 'BEGIN{{SUM=0}}{{SUM+=$3-$2}}END{{print SUM}}' {output.bed})
         echo $len $(awk -F "\t" '{{print $2}}' {input.gensum}) | awk \
-            '{{print "Mappability<{params.thresh}\t"$2-$1"\t"($2-$1)/$2*100}}' \
+            '{{print "Pileup mappability K{wildcards.k}-E{wildcards.e} <{params.thresh}\t"$2-$1"\t"($2-$1)/$2*100}}' \
             > {output.sum}) 2> {log}
         """
 

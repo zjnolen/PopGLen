@@ -13,9 +13,9 @@ rule bwa_aln_merged:
         "benchmarks/mapping/bwa_aln/{sample}_{unit}_{lib}.{ref}.merged.log"
     params:
         extra=config["params"]["bwa_aln"]["extra"],
-    threads: lambda wildcards, attempt: attempt * 10
+    threads: 20
     resources:
-        runtime=lambda wildcards, attempt: attempt * 2880,
+        runtime="10d",
     wrapper:
         "v2.6.0/bio/bwa/aln"
 
@@ -35,9 +35,9 @@ rule bwa_samse_merged:
         extra=lambda w: f"-r {get_read_group(w)}",
         sort="samtools",
         sort_order="coordinate",
-    threads: lambda wildcards, attempt: attempt * 10
+    threads: lambda wildcards, attempt: attempt
     resources:
-        runtime=lambda wildcards, attempt: attempt * 2880,
+        runtime="6h",
     wrapper:
         "v2.6.0/bio/bwa/samse"
 

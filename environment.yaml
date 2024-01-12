@@ -9,3 +9,4 @@ dependencies:
   # core packages for workflow
   - snakemake-minimal =7.32.*
   - mamba
+  - pulp =2.7.*

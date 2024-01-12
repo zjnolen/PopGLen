@@ -399,7 +399,7 @@ def get_endo_cont_stat(wildcards):
     if userbams and s in userbams:
         return {
             "paired": "results/datasets/{dataset}/bams/user_bams/{sample}.{ref}.user-processed.flagstat",
-            "merged": "results/datasets/{dataset}/bams/user_bams/{sample}.{ref}.user-processed.flagstat"
+            "merged": "results/datasets/{dataset}/bams/user_bams/{sample}.{ref}.user-processed.flagstat",
         }
     if (config["analyses"]["mapping"]["historical_only_collapsed"]) and (
         s in samples.index[samples.time == "historical"]

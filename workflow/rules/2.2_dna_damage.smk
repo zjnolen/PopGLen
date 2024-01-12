@@ -67,7 +67,9 @@ rule mapDamage2_rescaling:
         len="results/mapping/qc/mapdamage/{sample}.{ref}/Length_plot.pdf",
         lg_dist="results/mapping/qc/mapdamage/{sample}.{ref}/lgdistribution.txt",
         misincorp="results/mapping/qc/mapdamage/{sample}.{ref}/misincorporation.txt",
-        rescaled_bam=temp("results/mapping/bams/{sample}.{ref}.rmdup.realn.rescaled.bam"),
+        rescaled_bam=temp(
+            "results/mapping/bams/{sample}.{ref}.rmdup.realn.rescaled.bam"
+        ),
     log:
         "logs/mapping/mapdamage/{sample}.{ref}.log",
     benchmark:

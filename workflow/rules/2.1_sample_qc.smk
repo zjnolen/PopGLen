@@ -55,7 +55,9 @@ rule qualimap_userprovided:
     input:
         unpack(get_final_bam),
     output:
-        directory("results/datasets/{dataset}/qc/user-provided-bams/qualimap/{sample}.{ref}"),
+        directory(
+            "results/datasets/{dataset}/qc/user-provided-bams/qualimap/{sample}.{ref}"
+        ),
         pdf=report(
             "results/datasets/{dataset}/qc/user-provided-bams/qualimap/{sample}.{ref}/report.pdf",
             category="Quality Control",

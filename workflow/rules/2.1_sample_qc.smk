@@ -64,7 +64,7 @@ rule qualimap_userprovided:
             subcategory="Mapping Reports",
             labels={"Sample": "{sample}", "Ref": "{ref}", "Type": "Qualimap Report"},
         ),
-        txt="datasets/{dataset}/qc/user-provided-bams/qualimap/{sample}.{ref}/genome_results.txt",
+        txt="results/datasets/{dataset}/qc/user-provided-bams/qualimap/{sample}.{ref}/genome_results.txt",
     params:
         extra="-outformat pdf",
     log:

@@ -105,9 +105,18 @@ samples = pd.read_table(config["samples"], dtype=str, comment="#").set_index(
 samples = samples.drop(config["exclude_ind"])
 
 
-# Load unit sheet
+# Load unit sheet and drop any unused units
 
 units = pd.read_table(config["units"])
+units = units[units["sample"].isin(list(samples.index))]
+
+
+# Get lists of samples where bams are provided by users and where they are made
+# by the pipeline
+
+if "bam" in units:
+    userbams = list(units["sample"][units["bam"].notnull()].unique())
+    pipebams = list(units["sample"][units["bam"].isnull()].unique())
 
 
 # Get a list of all the populations
@@ -299,8 +308,9 @@ def get_newfilt(wildcards):
 
 ## Get read groups for mapping
 def get_read_group(wildcards):
-    return r"-R '@RG\tID:{unit}\tSM:{sample}\tLB:{lib}\tPL:{platform}'".format(
-        unit=wildcards.unit,
+    return r"-R '@RG\tID:{id}\tPU:{pu}\tSM:{sample}\tLB:{lib}\tPL:{platform}'".format(
+        id=f"{wildcards.unit}.{wildcards.lib}",
+        pu=f"{wildcards.unit}",
         sample=wildcards.sample,
         lib=wildcards.lib,
         platform=units.loc[
@@ -339,24 +349,58 @@ def get_dedup_bams(wildcards):
         ]
 
 
-## Determine if bam needs DNA damage rescaling
+## Function to pull user provided bam. For now, error raising is handled in
+## get_final_bam, as that runs before this.
+def get_user_bam(wildcards):
+    s = wildcards.sample
+    return {"bam": units.loc[units["sample"] == s, "bam"].values[0]}
+
+
+## Determine what bam to use in analyses. This decides whether to use user provided
+## bams, and process raw reads if not. It also determines if mapdamage rescaling will
+## be performed on historical bams.
 def get_final_bam(wildcards):
     s = wildcards.sample
-    if s in samples.index[samples.time == "historical"]:
+    if ("bam" in units) and any(units.loc[units["sample"] == s, "bam"].notnull()):
+        if sum(units["sample"] == s) > 1:
+            raise ValueError(
+                f"Config invalid - sample {s} appears in units file multiple times, "
+                f"but at least one of these times has a user provided bam. Multiple "
+                f"units are only supported when the pipeline is doing bam processing "
+                f"for a sample. Please process the sample into one bam file, or "
+                f"process all the raw reads using the pipeline without supplying a bam "
+                f"for the sample."
+            )
+        if config["params"]["clipoverlap"]["clip_user_provided_bams"]:
+            return {
+                "bam": "results/datasets/{dataset}/bams/clipped_user_bams/{sample}.{ref}.clip.bam",
+                "bai": "results/datasets/{dataset}/bams/clipped_user_bams/{sample}.{ref}.clip.bam.bai",
+            }
         return {
-            "bam": "results/mapping/bams/{sample}.{ref}.rmdup.realn.clip.rescaled.bam",
-            "bai": "results/mapping/bams/{sample}.{ref}.rmdup.realn.clip.rescaled.bam.bai",
+            "bam": "results/datasets/{dataset}/bams/user_bams/{sample}.{ref}.user-processed.bam",
+            "bai": "results/datasets/{dataset}/bams/user_bams/{sample}.{ref}.user-processed.bam.bai",
         }
-    elif s in samples.index[samples.time == "modern"]:
+    if (s in samples.index[samples.time == "historical"]) and (
+        config["analyses"]["mapdamage_rescale"]
+    ):
         return {
-            "bam": "results/mapping/bams/{sample}.{ref}.rmdup.realn.clip.bam",
-            "bai": "results/mapping/bams/{sample}.{ref}.rmdup.realn.clip.bam.bai",
+            "bam": "results/mapping/bams/{sample}.{ref}.rmdup.realn.rescaled.clip.bam",
+            "bai": "results/mapping/bams/{sample}.{ref}.rmdup.realn.rescaled.clip.bam.bai",
         }
+    return {
+        "bam": "results/mapping/bams/{sample}.{ref}.rmdup.realn.clip.bam",
+        "bai": "results/mapping/bams/{sample}.{ref}.rmdup.realn.clip.bam.bai",
+    }
 
 
 ## Get flagstat file for endogenous content calculation
 def get_endo_cont_stat(wildcards):
     s = wildcards.sample
+    if userbams and s in userbams:
+        return {
+            "paired": "results/datasets/{dataset}/bams/user_bams/{sample}.{ref}.user-processed.flagstat",
+            "merged": "results/datasets/{dataset}/bams/user_bams/{sample}.{ref}.user-processed.flagstat"
+        }
     if (config["analyses"]["mapping"]["historical_only_collapsed"]) and (
         s in samples.index[samples.time == "historical"]
     ):

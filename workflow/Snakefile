@@ -60,7 +60,17 @@ all_outputs = [
 ]
 
 if config["analyses"]["qualimap"]:
-    all_outputs.append("results/mapping/qc/qualimap/{sample}.{ref}/report.pdf")
+    all_outputs.extend(
+        expand(
+            "results/mapping/qc/qualimap/{sample}.{{ref}}/report.pdf", sample=pipebams
+        )
+    )
+    all_outputs.extend(
+        expand(
+            "results/datasets/{{dataset}}/qc/user-provided-bams/qualimap/{sample}.{{ref}}/report.pdf",
+            sample=userbams,
+        )
+    )
 
 if config["analyses"]["damageprofiler"]:
     all_outputs.append(

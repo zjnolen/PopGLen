@@ -1,6 +1,11 @@
 # Rules for mapping processed reads to the reference and processing bam files
 
 
+localrules:
+    symlink_bams,
+    symlink_userbams,
+
+
 rule bwa_mem_merged:
     """Map collapsed read pairs for historical samples to reference genome"""
     input:
@@ -174,7 +179,7 @@ rule indelrealigner:
         dict="results/ref/{ref}/{ref}.dict",
         fai="results/ref/{ref}/{ref}.fa.fai",
     output:
-        bam=temp("results/mapping/indelrealign/{sample}.{ref}.rmdup.realn.bam"),
+        bam=temp("results/mapping/bams/{sample}.{ref}.rmdup.realn.bam"),
     log:
         "logs/mapping/gatk/indelrealigner/{sample}.{ref}.log",
     benchmark:
@@ -189,37 +194,24 @@ rule indelrealigner:
 rule bam_clipoverlap:
     """Clip overlapping reads in paired end bam files"""
     input:
-        bam="results/mapping/indelrealign/{sample}.{ref}.rmdup.realn.bam",
+        bam="results/mapping/bams/{sample}.{ref}.{processing}.bam",
         ref="results/ref/{ref}/{ref}.fa",
     output:
-        bam="results/mapping/bams/{sample}.{ref}.rmdup.realn.clip.bam",
-        # met="results/mapping/qc/fgbio_clipbam/{sample}.{ref}.fgbio_clip.metrics",
-        log="results/mapping/qc/bamutil_clipoverlap/{sample}.{ref}.clipoverlap.stats",
+        bam="results/mapping/bams/{sample}.{ref}.{processing}.clip.bam",
+        log="results/mapping/qc/bamutil_clipoverlap/{sample}.{ref}.{processing}.clipoverlap.stats",
+    wildcard_constraints:
+        processing="rmdup\.realn|rmdup\.realn\.rescaled",
     log:
-        # "logs/mapping/fgbio/clipbam/{sample}.{ref}.log",
-        "logs/mapping/bamutil/clipoverlap/{sample}.{ref}.log",
+        "logs/mapping/bamutil/clipoverlap/{sample}.{ref}.{processing}.log",
     benchmark:
-        # "benchmarks/mapping/fgbio/clipbam/{sample}.{ref}.log"
-        "benchmarks/mapping/bamutil/clipoverlap/{sample}.{ref}.log"
+        "benchmarks/mapping/bamutil/clipoverlap/{sample}.{ref}.{processing}.log"
     conda:
-        # "../envs/fgbio.yaml"
         "../envs/bamutil.yaml"
     shadow:
         "minimal"
     threads: lambda wildcards, attempt: attempt * 2
     resources:
         runtime=lambda wildcards, attempt: attempt * 1440,
-    # shell:
-    #     """
-    #     (samtools sort -n -T {resources.tmpdir} -o {input.bam}.namesort.bam {input.bam}
-    #     fgbio -Xmx{resources.mem_mb}m ClipBam \
-    #             -i {input.bam}.namesort.bam \
-    #             -r {input.ref} -m {output.met} \
-    #             --clip-overlapping-reads=true \
-    #             -o {output.bam}.namesort.bam
-    #     samtools sort -T {resources.tmpdir} -o {output.bam} {output.bam}.namesort.bam
-    #     samtools index {output.bam}) 2> {log}
-    #     """
     shell:
         """
         bam clipOverlap --in {input.bam} --out {output.bam} --stats 2> {log}
@@ -227,12 +219,56 @@ rule bam_clipoverlap:
         """
 
 
+rule symlink_userbams:
+    input:
+        unpack(get_user_bam),
+    output:
+        bam="results/datasets/{dataset}/bams/user_bams/{sample}.{ref}.user-processed.bam",
+    log:
+        "logs/{dataset}/symlink_bams/{sample}.{ref}.user-processed.log",
+    conda:
+        "../envs/shell.yaml"
+    shell:
+        """
+        ln -sr {input.bam} {output.bam}
+        """
+
+
+rule bam_clipoverlap_userbams:
+    """Clip overlapping reads in paired end bam files provided by users"""
+    input:
+        bam="results/datasets/{dataset}/bams/user_bams/{sample}.{ref}.user-processed.bam",
+        ref="results/ref/{ref}/{ref}.fa",
+    output:
+        bam="results/datasets/{dataset}/bams/clipped_user_bams/{sample}.{ref}.clip.bam",
+        log="results/datasets/{dataset}/bams/clipped_user_bams/{sample}.{ref}.clipoverlap.stats",
+    log:
+        "logs/mapping/bamutil/clipoverlap/{dataset}.{sample}.{ref}.log",
+    benchmark:
+        "benchmarks/mapping/bamutil/clipoverlap/{dataset}.{sample}.{ref}.log"
+    conda:
+        "../envs/bamutil.yaml"
+    shadow:
+        "minimal"
+    threads: lambda wildcards, attempt: attempt * 2
+    resources:
+        runtime=lambda wildcards, attempt: attempt * 1440,
+    shell:
+        """
+        bam clipOverlap --in {input.bam} --out {output.bam} --stats 2> {log}
+        cat {log} > {output.log}
+        """
+
+
+ruleorder: symlink_bams > samtools_index
+
+
 rule samtools_index:
     """Index bam files """
     input:
-        "results/mapping/{prefix}.bam",
+        "results/{prefix}.bam",
     output:
-        "results/mapping/{prefix}.bam.bai",
+        "results/{prefix}.bam.bai",
     log:
         "logs/mapping/samtools/index/{prefix}.log",
     benchmark:

@@ -1,15 +1,77 @@
 # Genotype likelihood population genomics pipeline
 
-This workflow is aimed at processing raw sequencing reads and calculating
-population genomic statistics within a genotype likelihood framework. As it is
-focused on GL methods, it has options to adapt the workflow for processing data
-with low or variable coverage and/or contains historical/ancient samples with
-degraded DNA. It is under active development, so new features will be added.
+This workflow is aimed at processing sequencing data and calculating population
+genomic statistics within a genotype likelihood framework. As a primary use
+case of genotype likelihood based methods is analysis of samples sequenced to
+low depth or from degraded samples, processing can optionally be adapted to
+account for DNA damage. It is aimed at single and multi-population analyses of
+samples mapped to the same reference, so is appropriate for datasets containing
+individuals from a single or multiple populations and allows for examining
+population structure, genetic diversity, genetic differentiation, allele
+frequencies, linkage disequilibrium, and more.
+
+The workflow is designed with two entry points in mind. Users with raw
+sequencing data in FASTQ format can perform raw sequencing data alignment and
+processing, followed up by the population genomic analyses. Alternatively, users
+who have already mapped and processed their reads into BAM files can use these
+to start directly at the population genomic analyses (for instance, if you
+bring BAM files from GenErode, nf-core/eager, or your own custom processing).
+
+## Features
+
+### Sequence data processing
+
+If starting with raw sequencing data in FASTQ format, the pipeline will handle
+mapping and processing of the reads, with options speific for historical DNA.
+
+- Trimming and collapsing of overlapping paired end reads with fastp
+- Mapping of reads using bwa mem
+- Estimation of read mapping rates (for endogenous content calculation)
+- Removal of duplicates using Picard for paired reads and dedup for collapsed
+  overlapping reads
+- Realignment around indels using GATK
+- Optional base quality recalibration using MapDamage2 in historical samples to
+  correct post-mortem damage
+- Clipping of overlapping mapped paired end reads using bamutil
+- Quality control information from fastp, Qualimap, DamageProfiler, and
+  MapDamage2 (Qualimap is also available for users starting with BAM files)
+
+### Population Genomics
+
+The primary goal of this pipeline is to perform analyses in ANGSD and related
+softwares in a repeatable and automated way. These analyses are available both
+when you start with raw sequencing data or with processed BAM files.
+
+- Estimation of linkage disequilibrium across genome and LD decay using ngsLD
+- Linkage pruning where relevant with ngsLD
+- PCA with PCAngsd
+- Admixture with NGSAdmix
+- Relatedness using NgsRelate and IBSrelate
+- 1D and 2D Site frequency spectrum production with ANGSD
+- Neutrality statistics per population (Watterson's theta, pairwise nucleotide
+  diversity, Tajima's D) in user defined sliding windows with ANGSD
+- Estimation of heterozygosity per sample from 1D SFS with ANGSD
+- Pairwise $F_{ST}$ between all populations or individuals in user defined
+  sliding windows with ANGSD
+- Inbreeding coefficients and runs of homozygosity per sample with ngsF-HMM
+  (**NOTE** This is currently only possible for samples that are within a
+  population sample, not for lone samples which will always return an
+  inbreeding coefficient of 0)
+- Identity by state (IBS) matrix between all samples using ANGSD
+
+Additionally, several data filtering options are available:
+
+- Identification and removal of repetitive regions
+- Removal of regions with low mappability for fragments of a specified size
+- Removal of regions with extreme high or low depth
+- Removal of regions with a certain amount of missing data
 
 ## Getting Started
 
-To run this workflow, you'll need paired-end raw sequencing data and an
-uncompressed reference genome to map it to.
+The workflow will require data in either FASTQ or BAM format, as well as a
+single (uncompressed) reference genome that the reads will be or have been
+mapped to. Analyses are intended to be between samples and populations of
+samples mapped to the same reference.
 
 To run the workflow, you will need to be working on a machine with the
 following:
@@ -25,6 +87,8 @@ queues, setting default resources).
 
 ### Notes on inputs
 
+#### Reference Genomes
+
 Reference genomes should be uncompressed, and contig names should be clear and
 concise. Currently, there are some issues parsing contig names with
 underscores, so please change these in your reference before running the
@@ -34,6 +98,21 @@ tested to work so far, other symbols have not been tested.
 Potentially the ability to use bgzipped genomes will be added, I just need to
 check that it works with all underlying tools. Currently, it will for sure not
 work, as calculating chunks is hard-coded to work on an uncompressed genome.
+
+#### BAM Files
+
+BAM files will receive no processing, aside from optionally clipping
+overlapping read pairs that are otherwise double counted in ANGSD. Ensure any
+processing (duplicate removal, damage correction, realignment) you wish to
+include has already been performed. Note: Filtering is handled in ANGSD, so
+there is no need to filter out reads based on mapping or base quality, multi-
+mapping, etc. unless you wish to filter on a parameter not available to ANGSD.
+
+Some QC will not be available for users starting at BAM files. No read
+processing QC can be produced, and should be done beforehand. While mapping
+percentages are calculated, these may not entirely represent the truth, as they
+can't account for anything already removed, such as duplicates or unmapped
+reads.
 
 ### Running on a cluster
 
@@ -60,108 +139,6 @@ the [`rackham/config.yaml`](rackham/config.yaml) config to see an example of
 this. Right now, memory is only ever defined through threads, so you may need
 to lower the threads and add a memory resource to some rules using this method
 in order to optimize them for your system.
-
-## Features
-
-Currently, the pipeline performs the following tasks:
-
-### Reference genome preparation
-
-- Indexing of reference for subsequent analyses
-
-### Raw read preparation
-
-- Trimming of paired-end reads from high quality libraries
-- Collapsing of paired-end reads from fragmented (aDNA/historical DNA)
-libraries
-
-### Read mapping
-
-- Mapping prepared raw reads to reference using bwa-mem and clipping of
-  overlapping reads, combining of multiple sample runs/libraries
-  - **NOTE**: Reads marked as historical (degraded) will only map reads short
-    reads that overlap and collapse, to reduce mapping of likely contaminants.
-- Removal of PCR and sequencing duplicates separately for fresh (Picard) and
-  fragmented (DeDup) DNA reads
-- Realignment around indels
-- Optional recalibration of base quality scores on degraded DNA bam files with
-  [MapDamage2](https://ginolhac.github.io/mapDamage/)
-- Indexing of deduplicated, realigned, mapped, and recalibrated reads
-
-### Sample quality control
-
-- Assess post-mortem DNA damage with DamageProfiler
-- Assess mapping quality stats with Qualimap
-- Assess endogenous content using mapping proportion before duplicate reads are
-  removed
-
-### Data quality filtering
-
-- Analyses can be set with minimum mapping and base quality thresholds
-- Exclusion of entire scaffolds (i.e. sex-linked, low quality) through user
-  config (both list and contig size based)
-- Exclusion of repeat regions from analyses using RepeatModeler/RepeatMasker
-- Exclusion of low mappability regions with GenMap
-- Exclusion of sites with extreme global depth values (determined separately
-  for the entire dataset, and subsets at certain coverage ranges, then merged)
-- Exclusion of sites based on data missingness across dataset and/or per
-  population
-- Filter using any number of additional user-defined BED files
-
-### GL based population genomic analyses
-
-To speed up the pipeline, many of these analyses are done for part of the
-genome at a time, then later merged. This is only done for analyses where
-possible and where the time saved is appreciable. These chunks are made to be a
-user configured size to allowtuning of run-times (i.e. more jobs, shorter
-runtimes vs fewer jobs, longer runtimes).
-
-SAF based analyses are done on variable and non-variable sites passing quality
-filters. This set is the same across all populations in the dataset and is
-based on the positions passing all the requested filters. Beagle (SNP) based
-analyses are done on a SNP set that is constant across all populations,
-determined from the output of the Beagle file for the whole dataset, and major
-and minor alleles are inferred from the whole dataset. When relevant, pruned
-SNPs are used. Pruning is done on the whole dataset beagle file and the same
-pruned sites are used for all populations.
-
-Additionally, all analyses can be repeated with samples subsampled to a lower
-user configured depth. This helps to ensure results are not simply due to
-variance in depth between groups.
-
-**Analyses:**
-
-- Estimation of linkage disequilibrium across genome and LD decay using ngsLD
-- Linkage pruning where relevant with ngsLD
-- PCA with PCAngsd
-- Admixture with NGSAdmix
-- Relatedness using NgsRelate and IBSrelate
-- 1D and 2D Site frequency spectrum production with ANGSD
-- Neutrality statistics per population (Watterson's theta, pairwise pi,
-  Tajima's D) in user defined sliding windows with ANGSD
-- Estimation of heterozygosity per sample from 1D SFS with ANGSD
-- Pairwise $F_{ST}$ between all populations or individuals in user defined
-  sliding windows with ANGSD
-- Inbreeding coefficients and runs of homozygosity per sample with ngsF-HMM
-  (**NOTE** This is currently only possible for samples that are within a
-  population sampling, not for lone samples which will always return an
-  inbreeding coefficient of 0)
-- Pairwise $F_{ST}$ between all populations or individuals in user defined
-  sliding windows with ANGSD
-- Identity by state (IBS) matrix between all samples using ANGSD
-
-### Planned
-
-Some additional components to the pipeline are planned, the order below roughly
-corresponding to priority:
-
-- Add calculation of bootstrapped SFS
-- Manhattan plots in report for sliding window results
-- Allow starting with bam files - for those that want to process raw reads in
-  their own way before performing analyses
-- Add calculation of Dxy
-- Add schema for configuration files to improve incorrect format handling and
-  to enable defaults
 
 ## Workflow directed action graph
 

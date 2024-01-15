@@ -51,6 +51,7 @@ analyses:
   # quality control
   qualimap: true
   damageprofiler: true
+  mapdamage_rescale: true
   # population genomic analyses
   estimate_ld: false
   ld_decay: false
@@ -81,6 +82,8 @@ mapQ: 30
 baseQ: 30
 
 params: true
+  clipoverlap:
+    clip_user_provided_bams: true
   genmap:
     K: "100"
     E: "2"

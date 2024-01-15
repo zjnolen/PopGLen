@@ -37,19 +37,27 @@ Each sample must have five columns filled in the units sheet. The columns are
 tab separated:
 
 - `sample` - The sample name, same as in `samples.tsv`.
-- `unit` - This is used to fill out the `ID` read group in the bam file. It
-  must be unique to each read group, so the same sample shouldn't have the
-  same unit for more than one sequencing run. A good format might be
-  `sequencer_barcode.lane`. Optical duplicates will be removed within units.
-- `lib` - This is used to fill out the `LB` read group. This should be a unique
-  identifier for each sample library. Sequencing runs from the same library,
-  but different runs, will have the same value in `lib`, but different in
-  `unit`.
+- `unit` - This describes the sequencing platform unit. The expected format is
+  `sequencerbarcode.lane`. It will be used to fill the `PU` readgroup, and
+  combined with the `lib` column to fill the `ID` read group.
+- `lib` - This is used to fill out the `LB` read group and combined with `unit`
+  to fill out the `ID` read group. This should be a unique identifier for each
+  library. Sequencing runs from the same library, but different runs, will have
+  the same value in `lib`, but different in `unit`.
 - `platform` - This is used to fill out the `PL` read group. Put what you'd
   want there. Usually `ILLUMINA` for Illumina platforms.
 - `fq1` and `fq2` - The absolute or relative paths from the working directory
   to the raw fastq files for the sample. Currently the pipeline only supports
   paired-end sequencing, single end may be added down the line.
+- `bam` - If you do not want to map the raw reads, provide a pre-processed
+  BAM file path here. Samples with a BAM file may only appear once in the units
+  list, so multiple sequencing runs should be merged beforehand. If a BAM file
+  is listed, `fq1` and `fq2` are ignored, and the BAM file is used for that
+  sample.
+
+Note: Your dataset can include both samples that start at FASTQ and at BAM. If
+a BAM is listed, it will be used instead of mapping, but if not, the FASTQ
+files will be mapped.
 
 ## Configuration file
 
@@ -181,9 +189,9 @@ settings for each analysis are set in the next section.
     (`true`/`false`)
   - `damageprofiler:` Estimate post-mortem DNA damage on historical samples
     with Damageprofiler (`true`/`false`) NOTE: This just adds the addition of
-    Damageprofiler to the already default output of MapDamage. DNA damage will
-    always be estimated and rescaled by MapDamage for samples marked as
-    'historical'
+    Damageprofiler to the already default output of MapDamage.
+  - `mapdamage_rescale:` Rescale base quality scores using MapDamage2 to help
+    account for post-mortem damage in analyses (`true`/`false`) [docs](https://ginolhac.github.io/mapDamage/)
   - `estimate_ld:` Estimate pairwise linkage disquilibrium between sites with
     ngsLD for each popualation and the whole dataset. Note, only set this if
     you want to generate the LD estimates for use in downstream analyses
@@ -302,6 +310,15 @@ or a pull request and I'll gladly put it in.
   filtered out. (integer)
 
 - `params:`
+  - `clipoverlap:`
+    - `clip_user_provided_bams:` Determines whether overlapping read pairs will
+      be clipped in BAM files supplied by users. This is useful as many variant
+      callers will account for overlapping reads in their processing, but ANGSD
+      will double count overlapping reads. If BAMs were prepped without this in
+      mind, it can be good to apply before running through ANGSD. However, it
+      essentially creates a BAM file of nearly equal size for every sample, so
+      it may be nice to turn off if you don't care for this correction or have
+      already applied it on the BAMs you supply. (`true`/`false`)
   - `genmap:` Parameters for mappability analysis, see [GenMap's documentation](https://github.com/cpockrandt/genmap/)
     for more details.
     - `K:`

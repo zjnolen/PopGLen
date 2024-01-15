@@ -308,7 +308,7 @@ def get_newfilt(wildcards):
 
 ## Get read groups for mapping
 def get_read_group(wildcards):
-    return r"-R '@RG\tID:{id}\tPU:{pu}\tSM:{sample}\tLB:{lib}\tPL:{platform}'".format(
+    return r"'@RG\tID:{id}\tPU:{pu}\tSM:{sample}\tLB:{lib}\tPL:{platform}'".format(
         id=f"{wildcards.unit}.{wildcards.lib}",
         pu=f"{wildcards.unit}",
         sample=wildcards.sample,
@@ -318,7 +318,7 @@ def get_read_group(wildcards):
             & (units["unit"] == wildcards.unit)
             & (units["lib"] == wildcards.lib),
             "platform",
-        ].to_list(),
+        ].to_list()[0],
     )
 
 
@@ -326,8 +326,14 @@ def get_read_group(wildcards):
 def get_sample_bams(wildcards):
     reads = units.loc[units["sample"] == wildcards.sample]
     combos = reads[["sample", "unit", "lib"]].agg("_".join, axis=1)
+    if wildcards.sample in samples.index[samples.time == "historical"]:
+        aligner = config["analyses"]["mapping"]["historical_aligner"]
+    else:
+        aligner = "mem"
     return expand(
-        "results/mapping/mapped/{combo}.{{ref}}.{{pairing}}.bam", combo=combos
+        "results/mapping/mapped/{combo}.{{ref}}.{aligner}.{{pairing}}.bam",
+        combo=combos,
+        aligner=aligner,
     )
 
 

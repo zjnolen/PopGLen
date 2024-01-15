@@ -38,6 +38,7 @@ analyses:
   # mapping options
   mapping:
     historical_only_collapsed: true
+    historical_aligner: "aln"
   # filtering
   pileup-mappability: true
   repeatmasker:
@@ -96,6 +97,8 @@ params: true
     extra: "-p -g" # don't put --merge or --overlap_len_require here, they're implicit
     min_overlap_mod: 30
     min_overlap_hist: 15
+  bwa_aln:
+    extra: "-l 16500 -n 0.01 -o 2"
   picard:
     MarkDuplicates: "--REMOVE_DUPLICATES true --OPTICAL_DUPLICATE_PIXEL_DISTANCE 2500"
   angsd:

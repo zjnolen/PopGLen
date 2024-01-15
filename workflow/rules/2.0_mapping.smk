@@ -6,6 +6,47 @@ localrules:
     symlink_userbams,
 
 
+rule bwa_aln_merged:
+    input:
+        fastq="results/preprocessing/fastp/{sample}_{unit}_{lib}.merged.fastq.gz",
+        idx=rules.bwa_index.output,
+    output:
+        temp("results/mapping/mapped/{sample}_{unit}_{lib}.{ref}.aln.merged.sai"),
+    log:
+        "logs/mapping/bwa_aln/{sample}_{unit}_{lib}.{ref}.merged.log",
+    benchmark:
+        "benchmarks/mapping/bwa_aln/{sample}_{unit}_{lib}.{ref}.merged.log"
+    params:
+        extra=config["params"]["bwa_aln"]["extra"],
+    threads: 20
+    resources:
+        runtime="10d",
+    wrapper:
+        "v2.6.0/bio/bwa/aln"
+
+
+rule bwa_samse_merged:
+    input:
+        fastq="results/preprocessing/fastp/{sample}_{unit}_{lib}.merged.fastq.gz",
+        sai="results/mapping/mapped/{sample}_{unit}_{lib}.{ref}.aln.merged.sai",
+        idx=rules.bwa_index.output,
+    output:
+        temp("results/mapping/mapped/{sample}_{unit}_{lib}.{ref}.aln.merged.bam"),
+    log:
+        "logs/mapping/bwa_samse/{sample}_{unit}_{lib}.{ref}.merged.log",
+    benchmark:
+        "benchmarks/mapping/bwa_samse/{sample}_{unit}_{lib}.{ref}.merged.log"
+    params:
+        extra=lambda w: f"-r {get_read_group(w)}",
+        sort="samtools",
+        sort_order="coordinate",
+    threads: lambda wildcards, attempt: attempt
+    resources:
+        runtime="6h",
+    wrapper:
+        "v2.6.0/bio/bwa/samse"
+
+
 rule bwa_mem_merged:
     """Map collapsed read pairs for historical samples to reference genome"""
     input:
@@ -13,13 +54,13 @@ rule bwa_mem_merged:
         ref="results/ref/{ref}/{ref}.fa",
         idx=rules.bwa_index.output,
     output:
-        temp("results/mapping/mapped/{sample}_{unit}_{lib}.{ref}.merged.bam"),
+        temp("results/mapping/mapped/{sample}_{unit}_{lib}.{ref}.mem.merged.bam"),
     log:
         "logs/mapping/bwa_mem/{sample}_{unit}_{lib}.{ref}.merged.log",
     benchmark:
         "benchmarks/mapping/bwa_mem/{sample}_{unit}_{lib}.{ref}.merged.log"
     params:
-        extra=lambda w: f"{get_read_group(w)}",
+        extra=lambda w: f"-R {get_read_group(w)}",
         sorting="samtools",
     threads: lambda wildcards, attempt: attempt * 10
     resources:
@@ -38,13 +79,13 @@ rule bwa_mem_paired:
         ref="results/ref/{ref}/{ref}.fa",
         idx=rules.bwa_index.output,
     output:
-        bam=temp("results/mapping/mapped/{sample}_{unit}_{lib}.{ref}.paired.bam"),
+        bam=temp("results/mapping/mapped/{sample}_{unit}_{lib}.{ref}.mem.paired.bam"),
     log:
         "logs/mapping/bwa_mem/{sample}_{unit}_{lib}.{ref}.paired.log",
     benchmark:
         "benchmarks/mapping/bwa_mem/{sample}_{unit}_{lib}.{ref}.paired.log"
     params:
-        extra=lambda w: f"{get_read_group(w)}",
+        extra=lambda w: f"-R {get_read_group(w)}",
         sorting="samtools",
     threads: lambda wildcards, attempt: attempt * 10
     resources:

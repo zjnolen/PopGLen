@@ -81,7 +81,7 @@ only_filter_beds: false
 mapQ: 30
 baseQ: 30
 
-params: true
+params:
   clipoverlap:
     clip_user_provided_bams: true
   genmap:

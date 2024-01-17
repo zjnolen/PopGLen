@@ -61,7 +61,8 @@ when you start with raw sequencing data or with processed BAM files.
 
 Additionally, several data filtering options are available:
 
-- Identification and removal of repetitive regions
+- Identification (can also skip identification if repeat bed/gff is supplied)
+  and removal of repetitive regions
 - Removal of regions with low mappability for fragments of a specified size
 - Removal of regions with extreme high or low depth
 - Removal of regions with a certain amount of missing data

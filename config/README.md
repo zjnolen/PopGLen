@@ -170,8 +170,16 @@ settings for each analysis are set in the next section.
   - `genmap:` Filter out sites with low mappability estimated by Genmap
   (`true`/`false`)
   - `repeatmasker:` (NOTE: Only one of the three options should be filled/true)
+    - `bed:` Supply a path to a bed file that contains regions with repeats.
+      This is for those who want to filter out repetitive content, but don't
+      need to run Repeatmodeler or masker in the workflow because it has
+      already been done for the genome you're using. Be sure the contig names
+      in the bed file match those in the reference supplied. GFF or other
+      filetypes that work with `bedtools subtract` may also work, but haven't
+      been tested.
     - `local_lib:` Filter repeats by masking with an already made library you
-      have locally. Should be file path.
+      have locally (such as ones downloaded for Darwin Tree of Life genomes).
+      Should be file path, not a URL.
     - `dfam_lib:` Filter repeats using a library available from dfam. Should be
       a taxonomic group name.
     - `build_lib:` Use RepeatModeler to build a library of repeats from the

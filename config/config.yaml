@@ -42,6 +42,7 @@ analyses:
   # filtering
   pileup-mappability: true
   repeatmasker:
+    bed:
     local_lib:
     dfam_lib:
     build_lib: true

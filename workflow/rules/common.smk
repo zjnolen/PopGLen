@@ -175,6 +175,13 @@ def get_repmaskin(wildcards):
     return dic
 
 
+## Determine if making repeat bed or using user supplied
+def get_rep_file(wildcards):
+    if config["analyses"]["repeatmasker"]["bed"]:
+        return {"rep": config["analyses"]["repeatmasker"]["bed"]}
+    return {"rep": "results/ref/{ref}/repeatmasker/{ref}.fa.out.gff"}
+
+
 ## Get inputs for combined filters file
 def get_bed_filts(wildcards):
     bedin = []
@@ -225,8 +232,8 @@ def get_bed_filts(wildcards):
         )
     # add repeat filter if set
     if any(config["analyses"]["repeatmasker"].values()):
-        bedin.append("results/ref/{ref}/repeatmasker/{ref}.fa.out.gff")
-        bedsum.append("results/ref/{ref}/repeatmasker/{ref}.fa.out.gff.sum")
+        bedin.append("results/ref/{ref}/repeatmasker/{ref}.fa.out.bed")
+        bedsum.append("results/ref/{ref}/repeatmasker/{ref}.fa.out.sum")
     # add global depth extremes filter if set
     if config["analyses"]["extreme_depth"]:
         if (

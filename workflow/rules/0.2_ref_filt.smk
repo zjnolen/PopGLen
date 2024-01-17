@@ -342,10 +342,10 @@ rule repeatmasker:
 rule repeat_sum:
     """Summarize the proportion of the genome contained in the repeat gff"""
     input:
+        unpack(get_rep_file),
         sum="results/ref/{ref}/beds/genome.bed.sum",
-        gff="results/ref/{ref}/repeatmasker/{ref}.fa.out.gff",
     output:
-        sum="results/ref/{ref}/repeatmasker/{ref}.fa.out.gff.sum",
+        sum="results/ref/{ref}/repeatmasker/{ref}.fa.out.sum",
         bed="results/ref/{ref}/repeatmasker/{ref}.fa.out.bed",
     log:
         "logs/ref/repeatmasker/summarize_gff/{ref}.log",
@@ -355,7 +355,7 @@ rule repeat_sum:
         "../envs/bedtools.yaml"
     shell:
         r"""
-        (bedtools merge -i {input.gff} > {output.bed}
+        (bedtools merge -i {input.rep} > {output.bed}
         len=$(awk 'BEGIN{{SUM=0}}{{SUM+=$3-$2}}END{{print SUM}}' {output.bed})
         echo $len $(awk -F "\t" '{{print $2}}' {input.sum}) | \
             awk '{{print "Repeats\t"$2-$1"\t"($2-$1)/$2*100}}' > {output.sum}) &> {log}

@@ -7,7 +7,7 @@ rule damageprofiler:
     rather than corrective.
     """
     input:
-        bam="results/mapping/bams/{sample}.{ref}.rmdup.realn.clip.bam",
+        bam="results/mapping/bams/{sample}.{ref}.rmdup.realn.bam",
         ref="results/ref/{ref}/{ref}.fa",
     output:
         multiext(

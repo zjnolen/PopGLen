@@ -262,7 +262,7 @@ rule bam_clipoverlap:
 
 rule symlink_userbams:
     input:
-        unpack(get_user_bam),
+        bam=lambda w: units.loc[units["sample"] == w.sample, "bam"].values[0],
     output:
         bam="results/datasets/{dataset}/bams/user_bams/{sample}.{ref}.user-processed.bam",
     log:

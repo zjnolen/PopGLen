@@ -355,13 +355,6 @@ def get_dedup_bams(wildcards):
         ]
 
 
-## Function to pull user provided bam. For now, error raising is handled in
-## get_final_bam, as that runs before this.
-def get_user_bam(wildcards):
-    s = wildcards.sample
-    return {"bam": units.loc[units["sample"] == s, "bam"].values[0]}
-
-
 ## Determine what bam to use in analyses. This decides whether to use user provided
 ## bams, and process raw reads if not. It also determines if mapdamage rescaling will
 ## be performed on historical bams.

@@ -73,8 +73,13 @@ if config["analyses"]["qualimap"]:
     )
 
 if config["analyses"]["damageprofiler"]:
-    all_outputs.append(
-        "results/mapping/qc/damageprofiler/{histsample}.{ref}/dmgprof.json"
+    all_outputs.extend(
+        expand(
+            "results/mapping/qc/damageprofiler/{histsample}.{{ref}}/dmgprof.json",
+            histsample=list(
+                set(pipebams) & set(samples.index[samples["time"] == "historical"])
+            ),
+        )
     )
 
 if config["analyses"]["estimate_ld"]:
@@ -208,7 +213,6 @@ rule all:
             all_outputs,
             sample=samples.index,
             ref=config["reference"]["name"],
-            histsample=samples.index[samples["time"] == "historical"].tolist(),
             dataset=config["dataset"],
             dp=subsample,
             sites=filters,

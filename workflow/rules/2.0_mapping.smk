@@ -264,7 +264,7 @@ rule symlink_userbams:
     input:
         bam=lambda w: units.loc[units["sample"] == w.sample, "bam"].values[0],
     output:
-        bam="results/datasets/{dataset}/bams/user_bams/{sample}.{ref}.user-processed.bam",
+        bam="results/mapping/user-provided-bams/{sample}.{ref}.user-processed.bam",
     log:
         "logs/{dataset}/symlink_bams/{sample}.{ref}.user-processed.log",
     conda:
@@ -278,11 +278,11 @@ rule symlink_userbams:
 rule bam_clipoverlap_userbams:
     """Clip overlapping reads in paired end bam files provided by users"""
     input:
-        bam="results/datasets/{dataset}/bams/user_bams/{sample}.{ref}.user-processed.bam",
+        bam="results/mapping/user-provided-bams/{sample}.{ref}.user-processed.bam",
         ref="results/ref/{ref}/{ref}.fa",
     output:
-        bam="results/datasets/{dataset}/bams/clipped_user_bams/{sample}.{ref}.clip.bam",
-        log="results/datasets/{dataset}/bams/clipped_user_bams/{sample}.{ref}.clipoverlap.stats",
+        bam="results/mapping/user-provided-bams/{sample}.{ref}.clip.bam",
+        log="results/mapping/user-provided-bams/{sample}.{ref}.clipoverlap.stats",
     log:
         "logs/mapping/bamutil/clipoverlap/{dataset}.{sample}.{ref}.log",
     benchmark:

@@ -379,12 +379,12 @@ def get_final_bam(wildcards):
             )
         if config["params"]["clipoverlap"]["clip_user_provided_bams"]:
             return {
-                "bam": "results/datasets/{dataset}/bams/clipped_user_bams/{sample}.{ref}.clip.bam",
-                "bai": "results/datasets/{dataset}/bams/clipped_user_bams/{sample}.{ref}.clip.bam.bai",
+                "bam": "results/mapping/user-provided-bams/{sample}.{ref}.clip.bam",
+                "bai": "results/mapping/user-provided-bams/{sample}.{ref}.clip.bam.bai",
             }
         return {
-            "bam": "results/datasets/{dataset}/bams/user_bams/{sample}.{ref}.user-processed.bam",
-            "bai": "results/datasets/{dataset}/bams/user_bams/{sample}.{ref}.user-processed.bam.bai",
+            "bam": "results/mapping/user-provided-bams/{sample}.{ref}.user-processed.bam",
+            "bai": "results/mapping/user-provided-bams/{sample}.{ref}.user-processed.bam.bai",
         }
     if (s in samples.index[samples.time == "historical"]) and (
         config["analyses"]["mapdamage_rescale"]

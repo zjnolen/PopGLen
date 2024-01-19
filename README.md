@@ -105,15 +105,30 @@ work, as calculating chunks is hard-coded to work on an uncompressed genome.
 BAM files will receive no processing, aside from optionally clipping
 overlapping read pairs that are otherwise double counted in ANGSD. Ensure any
 processing (duplicate removal, damage correction, realignment) you wish to
-include has already been performed. Note: Filtering is handled in ANGSD, so
-there is no need to filter out reads based on mapping or base quality, multi-
-mapping, etc. unless you wish to filter on a parameter not available to ANGSD.
+include has already been performed. Ideally, it would be good to clip the
+overlapping reads before running the workflow if you are supplying your own
+bams, and turn off clipping of user provided bams in the pipeline config. This
+prevents doubling the storage usage, as otherwise all your bams get duplicated,
+but with clipped reads. Doing this beforehand with [bamutil](https://genome.sph.umich.edu/wiki/BamUtil)
+is straightforward: `bam clipOverlap --in {input.bam} --out {output.bam}`.
+After this, you can remove the original bams to save storage.
+
+This pipeline is written with reusing of samples across datasets in mind. For
+samples starting at fastq, this should be done seamlessly by reusing samples
+in different datasets (as set in the config file) processed in the same working
+directory. This, in most cases, will also be true for bam input. However, if
+you are planning to process datasets where different bam files will be used
+as input for a sample given the same sample name and reference name in both
+dataset configs (for instance, to run the same samples with and without
+MapDamage rescaling), the second dataset will overwrite the bams of the first,
+and Snakemake will suggest rerunning the first dataset. In this case, it is
+best to have different sample names for the different input bams, or to run the
+two datasets in different working directories.
 
 Some QC will not be available for users starting at BAM files. No read
-processing QC can be produced, and should be done beforehand. While mapping
+processing QC can be produced and should be done beforehand. While mapping
 percentages are calculated, these may not entirely represent the truth, as they
-can't account for anything already removed, such as duplicates or unmapped
-reads.
+may not account for anything already fully removed from the bam.
 
 ### Running on a cluster
 

@@ -266,7 +266,7 @@ rule symlink_userbams:
     output:
         bam="results/mapping/user-provided-bams/{sample}.{ref}.user-processed.bam",
     log:
-        "logs/{dataset}/symlink_bams/{sample}.{ref}.user-processed.log",
+        "logs/symlink_bams/{sample}.{ref}.user-processed.log",
     conda:
         "../envs/shell.yaml"
     shell:
@@ -284,9 +284,9 @@ rule bam_clipoverlap_userbams:
         bam="results/mapping/user-provided-bams/{sample}.{ref}.clip.bam",
         log="results/mapping/user-provided-bams/{sample}.{ref}.clipoverlap.stats",
     log:
-        "logs/mapping/bamutil/clipoverlap/{dataset}.{sample}.{ref}.log",
+        "logs/mapping/bamutil/clipoverlap/{sample}.{ref}.user-processed.log",
     benchmark:
-        "benchmarks/mapping/bamutil/clipoverlap/{dataset}.{sample}.{ref}.log"
+        "benchmarks/mapping/bamutil/clipoverlap/{sample}.{ref}.user-processed.log"
     conda:
         "../envs/bamutil.yaml"
     shadow:

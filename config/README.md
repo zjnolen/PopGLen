@@ -33,8 +33,9 @@ only characters permitted in filenames on your system.
 
 All your raw data will be pointed to in `units.tsv`.
 
-Each sample must have five columns filled in the units sheet. The columns are
-tab separated:
+Each row will contain a sample 'unit', this is a unique combination of a
+sample, sequencing run, and library. As such, these columns, as well as a
+fourth for the sequencing platform are required:
 
 - `sample` - The sample name, same as in `samples.tsv`.
 - `unit` - This describes the sequencing platform unit. The expected format is
@@ -46,9 +47,21 @@ tab separated:
   the same value in `lib`, but different in `unit`.
 - `platform` - This is used to fill out the `PL` read group. Put what you'd
   want there. Usually `ILLUMINA` for Illumina platforms.
+
+Additionally, you have three ways to specify sequencing data sources. You can
+provide fastq files available locally on your machine, an SRA run accession to
+automatically download fastq files from NCBI, or a fully processed bam file.
+Only one of these three categories of columns need to be defined. If multiple
+are, the pipeline will prefer bam files > local fastq files > SRA accessions.
+
 - `fq1` and `fq2` - The absolute or relative paths from the working directory
   to the raw fastq files for the sample. Currently the pipeline only supports
-  paired-end sequencing, single end may be added down the line.
+  paired-end sequencing, so both columns are neede. Single end may be added
+  down the line if requested.
+- `sra` - A short read run accession. Since NCBI and ENA mirror each other, the
+  run accession can come from either. Only supports paired-end runs. These are
+  treated as temporary and deleted after trimming, unlike local fastq files,
+  which we never delete.
 - `bam` - If you do not want to map the raw reads, provide a pre-processed
   BAM file path here. Samples with a BAM file may only appear once in the units
   list, so multiple sequencing runs should be merged beforehand. If a BAM file

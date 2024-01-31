@@ -144,13 +144,28 @@ if any(config["filter_beds"].values()):
 
 ## Get fastq inputs for fastp
 def get_raw_fastq(wildcards):
-    unit = units.loc[
-        (units["sample"] == wildcards.sample)
-        & (units["unit"] == wildcards.unit)
-        & (units["lib"] == wildcards.lib),
-        ["sample", "fq1", "fq2"],
-    ].set_index("sample")
-    return {"sample": [unit.fq1[0], unit.fq2[0]]}
+    if "fq1" in units:
+        unit = units.loc[
+            (units["sample"] == wildcards.sample)
+            & (units["unit"] == wildcards.unit)
+            & (units["lib"] == wildcards.lib),
+            ["sample", "fq1", "fq2"],
+        ].set_index("sample")
+        if not pd.isna(unit.fq1[0]):
+            return {"sample": [unit.fq1[0], unit.fq2[0]]}
+    if "sra" in units:
+        sra = units[
+            (units["sample"] == wildcards.sample)
+            & (units["unit"] == wildcards.unit)
+            & (units["lib"] == wildcards.lib)
+        ].sra.item()
+        if not pd.isna(sra):
+            return {
+                "sample": [
+                    f"results/downloaded_fastq/{sra}_1.fastq.gz",
+                    f"results/downloaded_fastq/{sra}_2.fastq.gz",
+                ]
+            }
 
 
 ## Get minimum overlap to collapse read pairs per sample

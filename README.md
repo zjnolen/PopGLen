@@ -11,11 +11,12 @@ population structure, genetic diversity, genetic differentiation, allele
 frequencies, linkage disequilibrium, and more.
 
 The workflow is designed with two entry points in mind. Users with raw
-sequencing data in FASTQ format can perform raw sequencing data alignment and
-processing, followed up by the population genomic analyses. Alternatively, users
-who have already mapped and processed their reads into BAM files can use these
-to start directly at the population genomic analyses (for instance, if you
-bring BAM files from GenErode, nf-core/eager, or your own custom processing).
+sequencing data in FASTQ format stored locally or as an NCBI/ENA run accession
+can perform raw sequencing data alignment and processing, followed up by the
+population genomic analyses. Alternatively, users who have already mapped and
+processed their reads into BAM files can use these to start directly at the
+population genomic analyses (for instance, if you bring BAM files from
+GenErode, nf-core/eager, or your own custom processing).
 
 ## Features
 
@@ -23,6 +24,8 @@ bring BAM files from GenErode, nf-core/eager, or your own custom processing).
 
 If starting with raw sequencing data in FASTQ format, the pipeline will handle
 mapping and processing of the reads, with options speific for historical DNA.
+These steps are available if providing paths to local FASTQ files or SRA
+accessions from e.g. NCBI/ENA.
 
 - Trimming and collapsing of overlapping paired end reads with fastp
 - Mapping of reads using bwa mem

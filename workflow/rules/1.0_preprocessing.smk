@@ -5,11 +5,11 @@
 rule ncbi_download:
     output:
         temp("results/downloaded_fastq/{accession}_1.fastq.gz"),
-        temp("results/downloaded_fastq/{accession}_2.fastq.gz")
+        temp("results/downloaded_fastq/{accession}_2.fastq.gz"),
     log:
-        "logs/download_fastq/{accession}.log"
+        "logs/download_fastq/{accession}.log",
     params:
-        extra="--skip-technical -x"
+        extra="--skip-technical -x",
     threads: 6
     wrapper:
         "v3.3.6/bio/sra-tools/fasterq-dump"

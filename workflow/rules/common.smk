@@ -117,6 +117,9 @@ units = units[units["sample"].isin(list(samples.index))]
 if "bam" in units:
     userbams = list(units["sample"][units["bam"].notnull()].unique())
     pipebams = list(units["sample"][units["bam"].isnull()].unique())
+else:
+    userbams = []
+    pipebams = list(samples.index)
 
 
 # Get a list of all the populations

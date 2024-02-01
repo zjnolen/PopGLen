@@ -155,6 +155,7 @@ rule dedup_merged:
         "../envs/dedup.yaml"
     shadow:
         "minimal"
+    threads: lambda wildcards, attempt: attempt * 2
     params:
         outdir=lambda w, output: os.path.dirname(output.bamfin),
     resources:

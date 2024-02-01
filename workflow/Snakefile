@@ -63,7 +63,8 @@ if config["analyses"]["qualimap"]:
     if len(pipebams) > 0:
         all_outputs.extend(
             expand(
-                "results/mapping/qc/qualimap/{sample}.{{ref}}/report.pdf", sample=pipebams
+                "results/mapping/qc/qualimap/{sample}.{{ref}}/report.pdf",
+                sample=pipebams,
             )
         )
     if len(userbams) > 0:

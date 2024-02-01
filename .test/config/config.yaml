@@ -35,8 +35,8 @@ populations: []
 analyses:
   # mapping options
   mapping:
-    historical_only_collapsed: true
-    historical_aligner: "aln"
+    historical_only_collapsed: false
+    historical_collapsed_aligner: "aln"
   # filtering
   pileup-mappability: true
   repeatmasker:

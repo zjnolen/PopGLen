@@ -180,6 +180,11 @@ settings for each analysis are set in the next section.
       help avoid mapping contaminants, as longer fragments are likely from more
       recent, non-endogenous DNA. However, in the event you want to map both,
       you can set this to `false`. (`true`/`false`)
+    - `historical_collapsed_aligner:` Aligner used to map collapsed historical
+      sample reads. `aln` is the recommended for this, but this is here in case
+      you would like to select `mem` for this. Uncollapsed historical reads
+      will be mapped with `mem` if `historical_only_collapsed` is set to
+      `false`, regardless of what is put here. (`aln`/`mem`)
   - `genmap:` Filter out sites with low mappability estimated by Genmap
   (`true`/`false`)
   - `repeatmasker:` (NOTE: Only one of the three options should be filled/true)

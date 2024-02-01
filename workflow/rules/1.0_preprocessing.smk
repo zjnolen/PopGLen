@@ -48,7 +48,8 @@ rule fastp_mergedout:
         + f" --merge --overlap_len_require {get_min_overlap(w)}",
     threads: lambda wildcards, attempt: attempt * 2
     resources:
-        runtime=lambda wildcards, attempt: attempt * 240,
+        runtime=lambda wildcards, attempt: attempt * 480,
+        mem_mb=lambda wildcards, input, attempt: int(attempt * (input.size_mb / 2))
     wrapper:
         "v2.5.0/bio/fastp"
 

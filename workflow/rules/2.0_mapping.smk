@@ -127,11 +127,10 @@ rule mark_duplicates:
         extra=config["params"]["picard"]["MarkDuplicates"],
     shadow:
         "minimal"
-    threads: lambda wildcards, attempt: attempt * 4
+    threads: 1
     resources:
-        # can be memory intensive for big bam files, look into ways of 
-        # allocating memory that will work on multiple clusters
         runtime=lambda wildcards, attempt: attempt * 1440,
+        mem_mb=lambda wildcards, attempt, input: int(attempt * (input.size_mb * 3))
     wrapper:
         "v1.17.2/bio/picard/markduplicates"
 

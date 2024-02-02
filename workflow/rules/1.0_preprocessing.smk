@@ -49,7 +49,6 @@ rule fastp_mergedout:
     threads: lambda wildcards, attempt: attempt * 2
     resources:
         runtime=lambda wildcards, attempt: attempt * 480,
-        #mem_mb=lambda wildcards, input, attempt: int(attempt * input.size_mb),
     wrapper:
         "v2.5.0/bio/fastp"
 
@@ -86,7 +85,6 @@ rule fastp_pairedout:
     threads: lambda wildcards, attempt: attempt * 2
     resources:
         runtime=lambda wildcards, attempt: attempt * 480,
-        #mem_mb=lambda wildcards, input, attempt: int(attempt * input.size_mb),
     wrapper:
         "v2.5.0/bio/fastp"
 

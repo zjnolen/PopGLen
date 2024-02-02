@@ -131,7 +131,9 @@ two datasets in different working directories.
 Some QC will not be available for users starting at BAM files. No read
 processing QC can be produced and should be done beforehand. While mapping
 percentages are calculated, these may not entirely represent the truth, as they
-may not account for anything already fully removed from the bam.
+may not account for anything already fully removed from the bam. In this case,
+they also can't be separated into categories of collapsed and uncollapsed
+reads, and instead are simply reported as the total percentage mapping only.
 
 ### Running on a cluster
 

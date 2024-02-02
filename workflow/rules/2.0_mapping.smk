@@ -47,18 +47,23 @@ rule bwa_samse_merged:
         "v2.6.0/bio/bwa/samse"
 
 
-rule bwa_mem_merged:
-    """Map collapsed read pairs for historical samples to reference genome"""
+rule bwa_mem_paired:
+    """Map trimmed paired reads from modern samples to reference genome"""
     input:
-        reads="results/preprocessing/fastp/{sample}_{unit}_{lib}.merged.fastq.gz",
+        reads=expand(
+            "results/preprocessing/fastp/{{sample}}_{{unit}}_{{lib}}.{read}.{{pairing}}.fastq.gz",
+            read=["R1", "R2"],
+        ),
         ref="results/ref/{ref}/{ref}.fa",
         idx=rules.bwa_index.output,
     output:
-        temp("results/mapping/mapped/{sample}_{unit}_{lib}.{ref}.mem.merged.bam"),
+        bam=temp("results/mapping/mapped/{sample}_{unit}_{lib}.{ref}.mem.{pairing}.bam"),
     log:
-        "logs/mapping/bwa_mem/{sample}_{unit}_{lib}.{ref}.merged.log",
+        "logs/mapping/bwa_mem/{sample}_{unit}_{lib}.{ref}.{pairing}.log",
     benchmark:
-        "benchmarks/mapping/bwa_mem/{sample}_{unit}_{lib}.{ref}.merged.log"
+        "benchmarks/mapping/bwa_mem/{sample}_{unit}_{lib}.{ref}.{pairing}.log"
+    wildcard_constraints:
+        pairing="paired|uncollapsed",
     params:
         extra=lambda w: f"-R {get_read_group(w)}",
         sorting="samtools",
@@ -69,21 +74,18 @@ rule bwa_mem_merged:
         "v2.6.0/bio/bwa/mem"
 
 
-rule bwa_mem_paired:
-    """Map trimmed paired reads from modern samples to reference genome"""
+rule bwa_mem_merged:
+    """Map collapsed reads from historical samples to reference genome"""
     input:
-        reads=expand(
-            "results/preprocessing/fastp/{{sample}}_{{unit}}_{{lib}}.{read}.fastq.gz",
-            read=["R1", "R2"],
-        ),
+        reads="results/preprocessing/fastp/{sample}_{unit}_{lib}.merged.fastq.gz",
         ref="results/ref/{ref}/{ref}.fa",
         idx=rules.bwa_index.output,
     output:
-        bam=temp("results/mapping/mapped/{sample}_{unit}_{lib}.{ref}.mem.paired.bam"),
+        bam=temp("results/mapping/mapped/{sample}_{unit}_{lib}.{ref}.mem.merged.bam"),
     log:
-        "logs/mapping/bwa_mem/{sample}_{unit}_{lib}.{ref}.paired.log",
+        "logs/mapping/bwa_mem/{sample}_{unit}_{lib}.{ref}.merged.log",
     benchmark:
-        "benchmarks/mapping/bwa_mem/{sample}_{unit}_{lib}.{ref}.paired.log"
+        "benchmarks/mapping/bwa_mem/{sample}_{unit}_{lib}.{ref}.merged.log"
     params:
         extra=lambda w: f"-R {get_read_group(w)}",
         sorting="samtools",
@@ -127,10 +129,9 @@ rule mark_duplicates:
         extra=config["params"]["picard"]["MarkDuplicates"],
     shadow:
         "minimal"
-    threads: 1
+    threads: lambda wildcards, attempt: attempt * 4
     resources:
         runtime=lambda wildcards, attempt: attempt * 1440,
-        mem_mb=lambda wildcards, attempt, input: int(attempt * (input.size_mb * 3)),
     wrapper:
         "v1.17.2/bio/picard/markduplicates"
 

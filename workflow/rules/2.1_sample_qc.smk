@@ -117,7 +117,7 @@ rule compile_endo_cont:
         runtime=lambda wildcards, attempt: attempt * 15,
     shell:
         """
-        (printf "sample\tperc.merged.map\tperc.paired.map\tperc.total.map\n" > {output}
+        (printf "sample\tperc.collapsed.map\tperc.uncollapsed.map\tperc.total.map\n" > {output}
         cat {input} >> {output}) 2> {log}
         """
 

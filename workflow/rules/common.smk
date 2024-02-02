@@ -352,7 +352,12 @@ def get_sample_bams(wildcards):
     reads = units.loc[units["sample"] == wildcards.sample]
     combos = reads[["sample", "unit", "lib"]].agg("_".join, axis=1)
     if wildcards.sample in samples.index[samples.time == "historical"]:
-        aligner = config["analyses"]["mapping"]["historical_aligner"]
+        if wildcards.pairing == "paired":
+            return expand(
+                "results/mapping/mapped/{combo}.{{ref}}.mem.uncollapsed.bam",
+                combo=combos,
+            )
+        aligner = config["analyses"]["mapping"]["historical_collapsed_aligner"]
     else:
         aligner = "mem"
     return expand(
@@ -364,20 +369,15 @@ def get_sample_bams(wildcards):
 
 ## Select which duplicate removal process the bam goes through
 def get_dedup_bams(wildcards):
-    if config["analyses"]["mapping"]["historical_only_collapsed"]:
-        s = wildcards.sample
-        if s in samples.index[samples.time == "historical"]:
-            return ["results/mapping/dedup/{sample}.{ref}.merged.rmdup.bam"]
-        elif s in samples.index[samples.time == "modern"]:
-            return [
-                "results/mapping/dedup/{sample}.{ref}.paired.rmdup.bam",
-                "results/mapping/dedup/{sample}.{ref}.merged.rmdup.bam",
-            ]
-    else:
+    s = wildcards.sample
+    if s in samples.index[samples.time == "historical"]:
+        if config["analyses"]["mapping"]["historical_only_collapsed"]:
+            return "results/mapping/dedup/{sample}.{ref}.merged.rmdup.bam"
         return [
             "results/mapping/dedup/{sample}.{ref}.paired.rmdup.bam",
             "results/mapping/dedup/{sample}.{ref}.merged.rmdup.bam",
         ]
+    return "results/mapping/dedup/{sample}.{ref}.paired.rmdup.bam"
 
 
 ## Determine what bam to use in analyses. This decides whether to use user provided
@@ -425,18 +425,14 @@ def get_endo_cont_stat(wildcards):
             "paired": "results/mapping/user-provided-bams/{sample}.{ref}.user-processed.flagstat",
             "merged": "results/mapping/user-provided-bams/{sample}.{ref}.user-processed.flagstat",
         }
-    if (config["analyses"]["mapping"]["historical_only_collapsed"]) and (
-        s in samples.index[samples.time == "historical"]
-    ):
-        return {
-            "paired": "results/mapping/mapped/{sample}.{ref}.merged.flagstat",
-            "merged": "results/mapping/mapped/{sample}.{ref}.merged.flagstat",
-        }
-    else:
+    if s in samples.index[samples.time == "historical"]:
+        if config["analyses"]["mapping"]["historical_only_collapsed"]:
+            return {"merged": "results/mapping/mapped/{sample}.{ref}.merged.flagstat"}
         return {
             "paired": "results/mapping/mapped/{sample}.{ref}.paired.flagstat",
             "merged": "results/mapping/mapped/{sample}.{ref}.merged.flagstat",
         }
+    return {"paired": "results/mapping/mapped/{sample}.{ref}.paired.flagstat"}
 
 
 # ANGSD

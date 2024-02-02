@@ -129,10 +129,10 @@ rule mark_duplicates:
         extra=config["params"]["picard"]["MarkDuplicates"],
     shadow:
         "minimal"
-    threads: 1
+    threads: lambda wildcards, attempt: attempt * 4
     resources:
         runtime=lambda wildcards, attempt: attempt * 1440,
-        mem_mb=lambda wildcards, attempt, input: int(attempt * (input.size_mb * 3)),
+        #mem_mb=lambda wildcards, attempt, input: int(attempt * (input.size_mb * 3)),
     wrapper:
         "v1.17.2/bio/picard/markduplicates"
 

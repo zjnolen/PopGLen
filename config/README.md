@@ -282,6 +282,30 @@ settings for each analysis are set in the next section.
   - `ibs_matrix:` Estimate pairwise identity by state distance between all
     samples using ANGSD. (`true`/`false`)
 
+#### Downsampling Section
+
+As this workflow is aimed at low coverage samples, its likely there might be
+considerable variance in sample depth. For this reason, it may be good to
+subsample all your samples to a similar depth to examine if variation in depth
+is influencing results. To do this, set an integer value here to subsample all
+your samples down to and run specific analyses.
+
+- `subsample_dp:` A mean depth to subsample your reads to. This will be done
+  per sample, and subsample from all the reads. If a sample already has the
+  same, or lower, depth than this number, it will just be used as is in the
+  analysis. (INT)
+
+- `subsample_redo_filts:` Make a separate filtered sites file using the
+  subsampled bams to calculate depth based filters. If left disabled, the
+  depth filters will be determined from the full coverage files.
+  (`true`/`false`)
+
+- `subsample_analyses:` Individually enable analyses to be performed with the
+  subsampled data. These are the same as the ones above in the analyses
+  section. Enabling here will only run the analysis for the subsampled data,
+  if you want to run it for the full data as well, you need to enable it in the
+  analyses section as well. (`true`/`false`)
+
 #### Filter Sets
 
 By default, this workflow will perform all analyses requested in the above

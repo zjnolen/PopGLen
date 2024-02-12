@@ -303,6 +303,7 @@ rule bam_clipoverlap_userbams:
 
 
 ruleorder: symlink_bams > samtools_index
+ruleorder: samtools_subsample > samtools_index
 
 
 rule samtools_index:
@@ -347,23 +348,24 @@ rule samtools_subsample:
     coverage
     """
     input:
-        bam=get_bamlist_bams,
-        bai=get_bamlist_bais,
-        depth="results/datasets/{dataset}/qc/ind_depth/filtered/{dataset}_{population}.depth.sum",
-        bed="results/datasets/{dataset}/genotyping/filters/beds/{dataset}_filts.bed",
+        bam="results/datasets/{dataset}/bams/{sample}.{ref}.bam",
+        bai="results/datasets/{dataset}/bams/{sample}.{ref}.bam.bai",
+        depth="results/mapping/qc/ind_depth/unfiltered/{dataset}.{ref}_{sample}_allsites-unfilt.depth.sum",
     output:
-        bam="results/datasets/{dataset}/bams/{population}{dp}.bam",
-        bai="results/datasets/{dataset}/bams/{population}{dp}.bam.bai",
+        bam="results/datasets/{dataset}/bams/{sample}.{ref}{dp}.bam",
+        bai="results/datasets/{dataset}/bams/{sample}.{ref}{dp}.bam.bai",
     log:
-        "logs/mapping/samtools/subsample/{dataset}_{population}{dp}.log",
+        "logs/mapping/samtools/subsample/{dataset}_{sample}.{ref}{dp}.log",
     benchmark:
-        "benchmarks/mapping/samtools/subsample/{dataset}_{population}{dp}.log"
+        "benchmarks/mapping/samtools/subsample/{dataset}_{sample}.{ref}{dp}.log"
+    wildcard_constraints:
+        dp=f".dp{config['subsample_dp']}",
     conda:
         "../envs/samtools.yaml"
     shadow:
         "minimal"
     params:
-        dp=config["downsample_cov"],
+        dp=config["subsample_dp"],
     resources:
         runtime=lambda wildcards, attempt: attempt * 720,
     shell:
@@ -374,8 +376,8 @@ rule samtools_subsample:
 
         if [ `awk 'BEGIN {{print ('$prop' <= 1.0)}}'` = 1 ]; then
             propdec=$(echo $prop | awk -F "." '{{print $2}}')
-            samtools view -h -s ${{RANDOM}}.${{propdec}} -q 30 -L {input.bed} -@ {threads} \
-                -b {input.bam} > {output.bam} 2> {log}
+            samtools view -h -s 0.${{propdec}} -@ {threads} -b {input.bam} \
+                > {output.bam} 2> {log}
             samtools index {output.bam} 2>> {log}
         else
             echo "WARNING: Depth of sample is lower than subsample depth." \

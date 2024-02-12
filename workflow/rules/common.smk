@@ -454,6 +454,18 @@ def get_endo_cont_stat(wildcards):
 #         return "results/datasets/{dataset}/glfs/chunks/{dataset}.{ref}_{population}{dp}_chunk{chunk}_allsites-filts.glf.gz"
 
 
+def filt_depth(wildcards):
+    if config["subsample_redo_filts"]:
+        return {
+            "sites": "results/datasets/{dataset}/filters/combined/{dataset}.{ref}{dp}_{sites}-filts.sites",
+            "idx": "results/datasets/{dataset}/filters/combined/{dataset}.{ref}{dp}_{sites}-filts.sites.idx",
+        }
+    return {
+        "sites": "results/datasets/{dataset}/filters/combined/{dataset}.{ref}_{sites}-filts.sites",
+        "idx": "results/datasets/{dataset}/filters/combined/{dataset}.{ref}_{sites}-filts.sites.idx",
+    }
+
+
 ## Get random sampling proportion depending on if LD decay is being calculated
 ## or if LD pruning is being done
 def get_ngsld_sampling(wildcards):

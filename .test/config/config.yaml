@@ -24,10 +24,6 @@ exclude_ind: []
 
 excl_pca-admix: []
 
-#==================== Downsampling Configuration ======================#
-
-downsample_cov:
-
 #====================== Analysis Selection ============================#
 
 populations: []
@@ -57,6 +53,29 @@ analyses:
   pca_pcangsd: true
   admix_ngsadmix: true
   relatedness: 
+    ngsrelate: true
+    ibsrelate_ibs: true
+    ibsrelate_sfs: true
+  thetas_angsd: true
+  heterozygosity_angsd: true
+  fst_angsd:
+    populations: true
+    individuals: true
+  inbreeding_ngsf-hmm: true
+  ibs_matrix: true
+
+#==================== Downsampling Configuration ======================#
+
+subsample_dp: 2
+
+subsample_redo_filts: true
+
+subsample_analyses:
+  estimate_ld: true
+  ld_decay: true
+  pca_pcangsd: true
+  admix_ngsadmix: true
+  relatedness:
     ngsrelate: true
     ibsrelate_ibs: true
     ibsrelate_sfs: true
@@ -109,6 +128,7 @@ params:
     extra_beagle: ""
     snp_pval: "1e-6"
     min_maf: 0.05
+    mindepthind_heterozygosity: 3
   ngsld:
     max_kb_dist_est-ld: 200
     max_kb_dist_decay: 100

@@ -69,6 +69,12 @@ Additionally, several data filtering options are available:
 - Removal of regions with low mappability for fragments of a specified size
 - Removal of regions with extreme high or low depth
 - Removal of regions with a certain amount of missing data
+- Multiple filter sets from user provided BED files that can be intersected
+  with other enabled filters (for instance, performing analyses on neutral
+  sites and genic regions separately)
+
+All the above analyses can also be performed with sample depth subsampled to
+a uniform level to account for differences in depth between samples.
 
 ## Getting Started
 

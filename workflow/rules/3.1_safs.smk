@@ -6,13 +6,12 @@ rule angsd_doSaf_pop:
     Generate a site allele frequency file for a given population and genome chunk.
     """
     input:
+        unpack(filt_depth),
         bam="results/datasets/{dataset}/bamlists/{dataset}.{ref}_{population}{dp}.bamlist",
         bams=get_bamlist_bams,
         bais=get_bamlist_bais,
         ref="results/ref/{ref}/{ref}.fa",
         regions="results/datasets/{dataset}/filters/chunks/{ref}_chunk{chunk}.rf",
-        sites="results/datasets/{dataset}/filters/combined/{dataset}.{ref}_{sites}-filts.sites",
-        idx="results/datasets/{dataset}/filters/combined/{dataset}.{ref}_{sites}-filts.sites.idx",
     output:
         saf=temp(
             "results/datasets/{dataset}/safs/chunks/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.saf.gz"
@@ -105,16 +104,15 @@ rule realSFS_catsaf:
 
 rule angsd_doSaf_sample:
     """
-    Generate a site allele frequency file for a given downsampled population and genome
+    Generate a site allele frequency file for a given subsampled population and genome
     chunk.
     """
     input:
+        unpack(filt_depth),
         bam="results/datasets/{dataset}/bamlists/{dataset}.{ref}_{population}{dp}.bamlist",
         bams=get_bamlist_bams,
         bais=get_bamlist_bais,
         ref="results/ref/{ref}/{ref}.fa",
-        sites="results/datasets/{dataset}/filters/combined/{dataset}.{ref}_{sites}-filts.sites",
-        idx="results/datasets/{dataset}/filters/combined/{dataset}.{ref}_{sites}-filts.sites.idx",
     output:
         saf="results/datasets/{dataset}/safs/{dataset}.{ref}_{population}{dp}_{sites}-filts.saf.gz",
         safidx="results/datasets/{dataset}/safs/{dataset}.{ref}_{population}{dp}_{sites}-filts.saf.idx",
@@ -132,6 +130,7 @@ rule angsd_doSaf_sample:
         gl_model=config["params"]["angsd"]["gl_model"],
         extra=config["params"]["angsd"]["extra"],
         extra_saf=config["params"]["angsd"]["extra_saf"],
+        mindepthind=config["params"]["angsd"]["mindepthind_heterozygosity"],
         mapQ=config["mapQ"],
         baseQ=config["baseQ"],
         out=lambda w, output: os.path.splitext(output.arg)[0],
@@ -142,5 +141,6 @@ rule angsd_doSaf_sample:
         (angsd -doSaf 1 -bam {input.bam} -GL {params.gl_model} -ref {input.ref} \
             -nThreads {threads} {params.extra} -minMapQ {params.mapQ} \
             -minQ {params.baseQ} -sites {input.sites} -anc {input.ref} \
-            {params.extra_saf} -out {params.out}) &> {log}
+            -setMinDepthInd {params.mindepthind} {params.extra_saf} \
+            -out {params.out}) &> {log}
         """

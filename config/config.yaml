@@ -18,6 +18,8 @@ reference:
   exclude: []
   min_size:
 
+ancestral:
+
 #===================== Sample Set Configuration =======================#
 
 exclude_ind: []
@@ -137,7 +139,7 @@ params:
     fit_LDdecay_n_correction: true
     pruning_min-weight: 0.1
   realsfs:
-    fold: 1 # Should only be set to 1 for now
+    fold: 1 # Should only be set to 1, unless ancestral reference is given above
     sfsboot: 100
   fst:
     whichFst: 1

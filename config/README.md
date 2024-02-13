@@ -134,6 +134,13 @@ Required configuration of the reference.
   - `min_size:` A size in bp (integer). All contigs below this size will be
     excluded from analysis.
 
+- `ancestral:` A path to a fasta file containing the ancestral states in your
+  reference genome. This is optional, and is used to polarize allele
+  frequencies in SAF files to ancestral/derived. If you leave this empty,
+  the reference genome itself will be used as ancestral, and you should be
+  sure the [`params`] [`realSFS`] [`fold`] is set to `1`. If you put a reference
+  here, you can set that to `0`.
+
 Reference genomes should be uncompressed, and contig names should be clear and
 concise. Currently, there are some issues parsing contig names with
 underscores, so please change these in your reference before running the
@@ -453,9 +460,8 @@ or a pull request and I'll gladly put it in.
     - `pruning_min-weight:` The minimum r^2 to assume two positions are in
       linkage disequilibrium when pruning (float)
   - `realSFS:` Settings for realSFS
-    - `fold:` Whether or not to fold the produced SFS (0 or 1, [docs](http://www.popgen.dk/angsd/index.php/SFS_Estimation))
-      **NOTE:** I have not implemented the use of an ancestral reference into
-      this workflow, so this should always be set to 1 until I implement this.
+    - `fold:` Whether or not to fold the produced SFS. Set to 1 if you have not
+      provided an ancestral-state reference (0 or 1, [docs](http://www.popgen.dk/angsd/index.php/SFS_Estimation))
     - `sfsboot:` Doesn't work now, but when it does it will produce this many
       bootstrapped SFS per population and population pair (integer)
   - `fst:` Settings for $F_{ST}$ calculation in ANGSD

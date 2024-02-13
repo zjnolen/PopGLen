@@ -10,27 +10,31 @@ rule ngsLD_prune_sites:
         ld=expand(
             "results/datasets/{{dataset}}/beagles/pruned/ngsLD/{{dataset}}.{{ref}}_{{population}}{{dp}}_chunk{{chunk}}_{{sites}}-filts.ld_maxkbdist-{maxkb}_rndsample-1.gz",
             maxkb=config["params"]["ngsld"]["max_kb_dist_pruning"],
-        )[0],
-        pos=expand(
-            "results/datasets/{{dataset}}/beagles/pruned/ngsLD/{{dataset}}.{{ref}}_{{population}}{{dp}}_chunk{{chunk}}_{{sites}}-filts.ld_maxkbdist-{maxkb}_rndsample-1.pos",
-            maxkb=config["params"]["ngsld"]["max_kb_dist_pruning"],
-        )[0],
+        ),
     output:
         sites="results/datasets/{dataset}/beagles/pruned/ngsLD/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts_pruned.sites",
     log:
         "logs/{dataset}/ngsLD/prune_sites/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.log",
     benchmark:
         "benchmarks/{dataset}/ngsLD/prune_sites/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.log"
-    conda:
-        "../envs/pruning.yaml"
-    threads: lambda wildcards, attempt: attempt * 3
+    container:
+        ngsld_container
+    threads: 4
     resources:
-        runtime="7d",
+        runtime="10d",
     params:
         maxdist=lambda w: str(config["params"]["ngsld"]["max_kb_dist_pruning"]) + "000",
         minweight=config["params"]["ngsld"]["pruning_min-weight"],
-    script:
-        "../scripts/prune_ngsLD.py"
+    shell:
+        """
+        if [ -s {input.ld} ]; then
+            zcat {input.ld} | prune_graph --weight-field 'column_7' \
+                --weight-filter 'column_3 <= {params.maxdist} && column_7 >= {params.minweight}' \
+                --out {output.sites}
+        else
+            > {output.sites}
+        fi 2> {log}
+        """
 
 
 rule prune_chunk_beagle:

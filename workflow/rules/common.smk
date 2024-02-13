@@ -154,8 +154,8 @@ def get_raw_fastq(wildcards):
             & (units["lib"] == wildcards.lib),
             ["sample", "fq1", "fq2"],
         ].set_index("sample")
-        if not pd.isna(unit.fq1[0]):
-            return {"sample": [unit.fq1[0], unit.fq2[0]]}
+        if not pd.isna(unit.fq1.item()):
+            return {"sample": [unit.fq1.item(), unit.fq2.item()]}
     if "sra" in units:
         sra = units[
             (units["sample"] == wildcards.sample)
@@ -454,6 +454,7 @@ def get_endo_cont_stat(wildcards):
 #         return "results/datasets/{dataset}/glfs/chunks/{dataset}.{ref}_{population}{dp}_chunk{chunk}_allsites-filts.glf.gz"
 
 
+# Select filter file based off of full depth samples or subsampled depth
 def filt_depth(wildcards):
     if config["subsample_redo_filts"]:
         return {
@@ -463,6 +464,19 @@ def filt_depth(wildcards):
     return {
         "sites": "results/datasets/{dataset}/filters/combined/{dataset}.{ref}_{sites}-filts.sites",
         "idx": "results/datasets/{dataset}/filters/combined/{dataset}.{ref}_{sites}-filts.sites.idx",
+    }
+
+
+# Choose to use an ancestral reference if present, otherwise use main reference
+def get_anc_ref(wildcards):
+    if config["ancestral"]:
+        return {
+            "anc": "results/ref/{ref}/{ref}.anc.fa",
+            "ancfai": "results/ref/{ref}/{ref}.anc.fa.fai",
+        }
+    return {
+        "anc": "results/ref/{ref}/{ref}.fa",
+        "ancfai": "results/ref/{ref}/{ref}.fa.fai",
     }
 
 

@@ -18,6 +18,8 @@ reference:
   exclude: []
   min_size: 3000
 
+ancestral: "data/ref/testref.fa"
+
 #===================== Sample Set Configuration =======================#
 
 exclude_ind: []

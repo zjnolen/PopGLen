@@ -7,10 +7,12 @@ rule angsd_doSaf_pop:
     """
     input:
         unpack(filt_depth),
+        unpack(get_anc_ref),
         bam="results/datasets/{dataset}/bamlists/{dataset}.{ref}_{population}{dp}.bamlist",
         bams=get_bamlist_bams,
         bais=get_bamlist_bais,
         ref="results/ref/{ref}/{ref}.fa",
+        reffai="results/ref/{ref}/{ref}.fa.fai",
         regions="results/datasets/{dataset}/filters/chunks/{ref}_chunk{chunk}.rf",
     output:
         saf=temp(
@@ -50,7 +52,7 @@ rule angsd_doSaf_pop:
         """
         angsd -doSaf 1 -bam {input.bam} -GL {params.gl_model} -ref {input.ref} \
             -nThreads {threads} {params.extra} -minMapQ {params.mapQ} \
-            -minQ {params.baseQ} -sites {input.sites} -anc {input.ref} \
+            -minQ {params.baseQ} -sites {input.sites} -anc {input.anc} \
             {params.extra_saf} -rf {input.regions} -out {params.out} &> {log}
         """
 
@@ -109,10 +111,12 @@ rule angsd_doSaf_sample:
     """
     input:
         unpack(filt_depth),
+        unpack(get_anc_ref),
         bam="results/datasets/{dataset}/bamlists/{dataset}.{ref}_{population}{dp}.bamlist",
         bams=get_bamlist_bams,
         bais=get_bamlist_bais,
         ref="results/ref/{ref}/{ref}.fa",
+        reffai="results/ref/{ref}/{ref}.fa.fai",
     output:
         saf="results/datasets/{dataset}/safs/{dataset}.{ref}_{population}{dp}_{sites}-filts.saf.gz",
         safidx="results/datasets/{dataset}/safs/{dataset}.{ref}_{population}{dp}_{sites}-filts.saf.idx",
@@ -140,7 +144,7 @@ rule angsd_doSaf_sample:
         """
         (angsd -doSaf 1 -bam {input.bam} -GL {params.gl_model} -ref {input.ref} \
             -nThreads {threads} {params.extra} -minMapQ {params.mapQ} \
-            -minQ {params.baseQ} -sites {input.sites} -anc {input.ref} \
+            -minQ {params.baseQ} -sites {input.sites} -anc {input.anc} \
             -setMinDepthInd {params.mindepthind} {params.extra_saf} \
             -out {params.out}) &> {log}
         """

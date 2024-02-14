@@ -417,22 +417,39 @@ or a pull request and I'll gladly put it in.
       than this will be binned to this value. Should be fine for most to leave
       at `1000`. (integer, [docs](http://www.popgen.dk/angsd/index.php/Depth))
     - `extra:` Additional options to pass to ANGSD during genotype likelihood
-      calculation. This is primarily useful for adding BAM input filters. Note
-      that `--remove_bads` and `-only_proper_pairs` are enabled by default, so
-      they only need to be included if you want to turn them off. I've also
-      found that for some datasets, `-C 50` and `-baq 1` can create a strong
-      relationship between sample depth and detected diversity, effectively
-      removing the benefits of ANGSD for low/variable depth data. I recommend
-      that these aren't included unless you know you need them, and even then,
-      I'd recommend plotting `heterozygosity ~ sample depth` to ensure there is
-      not any relationship. Since the workflow uses bwa to map, `-uniqueOnly 1`
-      doesn't do anything if your minimum mapping quality is > 0. Don't put
-      mapping and base quality thresholds here either, it will use the ones
-      defined above automatically. Although historical samples will have DNA
-      damaged assessed and to some extent, corrected, it may be useful to put
-      `-noTrans 1` or `-trim INT` here if you're interested in stricter filters
-      for degraded DNA. (string, [docs](http://www.popgen.dk/angsd/index.php/Input#BAM.2FCRAM))
+      calculation at all times. This is primarily useful for adding BAM input
+      filters. Note that `--remove_bads` and `-only_proper_pairs` are enabled
+      by default, so they only need to be included if you want to turn them
+      off or explicitly ensure they are enabled. I've also found that for some
+      datasets, `-C 50` and `-baq 1` can create a strong relationship between
+      sample depth and detected diversity, effectively removing the benefits of
+      ANGSD for low/variable depth data. I recommend that these aren't included
+      unless you know you need them. Since the workflow uses bwa to map,
+      `-uniqueOnly 1` doesn't do anything if your minimum mapping quality is
+      \> 0. Don't put mapping and base quality thresholds here either, it will
+      use the ones defined above automatically. Although historical samples
+      will have DNA damaged assessed and to some extent, corrected, it may be
+      useful to put `-noTrans 1` or `-trim INT` here if you're interested in
+      stricter filters for degraded DNA. (string, [docs](http://www.popgen.dk/angsd/index.php/Input#BAM.2FCRAM))
+    - `extra_saf:` Same as `extra`, but only used when making SAF files (used
+      for SFS, thetas, Fst, IBSrelate, heterozygosity includes invariable
+      sites).
+    - `extra_beagle:` Same as `extra`, but only used when making Beagle and Maf
+      files (used for PCA, Admix, ngsF-HMM, doIBS, ngsrelate, includes only
+      variable sites).
     - `snp_pval:` The p-value to use for calling SNPs (float, [docs](http://www.popgen.dk/angsd/index.php/SNP_calling))
+    - `domajorminor:` Method for inferring the major and minor alleles. Set to
+      1 to infer from the genotype likelihoods, see [documentation](https://www.popgen.dk/angsd/index.php/Major_Minor)
+      for other options. `1`, `2`, and `4` can be set without any additional
+      configuration. `5` must also have an ancestral reference provided in the
+      config, otherwise it will be the same as `4`. `3` is currently not
+      possible, but please open an issue if you have a use case, I'd like to
+      add it, but would need some input on how it is used.
+    - `domaf:` Method for inferring minor allele frequencies. Set to `1` to
+      infer from genotype likelihoods using a known major and minor from the
+      `domajorminor` setting above. See [docs](http://www.popgen.dk/angsd/index.php/Allele_Frequencies)
+      for other options. I have not tested much beyond `1` and `8`, please open
+      an issue if you have problems.
     - `min_maf:` The minimum minor allele frequency required to call a SNP.
       (float, [docs](http://www.popgen.dk/angsd/index.php/Allele_Frequencies))
   - `ngsld:` Settings for ngsLD ([docs](https://github.com/fgvieira/ngsLD))

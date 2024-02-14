@@ -10,10 +10,12 @@ rule angsd_doGlf2:
     """
     input:
         unpack(filt_depth),
+        unpack(get_anc_ref),
         bam="results/datasets/{dataset}/bamlists/{dataset}.{ref}_{population}{dp}.bamlist",
         bams=get_bamlist_bams,
         bais=get_bamlist_bais,
         ref="results/ref/{ref}/{ref}.fa",
+        reffai="results/ref/{ref}/{ref}.fa.fai",
         regions="results/datasets/{dataset}/filters/chunks/{ref}_chunk{chunk}.rf",
     output:
         beagle=temp(
@@ -36,7 +38,10 @@ rule angsd_doGlf2:
         mapQ=config["mapQ"],
         baseQ=config["baseQ"],
         snp_pval=config["params"]["angsd"]["snp_pval"],
+        maf=config["params"]["angsd"]["domaf"],
         minmaf=config["params"]["angsd"]["min_maf"],
+        majmin=config["params"]["angsd"]["domajorminor"],
+        counts=get_docounts,
         nind=lambda w: len(get_samples_from_pop(w.population)),
         out=lambda w, output: os.path.splitext(output.arg)[0],
     threads: lambda wildcards, attempt: attempt
@@ -45,10 +50,11 @@ rule angsd_doGlf2:
     shell:
         """
         angsd -doGlf 2 -bam {input.bam} -GL {params.gl_model} -ref {input.ref} \
-            -doMajorMinor 1 -doMaf 1 -SNP_pval {params.snp_pval} \
-            -minMaf {params.minmaf} -nThreads {threads} {params.extra} \
+            -doMajorMinor {params.majmin} -doMaf {params.maf} -minMaf {params.minmaf} \
+            -SNP_pval {params.snp_pval} -nThreads {threads} {params.extra} \
             -minMapQ {params.mapQ} -minQ {params.baseQ} -sites {input.sites} \
-            {params.extra_beagle} -rf {input.regions} -out {params.out} &> {log}
+            -anc {input.anc} {params.extra_beagle} -rf {input.regions} \
+            {params.counts} -out {params.out} &> {log}
         """
 
 

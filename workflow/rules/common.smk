@@ -480,6 +480,19 @@ def get_anc_ref(wildcards):
     }
 
 
+# Determine if docounts is needed for beagle/maf calculation to keep it from
+# slowing things down when it is not. It is only needed if the major and minor
+# alleles are being inferred from counts (-doMajorMinor 2) or the minor allele
+# frequency is being inferred by counts (-doMaf 8, >8 possible if count
+# inference is combined with other inferences)
+def get_docounts(wildcard):
+    if (int(config["params"]["angsd"]["domajorminor"]) == 2) or (
+        int(config["params"]["angsd"]["domaf"]) >= 8
+    ):
+        return "-doCounts 1"
+    return ""
+
+
 ## Get random sampling proportion depending on if LD decay is being calculated
 ## or if LD pruning is being done
 def get_ngsld_sampling(wildcards):

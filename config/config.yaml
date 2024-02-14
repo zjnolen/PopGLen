@@ -115,7 +115,7 @@ params:
     filt-on-depth-classes: true
   fastp:
     extra: "-p -g" # don't put --merge or --overlap_len_require here, they're implicit
-    min_overlap_hist: 15
+    min_overlap_hist: 20
   bwa_aln:
     extra: "-l 16500 -n 0.01 -o 2"
   picard:
@@ -126,6 +126,8 @@ params:
     extra: ""
     extra_saf: ""
     extra_beagle: ""
+    domajorminor: 1 # Currently only compatible with values 1, 2, 4, 5
+    domaf: 1
     snp_pval: "1e-6"
     min_maf: 0.05
     mindepthind_heterozygosity: 3

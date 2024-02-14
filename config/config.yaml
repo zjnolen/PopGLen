@@ -129,7 +129,7 @@ params:
     domajorminor: 1 # Currently only compatible with values 1, 2, 4, 5
     domaf: 1
     snp_pval: "1e-6"
-    min_maf: 0.05
+    min_maf: -1 # Set -1 to disable
     mindepthind_heterozygosity: 3
   ngsld:
     max_kb_dist_est-ld: 4000

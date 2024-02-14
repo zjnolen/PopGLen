@@ -359,7 +359,7 @@ if config["subsample_analyses"]["heterozygosity_angsd"]:
 if config["subsample_analyses"]["inbreeding_ngsf-hmm"]:
     all_outputs.extend(
         expand(
-            "results/datasets/{{dataset}}/plots/inbreeding/{{dataset}}.{{ref}}_all{dp}_{{sites}}-filts.froh.pdf",
+            "results/datasets/{{dataset}}/plots/inbreeding/{{dataset}}.{{ref}}_all{dp}_{{sites}}-filts.ind_froh.tsv",
             dp=subdp,
         )
     )

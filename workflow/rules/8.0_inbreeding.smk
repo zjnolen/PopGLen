@@ -8,8 +8,8 @@ rule ngsf_hmm:
     """
     input:
         beagle=expand(
-            "results/datasets/{{dataset}}/beagles{folder}/{{dataset}}.{{ref}}_{{population}}{{dp}}_{{sites}}-filts{pruning}.beagle.gz",
-            folder="/pruned" if config["params"]["ngsf-hmm"]["prune"] else "",
+            "results/datasets/{{dataset}}/beagles/{folder}{{dataset}}.{{ref}}_{{population}}{{dp}}_{{sites}}-filts{pruning}.beagle.gz",
+            folder="pruned/" if config["params"]["ngsf-hmm"]["prune"] else "",
             pruning=f".pruned_maxkbdist-{config['params']['ngsf-hmm']['max_kb_dist_pruning_pop']}_minr2-{config['params']['ngsf-hmm']['pruning_min-weight_pop']}"
             if config["params"]["ngsf-hmm"]["prune"]
             else "",
@@ -77,12 +77,20 @@ rule plot_froh:
         barplot=report(
             "results/datasets/{dataset}/plots/inbreeding/{dataset}.{ref}_all{dp}_{sites}-filts.froh_bins.svg",
             category="Inbreeding",
-            labels=lambda w: {"Filter": "{sites}", **dp_report(w), "Type": "Froh Bins Barplot"},
+            labels=lambda w: {
+                "Filter": "{sites}",
+                **dp_report(w),
+                "Type": "Froh Bins Barplot",
+            },
         ),
         scatter=report(
             "results/datasets/{dataset}/plots/inbreeding/{dataset}.{ref}_all{dp}_{sites}-filts.cumroh_nroh.svg",
             category="Inbreeding",
-            labels=lambda w: {"Filter": "{sites}", **dp_report(w), "Type": "Nroh ~ Lroh Scatterplot"},
+            labels=lambda w: {
+                "Filter": "{sites}",
+                **dp_report(w),
+                "Type": "Nroh ~ Lroh Scatterplot",
+            },
         ),
         roh="results/datasets/{dataset}/plots/inbreeding/{dataset}.{ref}_all{dp}_{sites}-filts.all_roh.bed",
         froh="results/datasets/{dataset}/plots/inbreeding/{dataset}.{ref}_all{dp}_{sites}-filts.ind_froh.tsv",

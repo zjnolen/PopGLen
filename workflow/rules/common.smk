@@ -485,7 +485,7 @@ def get_anc_ref(wildcards):
 # alleles are being inferred from counts (-doMajorMinor 2) or the minor allele
 # frequency is being inferred by counts (-doMaf 8, >8 possible if count
 # inference is combined with other inferences)
-def get_docunts(wildcard):
+def get_docounts(wildcard):
     if (int(config["params"]["angsd"]["domajorminor"]) == 2) or (
         int(config["params"]["angsd"]["domaf"]) >= 8
     ):

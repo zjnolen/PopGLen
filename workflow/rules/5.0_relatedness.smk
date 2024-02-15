@@ -162,7 +162,11 @@ rule ngsrelate:
     Estimates inbreeding and relatedness measures using NGSrelate.
     """
     input:
-        beagle="results/datasets/{dataset}/beagles/pruned/{dataset}.{ref}_all{dp}_{sites}-filts_pruned.beagle.gz",
+        beagle=expand(
+            "results/datasets/{{dataset}}/beagles/pruned/{{dataset}}.{{ref}}_all{{dp}}_{{sites}}-filts.pruned_maxkbdist-{maxkb}_minr2-{r2}.beagle.gz",
+            maxkb=config["params"]["ngsld"]["max_kb_dist_pruning_dataset"],
+            r2=config["params"]["ngsld"]["pruning_min-weight_dataset"],
+        ),
         inds="results/datasets/{dataset}/poplists/{dataset}_all.indiv.list",
     output:
         relate="results/datasets/{dataset}/analyses/kinship/ngsrelate/{dataset}.{ref}_all{dp}_{sites}-filts_relate.tsv",

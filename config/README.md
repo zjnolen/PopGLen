@@ -451,17 +451,16 @@ or a pull request and I'll gladly put it in.
       for other options. I have not tested much beyond `1` and `8`, please open
       an issue if you have problems.
     - `min_maf:` The minimum minor allele frequency required to call a SNP.
-      (float, [docs](http://www.popgen.dk/angsd/index.php/Allele_Frequencies))
+      This is set when generating the beagle file, so will filter SNPs for
+      PCAngsd, NGSadmix, ngsF-HMM, and NGSrelate. If you would like each tool
+      to handle filtering for maf on its own you can set this to `-1`
+      (disabled). (float, [docs](http://www.popgen.dk/angsd/index.php/Allele_Frequencies))
   - `ngsld:` Settings for ngsLD ([docs](https://github.com/fgvieira/ngsLD))
     - `max_kb_dist_est-ld:` For the LD estimates generated when setting
       `estimate_ld: true` above, set the maximum distance between sites in kb
       that LD will be estimated for (`--max_kb_dist` in ngsLD, integer)
     - `max_kb_dist_decay:` The same as `max_kb_dist_est-ld:`, but used when
       estimating LD decay when setting `ld_decay: true` above (integer)
-    - `max_kb_dist_pruning:` The same as `max_kb_dist_est-ld:`, but used when
-      linkage pruning SNPs as inputs for PCA, Admix, and Inbreeding analyses.
-      Any positions above this distance will be assumed to be in linkage
-      equilibrium during the pruning process (integer)
     - `rnd_sample_est-ld:` For the LD estimates generated when setting
       `estimate_ld: true` above, randomly sample this proportion of pairwise
       linkage estimates rather than estimating all (`--rnd_sample` in ngsLD,
@@ -474,8 +473,41 @@ or a pull request and I'll gladly put it in.
       size corrected r^2 model be used? (`true`/`false`, `true` is the
       equivalent of passing a sample size to `fit_LDdecay.R` in ngsLD using
       `--n_ind`)
-    - `pruning_min-weight:` The minimum r^2 to assume two positions are in
-      linkage disequilibrium when pruning (float)
+    - `max_kb_dist_pruning_dataset:` The same as `max_kb_dist_est-ld:`, but
+      used when linkage pruning SNPs as inputs for PCAngsd, NGSadmix, and
+      NGSrelate analyses. Pruning is performed on the whole dataset. Any
+      positions above this distance will be assumed to be in linkage
+      equilibrium during the pruning process. (integer)
+    - `pruning_min-weight_dataset:` The minimum r^2 to assume two positions are
+      in linkage disequilibrium when pruning for PCAngsd, NGSadmix, and
+      NGSrelate analyses. (float)
+  - `ngsf-hmm:` Settings for ngsF-HMM
+    - `estimate_in_pops:` Set to `true` to run ngsF-HMM separately for each
+      population in your dataset. Set to `false` to run for whole dataset at
+      once. ngsF-HMM assumes Hardy-Weinberg Equilibrium (aside from inbreeding)
+      in the input data, so select the option that most reflects this. You can
+      use PCA and Admixture analyses to help determine this. (`true`/`false`)
+    - `prune:` Whether or not to prune SNPs for LD before running the analysis.
+      ngsF-HMM assumes independent sites, so it is preferred to set this to
+      `true` to satisfy that expectation. (`true`/`false`)
+    - `max_kb_dist_pruning_pop:` The maximum distance between sites in kb
+      that will be treated as in LD when pruning for the ngsF-HMM input. (INT)
+    - `pruning_min-weight_pop:` The minimum r^2 to assume two positions are in
+      linkage disequilibrium when pruning for the ngsF-HMM input. Note, that
+      this likely will be substantially higher for individual populations than
+      for the whole dataset, as background LD should be higher when no
+      substructure is present. (float)
+    - `min_roh_length:` Minimum ROH size in base pairs to include in inbreeding
+      coefficient calculation. Set if short ROH might be considered low
+      confidence for your data. (integer)
+    - `roh_bins:` A list of integers that describe the size classes in base
+      pairs you would like to partition the inbreeding coefficient by. This can
+      help visualize how much of the coefficient comes from ROH of certain size
+      classes (and thus, ages). List should be in ascending order and the first
+      entry should be greater than `min_roh_length`. The first bin will group
+      ROH between `min_roh_length` and the first entry, subsequent bins will
+      group ROH with sizes between adjacent entries in the list, and the final
+      bin will group all ROH larger than the final entry in the list. (list)
   - `realSFS:` Settings for realSFS
     - `fold:` Whether or not to fold the produced SFS. Set to 1 if you have not
       provided an ancestral-state reference (0 or 1, [docs](http://www.popgen.dk/angsd/index.php/SFS_Estimation))
@@ -508,6 +540,6 @@ or a pull request and I'll gladly put it in.
       assessment. (integer)
     - `extra:` Additional arguments to pass to NGSadmix (for instance,
       increasing `-maxiter`). (string, [docs](http://www.popgen.dk/software/index.php/NgsAdmix))
-    - `ibs:` Settings for identity by state calculation with ANGSD
-      - `-doIBS:` Whether to use a random (1) or consensus (2) base in IBS
+  - `ibs:` Settings for identity by state calculation with ANGSD
+    - `-doIBS:` Whether to use a random (1) or consensus (2) base in IBS
         distance calculation ([docs](http://www.popgen.dk/angsd/index.php/PCA_MDS))

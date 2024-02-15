@@ -129,20 +129,27 @@ params:
     domajorminor: 1 # Currently only compatible with values 1, 2, 4, 5
     domaf: 1
     snp_pval: "1e-6"
-    min_maf: 0.05
+    min_maf: -1 # Set -1 to disable
     mindepthind_heterozygosity: 3
   ngsld:
     max_kb_dist_est-ld: 4000
-    max_kb_dist_decay: 100
-    max_kb_dist_pruning: 100
     rnd_sample_est-ld: 0.001
+    max_kb_dist_decay: 100
     rnd_sample_decay: 0.001
     fit_LDdecay_extra: "--fit_level 100 --fit_boot 100 --plot_size 3,6 --plot_data --plot_no_legend --plot_y_lim 0.5"
     fit_LDdecay_n_correction: true
-    pruning_min-weight: 0.1
+    max_kb_dist_pruning_dataset: 100 # used for PCA, Admix, NGSrelate, not ngsF-HMM
+    pruning_min-weight_dataset: 0.1 # used for PCA, Admix, NGSrelate, not ngsF-HMM
+  ngsf-hmm:
+    estimate_in_pops: true
+    prune: true
+    max_kb_dist_pruning_pop: 100 # used only for ngsf-hmm
+    pruning_min-weight_pop: 0.8 # used only for ngsf-hmm
+    min_roh_length: 50000
+    roh_bins: [ 100000, 250000, 500000, 1000000, 2500000, 5000000 ] # in ascending order, bins are between adjacent values and between min_roh_length and value 1 and the last value and infinity
   realsfs:
     fold: 1 # Should only be set to 1, unless ancestral reference is given above
-    sfsboot: 100
+    sfsboot: 100 # Does nothing for now
   fst:
     whichFst: 1
     win_size: 50000

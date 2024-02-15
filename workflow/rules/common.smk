@@ -171,15 +171,6 @@ def get_raw_fastq(wildcards):
             }
 
 
-## Get minimum overlap to collapse read pairs per sample
-def get_min_overlap(wildcards):
-    s = wildcards.sample
-    if s in samples.index[samples.time == "historical"]:
-        return config["params"]["fastp"]["min_overlap_hist"]
-    elif s in samples.index[samples.time == "modern"]:
-        return config["params"]["fastp"]["min_overlap_mod"]
-
-
 # Reference
 
 

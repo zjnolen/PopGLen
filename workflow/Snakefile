@@ -128,6 +128,40 @@ if config["analyses"]["ld_decay"]:
         )
     )
 
+if config["analyses"]["1dsfs"]:
+    all_outputs.extend(
+        expand(
+            "results/datasets/{{dataset}}/analyses/sfs/{{dataset}}.{{ref}}_{population}_{{sites}}-filts.sfs",
+            population=pop_list,
+        )
+    )
+
+if config["analyses"]["2dsfs"]:
+    all_outputs.extend(
+        expand(
+            "results/datasets/{{dataset}}/analyses/sfs/{{dataset}}.{{ref}}_{population1}-{population2}_{{sites}}-filts.sfs",
+            population1=[pair[0] for pair in pairwise_combos(pop_list)],
+            population2=[pair[1] for pair in pairwise_combos(pop_list)],
+        )
+    )
+
+if config["analyses"]["1dsfs_boot"]:
+    all_outputs.extend(
+        expand(
+            "results/datasets/{{dataset}}/analyses/sfs/{{dataset}}.{{ref}}_{population}_{{sites}}-filts.boot.sfs",
+            population=pop_list,
+        )
+    )
+
+if config["analyses"]["2dsfs_boot"]:
+    all_outputs.extend(
+        expand(
+            "results/datasets/{{dataset}}/analyses/sfs/{{dataset}}.{{ref}}_{population1}-{population2}_{{sites}}-filts.boot.sfs",
+            population1=[pair[0] for pair in pairwise_combos(pop_list)],
+            population2=[pair[1] for pair in pairwise_combos(pop_list)],
+        )
+    )
+
 if config["analyses"]["relatedness"]["ngsrelate"]:
     all_outputs.append(
         "results/datasets/{dataset}/analyses/kinship/ngsrelate/{dataset}.{ref}_all_{sites}-filts_relate.html"
@@ -252,6 +286,44 @@ if config["subsample_analyses"]["ld_decay"]:
         expand(
             "results/datasets/{{dataset}}/plots/LD_decay/{{dataset}}.{{ref}}_{population}{dp}_{{sites}}-filts.LDdecay.svg",
             population=pop_list + ["all"],
+            dp=subdp,
+        )
+    )
+
+if config["subsample_analyses"]["1dsfs"]:
+    all_outputs.extend(
+        expand(
+            "results/datasets/{{dataset}}/analyses/sfs/{{dataset}}.{{ref}}_{population}{dp}_{{sites}}-filts.sfs",
+            population=pop_list,
+            dp=subdp,
+        )
+    )
+
+if config["subsample_analyses"]["2dsfs"]:
+    all_outputs.extend(
+        expand(
+            "results/datasets/{{dataset}}/analyses/sfs/{{dataset}}.{{ref}}_{population1}-{population2}{dp}_{{sites}}-filts.sfs",
+            population1=[pair[0] for pair in pairwise_combos(pop_list)],
+            population2=[pair[1] for pair in pairwise_combos(pop_list)],
+            dp=subdp,
+        )
+    )
+
+if config["subsample_analyses"]["1dsfs_boot"]:
+    all_outputs.extend(
+        expand(
+            "results/datasets/{{dataset}}/analyses/sfs/{{dataset}}.{{ref}}_{population}{dp}_{{sites}}-filts.boot.sfs",
+            population=pop_list,
+            dp=subdp,
+        )
+    )
+
+if config["subsample_analyses"]["2dsfs_boot"]:
+    all_outputs.extend(
+        expand(
+            "results/datasets/{{dataset}}/analyses/sfs/{{dataset}}.{{ref}}_{population1}-{population2}{dp}_{{sites}}-filts.boot.sfs",
+            population1=[pair[0] for pair in pairwise_combos(pop_list)],
+            population2=[pair[1] for pair in pairwise_combos(pop_list)],
             dp=subdp,
         )
     )

@@ -58,6 +58,10 @@ analyses:
     ngsrelate: false
     ibsrelate_ibs: false
     ibsrelate_sfs: false
+  1dsfs: false
+  1dsfs_boot: false
+  2dsfs: false
+  2dsfs_boot: false
   thetas_angsd: false
   heterozygosity_angsd: false
   fst_angsd:
@@ -81,6 +85,10 @@ subsample_analyses:
     ngsrelate: false
     ibsrelate_ibs: false
     ibsrelate_sfs: false
+  1dsfs: false
+  1dsfs_boot: false
+  2dsfs: false
+  2dsfs_boot: false
   thetas_angsd: false
   heterozygosity_angsd: false
   fst_angsd:
@@ -149,7 +157,7 @@ params:
     roh_bins: [ 100000, 250000, 500000, 1000000, 2500000, 5000000 ] # in ascending order, bins are between adjacent values and between min_roh_length and value 1 and the last value and infinity
   realsfs:
     fold: 1 # Should only be set to 1, unless ancestral reference is given above
-    sfsboot: 100 # Does nothing for now
+    sfsboot: 100
   fst:
     whichFst: 1
     win_size: 50000

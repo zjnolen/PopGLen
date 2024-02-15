@@ -230,7 +230,8 @@ if config["analyses"]["fst_angsd"]["individuals"]:
 if config["analyses"]["heterozygosity_angsd"]:
     all_outputs.extend(
         [
-            "results/datasets/{dataset}/plots/heterozygosity/{dataset}.{ref}_all_{sites}-filts_heterozygosity.pdf",
+            "results/datasets/{dataset}/plots/heterozygosity/{dataset}.{ref}_all_{sites}-filts_heterozygosity.populations.svg",
+            "results/datasets/{dataset}/plots/heterozygosity/{dataset}.{ref}_all_{sites}-filts_heterozygosity.individuals.svg",
             "results/datasets/{dataset}/analyses/heterozygosity/{dataset}.{ref}_all_{sites}-filts_heterozygosity.html",
         ]
     )
@@ -421,7 +422,8 @@ if config["subsample_analyses"]["heterozygosity_angsd"]:
     all_outputs.extend(
         expand(
             [
-                "results/datasets/{{dataset}}/plots/heterozygosity/{{dataset}}.{{ref}}_all{dp}_{{sites}}-filts_heterozygosity.pdf",
+                "results/datasets/{{dataset}}/plots/heterozygosity/{{dataset}}.{{ref}}_all{dp}_{{sites}}-filts_heterozygosity.populations.svg",
+                "results/datasets/{{dataset}}/plots/heterozygosity/{{dataset}}.{{ref}}_all{dp}_{{sites}}-filts_heterozygosity.individuals.svg",
                 "results/datasets/{{dataset}}/analyses/heterozygosity/{{dataset}}.{{ref}}_all{dp}_{{sites}}-filts_heterozygosity.html",
             ],
             dp=subdp,

@@ -19,7 +19,7 @@ rule heterozygosity:
     output:
         table="results/datasets/{dataset}/analyses/heterozygosity/{dataset}.{ref}_all{dp}_{sites}-filts_heterozygosity.tsv",
         popplot=report(
-            "results/datasets/{dataset}/plots/heterozygosity/{dataset}.{ref}_all{dp}_{sites}-filts_heterozygosity.populations.pdf",
+            "results/datasets/{dataset}/plots/heterozygosity/{dataset}.{ref}_all{dp}_{sites}-filts_heterozygosity.populations.svg",
             category="Heterozygosity",
             labels=lambda w: {
                 "Filter": "{sites}",
@@ -28,7 +28,7 @@ rule heterozygosity:
             },
         ),
         indplot=report(
-            "results/datasets/{dataset}/plots/heterozygosity/{dataset}.{ref}_all{dp}_{sites}-filts_heterozygosity.individuals.pdf",
+            "results/datasets/{dataset}/plots/heterozygosity/{dataset}.{ref}_all{dp}_{sites}-filts_heterozygosity.individuals.svg",
             category="Heterozygosity",
             labels=lambda w: {
                 "Filter": "{sites}",

@@ -17,7 +17,7 @@ aggregate_roh <- function(rohlist) {
     df <- rbind(df, roh)
   }
   
-  colnames(df) <- c("chr","start","stop","sample","length")
+  colnames(df) <- c("chr","start","end","sample","length")
 
   return(df)
 

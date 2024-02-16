@@ -270,10 +270,23 @@ settings for each analysis are set in the next section.
       the time needed to build the workflow DAG if you have many samples. As a
       form of this method is implemented in NGSrelate, it may be more
       efficient to only enable that. (`true`/`false`)
+  - `1dsfs:` Generates a one dimensional site frequency spectrum for all
+    populations in the sample list. Automatically enabled if `thetas_angsd` is
+    enabled. (`true`/`false`)
+  - `1dsfs_boot:` Generates N bootstrap replicates of the 1D site frequency
+    spectrum for each population. N is determined from the `sfsboot` setting
+    below (`true`/`false`)
+  - `2dsfs:` Generates a two dimensional site frequency spectrum for all unique
+    populations pairings in the sample list. Automatically enabled if
+    `fst_angsd` is enabled. (`true`/`false`)
+  - `1dsfs_boot:` Generates N bootstrap replicates of the 2D site frequency
+    spectrum for each population pair. N is determined from the `sfsboot`
+    setting below (`true`/`false`)
   - `thetas_angsd:` Estimate pi, theta, and Tajima's D for each population in
     windows across the genome using ANGSD (`true`/`false`)
   - `heterozygosity_angsd:` Estimate individual genome-wide heterozygosity
-    using ANGSD (`true`/`false`)
+    using ANGSD. Calculates confidence intervals from bootstraps.
+    (`true`/`false`)
   - `fst_angsd:` Estimate pairwise $F_{ST}$ using ANGSD. Set one or both of the
     below options. Estimates both globally and in windows across the genome.
     - `populations:` Pairwise $F_{ST}$ is calculated between all possible
@@ -511,8 +524,10 @@ or a pull request and I'll gladly put it in.
   - `realSFS:` Settings for realSFS
     - `fold:` Whether or not to fold the produced SFS. Set to 1 if you have not
       provided an ancestral-state reference (0 or 1, [docs](http://www.popgen.dk/angsd/index.php/SFS_Estimation))
-    - `sfsboot:` Doesn't work now, but when it does it will produce this many
-      bootstrapped SFS per population and population pair (integer)
+    - `sfsboot:` Determines number of bootstrap replicates to use when
+      requesting bootstrapped SFS. Is used for both 1dsfs and 2dsfs (this is
+      very easy to separate, open an issue if desired). Automatically used
+      for heterozygosity analysis to calculate confidence intervals. (integer)
   - `fst:` Settings for $F_{ST}$ calculation in ANGSD
     - `whichFst:` Determines which $F_{ST}$ estimator is used by ANGSD. With 0
       being the default Reynolds 1983 and 1 being the Bhatia 2013 estimator.

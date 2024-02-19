@@ -39,17 +39,17 @@ froh_bins <- function(samplelist, roh_df, minroh, bins, lenautos) {
   frohs <- c()
 
   for (i in seq(length(bins))) {
-    runs <- roh_df[roh_df[,5] >= bins[i],]
-    if (i <= length(bins)-1){
+    if (i < length(bins)) {
+      runs <- roh_df[roh_df[,5] >= bins[i],]
       runs <- runs[runs[,5] < bins[i+1],]
+      runs <- rbind(runs, norun)
+      runs <- runs %>% group_by(sample) %>%
+        summarize(length = sum(length))
+      runs <- merge(runs, samples, by = "sample")
+      runs$froh <- runs$length / as.numeric(lenautos)
+      runs$range <- paste0("[",bins[i],",",bins[i+1],")")
+      frohs <- rbind(frohs, runs)
     }
-    runs <- rbind(runs, norun)
-    runs <- runs %>% group_by(sample) %>%
-      summarize(length = sum(length))
-    runs <- merge(runs, samples, by = "sample")
-    runs$froh <- runs$length / as.numeric(lenautos)
-    runs$range <- paste0("[",bins[i],",",bins[i+1],")")
-    frohs <- rbind(frohs, runs)
   }
 
   return(frohs)
@@ -74,10 +74,12 @@ plot_bins <- function(frohs, minroh, bins, plotpre) {
   bins <- c(minroh, bins, Inf)
   ranges <- c()
   for (i in seq(length(bins))) {
-    ranges <- c(ranges, paste0("[",bins[i],",",bins[i+1],")"))
+    if (i < length(bins)) {
+      ranges <- c(ranges, paste0("[",bins[i],",",bins[i+1],")"))
+    }
   }
   frohs$range <- as.factor(frohs$range)
-  frohs$range <- factor(frohs$range, levels = ranges, labels = ranges)
+  frohs$range <- factor(frohs$range, levels = rev(ranges), labels = rev(ranges))
   indfroh <- frohs %>% group_by(sample) %>%
     summarize(froh = sum(froh))
   
@@ -95,7 +97,7 @@ plot_bins <- function(frohs, minroh, bins, plotpre) {
       panel.grid.minor = element_blank()
     )
   
-  ggsave(paste0(plotpre,".froh_bins.svg"))
+  ggsave(paste0(plotpre,".froh_bins.svg"), width = 18, height = 6)
 }
 
 # Plot Nroh ~ Cumulative roh length for individuals with rohs
@@ -108,7 +110,7 @@ plot_cumroh_nroh <- function(nroh_cumroh, plotpre) {
     theme_classic() +
     labs(color = "Population")
 
-  ggsave(paste0(plotpre,".cumroh_nroh.svg"))
+  ggsave(paste0(plotpre,".cumroh_nroh.svg"), width = 9, height = 7)
 }
 
 

@@ -91,6 +91,7 @@ plot_bins <- function(frohs, minroh, bins, plotpre) {
     theme_bw() +
     labs(y = expression(F[RoH]), fill = "RoH Length (bp)") +
     scale_fill_grey() +
+    scale_x_discrete(guide = guide_axis(angle = 90)) +
     theme(
       axis.title.x = element_blank(),
       panel.grid.major = element_blank(),

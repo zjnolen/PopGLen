@@ -156,6 +156,41 @@ rule ind_unfiltered_depth:
         """
 
 
+rule ind_mapQ_baseQ_depth:
+    """
+    Estimate unfiltered sample depth, only removing reads using default ANGSD filters
+    """
+    input:
+        bamlist="results/datasets/{dataset}/bamlists/{dataset}.{ref}_{population}{dp}.bamlist",
+        bams=get_bamlist_bams,
+        bais=get_bamlist_bais,
+        ref="results/ref/{ref}/{ref}.fa",
+    output:
+        sample_hist="results/mapping/qc/ind_depth/mapq-baseq-filtered/{dataset}.{ref}_{population}{dp}_allsites-mapq{mapq}-baseq{baseq}-filt.depthSample",
+        global_hist=temp(
+            "results/mapping/qc/ind_depth/mapq-baseq-filtered/{dataset}.{ref}_{population}{dp}_allsites-mapq{mapq}-baseq{baseq}-filt.depthGlobal"
+        ),
+        arg="results/mapping/qc/ind_depth/mapq-baseq-filtered/{dataset}.{ref}_{population}{dp}_allsites-mapq{mapq}-baseq{baseq}-filt.arg",
+    log:
+        "logs/mapping/ind_depth/mapq-baseq-filtered/{dataset}.{ref}_{population}{dp}_allsites-mapq{mapq}-baseq{baseq}-filt.log",
+    benchmark:
+        "benchmarks/mapping/ind_depth/mapq-baseq-filtered/{dataset}.{ref}_{population}{dp}_allsites-mapq{mapq}-baseq{baseq}-filt.log"
+    container:
+        angsd_container
+    params:
+        out=lambda w, output: os.path.splitext(output.arg)[0],
+        maxdepth=config["params"]["angsd"]["maxdepth"],
+    threads: lambda wildcards, attempt: attempt
+    resources:
+        runtime=lambda wildcards, attempt: attempt * 120,
+    shell:
+        """
+        angsd -doDepth 1 -doCounts 1 -maxDepth {params.maxdepth} \
+            -minMapQ {wildcards.mapq} -minQ {wildcards.baseq} \
+            -bam {input.bamlist} -nThreads {threads} -out {params.out} &> {log}
+        """
+
+
 rule ind_filtered_depth:
     """
     Estimate depth at positions using filters for main workflow. This describes the

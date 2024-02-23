@@ -350,7 +350,11 @@ rule samtools_subsample:
     input:
         bam="results/datasets/{dataset}/bams/{sample}.{ref}.bam",
         bai="results/datasets/{dataset}/bams/{sample}.{ref}.bam.bai",
-        depth="results/mapping/qc/ind_depth/unfiltered/{dataset}.{ref}_{sample}_allsites-unfilt.depth.sum",
+        depth=expand(
+            "results/mapping/qc/ind_depth/mapq-baseq-filtered/{{dataset}}.{{ref}}_{{sample}}_allsites-mapq{mapq}-baseq{baseq}-filt.depth.sum",
+            mapq=config["mapQ"],
+            baseq=config["baseQ"],
+        ),
     output:
         bam="results/datasets/{dataset}/bams/{sample}.{ref}{dp}.bam",
         bai="results/datasets/{dataset}/bams/{sample}.{ref}{dp}.bam.bai",
@@ -376,7 +380,8 @@ rule samtools_subsample:
 
         if [ `awk 'BEGIN {{print ('$prop' <= 1.0)}}'` = 1 ]; then
             propdec=$(echo $prop | awk -F "." '{{print $2}}')
-            samtools view -h -s 0.${{propdec}} -@ {threads} -b {input.bam} \
+            samtools view -h -F 4 -q 30 -@ {threads} -u {input.bam} |
+                samtools view -h -s 0.${{propdec}} -@ {threads} -b \
                 > {output.bam} 2> {log}
             samtools index {output.bam} 2>> {log}
         else

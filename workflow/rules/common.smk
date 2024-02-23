@@ -534,25 +534,29 @@ def get_kinship(wildcards):
 ## Get bedfile for whole genome or filtered genome, to set the denomintor of coverage
 ## calculation
 def get_total_bed(wildcards):
-    if wildcards.prefix == "results/mapping/qc/ind_depth/unfiltered/":
-        return "results/ref/{ref}/beds/genome.bed"
-    elif (
+    if (
         wildcards.prefix
         == f"results/datasets/{wildcards.dataset}/qc/ind_depth/filtered/"
     ):
         return "results/datasets/{dataset}/filters/combined/{dataset}.{ref}{dp}_{group}.bed"
+    return "results/ref/{ref}/beds/genome.bed"
 
 
 ## Gather sample QC output files for concatenation
 def get_sample_qcs(wildcards):
     dic = {
         "inds": "results/datasets/{dataset}/poplists/{dataset}_all.indiv.list",
+        "endo": "results/datasets/{dataset}/qc/endogenous_content/{dataset}.{ref}_all.endo.tsv",
         "unfilt": "results/mapping/qc/ind_depth/unfiltered/{dataset}.{ref}_all{dp}_allsites-unfilt.depth.sum",
+        "mapqbaseqfilt": expand(
+            "results/mapping/qc/ind_depth/mapq-baseq-filtered/{{dataset}}.{{ref}}_all{{dp}}_allsites-mapq{mapq}-baseq{baseq}-filt.depth.sum",
+            mapq=config["mapQ"],
+            baseq=config["baseQ"],
+        ),
         "filt": expand(
             "results/datasets/{{dataset}}/qc/ind_depth/filtered/{{dataset}}.{{ref}}_all{{dp}}_{sites}-filts.depth.sum",
             sites=filters,
         ),
-        "endo": "results/datasets/{dataset}/qc/endogenous_content/{dataset}.{ref}_all.endo.tsv",
     }
     return dic
 

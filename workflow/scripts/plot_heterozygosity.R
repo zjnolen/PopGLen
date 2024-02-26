@@ -2,7 +2,7 @@ sink(file(snakemake@log[[1]], open="wt"), type = "message")
 
 aggregate_heterozygosity <- function(sfslist, pop) {
 
-  s <- as.data.frame(read.table(pop, header = TRUE))
+  s <- as.data.frame(read.table(pop, header = TRUE, sep = "\t"))
 
   hz <- data.frame(matrix(NA, ncol = 3, nrow = 0))
   colnames(hz) <- c("sample","pop","heterozygous_per_1000bp")
@@ -23,7 +23,7 @@ aggregate_heterozygosity <- function(sfslist, pop) {
 
 bootstrap_heterozygosity <- function (bootlist, pop) {
 
-  s <- as.data.frame(read.table(pop, header = TRUE))
+  s <- as.data.frame(read.table(pop, header = TRUE, sep = "\t"))
 
   hz <- data.frame(matrix(NA, ncol = 3, nrow = 0))
   colnames(hz) <- c("sample", "lower_95_CI", "upper_95_CI")

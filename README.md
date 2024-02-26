@@ -1,5 +1,9 @@
 # Genotype likelihood population genomics pipeline
 
+Note: This workflow has seen a good number of changes that are not yet in
+a numbered version. The most complete version is currently found on the
+[develop branch](https://github.com/zjnolen/angsd-snakemake-pipeline/tree/develop).
+
 This workflow is aimed at processing raw sequencing reads and calculating
 population genomic statistics within a genotype likelihood framework. As it is
 focused on GL methods, it has options to adapt the workflow for processing data

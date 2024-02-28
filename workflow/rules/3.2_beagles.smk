@@ -124,13 +124,13 @@ rule snpset:
     dataset.
     """
     input:
-        "results/datasets/{dataset}/mafs/{dataset}.{ref}_all{dp}_{sites}-filts.mafs.gz",
+        "results/datasets/{dataset}/mafs/{dataset}.{ref}_{population}{dp}_{sites}-filts.mafs.gz",
     output:
-        "results/datasets/{dataset}/filters/snps/{dataset}.{ref}{dp}_{sites}-filts_snps.sites",
+        "results/datasets/{dataset}/filters/snps/{dataset}.{ref}_{population}{dp}_{sites}-filts_snps.sites",
     log:
-        "logs/{dataset}/filters/snps/{dataset}.{ref}{dp}_{sites}-filts_snps.log",
+        "logs/{dataset}/filters/snps/{dataset}.{ref}_{population}{dp}_{sites}-filts_snps.log",
     benchmark:
-        "benchmarks/{dataset}/filters/snps/{dataset}.{ref}{dp}_{sites}-filts_snps.log"
+        "benchmarks/{dataset}/filters/snps/{dataset}.{ref}_{population}{dp}_{sites}-filts_snps.log"
     conda:
         "../envs/shell.yaml"
     shell:

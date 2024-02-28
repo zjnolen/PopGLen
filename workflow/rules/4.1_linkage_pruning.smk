@@ -24,7 +24,7 @@ rule ngsLD_prune_sites:
         if [ -s {input.ld} ]; then
             zcat {input.ld} | prune_graph --weight-field 'column_7' \
                 --weight-filter 'column_3 <= {wildcards.maxkb}000 && column_7 >= {wildcards.r2}' \
-                --out {output.sites}
+                --verbose --n-threads {threads} --out {output.sites}
         else
             > {output.sites}
         fi 2> {log}

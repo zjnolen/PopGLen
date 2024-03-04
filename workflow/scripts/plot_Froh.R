@@ -26,7 +26,7 @@ aggregate_roh <- function(rohlist) {
 # Calculate Froh for separate user defined size bins. Describes the proportion
 # of total Froh that comes from each size class
 froh_bins <- function(samplelist, roh_df, minroh, bins, lenautos) {
-  samples <- as.data.frame(read.table(samplelist, header=TRUE))
+  samples <- as.data.frame(read.table(samplelist, header=TRUE, sep = "\t"))
 
   norun <- c()
   norun$chr <- rep(0, nrow(samples))
@@ -60,7 +60,7 @@ froh_bins <- function(samplelist, roh_df, minroh, bins, lenautos) {
 # rohs > the minimum roh size. This can help distinguish patterns of
 # consanguinity from increased background relatedness
 nroh_cumroh <- function(roh_df, minroh, samplelist) {
-  samples <- as.data.frame(read.table(samplelist, header=TRUE))
+  samples <- as.data.frame(read.table(samplelist, header=TRUE, sep = "\t"))
   df <- roh_df[roh_df$length >= minroh, ]
   df <- df %>% group_by(sample) %>%
     summarize(cumlen = sum(length),
@@ -136,7 +136,7 @@ indfroh <- frohs %>% group_by(sample) %>%
   summarize(Froh = sum(froh))
 
 indfroh <- merge(
-  as.data.frame(read.table(snakemake@input[["inds"]], header=TRUE)),
+  as.data.frame(read.table(snakemake@input[["inds"]], header=TRUE, sep = "\t")),
   indfroh,
   by = "sample"
 )

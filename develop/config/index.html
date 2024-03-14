@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        
+        <link rel="shortcut icon" href="../img/favicon.ico">
+        <title>Configuration - ANGSD Snakemake Pipeline</title>
+        <link href="../css/bootstrap.min.css" rel="stylesheet">
+        <link href="../css/font-awesome.min.css" rel="stylesheet">
+        <link href="../css/base.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css">
+        <link href="../css/version-select.css" rel="stylesheet">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+        <script>hljs.highlightAll();</script> 
+    </head>
+
+    <body>
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" href="..">ANGSD Snakemake Pipeline</a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbar-collapse">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Expanded navigation -->
+                <div id="navbar-collapse" class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li class="navitem">
+                                <a href=".." class="nav-link">Home</a>
+                            </li>
+                            <li class="navitem active">
+                                <a href="./" class="nav-link">Configuration</a>
+                            </li>
+                            <li class="navitem">
+                                <a href="../about/" class="nav-link">About</a>
+                            </li>
+                        </ul>
+
+                    <ul class="nav navbar-nav ml-auto">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-toggle="modal" data-target="#mkdocs_search_modal">
+                                <i class="fa fa-search"></i> Search
+                            </a>
+                        </li>
+                            <li class="nav-item">
+                                <a rel="prev" href=".." class="nav-link">
+                                    <i class="fa fa-arrow-left"></i> Previous
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a rel="next" href="../about/" class="nav-link">
+                                    Next <i class="fa fa-arrow-right"></i>
+                                </a>
+                            </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-light navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-toggle="collapse" data-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-secondary">
+        <ul class="nav flex-column">
+            
+            <li class="nav-item" data-level="1"><a href="#general-settings" class="nav-link">General Settings</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-level="2"><a href="#samples-list" class="nav-link">Samples list</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#units-list" class="nav-link">Units list</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#configuration-file" class="nav-link">Configuration file</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+        </ul>
+    </div>
+</div></div>
+                    <div class="col-md-9" role="main">
+
+<h1 id="general-settings">General Settings</h1>
+<p>In the <a href="../config"><code>config</code></a> directory, you will find template configuration
+files for this pipeline. For your run, you'll need to edit <code>samples.tsv</code>,
+<code>units.tsv</code>, and <code>config.yaml</code>.</p>
+<h2 id="samples-list">Samples list</h2>
+<p>All your samples should be listed in <code>samples.tsv</code>. Samples preceded with a <code>#</code>
+will not be included, this can be useful if you want to exclude a sample after
+quality checking.</p>
+<p>Each sample must have four columns filled in the sample sheet. The columns are
+tab separated:</p>
+<ul>
+<li><code>sample</code> - The name of the sample</li>
+<li><code>population</code> - The populations you will group your samples into. These are
+  the groups that population level stats are calculated on.</li>
+<li><code>time</code> - This should be either <code>modern</code> or <code>historical</code>, the only thing this
+  will affect is whether or not your bam files will be corrected for
+  post-mortem damage or not.</li>
+<li><code>depth</code> - This is only used for depth filtering. Extreme levels (both high
+  and low) will be calculated for each group you put here as well as the
+  dataset as a whole, and all will be filtered out for all analyses. Any string
+  can be used for this. If all samples are sequenced to roughly similar depths,
+  all can have the same value. If some are low coverage, and some higher,
+  simply using 'low' and 'high' on the corresponding samples is sufficient.</li>
+</ul>
+<p>The values in the sample list will end up in filenames, so ensure that they are
+only characters permitted in filenames on your system.</p>
+<h2 id="units-list">Units list</h2>
+<p>All your raw data will be pointed to in <code>units.tsv</code>.</p>
+<p>Each row will contain a sample 'unit', this is a unique combination of a
+sample, sequencing run, and library. As such, these columns, as well as a
+fourth for the sequencing platform are required:</p>
+<ul>
+<li><code>sample</code> - The sample name, same as in <code>samples.tsv</code>.</li>
+<li><code>unit</code> - This describes the sequencing platform unit. The expected format is
+  <code>sequencerbarcode.lane</code>. It will be used to fill the <code>PU</code> readgroup, and
+  combined with the <code>lib</code> column to fill the <code>ID</code> read group.</li>
+<li><code>lib</code> - This is used to fill out the <code>LB</code> read group and combined with <code>unit</code>
+  to fill out the <code>ID</code> read group. This should be a unique identifier for each
+  library. Sequencing runs from the same library, but different runs, will have
+  the same value in <code>lib</code>, but different in <code>unit</code>.</li>
+<li><code>platform</code> - This is used to fill out the <code>PL</code> read group. Put what you'd
+  want there. Usually <code>ILLUMINA</code> for Illumina platforms.</li>
+</ul>
+<p>Additionally, you have three ways to specify sequencing data sources. You can
+provide fastq files available locally on your machine, an SRA run accession to
+automatically download fastq files from NCBI, or a fully processed bam file.
+Only one of these three categories of columns need to be defined. If multiple
+are, the pipeline will prefer bam files &gt; local fastq files &gt; SRA accessions.</p>
+<ul>
+<li><code>fq1</code> and <code>fq2</code> - The absolute or relative paths from the working directory
+  to the raw fastq files for the sample. Currently the pipeline only supports
+  paired-end sequencing, so both columns are neede. Single end may be added
+  down the line if requested.</li>
+<li><code>sra</code> - A short read run accession. Since NCBI and ENA mirror each other, the
+  run accession can come from either. Only supports paired-end runs. These are
+  treated as temporary and deleted after trimming, unlike local fastq files,
+  which we never delete.</li>
+<li><code>bam</code> - If you do not want to map the raw reads, provide a pre-processed
+  BAM file path here. Samples with a BAM file may only appear once in the units
+  list, so multiple sequencing runs should be merged beforehand. If a BAM file
+  is listed, <code>fq1</code> and <code>fq2</code> are ignored, and the BAM file is used for that
+  sample.</li>
+</ul>
+<p>Note: Your dataset can include both samples that start at FASTQ and at BAM. If
+a BAM is listed, it will be used instead of mapping, but if not, the FASTQ
+files will be mapped.</p>
+<h2 id="configuration-file">Configuration file</h2>
+<p><code>config.yaml</code> contains the configuration for the workflow, this is where you
+will put what analyses, filters, and options you want. Below I describe the
+configuration options. The <a href="../config/config.yaml"><code>config.yaml</code></a> in this
+repository serves as a template, but includes some 'default' parameters that
+may be good starting points for some users. If <code>--configfile</code> is not specified
+in the snakemake command, the workflow will default to <code>config/config.yaml</code>.</p>
+<h3 id="configuration-options">Configuration options</h3>
+<h4 id="dataset-configuration">Dataset Configuration</h4>
+<p>Required configuration of the 'dataset'.</p>
+<ul>
+<li><code>samples:</code> An absolute or relative path from the working directory to the
+  <code>samples.tsv</code> file.</li>
+<li><code>units:</code> An absolute or relative path from the working directory to the
+  <code>units.tsv</code> file.</li>
+<li><code>dataset:</code> A name for this dataset run - essentially, an identifier for a
+  batch of samples to be analysed together with the same configuration.</li>
+</ul>
+<p>Here, dataset means a set of samples and configurations that the workflow will
+be run with. Each dataset should have its own <code>samples.tsv</code> and <code>config.yaml</code>,
+but the same <code>units.tsv</code> can be used for multiple if you prefer. Essentially,
+what the dataset identifier does is keeps your outputs organized into projects,
+so that the same BAM files can be used in multiple datasets without having to
+be remade.</p>
+<p>So, say you have <code>dataset1_samples.tsv</code> and <code>dataset2_samples.tsv</code>, with
+corresponding <code>dataset1_config.tsv</code> and <code>dataset2_config.yaml</code>. The sample
+files contain different samples, though some are shared between the datasets.
+The workflow for dataset1 can be run, and then dataset2 can be run. When
+dataset2 runs, it map new samples, but won't re-map samples processed in
+dataset1. Each will perform downstream analyses independently with their sample
+set and configuration files, storing these results in dataset specific folders.</p>
+<h4 id="reference-configuration">Reference Configuration</h4>
+<p>Required configuration of the reference.</p>
+<ul>
+<li>
+<p><code>chunk_size:</code> A size in bp (integer). Your reference will be analyzed in
+  'chunks' of contigs of this size to parallelize processing. This size should
+  be larger than the largest contig in your genome. A larger number means fewer
+  jobs that run longer. A smaller number means more jobs that run shorter. The
+  best fit will depend on the reference and the compute resources you have
+  available. Leaving this blank will not divide the reference up into chunks
+  (but this isn't optimized yet, so it will do a couple unnecessary steps).</p>
+</li>
+<li>
+<p><code>reference:</code></p>
+</li>
+<li><code>name:</code> A name for your reference genome, will go in the file names.</li>
+<li><code>fasta:</code> A path to the reference fasta file (currently only supports
+    uncompressed fasta files)</li>
+<li><code>mito:</code> Mitochondrial contig name(s), will be removed from analysis. Should
+    be listed within brackets []</li>
+<li><code>sex-linked:</code> Sex-linked contig name(s), will be removed from analysis.
+    Should be listed within brackets []</li>
+<li><code>exclude:</code> Additional contig name(s) to exclude from analysis. Should be
+    listed within brackets []</li>
+<li>
+<p><code>min_size:</code> A size in bp (integer). All contigs below this size will be
+    excluded from analysis.</p>
+</li>
+<li>
+<p><code>ancestral:</code> A path to a fasta file containing the ancestral states in your
+  reference genome. This is optional, and is used to polarize allele
+  frequencies in SAF files to ancestral/derived. If you leave this empty,
+  the reference genome itself will be used as ancestral, and you should be
+  sure the [<code>params</code>] [<code>realSFS</code>] [<code>fold</code>] is set to <code>1</code>. If you put a reference
+  here, you can set that to <code>0</code>.</p>
+</li>
+</ul>
+<p>Reference genomes should be uncompressed, and contig names should be clear and
+concise. Currently, there are some issues parsing contig names with
+underscores, so please change these in your reference before running the
+pipeline. Alphanumeric characters, as well as <code>.</code> in contig names have been
+tested to work so far, other symbols have not been tested.</p>
+<p>Potentially the ability to use bgzipped genomes will be added, I just need to
+check that it works with all underlying tools. Currently, it will for sure not
+work, as calculating chunks is hard-coded to work on an uncompressed genome.</p>
+<h4 id="sample-set-configuration">Sample Set Configuration</h4>
+<p>This will exclude individuals from analysis that are listed in the sample list.
+This may be useful if you run the workflow and find a poor quality sample, and
+want to re-run without it. Or if you have relatives in the dataset and you want
+to exclude them where necessary.</p>
+<ul>
+<li><code>exclude_ind:</code> Sample name(s) that will be excluded from the workflow. Should
+  be a list in [].</li>
+<li><code>excl_pca-admix:</code> Sample name(s) that will be excluded <em>only</em> from PCA and
+  Admixture analyses. Useful for close relatives that violate the assumptions
+  of these analyses, but that you want in others. Should be a list in [].</li>
+</ul>
+<h4 id="analysis-selection">Analysis Selection</h4>
+<p>Here, you will define which analyses you will perform. It is useful to start
+with only a few, and add more in subsequent workflow runs, just to ensure you
+catch errors before you use compute time running all analyses. Most are set
+with (<code>true</code>/<code>false</code>) or a value, described below. Modifications to the
+settings for each analysis are set in the next section.</p>
+<ul>
+<li>
+<p><code>populations:</code> A list of populations found in your sample list to limit
+  population analyses to. Might be useful if you want to perform individual
+  analyses on some samples but not include them in any population level
+  analyses</p>
+</li>
+<li>
+<p><code>analyses:</code></p>
+</li>
+<li><code>mapping:</code><ul>
+<li><code>historical_only_collapsed:</code> Historical samples are expected to have
+  fragmented DNA. Overlapping (i.e. short) read pairs are collapsed in this
+  workflow, and while both overlapping and non-overlapping read pairs are
+  mapped for modern samples, setting this option to <code>true</code> will only map
+  the collapsed, overlapping read pairs for historical samples. This can
+  help avoid mapping contaminants, as longer fragments are likely from more
+  recent, non-endogenous DNA. However, in the event you want to map both,
+  you can set this to <code>false</code>. (<code>true</code>/<code>false</code>)</li>
+<li><code>historical_collapsed_aligner:</code> Aligner used to map collapsed historical
+  sample reads. <code>aln</code> is the recommended for this, but this is here in case
+  you would like to select <code>mem</code> for this. Uncollapsed historical reads
+  will be mapped with <code>mem</code> if <code>historical_only_collapsed</code> is set to
+  <code>false</code>, regardless of what is put here. (<code>aln</code>/<code>mem</code>)</li>
+</ul>
+</li>
+<li><code>genmap:</code> Filter out sites with low mappability estimated by Genmap
+  (<code>true</code>/<code>false</code>)</li>
+<li><code>repeatmasker:</code> (NOTE: Only one of the three options should be filled/true)<ul>
+<li><code>bed:</code> Supply a path to a bed file that contains regions with repeats.
+  This is for those who want to filter out repetitive content, but don't
+  need to run Repeatmodeler or masker in the workflow because it has
+  already been done for the genome you're using. Be sure the contig names
+  in the bed file match those in the reference supplied. GFF or other
+  filetypes that work with <code>bedtools subtract</code> may also work, but haven't
+  been tested.</li>
+<li><code>local_lib:</code> Filter repeats by masking with an already made library you
+  have locally (such as ones downloaded for Darwin Tree of Life genomes).
+  Should be file path, not a URL.</li>
+<li><code>dfam_lib:</code> Filter repeats using a library available from dfam. Should be
+  a taxonomic group name.</li>
+<li><code>build_lib:</code> Use RepeatModeler to build a library of repeats from the
+  reference itself, then filter them from analysis (<code>true</code>/<code>false</code>).</li>
+</ul>
+</li>
+<li><code>extreme_depth:</code> Filter out sites with extremely high or low global
+    sequencing depth. Set the parameters for this filtering in the <code>params</code>
+    section of the yaml. (<code>true</code>/<code>false</code>)</li>
+<li><code>dataset_missing_data:</code> A floating point value between 0 and 1. Sites with
+    data for fewer than this proportion of individuals across the whole dataset
+    will be filtered out.</li>
+<li><code>population_missing_data:</code> A floating point value between 0 and 1. Sites
+    with data for fewer than this proportion of individuals in any population
+    will be filtered out for all populations.</li>
+<li><code>qualimap:</code> Perform Qualimap bamqc on bam files for general quality stats
+    (<code>true</code>/<code>false</code>)</li>
+<li><code>damageprofiler:</code> Estimate post-mortem DNA damage on historical samples
+    with Damageprofiler (<code>true</code>/<code>false</code>) NOTE: This just adds the addition of
+    Damageprofiler to the already default output of MapDamage.</li>
+<li><code>mapdamage_rescale:</code> Rescale base quality scores using MapDamage2 to help
+    account for post-mortem damage in analyses (<code>true</code>/<code>false</code>) <a href="https://ginolhac.github.io/mapDamage/">docs</a></li>
+<li><code>estimate_ld:</code> Estimate pairwise linkage disquilibrium between sites with
+    ngsLD for each popualation and the whole dataset. Note, only set this if
+    you want to generate the LD estimates for use in downstream analyses
+    outside this workflow. Other analyses within this workflow that require LD
+    estimates (LD decay/pruning) will function properly regardless of the
+    setting here. (<code>true</code>/<code>false</code>)</li>
+<li><code>ld_decay:</code> Use ngsLD to plot LD decay curves for each population and for
+    the dataset as a whole (<code>true</code>/<code>false</code>)</li>
+<li><code>pca_pcangsd:</code> Perform Principal Component Analysis with PCAngsd
+    (<code>true</code>/<code>false</code>)</li>
+<li><code>admix_ngsadmix:</code> Perform admixture analysis with NGSadmix (<code>true</code>/<code>false</code>)</li>
+<li><code>relatedness:</code> Can be performed multiple ways, set any combination of the
+    three options below. Note, that I've mostly incorporated these with the
+    R0/R1/KING kinship methods in Waples et al. 2019, <em>Mol. Ecol.</em> in mind.
+    These methods differ slightly from how they implement this method, and will
+    give slightly more/less accurate estimates of kinship depending on your
+    reference's relationship to your samples. <code>ibsrelate_ibs</code> uses the
+    probabilities of all possible genotypes, so should be the most accurate
+    regardless, but can use a lot of memory and take a long time with many
+    samples. <code>ibsrelate_sfs</code> is a bit more efficient, as it does things in a
+    pairwise fashion in parallel, but may be biased if the segregating alleles
+    in your populations are not represented in the reference. <code>ngsrelate</code> uses
+    several methods, one of which is similar to <code>ibsrelate_sfs</code>, but may be
+    less accurate due to incorporating in less data. In my experience,
+    NGSrelate is suitable to identify up to third degree relatives in the
+    dataset, but only if the exact relationship can be somewhat uncertain (i.e.
+    you don't need to know the difference between, say, parent/offspring and
+    full sibling pairs, or between second degree and third degree relatives).
+    IBSrelate_sfs can get you greater accuracy, but may erroneously inflate
+    kinship if your datset has many alleles not represented in your reference.
+    If you notice, for instance, a large number of third degree relatives
+    (KING ~0.03 - 0.07) in your dataset that is not expected, it may be worth
+    trying the IBS based method (<code>ibsrelate_ibs</code>).<ul>
+<li><code>ngsrelate:</code> Co-estimate inbreeding and pairwise relatedness with
+  NGSrelate (<code>true</code>/<code>false</code>)</li>
+<li><code>ibsrelate_ibs:</code> Estimate pairwise relatedness with the IBS based method
+  from Waples et al. 2019, <em>Mol. Ecol.</em>. This can use a lot of memory, as
+  it has genotype likelihoods for all sites from all samples loaded into
+  memory, so it is done per 'chunk', which still takes a lot of time and
+  memory. (<code>true</code>/<code>false</code>)</li>
+<li><code>ibsrelate_sfs:</code> Estimate pairwise relatedness with the SFS based method
+  from Waples et al. 2019, <em>Mol. Ecol.</em>. Enabling this can greatly increase
+  the time needed to build the workflow DAG if you have many samples. As a
+  form of this method is implemented in NGSrelate, it may be more
+  efficient to only enable that. (<code>true</code>/<code>false</code>)</li>
+</ul>
+</li>
+<li><code>1dsfs:</code> Generates a one dimensional site frequency spectrum for all
+    populations in the sample list. Automatically enabled if <code>thetas_angsd</code> is
+    enabled. (<code>true</code>/<code>false</code>)</li>
+<li><code>1dsfs_boot:</code> Generates N bootstrap replicates of the 1D site frequency
+    spectrum for each population. N is determined from the <code>sfsboot</code> setting
+    below (<code>true</code>/<code>false</code>)</li>
+<li><code>2dsfs:</code> Generates a two dimensional site frequency spectrum for all unique
+    populations pairings in the sample list. Automatically enabled if
+    <code>fst_angsd</code> is enabled. (<code>true</code>/<code>false</code>)</li>
+<li><code>1dsfs_boot:</code> Generates N bootstrap replicates of the 2D site frequency
+    spectrum for each population pair. N is determined from the <code>sfsboot</code>
+    setting below (<code>true</code>/<code>false</code>)</li>
+<li><code>thetas_angsd:</code> Estimate pi, theta, and Tajima's D for each population in
+    windows across the genome using ANGSD (<code>true</code>/<code>false</code>)</li>
+<li><code>heterozygosity_angsd:</code> Estimate individual genome-wide heterozygosity
+    using ANGSD. Calculates confidence intervals from bootstraps.
+    (<code>true</code>/<code>false</code>)</li>
+<li><code>fst_angsd:</code> Estimate pairwise $F_{ST}$ using ANGSD. Set one or both of the
+    below options. Estimates both globally and in windows across the genome.<ul>
+<li><code>populations:</code> Pairwise $F_{ST}$ is calculated between all possible
+  population pairs (<code>true</code>/<code>false</code>)</li>
+<li><code>individuals:</code> Pairwise $F_{ST}$ is calculated between all possible
+  population pairs. NOTE: This can be really intensive on the DAG building
+  process, so I don't recommend enabling unless you're certain you want
+  this (<code>true</code>/<code>false</code>)</li>
+</ul>
+</li>
+<li><code>inbreeding_ngsf-hmm:</code> Estimates inbreeding coefficients and runs of
+    homozygosity using ngsF-HMM. Output is converted into an inbreeding measure
+    $F_ROH$, which describes the proportion of the genome in runs of
+    homozygosity over a certain length. (<code>true</code>/<code>false</code>)</li>
+<li><code>ibs_matrix:</code> Estimate pairwise identity by state distance between all
+    samples using ANGSD. (<code>true</code>/<code>false</code>)</li>
+</ul>
+<h4 id="downsampling-section">Downsampling Section</h4>
+<p>As this workflow is aimed at low coverage samples, its likely there might be
+considerable variance in sample depth. For this reason, it may be good to
+subsample all your samples to a similar depth to examine if variation in depth
+is influencing results. To do this, set an integer value here to subsample all
+your samples down to and run specific analyses.</p>
+<ul>
+<li>
+<p><code>subsample_dp:</code> A mean depth to subsample your reads to. This will be done
+  per sample, and subsample from all the reads. If a sample already has the
+  same, or lower, depth than this number, it will just be used as is in the
+  analysis. (INT)</p>
+</li>
+<li>
+<p><code>subsample_redo_filts:</code> Make a separate filtered sites file using the
+  subsampled bams to calculate depth based filters. If left disabled, the
+  depth filters will be determined from the full coverage files.
+  (<code>true</code>/<code>false</code>)</p>
+</li>
+<li>
+<p><code>subsample_analyses:</code> Individually enable analyses to be performed with the
+  subsampled data. These are the same as the ones above in the analyses
+  section. Enabling here will only run the analysis for the subsampled data,
+  if you want to run it for the full data as well, you need to enable it in the
+  analyses section as well. (<code>true</code>/<code>false</code>)</p>
+</li>
+</ul>
+<h4 id="filter-sets">Filter Sets</h4>
+<p>By default, this workflow will perform all analyses requested in the above
+section on all sites that pass the filters set in the above section. These
+outputs will contain <code>allsites-filts</code> in the filename and in the report.
+However, many times, it is useful to perform an analysis on different subsets
+of sites, for instance, to compare results for genic vs. intergenic regions,
+neutral sites, exons vs. introns, etc. Here, users can set an arbitrary number
+of additional filters using BED files. For each BED file supplied, the contents
+will be intersected with the sites passing the filters set in the above
+section, and all analyses will be performed additionally using those sites.</p>
+<p>For instance, given a BED file containing putatively neutral sites, one could
+set the following:</p>
+<pre><code class="language-yaml">filter_beds:
+  neutral-sites: &quot;resources/neutral_sites.bed&quot;
+</code></pre>
+<p>In this case, for each requested analysis, in addition to the <code>allsites-filts</code>
+output, a <code>neutral-filts</code> (named after the key assigned to the BED file in
+<code>config.yaml</code>) output will also be generated, containing the results for sites
+within the specified BED file that passed any set filters.</p>
+<p>More than one BED file can be set, up to an arbitrary number:</p>
+<pre><code class="language-yaml">filter_beds:
+  neutral: &quot;resources/neutral_sites.bed&quot;
+  intergenic: &quot;resources/intergenic_sites.bed&quot;
+  introns: &quot;resources/introns.bed&quot;
+</code></pre>
+<p>It may also sometimes be desireable to skip analyses on <code>allsites-filts</code>, say
+if you are trying to only generate diversity estimates or generate SFS for a
+set of neutral sites you supply. To skip running any analyses for
+<code>allsites-filts</code> and only perform them for the BED files you supply, you can
+set <code>only_filter_beds: true</code> in the config file. This may also be useful in the
+event you have a set of already filtered sites, and want to run the workflow on
+those, ignoring any of the built in filter options by setting them to <code>false</code>.</p>
+<h4 id="software-configuration">Software Configuration</h4>
+<p>These are software specific settings that can be user configured in the
+workflow. If you are missing a configurable setting you need, open up an issue
+or a pull request and I'll gladly put it in.</p>
+<ul>
+<li><code>mapQ:</code> Phred-scaled mapping quality filter. Reads below this threshold will
+  be filtered out. (integer)</li>
+<li>
+<p><code>baseQ:</code> Phred-scaled base quality filter. Reads below this threshold will be
+  filtered out. (integer)</p>
+</li>
+<li>
+<p><code>params:</code></p>
+</li>
+<li><code>clipoverlap:</code><ul>
+<li><code>clip_user_provided_bams:</code> Determines whether overlapping read pairs will
+  be clipped in BAM files supplied by users. This is useful as many variant
+  callers will account for overlapping reads in their processing, but ANGSD
+  will double count overlapping reads. If BAMs were prepped without this in
+  mind, it can be good to apply before running through ANGSD. However, it
+  essentially creates a BAM file of nearly equal size for every sample, so
+  it may be nice to turn off if you don't care for this correction or have
+  already applied it on the BAMs you supply. (<code>true</code>/<code>false</code>)</li>
+</ul>
+</li>
+<li><code>genmap:</code> Parameters for mappability analysis, see <a href="https://github.com/cpockrandt/genmap/">GenMap's documentation</a>
+    for more details.<ul>
+<li><code>K:</code></li>
+<li><code>E:</code></li>
+<li><code>map_thresh:</code> A threshold mappability score. Sites with a mappability
+  score below this threshold are filtered out if GenMap is enabled.
+  (integer/float, 0-1)</li>
+</ul>
+</li>
+<li><code>extreme_depth_filt:</code> Parameters for excluding sites based on extreme high
+    and/or low global depth. The final sites list will contain only sites that
+    pass the filters for all categories requested (i.e the whole dataset
+    and/or the depth categories set in samples.tsv).<ul>
+<li><code>method:</code> Whether you will generate extreme thresholds as a multiple of
+  the median global depth (<code>"median"</code>) or as percentiles of the
+  global depth distribution (<code>"percentile"</code>)</li>
+<li><code>bounds:</code> The bounds of the depth cutoff, defined as a numeric list. For
+  the median method, the values will be multiplied by the median of the
+  distribution to set the thresholds (i.e. <code>[0.5,1.5]</code> would generate
+  a lower threshold at 0.5*median and an upper at 1.5*median). For the
+  percentile method, these define the lower and upper percentiles to filter
+  out (i.e [0.01,0.99] would remove the lower and upper 1% of the depth
+  distributions). (<code>[ FLOAT, FLOAT]</code>)</li>
+<li><code>filt-on-dataset:</code> Whether to perform this filter on the dataset as a
+  whole (may want to set to false if your dataset global depth distribution
+  is multi-modal). (<code>true</code>/<code>false</code>)</li>
+<li><code>filt-on-depth-classes:</code> Whether to perform this filter on the depth
+  classes defined in the samples.tsv file. This will generate a global
+  depth distribution for samples in the same category, and perform the
+  filtering on these distributions independently. Then, the sites that pass
+  for all the classes will be included. (<code>true</code>/<code>false</code>)</li>
+</ul>
+</li>
+<li><code>fastp:</code><ul>
+<li><code>extra:</code> Additional options to pass to fastp trimming. (string)</li>
+</ul>
+</li>
+<li><code>picard:</code><ul>
+<li><code>MarkDuplicates:</code> Additional options to pass to Picard MarkDuplicates.
+  <code>--REMOVE_DUPLICATES true</code> is recommended. (string)</li>
+</ul>
+</li>
+<li><code>angsd:</code> General options in ANGSD, relevant doc pages are linked<ul>
+<li><code>gl_model:</code> Genotype likelihood model to use in calculation
+  (<code>-GL</code> option in ANGSD, <a href="http://www.popgen.dk/angsd/index.php/Genotype_Likelihoods">docs</a>)</li>
+<li><code>maxdepth:</code> When calculating individual depth, sites with depth higher
+  than this will be binned to this value. Should be fine for most to leave
+  at <code>1000</code>. (integer, <a href="http://www.popgen.dk/angsd/index.php/Depth">docs</a>)</li>
+<li><code>extra:</code> Additional options to pass to ANGSD during genotype likelihood
+  calculation at all times. This is primarily useful for adding BAM input
+  filters. Note that <code>--remove_bads</code> and <code>-only_proper_pairs</code> are enabled
+  by default, so they only need to be included if you want to turn them
+  off or explicitly ensure they are enabled. I've also found that for some
+  datasets, <code>-C 50</code> and <code>-baq 1</code> can create a strong relationship between
+  sample depth and detected diversity, effectively removing the benefits of
+  ANGSD for low/variable depth data. I recommend that these aren't included
+  unless you know you need them. Since the workflow uses bwa to map,
+  <code>-uniqueOnly 1</code> doesn't do anything if your minimum mapping quality is
+  &gt; 0. Don't put mapping and base quality thresholds here either, it will
+  use the ones defined above automatically. Although historical samples
+  will have DNA damaged assessed and to some extent, corrected, it may be
+  useful to put <code>-noTrans 1</code> or <code>-trim INT</code> here if you're interested in
+  stricter filters for degraded DNA. (string, <a href="http://www.popgen.dk/angsd/index.php/Input#BAM.2FCRAM">docs</a>)</li>
+<li><code>extra_saf:</code> Same as <code>extra</code>, but only used when making SAF files (used
+  for SFS, thetas, Fst, IBSrelate, heterozygosity includes invariable
+  sites).</li>
+<li><code>extra_beagle:</code> Same as <code>extra</code>, but only used when making Beagle and Maf
+  files (used for PCA, Admix, ngsF-HMM, doIBS, ngsrelate, includes only
+  variable sites).</li>
+<li><code>snp_pval:</code> The p-value to use for calling SNPs (float, <a href="http://www.popgen.dk/angsd/index.php/SNP_calling">docs</a>)</li>
+<li><code>domajorminor:</code> Method for inferring the major and minor alleles. Set to
+  1 to infer from the genotype likelihoods, see <a href="https://www.popgen.dk/angsd/index.php/Major_Minor">documentation</a>
+  for other options. <code>1</code>, <code>2</code>, and <code>4</code> can be set without any additional
+  configuration. <code>5</code> must also have an ancestral reference provided in the
+  config, otherwise it will be the same as <code>4</code>. <code>3</code> is currently not
+  possible, but please open an issue if you have a use case, I'd like to
+  add it, but would need some input on how it is used.</li>
+<li><code>domaf:</code> Method for inferring minor allele frequencies. Set to <code>1</code> to
+  infer from genotype likelihoods using a known major and minor from the
+  <code>domajorminor</code> setting above. See <a href="http://www.popgen.dk/angsd/index.php/Allele_Frequencies">docs</a>
+  for other options. I have not tested much beyond <code>1</code> and <code>8</code>, please open
+  an issue if you have problems.</li>
+<li><code>min_maf:</code> The minimum minor allele frequency required to call a SNP.
+  This is set when generating the beagle file, so will filter SNPs for
+  PCAngsd, NGSadmix, ngsF-HMM, and NGSrelate. If you would like each tool
+  to handle filtering for maf on its own you can set this to <code>-1</code>
+  (disabled). (float, <a href="http://www.popgen.dk/angsd/index.php/Allele_Frequencies">docs</a>)</li>
+</ul>
+</li>
+<li><code>ngsld:</code> Settings for ngsLD (<a href="https://github.com/fgvieira/ngsLD">docs</a>)<ul>
+<li><code>max_kb_dist_est-ld:</code> For the LD estimates generated when setting
+  <code>estimate_ld: true</code> above, set the maximum distance between sites in kb
+  that LD will be estimated for (<code>--max_kb_dist</code> in ngsLD, integer)</li>
+<li><code>max_kb_dist_decay:</code> The same as <code>max_kb_dist_est-ld:</code>, but used when
+  estimating LD decay when setting <code>ld_decay: true</code> above (integer)</li>
+<li><code>rnd_sample_est-ld:</code> For the LD estimates generated when setting
+  <code>estimate_ld: true</code> above, randomly sample this proportion of pairwise
+  linkage estimates rather than estimating all (<code>--rnd_sample</code> in ngsLD,
+  float)</li>
+<li><code>rnd_sample_decay:</code> The same as <code>rnd_sample_est-ld:</code>, but used when
+  estimating LD decay when setting <code>ld_decay: true</code> above (float)</li>
+<li><code>fit_LDdecay_extra:</code> Additional plotting arguments to pass to
+  <code>fit_LDdecay.R</code> when estimating LD decay (string)</li>
+<li><code>fit_LDdecay_n_correction:</code> When estimating LD decay, should the sample
+  size corrected r^2 model be used? (<code>true</code>/<code>false</code>, <code>true</code> is the
+  equivalent of passing a sample size to <code>fit_LDdecay.R</code> in ngsLD using
+  <code>--n_ind</code>)</li>
+<li><code>max_kb_dist_pruning_dataset:</code> The same as <code>max_kb_dist_est-ld:</code>, but
+  used when linkage pruning SNPs as inputs for PCAngsd, NGSadmix, and
+  NGSrelate analyses. Pruning is performed on the whole dataset. Any
+  positions above this distance will be assumed to be in linkage
+  equilibrium during the pruning process. (integer)</li>
+<li><code>pruning_min-weight_dataset:</code> The minimum r^2 to assume two positions are
+  in linkage disequilibrium when pruning for PCAngsd, NGSadmix, and
+  NGSrelate analyses. (float)</li>
+</ul>
+</li>
+<li><code>ngsf-hmm:</code> Settings for ngsF-HMM<ul>
+<li><code>estimate_in_pops:</code> Set to <code>true</code> to run ngsF-HMM separately for each
+  population in your dataset. Set to <code>false</code> to run for whole dataset at
+  once. ngsF-HMM assumes Hardy-Weinberg Equilibrium (aside from inbreeding)
+  in the input data, so select the option that most reflects this. You can
+  use PCA and Admixture analyses to help determine this. (<code>true</code>/<code>false</code>)</li>
+<li><code>prune:</code> Whether or not to prune SNPs for LD before running the analysis.
+  ngsF-HMM assumes independent sites, so it is preferred to set this to
+  <code>true</code> to satisfy that expectation. (<code>true</code>/<code>false</code>)</li>
+<li><code>max_kb_dist_pruning_pop:</code> The maximum distance between sites in kb
+  that will be treated as in LD when pruning for the ngsF-HMM input. (INT)</li>
+<li><code>pruning_min-weight_pop:</code> The minimum r^2 to assume two positions are in
+  linkage disequilibrium when pruning for the ngsF-HMM input. Note, that
+  this likely will be substantially higher for individual populations than
+  for the whole dataset, as background LD should be higher when no
+  substructure is present. (float)</li>
+<li><code>min_roh_length:</code> Minimum ROH size in base pairs to include in inbreeding
+  coefficient calculation. Set if short ROH might be considered low
+  confidence for your data. (integer)</li>
+<li><code>roh_bins:</code> A list of integers that describe the size classes in base
+  pairs you would like to partition the inbreeding coefficient by. This can
+  help visualize how much of the coefficient comes from ROH of certain size
+  classes (and thus, ages). List should be in ascending order and the first
+  entry should be greater than <code>min_roh_length</code>. The first bin will group
+  ROH between <code>min_roh_length</code> and the first entry, subsequent bins will
+  group ROH with sizes between adjacent entries in the list, and the final
+  bin will group all ROH larger than the final entry in the list. (list)</li>
+</ul>
+</li>
+<li><code>realSFS:</code> Settings for realSFS<ul>
+<li><code>fold:</code> Whether or not to fold the produced SFS. Set to 1 if you have not
+  provided an ancestral-state reference (0 or 1, <a href="http://www.popgen.dk/angsd/index.php/SFS_Estimation">docs</a>)</li>
+<li><code>sfsboot:</code> Determines number of bootstrap replicates to use when
+  requesting bootstrapped SFS. Is used for both 1dsfs and 2dsfs (this is
+  very easy to separate, open an issue if desired). Automatically used
+  for heterozygosity analysis to calculate confidence intervals. (integer)</li>
+</ul>
+</li>
+<li><code>fst:</code> Settings for $F_{ST}$ calculation in ANGSD<ul>
+<li><code>whichFst:</code> Determines which $F_{ST}$ estimator is used by ANGSD. With 0
+  being the default Reynolds 1983 and 1 being the Bhatia 2013 estimator.
+  The latter is preferable for small or uneven sample sizes
+  (0 or 1, <a href="http://www.popgen.dk/angsd/index.php/Fst">docs</a>)</li>
+<li><code>win_size:</code> Window size in bp for sliding window analysis (integer)</li>
+<li><code>win_step:</code> Window step size in bp for sliding window analysis (integer)</li>
+</ul>
+</li>
+<li><code>thetas:</code> Settings for pi, theta, and Tajima's D estimation<ul>
+<li><code>win_size:</code> Window size in bp for sliding window analysis (integer)</li>
+<li><code>win_step:</code> Window step size in bp for sliding window analysis (integer)</li>
+</ul>
+</li>
+<li><code>ngsadmix:</code> Settings for admixture analysis with NGSadmix. This analysis is
+    performed for a set of K groupings, and each K has several replicates
+    performed. Replicates will continue until a set of N highest likelihood
+    replicates converge, or the number of replicates reaches an upper threshold
+    set here. Defaults for <code>reps</code>, <code>minreps</code>, <code>thresh</code>, and <code>conv</code> can be left
+    as default for most.<ul>
+<li><code>kvalues:</code> A list of values of K to fit the data to (list of integers)</li>
+<li><code>reps:</code> The maximum number of replicates to perform per K (integer)</li>
+<li><code>minreps:</code> The minimum number of replicates to perform, even if
+  replicates have converged (integer)</li>
+<li><code>thresh:</code> The convergence threshold - the top replicates must all be
+  within this value of log-likelihood units to consider the run converged
+  (integer)</li>
+<li><code>conv:</code> The number of top replicates to include in convergence
+  assessment. (integer)</li>
+<li><code>extra:</code> Additional arguments to pass to NGSadmix (for instance,
+  increasing <code>-maxiter</code>). (string, <a href="http://www.popgen.dk/software/index.php/NgsAdmix">docs</a>)</li>
+</ul>
+</li>
+<li><code>ibs:</code> Settings for identity by state calculation with ANGSD<ul>
+<li><code>-doIBS:</code> Whether to use a random (1) or consensus (2) base in IBS
+    distance calculation (<a href="http://www.popgen.dk/angsd/index.php/PCA_MDS">docs</a>)</li>
+</ul>
+</li>
+</ul></div>
+            </div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script src="../js/jquery-3.6.0.min.js"></script>
+        <script src="../js/bootstrap.min.js"></script>
+        <script>
+            var base_url = "..",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="../js/base.js"></script>
+        <script src="../search/main.js"></script>
+        <script src="../js/version-select.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            </div>
+            <div class="modal-body">
+                <p>From here you can search these documents. Enter your search terms below.</p>
+                <form>
+                    <div class="form-group">
+                        <input type="search" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results" data-no-results-text="No results found"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>

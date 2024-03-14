@@ -158,7 +158,9 @@ rule ind_unfiltered_depth:
 
 rule ind_mapQ_baseQ_depth:
     """
-    Estimate unfiltered sample depth, only removing reads using default ANGSD filters
+    Estimate sample depth with only mapping and base quality filters. Also
+    includes universal 'extra' params user provides for ANGSD. This makes it
+    compatible with using -trim
     """
     input:
         bamlist="results/datasets/{dataset}/bamlists/{dataset}.{ref}_{population}{dp}.bamlist",
@@ -179,6 +181,7 @@ rule ind_mapQ_baseQ_depth:
         angsd_container
     params:
         out=lambda w, output: os.path.splitext(output.arg)[0],
+        extra=config["params"]["angsd"]["extra"],
         maxdepth=config["params"]["angsd"]["maxdepth"],
     threads: lambda wildcards, attempt: attempt
     resources:
@@ -186,7 +189,7 @@ rule ind_mapQ_baseQ_depth:
     shell:
         """
         angsd -doDepth 1 -doCounts 1 -maxDepth {params.maxdepth} \
-            -minMapQ {wildcards.mapq} -minQ {wildcards.baseq} \
+            -minMapQ {wildcards.mapq} -minQ {wildcards.baseq} {params.extra} \
             -bam {input.bamlist} -nThreads {threads} -out {params.out} &> {log}
         """
 

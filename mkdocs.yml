@@ -1,4 +1,5 @@
 site_name: ANGSD Snakemake Pipeline
 nav:
   - Home: index.md
+  - Configuration: config.md
   - About: about.md

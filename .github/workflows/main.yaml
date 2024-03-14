@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout with submodules
-      uses: actions/checkout@v3.5.2
+      uses: actions/checkout@v4
     - name: Formatting
       uses: github/super-linter@v5
       env:
@@ -27,7 +27,7 @@ jobs:
   linting:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3.5.2
+    - uses: actions/checkout@v4
     - name: Linting
       uses: snakemake/snakemake-github-action@v1.24.0
       with:
@@ -52,7 +52,7 @@ jobs:
         remove-codeql: 'true'
         remove-docker-images: 'true'
     - name: Checkout repository
-      uses: actions/checkout@v3.5.2
+      uses: actions/checkout@v4
     - name: Set up conda environment and singularity
       uses: mamba-org/setup-micromamba@v1
       with:

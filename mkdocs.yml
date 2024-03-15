@@ -9,7 +9,7 @@ theme:
   name: material
   icon:
     repo: simple/github
-repo_url: https://www.github.com/zjnolen/angsd-snakemake-pipeline
+repo_url: https://github.com/zjnolen/angsd-snakemake-pipeline
 plugins:
   - search
 extra:

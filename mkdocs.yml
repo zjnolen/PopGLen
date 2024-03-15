@@ -1,5 +1,8 @@
 site_name: ANGSD Snakemake Pipeline
 nav:
   - Home: index.md
+  - Getting Started: getting-started.md
   - Configuration: config.md
+  - Tutorial: tutorial.md
   - About: about.md
+theme: material

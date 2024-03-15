@@ -236,17 +236,15 @@ rule indelrealigner:
 rule bam_clipoverlap:
     """Clip overlapping reads in paired end bam files"""
     input:
-        bam="results/mapping/bams/{sample}.{ref}.{processing}.bam",
+        bam="results/mapping/bams/{sample}.{ref}.rmdup.realn.bam",
         ref="results/ref/{ref}/{ref}.fa",
     output:
-        bam="results/mapping/bams/{sample}.{ref}.{processing}.clip.bam",
-        log="results/mapping/qc/bamutil_clipoverlap/{sample}.{ref}.{processing}.clipoverlap.stats",
-    wildcard_constraints:
-        processing="rmdup\.realn|rmdup\.realn\.rescaled",
+        bam="results/mapping/bams/{sample}.{ref}.rmdup.realn.clip.bam",
+        log="results/mapping/qc/bamutil_clipoverlap/{sample}.{ref}.rmdup.realn.clipoverlap.stats",
     log:
-        "logs/mapping/bamutil/clipoverlap/{sample}.{ref}.{processing}.log",
+        "logs/mapping/bamutil/clipoverlap/{sample}.{ref}.rmdup.realn.log",
     benchmark:
-        "benchmarks/mapping/bamutil/clipoverlap/{sample}.{ref}.{processing}.log"
+        "benchmarks/mapping/bamutil/clipoverlap/{sample}.{ref}.rmdup.realn.log"
     conda:
         "../envs/bamutil.yaml"
     shadow:

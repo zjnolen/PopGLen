@@ -29,15 +29,10 @@ rule qualimap:
         unpack(get_final_bam),
     output:
         directory("results/mapping/qc/qualimap/{sample}.{ref}"),
-        pdf=report(
-            "results/mapping/qc/qualimap/{sample}.{ref}/report.pdf",
-            category="Quality Control",
-            subcategory="Mapping Reports",
-            labels={"Sample": "{sample}", "Ref": "{ref}", "Type": "Qualimap Report"},
-        ),
+        rep="results/mapping/qc/qualimap/{sample}.{ref}/qualimapReport.html",
         txt="results/mapping/qc/qualimap/{sample}.{ref}/genome_results.txt",
     params:
-        extra="-outformat pdf",
+        extra="",
     log:
         "logs/mapping/qualimap/{sample}.{ref}.log",
     benchmark:
@@ -58,15 +53,10 @@ rule qualimap_userprovided:
         directory(
             "results/datasets/{dataset}/qc/user-provided-bams/qualimap/{sample}.{ref}"
         ),
-        pdf=report(
-            "results/datasets/{dataset}/qc/user-provided-bams/qualimap/{sample}.{ref}/report.pdf",
-            category="Quality Control",
-            subcategory="Mapping Reports",
-            labels={"Sample": "{sample}", "Ref": "{ref}", "Type": "Qualimap Report"},
-        ),
+        rep="results/datasets/{dataset}/qc/user-provided-bams/qualimap/{sample}.{ref}/qualimapReport.html",
         txt="results/datasets/{dataset}/qc/user-provided-bams/qualimap/{sample}.{ref}/genome_results.txt",
     params:
-        extra="-outformat pdf",
+        extra="",
     log:
         "logs/mapping/qualimap/{dataset}.{sample}.{ref}.log",
     benchmark:
@@ -75,6 +65,20 @@ rule qualimap_userprovided:
         runtime=360,
     wrapper:
         "v2.6.0/bio/qualimap/bamqc"
+
+
+rule qualimap_multiqc:
+    input:
+        multiqc_input_qualimap,
+    output:
+        "results/datasets/{dataset}/qc/qualimap/qualimap_all.{ref}_mqc.html",
+    log:
+        "logs/mapping/qualimap/{dataset}.{ref}_mqc.log",
+    params:
+        extra="--cl-config \"extra_fn_clean_exts: ['.rmdup', '.clip']\" "
+        '--cl-config "qualimap_config: { general_stats_coverage: [1,2,3,5,10,15] }"',
+    wrapper:
+        "v3.5.0/bio/multiqc"
 
 
 rule endo_cont:

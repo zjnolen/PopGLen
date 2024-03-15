@@ -25,7 +25,6 @@ angsd_container = "docker://zjnolen/angsd:0.940"
 pcangsd_container = "docker://zjnolen/pcangsd:1.10"
 evaladmix_container = "docker://zjnolen/evaladmix:0.961"
 ngsf_hmm_container = "docker://zjnolen/ngsf-hmm:1.1.0"
-mapdamage_container = "docker://quay.io/biocontainers/mapdamage2:2.2.1--pyr40_0"
 ngsrelate_container = "docker://zjnolen/ngsrelate:20220925-ec95c8f"
 ngsld_container = "docker://zjnolen/ngsld:1.2.0-prune_graph"
 
@@ -139,8 +138,9 @@ if any(config["filter_beds"].values()):
     filters = filters + list(config["filter_beds"].keys())
 
 
-# Define various helper functions for Snakefiles
-
+###############################################################################
+# ========== Define various helper functions for Snakefiles ================= #
+###############################################################################
 
 # Pre-processing
 
@@ -399,13 +399,16 @@ def get_final_bam(wildcards):
         config["analyses"]["mapdamage_rescale"]
     ):
         return {
-            "bam": "results/mapping/bams/{sample}.{ref}.rmdup.realn.rescaled.clip.bam",
-            "bai": "results/mapping/bams/{sample}.{ref}.rmdup.realn.rescaled.clip.bam.bai",
+            "bam": "results/mapping/bams/{sample}.{ref}.rmdup.realn.clip.rescaled.bam",
+            "bai": "results/mapping/bams/{sample}.{ref}.rmdup.realn.clip.rescaled.bam.bai",
         }
     return {
         "bam": "results/mapping/bams/{sample}.{ref}.rmdup.realn.clip.bam",
         "bai": "results/mapping/bams/{sample}.{ref}.rmdup.realn.clip.bam.bai",
     }
+
+
+# Sample QC
 
 
 ## Get flagstat file for endogenous content calculation
@@ -426,23 +429,122 @@ def get_endo_cont_stat(wildcards):
     return {"paired": "results/mapping/mapped/{sample}.{ref}.paired.flagstat"}
 
 
+## Get bedfile for whole genome or filtered genome, to set the denomintor of coverage
+## calculation
+def get_total_bed(wildcards):
+    if (
+        wildcards.prefix
+        == f"results/datasets/{wildcards.dataset}/qc/ind_depth/filtered/"
+    ):
+        return "results/datasets/{dataset}/filters/combined/{dataset}.{ref}{dp}_{group}.bed"
+    return "results/ref/{ref}/beds/genome.bed"
+
+
+## Gather sample QC output files for concatenation
+def get_sample_qcs(wildcards):
+    dic = {
+        "inds": "results/datasets/{dataset}/poplists/{dataset}_all.indiv.list",
+        "endo": "results/datasets/{dataset}/qc/endogenous_content/{dataset}.{ref}_all.endo.tsv",
+        "unfilt": "results/mapping/qc/ind_depth/unfiltered/{dataset}.{ref}_all{dp}_allsites-unfilt.depth.sum",
+        "mapqbaseqfilt": expand(
+            "results/mapping/qc/ind_depth/mapq-baseq-filtered/{{dataset}}.{{ref}}_all{{dp}}_allsites-mapq{mapq}-baseq{baseq}-filt.depth.sum",
+            mapq=config["mapQ"],
+            baseq=config["baseQ"],
+        ),
+        "filt": expand(
+            "results/datasets/{{dataset}}/qc/ind_depth/filtered/{{dataset}}.{{ref}}_all{{dp}}_{sites}-filts.depth.sum",
+            sites=filters,
+        ),
+    }
+    return dic
+
+
+def multiqc_input_qualimap(wildcards):
+    reports = []
+    if len(pipebams) > 0:
+        reports.extend(
+            expand(
+                "results/mapping/qc/qualimap/{sample}.{{ref}}/qualimapReport.html",
+                sample=pipebams,
+            )
+        )
+    if len(userbams) > 0:
+        reports.extend(
+            expand(
+                "results/datasets/{{dataset}}/qc/user-provided-bams/qualimap/{sample}.{{ref}}/qualimapReport.html",
+                sample=userbams,
+            )
+        )
+    return reports
+
+
+# DNA Damage
+
+
+def multiqc_input_dnadmg(wildcards):
+    reports = []
+    if config["analyses"]["damageprofiler"]:
+        if len(pipebams) > 0:
+            reports.extend(
+                expand(
+                    "results/mapping/qc/damageprofiler/{histsample}.{{ref}}/dmgprof.json",
+                    histsample=list(
+                        set(pipebams)
+                        & set(samples.index[samples["time"] == "historical"])
+                    ),
+                )
+            )
+    if config["analyses"]["mapdamage_rescale"]:
+        if len(pipebams) > 0:
+            reports.extend(
+                expand(
+                    "results/mapping/qc/mapdamage/{histsample}.{{ref}}/lgdistribution.txt",
+                    histsample=list(
+                        set(pipebams)
+                        & set(samples.index[samples["time"] == "historical"])
+                    ),
+                )
+            )
+    return reports
+
+
 # ANGSD
 
-## Get GLF input for beagle and SAF. If statistics are only desired for sites from a
-## user defined BED file, GLFs will only be made for those sites to prevent estimating
-## GLs for entire genome when only a subset is desired.
+
+# List samples in a group
+# The following function is useful for now, but not robust to duplicate
+# names across column types. Needs improvement
+def get_samples_from_pop(population):
+    pop = population
+    if pop == "all":
+        return samples.index.values.tolist()
+    elif pop == "all_excl_pca-admix":
+        excl = config["excl_pca-admix"]
+        return [s for s in samples.index.values.tolist() if s not in excl]
+    elif pop in samples.depth.values:
+        return samples.index[samples.depth == pop].values.tolist()
+    elif pop in samples.population.values and pop not in samples.index:
+        return samples.index[samples.population == pop].values.tolist()
+    elif pop in samples.index and pop not in samples.population.values:
+        return [pop]
 
 
-# def get_glf(wildcards):
-#     if config["only_filter_beds"] and not any(config["filter_beds"].values()):
-#         raise ValueError(
-#             f"Config invalid - 'only_filter_beds' cannot be true without supplying bed "
-#             f"files to at least one 'filter_beds' key."
-#         )
-#     elif config["only_filter_beds"]:
-#         return "results/datasets/{dataset}/glfs/chunks/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.glf.gz"
-#     else:
-#         return "results/datasets/{dataset}/glfs/chunks/{dataset}.{ref}_{population}{dp}_chunk{chunk}_allsites-filts.glf.gz"
+# List bam files for a grouping
+def get_bamlist_bams(wildcards):
+    pop = wildcards.population
+    return expand(
+        "results/datasets/{{dataset}}/bams/{sample}.{{ref}}{{dp}}.bam",
+        sample=get_samples_from_pop(pop),
+    )
+
+
+# List bai files for a grouping
+def get_bamlist_bais(wildcards):
+    pop = wildcards.population
+    return expand(
+        "results/datasets/{{dataset}}/bams/{sample}.{{ref}}{{dp}}.bam.bai",
+        sample=get_samples_from_pop(pop),
+    )
 
 
 # Select filter file based off of full depth samples or subsampled depth
@@ -484,6 +586,9 @@ def get_docounts(wildcard):
     return ""
 
 
+# ngsLD
+
+
 ## Get random sampling proportion depending on if LD decay is being calculated
 ## or if LD pruning is being done
 def get_ngsld_sampling(wildcards):
@@ -497,9 +602,12 @@ def get_ngsld_sampling(wildcards):
 def get_ngsld_n(wildcards):
     if config["params"]["ngsld"]["fit_LDdecay_n_correction"]:
         nind = len(get_samples_from_pop(wildcards.population))
-        return f"--n_ind {nind}"
+        return "--n_ind %s" % nind
     else:
         return ""
+
+
+# PCA/Admix
 
 
 ## Remove requested individuals from beagle for pca and admix
@@ -512,6 +620,9 @@ def get_excl_ind_cols(wildcards):
     remove = col1 + col2 + col3
     remove_string = ",".join([str(i) for i in remove])
     return remove_string
+
+
+# Kinship
 
 
 ## Get all possible kinship estimate pairings
@@ -531,34 +642,7 @@ def get_kinship(wildcards):
     )
 
 
-## Get bedfile for whole genome or filtered genome, to set the denomintor of coverage
-## calculation
-def get_total_bed(wildcards):
-    if (
-        wildcards.prefix
-        == f"results/datasets/{wildcards.dataset}/qc/ind_depth/filtered/"
-    ):
-        return "results/datasets/{dataset}/filters/combined/{dataset}.{ref}{dp}_{group}.bed"
-    return "results/ref/{ref}/beds/genome.bed"
-
-
-## Gather sample QC output files for concatenation
-def get_sample_qcs(wildcards):
-    dic = {
-        "inds": "results/datasets/{dataset}/poplists/{dataset}_all.indiv.list",
-        "endo": "results/datasets/{dataset}/qc/endogenous_content/{dataset}.{ref}_all.endo.tsv",
-        "unfilt": "results/mapping/qc/ind_depth/unfiltered/{dataset}.{ref}_all{dp}_allsites-unfilt.depth.sum",
-        "mapqbaseqfilt": expand(
-            "results/mapping/qc/ind_depth/mapq-baseq-filtered/{{dataset}}.{{ref}}_all{{dp}}_allsites-mapq{mapq}-baseq{baseq}-filt.depth.sum",
-            mapq=config["mapQ"],
-            baseq=config["baseQ"],
-        ),
-        "filt": expand(
-            "results/datasets/{{dataset}}/qc/ind_depth/filtered/{{dataset}}.{{ref}}_all{{dp}}_{sites}-filts.depth.sum",
-            sites=filters,
-        ),
-    }
-    return dic
+# Fst
 
 
 ## Get a list of all pairwise combos of a set of items
@@ -612,40 +696,7 @@ def get_auto_sum(wildcards):
         return "results/ref/{ref}/beds/genome.bed"
 
 
-# List samples in a group
-# The following function is useful for now, but not robust to duplicate
-# names across column types. Needs improvement
-def get_samples_from_pop(population):
-    pop = population
-    if pop == "all":
-        return samples.index.values.tolist()
-    elif pop == "all_excl_pca-admix":
-        excl = config["excl_pca-admix"]
-        return [s for s in samples.index.values.tolist() if s not in excl]
-    elif pop in samples.depth.values:
-        return samples.index[samples.depth == pop].values.tolist()
-    elif pop in samples.population.values and pop not in samples.index:
-        return samples.index[samples.population == pop].values.tolist()
-    elif pop in samples.index and pop not in samples.population.values:
-        return [pop]
-
-
-# List bam files for a grouping
-def get_bamlist_bams(wildcards):
-    pop = wildcards.population
-    return expand(
-        "results/datasets/{{dataset}}/bams/{sample}.{{ref}}{{dp}}.bam",
-        sample=get_samples_from_pop(pop),
-    )
-
-
-# List bai files for a grouping
-def get_bamlist_bais(wildcards):
-    pop = wildcards.population
-    return expand(
-        "results/datasets/{{dataset}}/bams/{sample}.{{ref}}{{dp}}.bam.bai",
-        sample=get_samples_from_pop(pop),
-    )
+# Reports
 
 
 # Get string to describe depth subsampling for report

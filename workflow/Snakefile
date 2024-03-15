@@ -79,31 +79,22 @@ if config["subsample_redo_filts"]:
 
 
 if config["analyses"]["qualimap"]:
-    if len(pipebams) > 0:
-        all_outputs.extend(
-            expand(
-                "results/mapping/qc/qualimap/{sample}.{{ref}}/report.pdf",
-                sample=pipebams,
-            )
-        )
-    if len(userbams) > 0:
-        all_outputs.extend(
-            expand(
-                "results/datasets/{{dataset}}/qc/user-provided-bams/qualimap/{sample}.{{ref}}/report.pdf",
-                sample=userbams,
-            )
-        )
+    all_outputs.append(
+        "results/datasets/{dataset}/qc/qualimap/qualimap_all.{ref}_mqc.html",
+    )
 
 
 if config["analyses"]["damageprofiler"]:
     if len(pipebams) > 0:
-        all_outputs.extend(
-            expand(
-                "results/mapping/qc/damageprofiler/{histsample}.{{ref}}/dmgprof.json",
-                histsample=list(
-                    set(pipebams) & set(samples.index[samples["time"] == "historical"])
-                ),
-            )
+        all_outputs.append(
+            "results/datasets/{dataset}/qc/dna-damage-mqc/dna-damage_all.{ref}_mqc.html",
+        )
+
+
+if config["analyses"]["mapdamage_rescale"]:
+    if len(pipebams) > 0:
+        all_outputs.append(
+            "results/datasets/{dataset}/qc/dna-damage-mqc/dna-damage_all.{ref}_mqc.html",
         )
 
 

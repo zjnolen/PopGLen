@@ -228,7 +228,9 @@ rule genmap_filt_bed:
         gensum="results/ref/{ref}/beds/genome.bed.sum",
     output:
         bed="results/datasets/{dataset}/filters/pileupmap/{ref}_k{k}_e{e}_{thresh}.bed",
-        tmp=temp("results/datasets/{dataset}/filters/pileupmap/{ref}_k{k}_e{e}_{thresh}.bed.tmp"),
+        tmp=temp(
+            "results/datasets/{dataset}/filters/pileupmap/{ref}_k{k}_e{e}_{thresh}.bed.tmp"
+        ),
         sum="results/datasets/{dataset}/filters/pileupmap/{ref}_k{k}_e{e}_{thresh}.bed.sum",
     log:
         "logs/{dataset}/filters/pileupmap/{ref}_k{k}_e{e}_{thresh}.log",

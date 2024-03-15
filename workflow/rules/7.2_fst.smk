@@ -20,8 +20,12 @@ rule realSFS_fst_index:
         ),
         sfs="results/datasets/{dataset}/analyses/sfs/{dataset}.{ref}_{population1}-{population2}{dp}_{sites}-filts.sfs",
     output:
-        fstidx=temp("results/datasets/{dataset}/analyses/fst/{dataset}.{ref}_{population1}-{population2}{dp}_{sites}-filts.fst.idx"),
-        fstgz=temp("results/datasets/{dataset}/analyses/fst/{dataset}.{ref}_{population1}-{population2}{dp}_{sites}-filts.fst.gz"),
+        fstidx=temp(
+            "results/datasets/{dataset}/analyses/fst/{dataset}.{ref}_{population1}-{population2}{dp}_{sites}-filts.fst.idx"
+        ),
+        fstgz=temp(
+            "results/datasets/{dataset}/analyses/fst/{dataset}.{ref}_{population1}-{population2}{dp}_{sites}-filts.fst.gz"
+        ),
     container:
         angsd_container
     log:

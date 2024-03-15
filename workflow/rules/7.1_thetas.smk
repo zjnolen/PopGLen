@@ -14,8 +14,12 @@ rule realSFS_saf2theta:
         ),
         sfs="results/datasets/{dataset}/analyses/sfs/{dataset}.{ref}_{population}{dp}_{sites}-filts.sfs",
     output:
-        thetasidx=temp("results/datasets/{dataset}/analyses/thetas/{dataset}.{ref}_{population}{dp}_{sites}-filts.thetas.idx"),
-        thetas=temp("results/datasets/{dataset}/analyses/thetas/{dataset}.{ref}_{population}{dp}_{sites}-filts.thetas.gz"),
+        thetasidx=temp(
+            "results/datasets/{dataset}/analyses/thetas/{dataset}.{ref}_{population}{dp}_{sites}-filts.thetas.idx"
+        ),
+        thetas=temp(
+            "results/datasets/{dataset}/analyses/thetas/{dataset}.{ref}_{population}{dp}_{sites}-filts.thetas.gz"
+        ),
     container:
         angsd_container
     log:

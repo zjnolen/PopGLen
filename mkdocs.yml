@@ -5,4 +5,13 @@ nav:
   - Configuration: config.md
   - Tutorial: tutorial.md
   - About: about.md
+repo_url: https://www.github.com/zjnolen/angsd-snakemake-pipeline
 theme: material
+theme:
+  icon:
+    repo: fontawesome/brands/github
+plugins:
+  - search
+extra:
+  version:
+    provider: mike

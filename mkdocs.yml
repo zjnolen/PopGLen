@@ -10,6 +10,7 @@ theme:
   icon:
     repo: simple/github
 repo_url: https://github.com/zjnolen/angsd-snakemake-pipeline
+repo_name: zjnolen/angsd-snakemake-pipeline
 plugins:
   - search
 extra:

@@ -9,6 +9,8 @@ theme:
   name: material
   icon:
     repo: simple/github
+  features:
+    - search.highlight
 repo_url: https://github.com/zjnolen/angsd-snakemake-pipeline
 repo_name: zjnolen/angsd-snakemake-pipeline
 plugins:

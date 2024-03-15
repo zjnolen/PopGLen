@@ -7,11 +7,13 @@ on:
     paths-ignore:
       - '**/*.md'
       - 'docs'
+      - 'mkdocs.yml'
   pull_request:
     branches_ignore: []
     paths-ignore:
       - '**/*.md'
       - 'docs'
+      - 'mkdocs.yml'
 
 jobs:
   formatting:

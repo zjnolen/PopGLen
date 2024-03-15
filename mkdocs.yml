@@ -5,8 +5,9 @@ nav:
   - Configuration: config.md
   - Tutorial: tutorial.md
   - About: about.md
-repo_url: https://www.github.com/zjnolen/angsd-snakemake-pipeline
 theme: material
+repo_url: https://www.github.com/zjnolen/angsd-snakemake-pipeline
+theme:
   icon:
     repo: material/github
 plugins:

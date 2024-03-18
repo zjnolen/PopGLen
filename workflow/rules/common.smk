@@ -187,8 +187,8 @@ def multiqc_input_fastp(wildcards):
                 "results/preprocessing/qc/fastp/{sample}_{unit}_{lib}_merged.json",
                 zip,
                 sample=histunits["sample"].tolist(),
-                unit=pipeunits["unit"].tolist(),
-                lib=pipeunits["lib"].tolist(),
+                unit=histunits["unit"].tolist(),
+                lib=histunits["lib"].tolist(),
             )
         )
         # add modern, paired fastq to report

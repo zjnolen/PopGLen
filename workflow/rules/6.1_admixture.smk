@@ -48,7 +48,7 @@ rule plot_admix:
     output:
         report(
             "results/datasets/{dataset}/plots/ngsadmix/{dataset}.{ref}_{population}{dp}_{sites}-filts_K{kvalue}.svg",
-            category="Admixture",
+            category="03.2 Admixture",
             subcategory="NGSadmix",
             labels=lambda w: {
                 "Filter": "{sites}",
@@ -105,7 +105,7 @@ rule plot_evalAdmix:
     output:
         report(
             "results/datasets/{dataset}/plots/evaladmix/{dataset}.{ref}_{population}{dp}_{sites}-filts_K{kvalue}_evaladmix.html",
-            category="Admixture",
+            category="03.2 Admixture",
             subcategory="evalAdmix",
             labels=lambda w: {
                 "Filter": "{sites}",

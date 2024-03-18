@@ -72,7 +72,7 @@ rule plot_thetas:
     output:
         watterson=report(
             "results/datasets/{dataset}/plots/thetas/{dataset}.{ref}_all{dp}_{sites}-filts.window_{win}_{step}.density.watterson.pdf",
-            category="Watterson's Theta",
+            category="04.1 Watterson's Theta",
             labels=lambda w: {
                 "Filter": "{sites}",
                 **dp_report(w),
@@ -83,7 +83,7 @@ rule plot_thetas:
         ),
         pi=report(
             "results/datasets/{dataset}/plots/thetas/{dataset}.{ref}_all{dp}_{sites}-filts.window_{win}_{step}.density.pi.pdf",
-            category="Nucleotide Diversity (Pi)",
+            category="04.2 Nucleotide Diversity (Pi)",
             labels=lambda w: {
                 "Filter": "{sites}",
                 **dp_report(w),
@@ -94,7 +94,7 @@ rule plot_thetas:
         ),
         tajima=report(
             "results/datasets/{dataset}/plots/thetas/{dataset}.{ref}_all{dp}_{sites}-filts.window_{win}_{step}.density.tajima.pdf",
-            category="Tajima's D",
+            category="04.3 Tajima's D",
             labels=lambda w: {
                 "Filter": "{sites}",
                 **dp_report(w),

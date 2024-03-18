@@ -76,7 +76,7 @@ rule plot_froh:
     output:
         barplot=report(
             "results/datasets/{dataset}/plots/inbreeding/{dataset}.{ref}_all{dp}_{sites}-filts.froh_bins.svg",
-            category="Inbreeding",
+            category="06 Inbreeding",
             labels=lambda w: {
                 "Filter": "{sites}",
                 **dp_report(w),
@@ -85,7 +85,7 @@ rule plot_froh:
         ),
         scatter=report(
             "results/datasets/{dataset}/plots/inbreeding/{dataset}.{ref}_all{dp}_{sites}-filts.cumroh_nroh.svg",
-            category="Inbreeding",
+            category="06 Inbreeding",
             labels=lambda w: {
                 "Filter": "{sites}",
                 **dp_report(w),

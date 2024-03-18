@@ -143,7 +143,7 @@ rule kinship_table_html:
     output:
         report(
             "results/datasets/{dataset}/analyses/kinship/ibsrelate_{type}/{dataset}.{ref}_all{dp}_{sites}-filts.kinship.html",
-            category="Relatedness",
+            category="02 Relatedness",
             subcategory="IBSrelate - {type}",
             labels=lambda w: {"Filter": "{sites}", **dp_report(w), "Type": "Table"},
         ),
@@ -200,7 +200,7 @@ rule ngsrelate_summary:
     output:
         report(
             "results/datasets/{dataset}/analyses/kinship/ngsrelate/{dataset}.{ref}_all{dp}_{sites}-filts_relate.html",
-            category="Relatedness",
+            category="02 Relatedness",
             subcategory="NgsRelate",
             labels=lambda w: {"Filter": "{sites}", **dp_report(w), "Type": "Table"},
         ),

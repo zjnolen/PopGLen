@@ -153,7 +153,7 @@ rule plot_fst:
     output:
         report(
             "results/datasets/{dataset}/plots/fst/{dataset}.{ref}_{unit}pairs{dp}_{sites}-filts.fst.global.pdf",
-            category="Fst",
+            category="05 Fst",
             subcategory="Global",
             labels=lambda w: {
                 "Filter": "{sites}",

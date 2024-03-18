@@ -171,6 +171,40 @@ def get_raw_fastq(wildcards):
             }
 
 
+## Get correct reports to compile a fastp multiqc report
+def multiqc_input_fastp(wildcards):
+    reports = []
+    # Check if pipeline is actually processing any fastq files
+    if len(pipebams) > 0:
+        # subset units to samples that are starting at fastq
+        pipeunits = units[units["sample"].isin(pipebams)]
+        # join with sample list to know 'historical' or 'modern' sample context
+        pipeunits = pd.merge(pipeunits, samples, left_on="sample", right_index=True)
+        # add historical, merged fastq to report
+        histunits = pipeunits[pipeunits["time"] == "historical"]
+        reports.extend(
+            expand(
+                "results/preprocessing/qc/fastp/{sample}_{unit}_{lib}_merged.json",
+                zip,
+                sample=histunits["sample"].tolist(),
+                unit=pipeunits["unit"].tolist(),
+                lib=pipeunits["lib"].tolist(),
+            )
+        )
+        # add modern, paired fastq to report
+        modunits = pipeunits[pipeunits["time"] == "modern"]
+        reports.extend(
+            expand(
+                "results/preprocessing/qc/fastp/{sample}_{unit}_{lib}_paired.json",
+                zip,
+                sample=modunits["sample"].tolist(),
+                unit=modunits["unit"].tolist(),
+                lib=modunits["lib"].tolist(),
+            )
+        )
+    return reports
+
+
 # Reference
 
 
@@ -721,8 +755,8 @@ def unit_report(wildcards):
 def theta_report(wildcards):
     stat = wildcards.stat
     if stat == "watterson":
-        return "Watterson's Theta"
+        return "04.1 Watterson's Theta"
     elif stat == "pi":
-        return "Nucleotide Diversity (Pi)"
+        return "04.2 Nucleotide Diversity (Pi)"
     elif stat == "tajima":
-        return "Tajima's D"
+        return "04.3 Tajima's D"

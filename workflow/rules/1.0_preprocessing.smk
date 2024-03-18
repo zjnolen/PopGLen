@@ -29,8 +29,8 @@ rule fastp_mergedout:
         merged=temp("results/preprocessing/fastp/{sample}_{unit}_{lib}.merged.fastq.gz"),
         html=report(
             "results/preprocessing/qc/fastp/{sample}_{unit}_{lib}_merged.html",
-            category="Quality Control",
-            subcategory="Trimming Reports",
+            category="00 Quality Control",
+            subcategory="1 Trimming Reports",
             labels={
                 "Sample": "{sample}",
                 "Unit": "{unit}",
@@ -66,8 +66,8 @@ rule fastp_pairedout:
         ),
         html=report(
             "results/preprocessing/qc/fastp/{sample}_{unit}_{lib}_paired.html",
-            category="Quality Control",
-            subcategory="Trimming Reports",
+            category="00 Quality Control",
+            subcategory="1 Trimming Reports",
             labels={
                 "Sample": "{sample}",
                 "Unit": "{unit}",
@@ -87,6 +87,25 @@ rule fastp_pairedout:
         runtime=lambda wildcards, attempt: attempt * 480,
     wrapper:
         "v2.5.0/bio/fastp"
+
+
+rule fastp_multiqc:
+    input:
+        multiqc_input_fastp,
+    output:
+        report(
+            "results/datasets/{dataset}/qc/fastp-trimming/fastp_all.{ref}_mqc.html",
+            category="00 Quality Control",
+            subcategory="1 Trimming Reports",
+            labels={"Type": "MultiQC Report"},
+        ),
+    log:
+        "logs/preprocessing/fastp/{dataset}.{ref}_mqc.log",
+    params:
+        extra="",
+        use_input_files_only=True,
+    wrapper:
+        "v3.5.0/bio/multiqc"
 
 
 # rule fastp_pairedout:

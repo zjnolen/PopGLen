@@ -64,7 +64,7 @@ rule plot_pca:
     output:
         report(
             "results/datasets/{dataset}/plots/pca/{dataset}.{ref}_{population}{dp}_{sites}-filts_pc{xpc}-{ypc}.svg",
-            category="PCA",
+            category="03.1 PCA",
             labels=lambda w: {
                 "Filter": "{sites}",
                 **dp_report(w),

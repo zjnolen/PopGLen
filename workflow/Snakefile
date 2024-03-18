@@ -78,6 +78,12 @@ if config["subsample_redo_filts"]:
     )
 
 
+if len(pipebams) > 0:
+    all_outputs.append(
+        "results/datasets/{dataset}/qc/fastp-trimming/fastp_all.{ref}_mqc.html"
+    )
+
+
 if config["analyses"]["qualimap"]:
     all_outputs.append(
         "results/datasets/{dataset}/qc/qualimap/qualimap_all.{ref}_mqc.html",

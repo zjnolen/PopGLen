@@ -440,9 +440,13 @@ if config["analyses"]["extreme_depth"]:
             summ="results/datasets/{dataset}/filters/depth/{dataset}.{ref}_{population}{dp}_depth.summary",
             plot=report(
                 "results/datasets/{dataset}/plots/depth_dist/{dataset}.{ref}_{population}{dp}_depth.svg",
-                category="Quality Control",
-                subcategory="Depth distributions and filters",
-                labels={"Subset": "{population}", "Type": "Histogram"},
+                category="00 Quality Control",
+                subcategory="2 Depth distributions and filters",
+                labels=lambda w: {
+                    "Subset": "{population}",
+                    **dp_report(w),
+                    "Type": "Histogram",
+                },
             ),
         log:
             "logs/{dataset}/filters/depth/{dataset}.{ref}_{population}{dp}_depth_extremes.log",
@@ -733,9 +737,9 @@ rule filter_summary_table:
     output:
         report(
             "results/datasets/{dataset}/filters/combined/{dataset}.{ref}{dp}_{sites}-filts.html",
-            category="Quality Control",
-            subcategory="Filtering Summary",
-            labels={"Filter": "{sites}", "Type": "Table"},
+            category="00 Quality Control",
+            subcategory="3 Filtering Summary",
+            labels=lambda w: {"Filter": "{sites}", **dp_report(w), "Type": "Table"},
         ),
     log:
         "logs/{dataset}/filters/combine/{dataset}.{ref}{dp}_{sites}-filts_tsv2html.log",

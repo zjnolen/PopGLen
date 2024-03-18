@@ -71,7 +71,12 @@ rule qualimap_multiqc:
     input:
         multiqc_input_qualimap,
     output:
-        "results/datasets/{dataset}/qc/qualimap/qualimap_all.{ref}_mqc.html",
+        report(
+            "results/datasets/{dataset}/qc/qualimap/qualimap_all.{ref}_mqc.html",
+            category="00 Quality Control",
+            subcategory="5 Qualimap",
+            labels={"Type": "MultiQC Report"},
+        ),
     log:
         "logs/mapping/qualimap/{dataset}.{ref}_mqc.log",
     params:
@@ -331,9 +336,9 @@ rule sample_qc_summary:
     output:
         report(
             "results/datasets/{dataset}/qc/{dataset}.{ref}_all{dp}.sampleqc.html",
-            category="Quality Control",
-            subcategory="Sample coverage and endogenous content",
-            labels={"Type": "Table"},
+            category="00 Quality Control",
+            subcategory="6 Sample depth and endogenous content",
+            labels=lambda w: {**dp_report(w), "Type": "Table"},
         ),
     log:
         "logs/{dataset}/combine_sample_qc/{dataset}.{ref}{dp}_tsv2html.log",

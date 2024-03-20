@@ -519,13 +519,14 @@ def multiqc_input_dnadmg(wildcards):
     reports = []
     if config["analyses"]["damageprofiler"]:
         if len(pipebams) > 0:
+            if config["params"]["damageprofiler"]["profile_modern"]:
+                samset = set(samples.index)
+            else:
+                samset = set(samples.index[samples["time"] == "historical"])
             reports.extend(
                 expand(
                     "results/mapping/qc/damageprofiler/{histsample}.{{ref}}/dmgprof.json",
-                    histsample=list(
-                        set(pipebams)
-                        & set(samples.index[samples["time"] == "historical"])
-                    ),
+                    histsample=list(set(pipebams) & samset),
                 )
             )
     if config["analyses"]["mapdamage_rescale"]:

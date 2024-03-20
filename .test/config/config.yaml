@@ -129,6 +129,8 @@ params:
     extra: "-l 16500 -n 0.01 -o 2"
   picard:
     MarkDuplicates: "--REMOVE_DUPLICATES true --OPTICAL_DUPLICATE_PIXEL_DISTANCE 2500"
+  damageprofiler:
+    profile_modern: false
   angsd:
     gl_model: 2 # gl_model - 1=SAMtools, 2=GATK, 3=SOAPsnp, 4=SYK
     maxdepth: 1000

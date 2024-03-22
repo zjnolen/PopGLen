@@ -9,6 +9,8 @@ theme:
   name: material
   icon:
     repo: simple/github
+    admonition:
+      note: octicons/tag-16
   features:
     - search.highlight
 repo_url: https://github.com/zjnolen/angsd-snakemake-pipeline

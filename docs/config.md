@@ -13,15 +13,13 @@ running snakemake with `--configfile <path>`.
 This file contains your sample list, and has four tab separated columns:
 
 ```
-sample	unit	lib	platform	fq1	fq2	bam	sra
-hist1	BHVN22DSX2.2	hist1	ILLUMINA	data/fastq/hist1.r1.fastq.gz	data/fastq/hist1.r2.fastq.gz		
-hist1	BHVN22DSX2.3	hist1	ILLUMINA	data/fastq/hist1.unit2.r1.fastq.gz	data/fastq/hist1.unit2.r2.fastq.gz		
-hist2	BHVN22DSX2.2	hist2	ILLUMINA	data/fastq/hist2.r1.fastq.gz	data/fastq/hist2.r2.fastq.gz		
-hist3	BHVN22DSX2.2	hist2	ILLUMINA	data/fastq/hist3.r1.fastq.gz	data/fastq/hist3.r2.fastq.gz		
-mod1	AHW5NGDSX2.3	mod1	ILLUMINA	data/fastq/mod1.r1.fastq.gz	data/fastq/mod1.r2.fastq.gz		
-mod2	AHW5NGDSX2.3	mod2	ILLUMINA			data/bam/mod2.bam	
-mod3	AHW5NGDSX2.3	mod3	ILLUMINA	data/fastq/mod3.r1.fastq.gz	data/fastq/mod3.r2.fastq.gz		
-SAMN13218652	SRR10398077	SAMN13218652	ILLUMINA				SRR10398077
+sample	population	time	depth
+hist1	Hjelmseryd	historical	low
+hist2	Hjelmseryd	historical	low
+hist3	Hjelmseryd	historical	low
+mod1	Gotafors	modern	high
+mod2	Gotafors	modern	high
+mod3	Gotafors	modern	high
 ```
 
 - `sample` contains the ID of a sample. It is best if it only contains
@@ -45,7 +43,14 @@ columns:
 
 ```
 sample	unit	lib	platform	fq1	fq2	bam	sra
-sample1	
+hist1	BHVN22DSX2.2	hist1	ILLUMINA	data/fastq/hist1.r1.fastq.gz	data/fastq/hist1.r2.fastq.gz		
+hist1	BHVN22DSX2.3	hist1	ILLUMINA	data/fastq/hist1.unit2.r1.fastq.gz	data/fastq/hist1.unit2.r2.fastq.gz		
+hist2	BHVN22DSX2.2	hist2	ILLUMINA	data/fastq/hist2.r1.fastq.gz	data/fastq/hist2.r2.fastq.gz		
+hist3	BHVN22DSX2.2	hist2	ILLUMINA	data/fastq/hist3.r1.fastq.gz	data/fastq/hist3.r2.fastq.gz		
+mod1	AHW5NGDSX2.3	mod1	ILLUMINA	data/fastq/mod1.r1.fastq.gz	data/fastq/mod1.r2.fastq.gz		
+mod2	AHW5NGDSX2.3	mod2	ILLUMINA			data/bam/mod2.bam	
+mod3	AHW5NGDSX2.3	mod3	ILLUMINA	data/fastq/mod3.r1.fastq.gz	data/fastq/mod3.r2.fastq.gz		
+SAMN13218652	SRR10398077	SAMN13218652	ILLUMINA				SRR10398077
 ```
 
 - `sample` contains the ID of a sample. Must be same as in `samples.tsv` and
@@ -78,11 +83,12 @@ the units file.
 - `sra` provides the NCBI SRA accession number for a set of paired end fastq
 files that will be downloaded to be processed.
 
-It is possible to have different samples start from different inputs (i.e. some
-from bam, others from fastq, others from SRA). It is best to provide only
-`fq1`+`fq2`, `bam`, or `sra` for each sample to be clear where each sample
-starts. If multiple are provided for each sample, the bam file will override
-fastq or SRA entries, and the fastq will override SRA entries.
+!!! note
+    It is possible to have different samples start from different inputs (i.e.
+    some from bam, others from fastq, others from SRA). It is best to provide
+    only `fq1`+`fq2`, `bam`, or `sra` for each sample to be clear where each
+    sample starts. If multiple are provided for each sample, the bam file will
+    override fastq or SRA entries, and the fastq will override SRA entries.
 
 ## Configuration file
 

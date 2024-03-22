@@ -636,14 +636,14 @@ connects sample names to their input data files. The workflow will use
 running snakemake with <code>--configfile &lt;path&gt;</code>.</p>
 <h3 id="samplestsv"><code>samples.tsv</code></h3>
 <p>This file contains your sample list, and has four tab separated columns:</p>
-<pre><code>sample  population  time    depth
+<div class="highlight"><pre><span></span><code>sample  population  time    depth
 hist1   Hjelmseryd  historical  low
 hist2   Hjelmseryd  historical  low
 hist3   Hjelmseryd  historical  low
 mod1    Gotafors    modern  high
 mod2    Gotafors    modern  high
 mod3    Gotafors    modern  high
-</code></pre>
+</code></pre></div>
 <ul>
 <li>
 <p><code>sample</code> contains the ID of a sample. It is best if it only contains
@@ -667,7 +667,7 @@ depth categories individually.</p>
 <h3 id="unitstsv"><code>units.tsv</code></h3>
 <p>This file connects your samples to input files and has a potential for eight
 columns:</p>
-<pre><code>sample  unit    lib platform    fq1 fq2 bam sra
+<div class="highlight"><pre><span></span><code>sample  unit    lib platform    fq1 fq2 bam sra
 hist1   BHVN22DSX2.2    hist1   ILLUMINA    data/fastq/hist1.r1.fastq.gz    data/fastq/hist1.r2.fastq.gz        
 hist1   BHVN22DSX2.3    hist1   ILLUMINA    data/fastq/hist1.unit2.r1.fastq.gz  data/fastq/hist1.unit2.r2.fastq.gz      
 hist2   BHVN22DSX2.2    hist2   ILLUMINA    data/fastq/hist2.r1.fastq.gz    data/fastq/hist2.r2.fastq.gz        
@@ -676,7 +676,7 @@ mod1    AHW5NGDSX2.3    mod1    ILLUMINA    data/fastq/mod1.r1.fastq.gz data/fas
 mod2    AHW5NGDSX2.3    mod2    ILLUMINA            data/bam/mod2.bam   
 mod3    AHW5NGDSX2.3    mod3    ILLUMINA    data/fastq/mod3.r1.fastq.gz data/fastq/mod3.r2.fastq.gz     
 SAMN13218652    SRR10398077 SAMN13218652    ILLUMINA                SRR10398077
-</code></pre>
+</code></pre></div>
 <ul>
 <li>
 <p><code>sample</code> contains the ID of a sample. Must be same as in <code>samples.tsv</code> and
@@ -716,12 +716,14 @@ the units file.</p>
 files that will be downloaded to be processed.</p>
 </li>
 </ul>
-<p>!!! note
-    It is possible to have different samples start from different inputs (i.e.
-    some from bam, others from fastq, others from SRA). It is best to provide
-    only <code>fq1</code>+<code>fq2</code>, <code>bam</code>, or <code>sra</code> for each sample to be clear where each
-    sample starts. If multiple are provided for each sample, the bam file will
-    override fastq or SRA entries, and the fastq will override SRA entries.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>It is possible to have different samples start from different inputs (i.e.
+some from bam, others from fastq, others from SRA). It is best to provide
+only <code>fq1</code>+<code>fq2</code>, <code>bam</code>, or <code>sra</code> for each sample to be clear where each
+sample starts. If multiple are provided for each sample, the bam file will
+override fastq or SRA entries, and the fastq will override SRA entries.</p>
+</div>
 <h2 id="configuration-file">Configuration file</h2>
 <p><code>config.yaml</code> contains the configuration for the workflow, this is where you
 will put what analyses, filters, and options you want. Below I describe the
@@ -997,19 +999,19 @@ will be intersected with the sites passing the filters set in the above
 section, and all analyses will be performed additionally using those sites.</p>
 <p>For instance, given a BED file containing putatively neutral sites, one could
 set the following:</p>
-<pre><code class="language-yaml">filter_beds:
-  neutral-sites: &quot;resources/neutral_sites.bed&quot;
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="nt">filter_beds</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">neutral-sites</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;resources/neutral_sites.bed&quot;</span>
+</code></pre></div>
 <p>In this case, for each requested analysis, in addition to the <code>allsites-filts</code>
 output, a <code>neutral-filts</code> (named after the key assigned to the BED file in
 <code>config.yaml</code>) output will also be generated, containing the results for sites
 within the specified BED file that passed any set filters.</p>
 <p>More than one BED file can be set, up to an arbitrary number:</p>
-<pre><code class="language-yaml">filter_beds:
-  neutral: &quot;resources/neutral_sites.bed&quot;
-  intergenic: &quot;resources/intergenic_sites.bed&quot;
-  introns: &quot;resources/introns.bed&quot;
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="nt">filter_beds</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">neutral</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;resources/neutral_sites.bed&quot;</span>
+<span class="w">  </span><span class="nt">intergenic</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;resources/intergenic_sites.bed&quot;</span>
+<span class="w">  </span><span class="nt">introns</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;resources/introns.bed&quot;</span>
+</code></pre></div>
 <p>It may also sometimes be desireable to skip analyses on <code>allsites-filts</code>, say
 if you are trying to only generate diversity estimates or generate SFS for a
 set of neutral sites you supply. To skip running any analyses for

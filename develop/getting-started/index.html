@@ -567,8 +567,8 @@ version/branch you prefer (recommended if you will change any workflow code).</p
 <h3 id="preparing-the-environment">Preparing the environment</h3>
 <p>First, create an environment for Snakemake, including Snakedeploy if you intend
 to deploy that way:</p>
-<pre><code class="language-bash">mamba create -c conda-forge -c bioconda --name snakemake snakemake snakedeploy
-</code></pre>
+<div class="highlight"><pre><span></span><code>mamba<span class="w"> </span>create<span class="w"> </span>-c<span class="w"> </span>conda-forge<span class="w"> </span>-c<span class="w"> </span>bioconda<span class="w"> </span>--name<span class="w"> </span>snakemake<span class="w"> </span>snakemake<span class="w"> </span>snakedeploy
+</code></pre></div>
 <p>If you already have a Snakemake environment, you can use that, so long as
 it has <code>snakemake</code> (not just <code>snakemake-minimal</code>) installed. Snakemake
 versions &gt;=7.25 are likely to work, but most testing is on 7.32.4. You can
@@ -576,31 +576,31 @@ change the name of the environment if you'd like to isolate it any other
 Snakemake environments you might have. The only main dependency of this
 pipeline is <code>snakemake</code>.</p>
 <p>Activate the Snakemake environment:</p>
-<pre><code class="language-bash">conda activate snakemake
-</code></pre>
+<div class="highlight"><pre><span></span><code>conda<span class="w"> </span>activate<span class="w"> </span>snakemake
+</code></pre></div>
 <h3 id="deploying-with-snakedeploy">Deploying with Snakedeploy</h3>
 <p>Make your working directory:</p>
-<pre><code class="language-bash">mkdir -p /path/to/work-dir
-cd /path/to/work-dir
-</code></pre>
+<div class="highlight"><pre><span></span><code>mkdir<span class="w"> </span>-p<span class="w"> </span>/path/to/work-dir
+<span class="nb">cd</span><span class="w"> </span>/path/to/work-dir
+</code></pre></div>
 <p>And deploy the workflow, using the tag for the version you want to deploy:</p>
-<pre><code class="language-bash">snakedeploy deploy-workflow https://github.com/zjnolen/angsd-snakemake-pipeline . --tag v0.2.0
-</code></pre>
+<div class="highlight"><pre><span></span><code>snakedeploy<span class="w"> </span>deploy-workflow<span class="w"> </span>https://github.com/zjnolen/angsd-snakemake-pipeline<span class="w"> </span>.<span class="w"> </span>--tag<span class="w"> </span>v0.2.0
+</code></pre></div>
 <p>This will generate a simple Snakefile in a <code>workflow</code> folder that loads the
 pipeline as a module. It will also download the template <code>config.yaml</code>,
 <code>samples.tsv</code>, and <code>units.tsv</code> in the <code>config</code> folder.</p>
 <h3 id="cloning-from-github">Cloning from GitHub</h3>
 <p>Go to the folder you would like you working directory to be created in and
 clone the GitHub repo:</p>
-<pre><code class="language-bash">git clone https://github.com/zjnolen/angsd-snakemake-pipeline.git
-</code></pre>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/zjnolen/angsd-snakemake-pipeline.git
+</code></pre></div>
 <p>If you would like, you can change the name of the directory:</p>
-<pre><code class="language-bash">mv angsd-snakemake-pipeline work-dir-name
-</code></pre>
+<div class="highlight"><pre><span></span><code>mv<span class="w"> </span>angsd-snakemake-pipeline<span class="w"> </span>work-dir-name
+</code></pre></div>
 <p>Move into the working directory (<code>angsd-snakemake-pipeline</code> or <code>work-dir-name</code>
 if you changed it) and checkout the version you would like to use:</p>
-<pre><code class="language-bash">git checkout v0.2.0
-</code></pre>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>checkout<span class="w"> </span>v0.2.0
+</code></pre></div>
 <p>This can also be used to checkout specific branches or commits.</p>
 <h2 id="configuring-the-workflow">Configuring the workflow</h2>
 <p>Now you are ready to configure the workflow, see the documentation for that

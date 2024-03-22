@@ -27,6 +27,14 @@
       <link rel="stylesheet" href="../assets/stylesheets/main.10ba22f1.min.css">
       
       
+  
+  
+    
+    
+  
+  
+  <style>:root{--md-admonition-icon--note:url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M1 7.775V2.75C1 1.784 1.784 1 2.75 1h5.025c.464 0 .91.184 1.238.513l6.25 6.25a1.75 1.75 0 0 1 0 2.474l-5.026 5.026a1.75 1.75 0 0 1-2.474 0l-6.25-6.25A1.752 1.752 0 0 1 1 7.775Zm1.5 0c0 .066.026.13.073.177l6.25 6.25a.25.25 0 0 0 .354 0l5.025-5.025a.25.25 0 0 0 0-.354l-6.25-6.25a.25.25 0 0 0-.177-.073H2.75a.25.25 0 0 0-.25.25ZM6 5a1 1 0 1 1 0 2 1 1 0 0 1 0-2Z"/></svg>');}</style>
+
 
 
     
@@ -628,15 +636,13 @@ connects sample names to their input data files. The workflow will use
 running snakemake with <code>--configfile &lt;path&gt;</code>.</p>
 <h3 id="samplestsv"><code>samples.tsv</code></h3>
 <p>This file contains your sample list, and has four tab separated columns:</p>
-<pre><code>sample  unit    lib platform    fq1 fq2 bam sra
-hist1   BHVN22DSX2.2    hist1   ILLUMINA    data/fastq/hist1.r1.fastq.gz    data/fastq/hist1.r2.fastq.gz        
-hist1   BHVN22DSX2.3    hist1   ILLUMINA    data/fastq/hist1.unit2.r1.fastq.gz  data/fastq/hist1.unit2.r2.fastq.gz      
-hist2   BHVN22DSX2.2    hist2   ILLUMINA    data/fastq/hist2.r1.fastq.gz    data/fastq/hist2.r2.fastq.gz        
-hist3   BHVN22DSX2.2    hist2   ILLUMINA    data/fastq/hist3.r1.fastq.gz    data/fastq/hist3.r2.fastq.gz        
-mod1    AHW5NGDSX2.3    mod1    ILLUMINA    data/fastq/mod1.r1.fastq.gz data/fastq/mod1.r2.fastq.gz     
-mod2    AHW5NGDSX2.3    mod2    ILLUMINA            data/bam/mod2.bam   
-mod3    AHW5NGDSX2.3    mod3    ILLUMINA    data/fastq/mod3.r1.fastq.gz data/fastq/mod3.r2.fastq.gz     
-SAMN13218652    SRR10398077 SAMN13218652    ILLUMINA                SRR10398077
+<pre><code>sample  population  time    depth
+hist1   Hjelmseryd  historical  low
+hist2   Hjelmseryd  historical  low
+hist3   Hjelmseryd  historical  low
+mod1    Gotafors    modern  high
+mod2    Gotafors    modern  high
+mod3    Gotafors    modern  high
 </code></pre>
 <ul>
 <li>
@@ -662,7 +668,14 @@ depth categories individually.</p>
 <p>This file connects your samples to input files and has a potential for eight
 columns:</p>
 <pre><code>sample  unit    lib platform    fq1 fq2 bam sra
-sample1 
+hist1   BHVN22DSX2.2    hist1   ILLUMINA    data/fastq/hist1.r1.fastq.gz    data/fastq/hist1.r2.fastq.gz        
+hist1   BHVN22DSX2.3    hist1   ILLUMINA    data/fastq/hist1.unit2.r1.fastq.gz  data/fastq/hist1.unit2.r2.fastq.gz      
+hist2   BHVN22DSX2.2    hist2   ILLUMINA    data/fastq/hist2.r1.fastq.gz    data/fastq/hist2.r2.fastq.gz        
+hist3   BHVN22DSX2.2    hist2   ILLUMINA    data/fastq/hist3.r1.fastq.gz    data/fastq/hist3.r2.fastq.gz        
+mod1    AHW5NGDSX2.3    mod1    ILLUMINA    data/fastq/mod1.r1.fastq.gz data/fastq/mod1.r2.fastq.gz     
+mod2    AHW5NGDSX2.3    mod2    ILLUMINA            data/bam/mod2.bam   
+mod3    AHW5NGDSX2.3    mod3    ILLUMINA    data/fastq/mod3.r1.fastq.gz data/fastq/mod3.r2.fastq.gz     
+SAMN13218652    SRR10398077 SAMN13218652    ILLUMINA                SRR10398077
 </code></pre>
 <ul>
 <li>
@@ -703,11 +716,12 @@ the units file.</p>
 files that will be downloaded to be processed.</p>
 </li>
 </ul>
-<p>It is possible to have different samples start from different inputs (i.e. some
-from bam, others from fastq, others from SRA). It is best to provide only
-<code>fq1</code>+<code>fq2</code>, <code>bam</code>, or <code>sra</code> for each sample to be clear where each sample
-starts. If multiple are provided for each sample, the bam file will override
-fastq or SRA entries, and the fastq will override SRA entries.</p>
+<p>!!! note
+    It is possible to have different samples start from different inputs (i.e.
+    some from bam, others from fastq, others from SRA). It is best to provide
+    only <code>fq1</code>+<code>fq2</code>, <code>bam</code>, or <code>sra</code> for each sample to be clear where each
+    sample starts. If multiple are provided for each sample, the bam file will
+    override fastq or SRA entries, and the fastq will override SRA entries.</p>
 <h2 id="configuration-file">Configuration file</h2>
 <p><code>config.yaml</code> contains the configuration for the workflow, this is where you
 will put what analyses, filters, and options you want. Below I describe the

@@ -134,6 +134,7 @@ params:
   angsd:
     gl_model: 2 # gl_model - 1=SAMtools, 2=GATK, 3=SOAPsnp, 4=SYK
     maxdepth: 1000
+    missing_data_mindepthind: 1
     extra: ""
     extra_saf: ""
     extra_beagle: ""

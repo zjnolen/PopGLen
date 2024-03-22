@@ -357,7 +357,7 @@ rule repeat_sum:
         "../envs/bedtools.yaml"
     shell:
         r"""
-        (bedtools merge -i {input.rep} > {output.bed}
+        (bedtools sort -i {input.rep} | bedtools merge > {output.bed}
         len=$(awk 'BEGIN{{SUM=0}}{{SUM+=$3-$2}}END{{print SUM}}' {output.bed})
         echo $len $(awk -F "\t" '{{print $2}}' {input.sum}) | \
             awk '{{print "Repeats\t"$2-$1"\t"($2-$1)/$2*100}}' > {output.sum}) &> {log}

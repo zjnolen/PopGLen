@@ -18,7 +18,11 @@ if (snakemake@params[["method"]] == "percentile") {
   qup <- genome.dp.cumsum[length(genome.dp.cumsum)]*snakemake@params[["upper"]]
   qlow <- genome.dp.cumsum[length(genome.dp.cumsum)]*snakemake@params[["lower"]]
   upper <- min(which(genome.dp.cumsum > qup))
-  lower <- min(which(genome.dp.cumsum > qlow))
+  if (snakemake@params[["lower"]] == 0) {
+    lower <- 0
+  } else {
+    lower <- min(which(genome.dp.cumsum > qlow))
+  }
   quants <- c(lower, upper)
 } else if (snakemake@params[["method"]] == "median") {
   quants <- c(
@@ -40,7 +44,7 @@ hist(cov[cov <= xlim],
   ylab = "Count",
   breaks = 100
 )
-abline(v=quants[1], col = "red")
+abline(v=max(0,quants[1]-1), col = "red")
 abline(v=quants[2], col = "red")
 dev.off()
 

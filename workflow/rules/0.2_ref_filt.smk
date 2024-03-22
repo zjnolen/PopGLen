@@ -488,7 +488,7 @@ if config["analyses"]["extreme_depth"]:
             upper=$(awk '{{print $3}}' {input.quants})
             for i in {input.pos}; do
                 zcat $i | tail -n +2 | \
-                awk -v lower=$lower -v upper=$upper '$3 > lower && $3 < upper'
+                awk -v lower=$lower -v upper=$upper '$3 >= lower && $3 < upper'
             done | \
             awk '{{print $1"\t"$2-1"\t"$2}}' > {output.bed}
             bedtools merge -i {output.bed} > {output.bed}.tmp

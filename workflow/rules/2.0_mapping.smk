@@ -102,7 +102,7 @@ rule samtools_merge_collapsed_libs:
     output:
         bam=temp("results/mapping/mapped/{sample}_{lib}.{ref}.merged.bam"),
     log:
-        "logs/mapping/samtools/merge/{sample}_{lib}.{ref}.merged.log"
+        "logs/mapping/samtools/merge/{sample}_{lib}.{ref}.merged.log",
     benchmark:
         "benchmarks/mapping/samtools/merge/{sample}_{lib}.{ref}.merged.log"
     threads: lambda wildcards, attempt: attempt * 4

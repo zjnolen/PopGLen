@@ -10,7 +10,7 @@ running snakemake with `--configfile <path>`.
 
 ### `samples.tsv`
 
-This file contains your sample list, and has four tab separated columns:
+This file contains your sample list, and has four **tab separated** columns:
 
 ```
 sample	population	time	depth
@@ -39,7 +39,7 @@ depth categories individually.
 ### `units.tsv`
 
 This file connects your samples to input files and has a potential for eight
-columns:
+**tab separated** columns:
 
 ```
 sample	unit	lib	platform	fq1	fq2	bam	sra
@@ -83,7 +83,8 @@ the units file.
 - `sra` provides the NCBI SRA accession number for a set of paired end fastq
 files that will be downloaded to be processed.
 
-!!! note
+!!! note "Mixing starting points"
+
     It is possible to have different samples start from different inputs (i.e.
     some from bam, others from fastq, others from SRA). It is best to provide
     only `fq1`+`fq2`, `bam`, or `sra` for each sample to be clear where each

@@ -470,7 +470,9 @@ def get_total_bed(wildcards):
         wildcards.prefix
         == f"results/datasets/{wildcards.dataset}/qc/ind_depth/filtered/"
     ):
-        return "results/datasets/{dataset}/filters/combined/{dataset}.{ref}{dp}_{group}.bed"
+        if config["subsample_redo_filts"]:
+            return "results/datasets/{dataset}/filters/combined/{dataset}.{ref}{dp}_{group}.bed"
+        return "results/datasets/{dataset}/filters/combined/{dataset}.{ref}_{group}.bed"
     return "results/ref/{ref}/beds/genome.bed"
 
 

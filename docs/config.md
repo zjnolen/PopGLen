@@ -83,13 +83,15 @@ the units file.
 - `sra` provides the NCBI SRA accession number for a set of paired end fastq
 files that will be downloaded to be processed.
 
-!!! note "Mixing starting points"
-
+!!! note "Mixing samples with different starting points"
     It is possible to have different samples start from different inputs (i.e.
     some from bam, others from fastq, others from SRA). It is best to provide
     only `fq1`+`fq2`, `bam`, or `sra` for each sample to be clear where each
-    sample starts. If multiple are provided for each sample, the bam file will
-    override fastq or SRA entries, and the fastq will override SRA entries.
+    sample starts. If multiple are provided for the same sample, the bam file
+    will override fastq or SRA entries, and the fastq will override SRA
+    entries. Note that this means it is not currently possible to have multiple
+    starting points for *the same* sample (i.e. FASTQ reads that would be
+    processed then merged into an existing BAM).
 
 ## Configuration file
 

@@ -16,7 +16,7 @@
       
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.14">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.15">
     
     
       
@@ -24,7 +24,7 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.10ba22f1.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.7e359304.min.css">
       
       
   
@@ -635,14 +635,14 @@ connects sample names to their input data files. The workflow will use
 (good for separating datasets in same working directory) and point to it when
 running snakemake with <code>--configfile &lt;path&gt;</code>.</p>
 <h3 id="samplestsv"><code>samples.tsv</code></h3>
-<p>This file contains your sample list, and has four tab separated columns:</p>
-<div class="highlight"><pre><span></span><code>sample  population  time    depth
-hist1   Hjelmseryd  historical  low
-hist2   Hjelmseryd  historical  low
-hist3   Hjelmseryd  historical  low
-mod1    Gotafors    modern  high
-mod2    Gotafors    modern  high
-mod3    Gotafors    modern  high
+<p>This file contains your sample list, and has four <strong>tab separated</strong> columns:</p>
+<div class="highlight"><pre><span></span><code>sample	population	time	depth
+hist1	Hjelmseryd	historical	low
+hist2	Hjelmseryd	historical	low
+hist3	Hjelmseryd	historical	low
+mod1	Gotafors	modern	high
+mod2	Gotafors	modern	high
+mod3	Gotafors	modern	high
 </code></pre></div>
 <ul>
 <li>
@@ -666,16 +666,16 @@ depth categories individually.</p>
 </ul>
 <h3 id="unitstsv"><code>units.tsv</code></h3>
 <p>This file connects your samples to input files and has a potential for eight
-columns:</p>
-<div class="highlight"><pre><span></span><code>sample  unit    lib platform    fq1 fq2 bam sra
-hist1   BHVN22DSX2.2    hist1   ILLUMINA    data/fastq/hist1.r1.fastq.gz    data/fastq/hist1.r2.fastq.gz        
-hist1   BHVN22DSX2.3    hist1   ILLUMINA    data/fastq/hist1.unit2.r1.fastq.gz  data/fastq/hist1.unit2.r2.fastq.gz      
-hist2   BHVN22DSX2.2    hist2   ILLUMINA    data/fastq/hist2.r1.fastq.gz    data/fastq/hist2.r2.fastq.gz        
-hist3   BHVN22DSX2.2    hist2   ILLUMINA    data/fastq/hist3.r1.fastq.gz    data/fastq/hist3.r2.fastq.gz        
-mod1    AHW5NGDSX2.3    mod1    ILLUMINA    data/fastq/mod1.r1.fastq.gz data/fastq/mod1.r2.fastq.gz     
-mod2    AHW5NGDSX2.3    mod2    ILLUMINA            data/bam/mod2.bam   
-mod3    AHW5NGDSX2.3    mod3    ILLUMINA    data/fastq/mod3.r1.fastq.gz data/fastq/mod3.r2.fastq.gz     
-SAMN13218652    SRR10398077 SAMN13218652    ILLUMINA                SRR10398077
+<strong>tab separated</strong> columns:</p>
+<div class="highlight"><pre><span></span><code>sample	unit	lib	platform	fq1	fq2	bam	sra
+hist1	BHVN22DSX2.2	hist1	ILLUMINA	data/fastq/hist1.r1.fastq.gz	data/fastq/hist1.r2.fastq.gz		
+hist1	BHVN22DSX2.3	hist1	ILLUMINA	data/fastq/hist1.unit2.r1.fastq.gz	data/fastq/hist1.unit2.r2.fastq.gz		
+hist2	BHVN22DSX2.2	hist2	ILLUMINA	data/fastq/hist2.r1.fastq.gz	data/fastq/hist2.r2.fastq.gz		
+hist3	BHVN22DSX2.2	hist2	ILLUMINA	data/fastq/hist3.r1.fastq.gz	data/fastq/hist3.r2.fastq.gz		
+mod1	AHW5NGDSX2.3	mod1	ILLUMINA	data/fastq/mod1.r1.fastq.gz	data/fastq/mod1.r2.fastq.gz		
+mod2	AHW5NGDSX2.3	mod2	ILLUMINA			data/bam/mod2.bam	
+mod3	AHW5NGDSX2.3	mod3	ILLUMINA	data/fastq/mod3.r1.fastq.gz	data/fastq/mod3.r2.fastq.gz		
+SAMN13218652	SRR10398077	SAMN13218652	ILLUMINA				SRR10398077
 </code></pre></div>
 <ul>
 <li>
@@ -717,7 +717,7 @@ files that will be downloaded to be processed.</p>
 </li>
 </ul>
 <div class="admonition note">
-<p class="admonition-title">Note</p>
+<p class="admonition-title">Mixing starting points</p>
 <p>It is possible to have different samples start from different inputs (i.e.
 some from bam, others from fastq, others from SRA). It is best to provide
 only <code>fq1</code>+<code>fq2</code>, <code>bam</code>, or <code>sra</code> for each sample to be clear where each

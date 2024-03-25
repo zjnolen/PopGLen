@@ -10,6 +10,7 @@ theme:
     repo: simple/github
     admonition:
       note: octicons/tag-16
+      question: octicons/question-16
   features:
     - search.highlight
 repo_url: https://github.com/zjnolen/angsd-snakemake-pipeline

@@ -717,12 +717,15 @@ files that will be downloaded to be processed.</p>
 </li>
 </ul>
 <div class="admonition note">
-<p class="admonition-title">Mixing starting points</p>
+<p class="admonition-title">Mixing samples with different starting points</p>
 <p>It is possible to have different samples start from different inputs (i.e.
 some from bam, others from fastq, others from SRA). It is best to provide
 only <code>fq1</code>+<code>fq2</code>, <code>bam</code>, or <code>sra</code> for each sample to be clear where each
-sample starts. If multiple are provided for each sample, the bam file will
-override fastq or SRA entries, and the fastq will override SRA entries.</p>
+sample starts. If multiple are provided for the same sample, the bam file
+will override fastq or SRA entries, and the fastq will override SRA
+entries. Note that this means it is not currently possible to have multiple
+starting points for <em>the same</em> sample (i.e. FASTQ reads that would be
+processed then merged into an existing BAM).</p>
 </div>
 <h2 id="configuration-file">Configuration file</h2>
 <p><code>config.yaml</code> contains the configuration for the workflow, this is where you

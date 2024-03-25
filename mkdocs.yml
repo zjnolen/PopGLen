@@ -4,7 +4,6 @@ nav:
   - Getting Started: getting-started.md
   - Configuration: config.md
   - Tutorial: tutorial.md
-  - About: about.md
 theme:
   name: material
   icon:

@@ -610,6 +610,21 @@ def get_anc_ref(wildcards):
     }
 
 
+# Define if minimum individual filtering will happen in ANGSD, and set the
+# command line option
+def get_minind(wildcards):
+    pop = wildcards.population
+    if pop == "all":
+        minind = int(
+            len(get_samples_from_pop(pop)) * config["params"]["angsd"]["minind_dataset"]
+        )
+    else:
+        minind = int(
+            len(get_samples_from_pop(pop)) * config["params"]["angsd"]["minind_pop"]
+        )
+    return f"-minInd {minind}"
+
+
 # Determine if docounts is needed for beagle/maf calculation to keep it from
 # slowing things down when it is not. It is only needed if the major and minor
 # alleles are being inferred from counts (-doMajorMinor 2) or the minor allele

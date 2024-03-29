@@ -35,7 +35,7 @@ analyses:
   mapping:
     historical_only_collapsed: false
     historical_collapsed_aligner: "aln"
-  # filtering
+  # sites file filters
   pileup-mappability: true
   repeatmasker:
     bed:
@@ -133,16 +133,18 @@ params:
     profile_modern: false
   angsd:
     gl_model: 2 # gl_model - 1=SAMtools, 2=GATK, 3=SOAPsnp, 4=SYK
-    maxdepth: 1000
-    missing_data_mindepthind: 1
-    extra: ""
-    extra_saf: ""
-    extra_beagle: ""
+    maxdepth: 1000 # for depth calc only
+    mindepthind: 1
+    minind_dataset: 0.75 # as a proportion of N
+    minind_pop: 0.5 # as a proportion of N
+    extra: "" # goes to all ANGSD runs
+    extra_saf: "" # goes to all -doSaf runs
+    extra_beagle: "" # goes to all -doGlf 2 runs
     domajorminor: 1 # Currently only compatible with values 1, 2, 4, 5
     domaf: 1
     snp_pval: "1e-6"
     min_maf: -1 # Set -1 to disable
-    mindepthind_heterozygosity: 3
+    mindepthind_heterozygosity: 1
   ngsld:
     max_kb_dist_est-ld: 200
     rnd_sample_est-ld: 0.001

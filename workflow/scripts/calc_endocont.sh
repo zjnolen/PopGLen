@@ -8,8 +8,8 @@ if [[ -z "$merged" ]]; then
     map_merged=0
     perc_merged="NA"
 else
-    tot_merged=$(grep -E "^[0-9]+ \+ [0-9]+ in total" $merged | awk '{print $1}')
-    map_merged=$(grep -E "^[0-9]+ \+ [0-9]+ mapped" $merged | awk '{print $1}')
+    tot_merged=$(grep -h -E "^[0-9]+ \+ [0-9]+ in total" $merged | awk '{sum+=$1;} END{print sum;}')
+    map_merged=$(grep -h -E "^[0-9]+ \+ [0-9]+ mapped" $merged | awk '{sum+=$1;} END{print sum;}')
     if [ $tot_merged == 0 ]; then
         perc_merged="No reads collapsed..."
     else

@@ -820,7 +820,7 @@ set and configuration files, storing these results in dataset specific folders.<
   reference genome. This is optional, and is used to polarize allele
   frequencies in SAF files to ancestral/derived. If you leave this empty,
   the reference genome itself will be used as ancestral, and you should be
-  sure the [<code>params</code>] [<code>realSFS</code>] [<code>fold</code>] is set to <code>1</code>. If you put a reference
+  sure the [<code>params</code>] [<code>realSFS</code>] [<code>fold</code>] is set to <code>1</code>. If you put a fasta
   here, you can set that to <code>0</code>.</p>
 </li>
 </ul>
@@ -855,20 +855,20 @@ settings for each analysis are set in the next section.</p>
 <p><code>populations:</code> A list of populations found in your sample list to limit
   population analyses to. Might be useful if you want to perform individual
   analyses on some samples but not include them in any population level
-  analyses</p>
+  analyses. Leave blank (<code>[]</code>) if you want population level analyses on all the
+  populations defined in your <code>samples.tsv</code> file.</p>
 </li>
 <li>
 <p><code>analyses:</code></p>
 </li>
 <li><code>mapping:</code><ul>
 <li><code>historical_only_collapsed:</code> Historical samples are expected to have
-  fragmented DNA. Overlapping (i.e. short) read pairs are collapsed in this
-  workflow, and while both overlapping and non-overlapping read pairs are
-  mapped for modern samples, setting this option to <code>true</code> will only map
-  the collapsed, overlapping read pairs for historical samples. This can
-  help avoid mapping contaminants, as longer fragments are likely from more
-  recent, non-endogenous DNA. However, in the event you want to map both,
-  you can set this to <code>false</code>. (<code>true</code>/<code>false</code>)</li>
+  fragmented DNA. For this reason, overlapping (i.e. shorter, usually
+  &lt;270bp) read pairs are collapsed in this workflow for historical samples.
+  Setting this option to <code>true</code> will only map only these collapsed reads,
+  and is recommended to target primarily endogenous content. However, in
+  the event you want to map both the collapsed and uncollapsed reads, you
+  can set this to <code>false</code>. (<code>true</code>/<code>false</code>)</li>
 <li><code>historical_collapsed_aligner:</code> Aligner used to map collapsed historical
   sample reads. <code>aln</code> is the recommended for this, but this is here in case
   you would like to select <code>mem</code> for this. Uncollapsed historical reads
@@ -876,9 +876,10 @@ settings for each analysis are set in the next section.</p>
   <code>false</code>, regardless of what is put here. (<code>aln</code>/<code>mem</code>)</li>
 </ul>
 </li>
-<li><code>genmap:</code> Filter out sites with low mappability estimated by Genmap
-  (<code>true</code>/<code>false</code>)</li>
-<li><code>repeatmasker:</code> (NOTE: Only one of the three options should be filled/true)<ul>
+<li><code>pileup-mappability:</code> Filter out sites with low 'pileup mappability', which
+    describes how uniquely fragments of a given size can map to the reference
+    (<code>true</code>/<code>false</code>)</li>
+<li><code>repeatmasker:</code> (NOTE: Only one of the four options should be filled/true)<ul>
 <li><code>bed:</code> Supply a path to a bed file that contains regions with repeats.
   This is for those who want to filter out repetitive content, but don't
   need to run Repeatmodeler or masker in the workflow because it has
@@ -900,10 +901,10 @@ settings for each analysis are set in the next section.</p>
     section of the yaml. (<code>true</code>/<code>false</code>)</li>
 <li><code>dataset_missing_data:</code> A floating point value between 0 and 1. Sites with
     data for fewer than this proportion of individuals across the whole dataset
-    will be filtered out.</li>
+    will be filtered out in all analyses using the filtered sites file.</li>
 <li><code>population_missing_data:</code> A floating point value between 0 and 1. Sites
     with data for fewer than this proportion of individuals in any population
-    will be filtered out for all populations.</li>
+    will be filtered out in all populations using the filtered sites file.</li>
 <li><code>qualimap:</code> Perform Qualimap bamqc on bam files for general quality stats
     (<code>true</code>/<code>false</code>)</li>
 <li><code>damageprofiler:</code> Estimate post-mortem DNA damage on historical samples
@@ -1124,6 +1125,23 @@ or a pull request and I'll gladly put it in.</p>
 <li><code>maxdepth:</code> When calculating individual depth, sites with depth higher
   than this will be binned to this value. Should be fine for most to leave
   at <code>1000</code>. (integer, <a href="http://www.popgen.dk/angsd/index.php/Depth">docs</a>)</li>
+<li><code>rmtrans:</code> Removes transitions using ANGSD, effectively removing them
+  from downstream analyses. This is useful for removing DNA damage from
+  analyses, and will automatically set the appropriate ANGSD flags (i.e.
+  using <code>-noTrans 1</code> for SAF files and <code>-rmTrans 1</code> for Beagle files.)</li>
+<li><code>mindepthind:</code> Individuals with sequencing depth below this value at a
+  position will be treated as having no data at that position by ANGSD.
+  ANGSD defaults to 1 for this. Note that this can be separately set for
+  individual heterozygosity estimates with <code>mindepthind_heterozygosity</code>
+  below. (integer, <code>-setMinDepthInd</code> option in ANGSD)</li>
+<li><code>minind_dataset:</code> Used to fill the <code>-minInd</code> option for any dataset wide
+  ANGSD outputs (like Beagles for PCA/Admix). Should be a floating point
+  value between 0 and 1 describing what proportion of the dataset must have
+  data at a site to include it in the output.</li>
+<li><code>minind_pop:</code> Used to fill the <code>-minInd</code> option for any population level
+  ANGSD outputs (like SAFs or Beagles for ngsF-HMM). Should be a floating
+  point value between 0 and 1 describing what proportion of the population
+  must have data at a site to include it in the output.</li>
 <li><code>extra:</code> Additional options to pass to ANGSD during genotype likelihood
   calculation at all times. This is primarily useful for adding BAM input
   filters. Note that <code>--remove_bads</code> and <code>-only_proper_pairs</code> are enabled
@@ -1163,6 +1181,9 @@ or a pull request and I'll gladly put it in.</p>
   PCAngsd, NGSadmix, ngsF-HMM, and NGSrelate. If you would like each tool
   to handle filtering for maf on its own you can set this to <code>-1</code>
   (disabled). (float, <a href="http://www.popgen.dk/angsd/index.php/Allele_Frequencies">docs</a>)</li>
+<li><code>mindepthind_heterozygosity:</code> When estimating individual heterozygosity,
+  sites with sequencing depth lower than this value will be dropped.
+  (integer, <code>-setMinDepthInd</code> option in ANGSD)</li>
 </ul>
 </li>
 <li><code>ngsld:</code> Settings for ngsLD (<a href="https://github.com/fgvieira/ngsLD">docs</a>)<ul>

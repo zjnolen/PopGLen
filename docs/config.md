@@ -159,7 +159,7 @@ Required configuration of the reference.
   reference genome. This is optional, and is used to polarize allele
   frequencies in SAF files to ancestral/derived. If you leave this empty,
   the reference genome itself will be used as ancestral, and you should be
-  sure the [`params`] [`realSFS`] [`fold`] is set to `1`. If you put a reference
+  sure the [`params`] [`realSFS`] [`fold`] is set to `1`. If you put a fasta
   here, you can set that to `0`.
 
 Reference genomes should be uncompressed, and contig names should be clear and
@@ -196,26 +196,27 @@ settings for each analysis are set in the next section.
 - `populations:` A list of populations found in your sample list to limit
   population analyses to. Might be useful if you want to perform individual
   analyses on some samples but not include them in any population level
-  analyses
+  analyses. Leave blank (`[]`) if you want population level analyses on all the
+  populations defined in your `samples.tsv` file.
 
 - `analyses:`
   - `mapping:`
     - `historical_only_collapsed:` Historical samples are expected to have
-      fragmented DNA. Overlapping (i.e. short) read pairs are collapsed in this
-      workflow, and while both overlapping and non-overlapping read pairs are
-      mapped for modern samples, setting this option to `true` will only map
-      the collapsed, overlapping read pairs for historical samples. This can
-      help avoid mapping contaminants, as longer fragments are likely from more
-      recent, non-endogenous DNA. However, in the event you want to map both,
-      you can set this to `false`. (`true`/`false`)
+      fragmented DNA. For this reason, overlapping (i.e. shorter, usually
+      <270bp) read pairs are collapsed in this workflow for historical samples.
+      Setting this option to `true` will only map only these collapsed reads,
+      and is recommended to target primarily endogenous content. However, in
+      the event you want to map both the collapsed and uncollapsed reads, you
+      can set this to `false`. (`true`/`false`)
     - `historical_collapsed_aligner:` Aligner used to map collapsed historical
       sample reads. `aln` is the recommended for this, but this is here in case
       you would like to select `mem` for this. Uncollapsed historical reads
       will be mapped with `mem` if `historical_only_collapsed` is set to
       `false`, regardless of what is put here. (`aln`/`mem`)
-  - `genmap:` Filter out sites with low mappability estimated by Genmap
-  (`true`/`false`)
-  - `repeatmasker:` (NOTE: Only one of the three options should be filled/true)
+  - `pileup-mappability:` Filter out sites with low 'pileup mappability', which
+    describes how uniquely fragments of a given size can map to the reference
+    (`true`/`false`)
+  - `repeatmasker:` (NOTE: Only one of the four options should be filled/true)
     - `bed:` Supply a path to a bed file that contains regions with repeats.
       This is for those who want to filter out repetitive content, but don't
       need to run Repeatmodeler or masker in the workflow because it has
@@ -235,10 +236,10 @@ settings for each analysis are set in the next section.
     section of the yaml. (`true`/`false`)
   - `dataset_missing_data:` A floating point value between 0 and 1. Sites with
     data for fewer than this proportion of individuals across the whole dataset
-    will be filtered out.
+    will be filtered out in all analyses using the filtered sites file.
   - `population_missing_data:` A floating point value between 0 and 1. Sites
     with data for fewer than this proportion of individuals in any population
-    will be filtered out for all populations.
+    will be filtered out in all populations using the filtered sites file.
   - `qualimap:` Perform Qualimap bamqc on bam files for general quality stats
     (`true`/`false`)
   - `damageprofiler:` Estimate post-mortem DNA damage on historical samples
@@ -454,6 +455,19 @@ or a pull request and I'll gladly put it in.
       from downstream analyses. This is useful for removing DNA damage from
       analyses, and will automatically set the appropriate ANGSD flags (i.e.
       using `-noTrans 1` for SAF files and `-rmTrans 1` for Beagle files.)
+    - `mindepthind:` Individuals with sequencing depth below this value at a
+      position will be treated as having no data at that position by ANGSD.
+      ANGSD defaults to 1 for this. Note that this can be separately set for
+      individual heterozygosity estimates with `mindepthind_heterozygosity`
+      below. (integer, `-setMinDepthInd` option in ANGSD)
+    - `minind_dataset:` Used to fill the `-minInd` option for any dataset wide
+      ANGSD outputs (like Beagles for PCA/Admix). Should be a floating point
+      value between 0 and 1 describing what proportion of the dataset must have
+      data at a site to include it in the output.
+    - `minind_pop:` Used to fill the `-minInd` option for any population level
+      ANGSD outputs (like SAFs or Beagles for ngsF-HMM). Should be a floating
+      point value between 0 and 1 describing what proportion of the population
+      must have data at a site to include it in the output.
     - `extra:` Additional options to pass to ANGSD during genotype likelihood
       calculation at all times. This is primarily useful for adding BAM input
       filters. Note that `--remove_bads` and `-only_proper_pairs` are enabled
@@ -493,6 +507,9 @@ or a pull request and I'll gladly put it in.
       PCAngsd, NGSadmix, ngsF-HMM, and NGSrelate. If you would like each tool
       to handle filtering for maf on its own you can set this to `-1`
       (disabled). (float, [docs](http://www.popgen.dk/angsd/index.php/Allele_Frequencies))
+    - `mindepthind_heterozygosity:` When estimating individual heterozygosity,
+      sites with sequencing depth lower than this value will be dropped.
+      (integer, `-setMinDepthInd` option in ANGSD)
   - `ngsld:` Settings for ngsLD ([docs](https://github.com/fgvieira/ngsLD))
     - `max_kb_dist_est-ld:` For the LD estimates generated when setting
       `estimate_ld: true` above, set the maximum distance between sites in kb

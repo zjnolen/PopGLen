@@ -661,6 +661,13 @@ def get_docounts(wildcard):
     return ""
 
 
+# Determine whether transitions should be removed based on user configuration
+def get_trans(wildcards):
+    if config["params"]["angsd"]["rmtrans"]:
+        return 1
+    return 0
+
+
 # ngsLD
 
 

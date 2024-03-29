@@ -38,6 +38,7 @@ rule angsd_doGlf2:
         minmaf=config["params"]["angsd"]["min_maf"],
         majmin=config["params"]["angsd"]["domajorminor"],
         counts=get_docounts,
+        trans=get_trans,
         nind=lambda w: len(get_samples_from_pop(w.population)),
         minind=get_minind,
         mininddp=config["params"]["angsd"]["mindepthind"],
@@ -52,7 +53,8 @@ rule angsd_doGlf2:
             -SNP_pval {params.snp_pval} -nThreads {threads} {params.extra} \
             -minMapQ {params.mapQ} -minQ {params.baseQ} -sites {input.sites} \
             -anc {input.anc} {params.extra_beagle} -rf {input.regions} {params.minind} \
-            -setMinDepthInd {params.mininddp} {params.counts} -out {params.out} &> {log}
+            -setMinDepthInd {params.mininddp} {params.counts} -rmTrans {params.trans} \
+            -out {params.out} &> {log}
         """
 
 

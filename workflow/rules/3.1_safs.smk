@@ -44,6 +44,7 @@ rule angsd_doSaf_pop:
         extra_saf=config["params"]["angsd"]["extra_saf"],
         mapQ=config["mapQ"],
         baseQ=config["baseQ"],
+        trans=get_trans,
         minind=get_minind,
         mininddp=config["params"]["angsd"]["mindepthind"],
         out=lambda w, output: os.path.splitext(output.arg)[0],
@@ -55,8 +56,8 @@ rule angsd_doSaf_pop:
         angsd -doSaf 1 -bam {input.bam} -GL {params.gl_model} -ref {input.ref} \
             -nThreads {threads} {params.extra} {params.minind} -minMapQ {params.mapQ} \
             -minQ {params.baseQ} -sites {input.sites} -anc {input.anc} \
-            -setMinDepthInd {params.mininddp} {params.extra_saf} -rf {input.regions} \
-            -out {params.out} &> {log}
+            -noTrans {params.trans} {params.extra_saf} -rf {input.regions} \
+            -setMinDepthInd {params.mininddp} -out {params.out} &> {log}
         """
 
 
@@ -140,6 +141,7 @@ rule angsd_doSaf_sample:
         mindepthind=config["params"]["angsd"]["mindepthind_heterozygosity"],
         mapQ=config["mapQ"],
         baseQ=config["baseQ"],
+        trans=get_trans,
         out=lambda w, output: os.path.splitext(output.arg)[0],
     resources:
         runtime="120m",
@@ -149,5 +151,5 @@ rule angsd_doSaf_sample:
             -nThreads {threads} {params.extra} -minMapQ {params.mapQ} \
             -minQ {params.baseQ} -sites {input.sites} -anc {input.anc} \
             -setMinDepthInd {params.mindepthind} {params.extra_saf} \
-            -out {params.out}) &> {log}
+            -noTrans {params.trans} -out {params.out}) &> {log}
         """

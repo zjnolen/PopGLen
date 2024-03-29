@@ -451,6 +451,10 @@ or a pull request and I'll gladly put it in.
     - `maxdepth:` When calculating individual depth, sites with depth higher
       than this will be binned to this value. Should be fine for most to leave
       at `1000`. (integer, [docs](http://www.popgen.dk/angsd/index.php/Depth))
+    - `rmtrans:` Removes transitions using ANGSD, effectively removing them
+      from downstream analyses. This is useful for removing DNA damage from
+      analyses, and will automatically set the appropriate ANGSD flags (i.e.
+      using `-noTrans 1` for SAF files and `-rmTrans 1` for Beagle files.)
     - `mindepthind:` Individuals with sequencing depth below this value at a
       position will be treated as having no data at that position by ANGSD.
       ANGSD defaults to 1 for this. Note that this can be separately set for

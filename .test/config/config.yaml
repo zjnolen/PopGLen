@@ -137,6 +137,7 @@ params:
     mindepthind: 1
     minind_dataset: 0.75 # as a proportion of N
     minind_pop: 0.5 # as a proportion of N
+    rmtrans: true
     extra: "" # goes to all ANGSD runs
     extra_saf: "" # goes to all -doSaf runs
     extra_beagle: "" # goes to all -doGlf 2 runs

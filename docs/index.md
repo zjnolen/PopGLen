@@ -17,7 +17,7 @@ is generalizable and customizable through a single configuration file and uses
 a common workflow utilized by ANGSD users, so it is available for others to
 use, should it suit their needs.
 
-!!! question "Questions? Feature requests? Just ask!"
+??? question "Questions? Feature requests? Just ask!"
     I'm glad to answer questions on the [GitHub Issues](https://github.com/zjnolen/angsd-snakemake-pipeline/issues)
     page for the project, as well as take suggestions for features or
     improvements!

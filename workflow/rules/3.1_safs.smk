@@ -44,6 +44,8 @@ rule angsd_doSaf_pop:
         extra_saf=config["params"]["angsd"]["extra_saf"],
         mapQ=config["mapQ"],
         baseQ=config["baseQ"],
+        minind=get_minind,
+        mininddp=config["params"]["angsd"]["mindepthind"],
         out=lambda w, output: os.path.splitext(output.arg)[0],
     resources:
         runtime=lambda wildcards, attempt: attempt * 180,
@@ -51,9 +53,10 @@ rule angsd_doSaf_pop:
     shell:
         """
         angsd -doSaf 1 -bam {input.bam} -GL {params.gl_model} -ref {input.ref} \
-            -nThreads {threads} {params.extra} -minMapQ {params.mapQ} \
+            -nThreads {threads} {params.extra} {params.minind} -minMapQ {params.mapQ} \
             -minQ {params.baseQ} -sites {input.sites} -anc {input.anc} \
-            {params.extra_saf} -rf {input.regions} -out {params.out} &> {log}
+            -setMinDepthInd {params.mininddp} {params.extra_saf} -rf {input.regions} \
+            -out {params.out} &> {log}
         """
 
 

@@ -571,7 +571,7 @@ rule angsd_missdata:
         angsd_container
     params:
         nind=lambda w: len(get_samples_from_pop(w.population)),
-        mindpind=config["params"]["angsd"]["missing_data_mindepthind"],
+        mindpind=config["params"]["angsd"]["mindepthind"],
         extra=config["params"]["angsd"]["extra"],
         mapQ=config["mapQ"],
         baseQ=config["baseQ"],

@@ -39,6 +39,8 @@ rule angsd_doGlf2:
         majmin=config["params"]["angsd"]["domajorminor"],
         counts=get_docounts,
         nind=lambda w: len(get_samples_from_pop(w.population)),
+        minind=get_minind,
+        mininddp=config["params"]["angsd"]["mindepthind"],
         out=lambda w, output: os.path.splitext(output.arg)[0],
     threads: lambda wildcards, attempt: attempt
     resources:
@@ -49,8 +51,8 @@ rule angsd_doGlf2:
             -doMajorMinor {params.majmin} -doMaf {params.maf} -minMaf {params.minmaf} \
             -SNP_pval {params.snp_pval} -nThreads {threads} {params.extra} \
             -minMapQ {params.mapQ} -minQ {params.baseQ} -sites {input.sites} \
-            -anc {input.anc} {params.extra_beagle} -rf {input.regions} \
-            {params.counts} -out {params.out} &> {log}
+            -anc {input.anc} {params.extra_beagle} -rf {input.regions} {params.minind} \
+            -setMinDepthInd {params.mininddp} {params.counts} -out {params.out} &> {log}
         """
 
 

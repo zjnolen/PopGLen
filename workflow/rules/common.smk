@@ -468,11 +468,20 @@ def get_endo_cont_stat(wildcards):
             "merged": "results/mapping/user-provided-bams/{sample}.{ref}.user-processed.flagstat",
         }
     if s in samples.index[samples.time == "historical"]:
+        libs = list(set(units.loc[units["sample"] == wildcards.sample]["lib"]))
         if config["analyses"]["mapping"]["historical_only_collapsed"]:
-            return {"merged": "results/mapping/mapped/{sample}.{ref}.merged.flagstat"}
+            return {
+                "merged": expand(
+                    "results/mapping/mapped/{{sample}}_{lib}.{{ref}}.merged.flagstat",
+                    lib=libs,
+                )
+            }
         return {
             "paired": "results/mapping/mapped/{sample}.{ref}.paired.flagstat",
-            "merged": "results/mapping/mapped/{sample}.{ref}.merged.flagstat",
+            "merged": expand(
+                "results/mapping/mapped/{{sample}}_{lib}.{{ref}}.merged.flagstat",
+                lib=libs,
+            ),
         }
     return {"paired": "results/mapping/mapped/{sample}.{ref}.paired.flagstat"}
 

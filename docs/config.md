@@ -450,6 +450,10 @@ or a pull request and I'll gladly put it in.
     - `maxdepth:` When calculating individual depth, sites with depth higher
       than this will be binned to this value. Should be fine for most to leave
       at `1000`. (integer, [docs](http://www.popgen.dk/angsd/index.php/Depth))
+    - `rmtrans:` Removes transitions using ANGSD, effectively removing them
+      from downstream analyses. This is useful for removing DNA damage from
+      analyses, and will automatically set the appropriate ANGSD flags (i.e.
+      using `-noTrans 1` for SAF files and `-rmTrans 1` for Beagle files.)
     - `extra:` Additional options to pass to ANGSD during genotype likelihood
       calculation at all times. This is primarily useful for adding BAM input
       filters. Note that `--remove_bads` and `-only_proper_pairs` are enabled

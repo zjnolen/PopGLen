@@ -11,7 +11,7 @@ source(
   "https://raw.githubusercontent.com/rwaples/freqfree_suppl/a71b7a17fffa9ff50311540f0ec24db3b94e17a7/read_IBS.R"
 )
 
-inds <- read.table(snakemake@input[["inds"]], header = TRUE)
+inds <- read.table(snakemake@input[["inds"]], header = TRUE, sep = "\t")
 
 df <- c()
 

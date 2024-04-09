@@ -74,7 +74,8 @@ analyses:
 
 subsample_dp:
 
-subsample_redo_filts:
+subsample_by: "sitefilt" # three options: unfilt, mapqbaseq, sitefilt; sitefilt recommended (subsamples bams to `subsample_dp` within filtered regions)
+redo_depth_filts: false # has no effect when `subsample_by` == "sitefilt"
 
 subsample_analyses:
   estimate_ld: false

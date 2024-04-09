@@ -23,18 +23,18 @@ mod3	Gotafors	modern	high
 ```
 
 - `sample` contains the ID of a sample. It is best if it only contains
-alphanumeric characters.
+  alphanumeric characters.
 
 - `population` contains the population the sample comes from and will be used
-to group samples for population-level analyses.
+  to group samples for population-level analyses.
 
 - `time` sets whether a sample should be treated as fresh DNA or historical DNA
-in the sequence processing workflow. Doesn't change anything if you're starting
-with bam files.
+  in the sequence processing workflow. Doesn't change anything if you're
+  starting with bam files.
 
 - `depth` puts the sample in a sequencing depth category. Used for filtering -
-if enabled in the configuration, extreme depth filters will be performed for
-depth categories individually.
+  if enabled in the configuration, extreme depth filters will be performed for
+  depth categories individually.
 
 ### `units.tsv`
 
@@ -43,45 +43,39 @@ This file connects your samples to input files and has a potential for eight
 
 ```
 sample	unit	lib	platform	fq1	fq2	bam	sra
-hist1	BHVN22DSX2.2	hist1	ILLUMINA	data/fastq/hist1.r1.fastq.gz	data/fastq/hist1.r2.fastq.gz		
-hist1	BHVN22DSX2.3	hist1	ILLUMINA	data/fastq/hist1.unit2.r1.fastq.gz	data/fastq/hist1.unit2.r2.fastq.gz		
-hist2	BHVN22DSX2.2	hist2	ILLUMINA	data/fastq/hist2.r1.fastq.gz	data/fastq/hist2.r2.fastq.gz		
-hist3	BHVN22DSX2.2	hist2	ILLUMINA	data/fastq/hist3.r1.fastq.gz	data/fastq/hist3.r2.fastq.gz		
-mod1	AHW5NGDSX2.3	mod1	ILLUMINA	data/fastq/mod1.r1.fastq.gz	data/fastq/mod1.r2.fastq.gz		
-mod2	AHW5NGDSX2.3	mod2	ILLUMINA			data/bam/mod2.bam	
-mod3	AHW5NGDSX2.3	mod3	ILLUMINA	data/fastq/mod3.r1.fastq.gz	data/fastq/mod3.r2.fastq.gz		
+hist1	BHVN22DSX2.2	hist1	ILLUMINA	data/fastq/hist1.r1.fastq.gz	data/fastq/hist1.r2.fastq.gz	
+hist1	BHVN22DSX2.3	hist1	ILLUMINA	data/fastq/hist1.unit2.r1.fastq.gz	data/fastq/hist1.unit2.r2.fastq.gz	
+hist2	BHVN22DSX2.2	hist2	ILLUMINA	data/fastq/hist2.r1.fastq.gz	data/fastq/hist2.r2.fastq.gz	
+hist3	BHVN22DSX2.2	hist2	ILLUMINA	data/fastq/hist3.r1.fastq.gz	data/fastq/hist3.r2.fastq.gz	
+mod1	AHW5NGDSX2.3	mod1	ILLUMINA	data/fastq/mod1.r1.fastq.gz	data/fastq/mod1.r2.fastq.gz	
+mod2	AHW5NGDSX2.3	mod2	ILLUMINA			data/bam/mod2.bam
+mod3	AHW5NGDSX2.3	mod3	ILLUMINA	data/fastq/mod3.r1.fastq.gz	data/fastq/mod3.r2.fastq.gz	
 SAMN13218652	SRR10398077	SAMN13218652	ILLUMINA				SRR10398077
 ```
 
 - `sample` contains the ID of a sample. Must be same as in `samples.tsv` and
-may be listed multiple times when inputting multiple sequencing runs/libraries.
-
+  may be listed multiple times when inputting multiple sequencing runs/libraries.
 - `unit` contains the sequencing unit, i.e. the sequencing lane barcode and
-lane number. This is used in the PU and (part of) the ID read groups. If you
-don't have multiple sequencing lanes per samples, this won't impact anything.
-Doesn't do anything when using bam input.
-
+  lane number. This is used in the PU and (part of) the ID read groups. If you
+  don't have multiple sequencing lanes per samples, this won't impact anything.
+  Doesn't do anything when using bam input.
 - `lib` contains the name of the library identifier for the entry. Fills in
-the LB and (part of) the ID read groups and is used for PCR duplicate removal.
-Best practice would be to have the combination of `unit` and `lib` to be unique
-per line. An easy way to use this is to use the Illumina library identifier or
-another unique library identifier, or simply combine a generic name with the
-sample name (sample1A, sample1B, etc.). Doesn't do anything when using bam
-input.
-
+  the LB and (part of) the ID read groups and is used for PCR duplicate removal.
+  Best practice would be to have the combination of `unit` and `lib` to be unique
+  per line. An easy way to use this is to use the Illumina library identifier or
+  another unique library identifier, or simply combine a generic name with the
+  sample name (sample1A, sample1B, etc.). Doesn't do anything when using bam
+  input.
 - `platform` is used to fill the PL read group. Commonly is just 'ILLUMINA'.
-Doesn't do anything when using bam input.
-
+  Doesn't do anything when using bam input.
 - `fq1` and `fq2` provides the absolute or relative to the working directory
-paths to the raw sequencing files corresponding to the metadata in the previous
-columns.
-
+  paths to the raw sequencing files corresponding to the metadata in the previous
+  columns.
 - `bam` provides the absolute or relative to the working directory path of
-pre-processed bam files. Only one bam files should be provided per sample in
-the units file.
-
+  pre-processed bam files. Only one bam files should be provided per sample in
+  the units file.
 - `sra` provides the NCBI SRA accession number for a set of paired end fastq
-files that will be downloaded to be processed.
+  files that will be downloaded to be processed.
 
 !!! note "Mixing samples with different starting points"
     It is possible to have different samples start from different inputs (i.e.
@@ -324,24 +318,41 @@ settings for each analysis are set in the next section.
   - `ibs_matrix:` Estimate pairwise identity by state distance between all
     samples using ANGSD. (`true`/`false`)
 
-#### Downsampling Section
+#### Subsampling Section
 
 As this workflow is aimed at low coverage samples, its likely there might be
 considerable variance in sample depth. For this reason, it may be good to
 subsample all your samples to a similar depth to examine if variation in depth
 is influencing results. To do this, set an integer value here to subsample all
-your samples down to and run specific analyses.
+your samples down to and run specific analyses. This subsampling can be done
+in reference to the unfiltered sequencing depth, the mapping and base quality
+filtered sequencing depth, or the filtered sites sequencing depth. The latter
+is recommended, as this will ensure that sequencing depth is made uniform at
+the analysis stage, as it is these filtered sites that analyses are performed
+for.
 
 - `subsample_dp:` A mean depth to subsample your reads to. This will be done
   per sample, and subsample from all the reads. If a sample already has the
   same, or lower, depth than this number, it will just be used as is in the
   analysis. (INT)
-
-- `subsample_redo_filts:` Make a separate filtered sites file using the
-  subsampled bams to calculate depth based filters. If left disabled, the
-  depth filters will be determined from the full coverage files.
-  (`true`/`false`)
-
+- `subsample_by:` This determines how the 'full' sequencing depth of a sample
+  is calculated to determine the amount of subsampling needed to reach the
+  target depth. This should be one of three options: (1) `"unfilt"` will treat
+  the sequencing depth of all (unfiltered) reads and sites as the 'full' depth;
+  (2) `"mapqbaseq"` will filter out reads that don't pass the configured
+  mapping or base quality, then calculate depth across all sites as the 'full'
+  depth, (3) `"sitefilt"` will filter reads justa as `"mapqbaseq"` does, but
+  will only calculate the 'full' depth from sites passing the sites filter. As
+  the main goal of subsampling is to make depth uniform for analyses, this
+  latter option is preferred, as it will most accurately bring the depth of the
+  samples to the target depth for analyses.
+  (`"unfilt"`/`"mapqbaseq"`/`"sitefilt"`)
+- `redo_depth_filts`: If `subsample_by` is set to `"unfilt"` or `"mapqbaseq"`,
+  then it would be possible to recaculate extreme depth filters for the
+  subsampled dataset. Enable this to do so, otherwise, the depth filters from
+  the full depth bams will be used. If `subsample_by` is set to `"sitefilt"`
+  this will have no effect, as the subsampling is already in reference to a set
+  site list. (`true`/`false`)
 - `subsample_analyses:` Individually enable analyses to be performed with the
   subsampled data. These are the same as the ones above in the analyses
   section. Enabling here will only run the analysis for the subsampled data,
@@ -599,4 +610,4 @@ or a pull request and I'll gladly put it in.
       increasing `-maxiter`). (string, [docs](http://www.popgen.dk/software/index.php/NgsAdmix))
   - `ibs:` Settings for identity by state calculation with ANGSD
     - `-doIBS:` Whether to use a random (1) or consensus (2) base in IBS
-        distance calculation ([docs](http://www.popgen.dk/angsd/index.php/PCA_MDS))
+      distance calculation ([docs](http://www.popgen.dk/angsd/index.php/PCA_MDS))

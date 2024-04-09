@@ -362,11 +362,7 @@ rule samtools_subsample:
     input:
         bam="results/datasets/{dataset}/bams/{sample}.{ref}.bam",
         bai="results/datasets/{dataset}/bams/{sample}.{ref}.bam.bai",
-        depth=expand(
-            "results/mapping/qc/ind_depth/mapq-baseq-filtered/{{dataset}}.{{ref}}_{{sample}}_allsites-mapq{mapq}-baseq{baseq}-filt.depth.sum",
-            mapq=config["mapQ"],
-            baseq=config["baseQ"],
-        ),
+        depth=depth_file,
     output:
         bam="results/datasets/{dataset}/bams/{sample}.{ref}{dp}.bam",
         bai="results/datasets/{dataset}/bams/{sample}.{ref}{dp}.bam.bai",

@@ -69,7 +69,7 @@ if config["subsample_dp"]:
     )
 
 
-if config["subsample_redo_filts"]:
+if (config["subsample_by"] != "sitefilt") and config["redo_depth_filts"]:
     all_outputs.extend(
         expand(
             "results/datasets/{{dataset}}/filters/combined/{{dataset}}.{{ref}}{dp}_{{sites}}-filts.html",

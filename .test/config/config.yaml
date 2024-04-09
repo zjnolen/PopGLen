@@ -48,7 +48,7 @@ analyses:
   # quality control
   qualimap: true
   damageprofiler: true
-  mapdamage_rescale: true
+  mapdamage_rescale: false
   # population genomic analyses
   estimate_ld: true
   ld_decay: true
@@ -74,7 +74,8 @@ analyses:
 
 subsample_dp: 2
 
-subsample_redo_filts: true
+subsample_by: "sitefilt" # three options: unfilt, mapqbaseq, sitefilt; sitefilt recommended (subsamples bams to `subsample_dp` within filtered regions)
+redo_depth_filts: false # has no effect when `subsample_by` == "sitefilt"
 
 subsample_analyses:
   estimate_ld: true

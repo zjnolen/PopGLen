@@ -493,7 +493,7 @@ def get_total_bed(wildcards):
         wildcards.prefix
         == f"results/datasets/{wildcards.dataset}/qc/ind_depth/filtered/"
     ):
-        if config["subsample_redo_filts"]:
+        if (config["subsample_by"] != "sitefilt") and config["redo_depth_filts"]:
             return "results/datasets/{dataset}/filters/combined/{dataset}.{ref}{dp}_{group}.bed"
         return "results/datasets/{dataset}/filters/combined/{dataset}.{ref}_{group}.bed"
     return "results/ref/{ref}/beds/genome.bed"
@@ -609,7 +609,7 @@ def get_bamlist_bais(wildcards):
 
 # Select filter file based off of full depth samples or subsampled depth
 def filt_depth(wildcards):
-    if config["subsample_redo_filts"]:
+    if (config["subsample_by"] != "sitefilt") and config["redo_depth_filts"]:
         return {
             "sites": "results/datasets/{dataset}/filters/combined/{dataset}.{ref}{dp}_{sites}-filts.sites",
             "idx": "results/datasets/{dataset}/filters/combined/{dataset}.{ref}{dp}_{sites}-filts.sites.idx",
@@ -618,6 +618,22 @@ def filt_depth(wildcards):
         "sites": "results/datasets/{dataset}/filters/combined/{dataset}.{ref}_{sites}-filts.sites",
         "idx": "results/datasets/{dataset}/filters/combined/{dataset}.{ref}_{sites}-filts.sites.idx",
     }
+
+
+# Select mean depth to use for subsampling based on user preference. Sitefilt
+# is recommended when trying to make sequencing depth uniform across samples in
+# downstream analyses.
+def depth_file(wildcards):
+    if config["subsample_by"] == "unfilt":
+        return "results/mapping/qc/ind_depth/unfiltered/{dataset}.{ref}_{sample}_allsites-unfilt.depth.sum"
+    if config["subsample_by"] == "mapqbaseq":
+        return expand(
+            "results/mapping/qc/ind_depth/mapq-baseq-filtered/{{dataset}}.{{ref}}_{{sample}}_allsites-mapq{mapq}-baseq{baseq}-filt.depth.sum",
+            mapq=config["mapQ"],
+            baseq=config["baseQ"],
+        )
+    if config["subsample_by"] == "sitefilt":
+        return "results/datasets/{dataset}/qc/ind_depth/filtered/{dataset}.{ref}_{sample}_allsites-filts.depth.sum"
 
 
 # Choose to use an ancestral reference if present, otherwise use main reference
@@ -645,7 +661,8 @@ def get_minind(wildcards):
         minind = int(
             len(get_samples_from_pop(pop)) * config["params"]["angsd"]["minind_pop"]
         )
-    return f"-minInd {minind}"
+    minindopt = f"-minInd {minind}"
+    return minindopt
 
 
 # Determine if docounts is needed for beagle/maf calculation to keep it from

@@ -48,7 +48,7 @@ wildcard_constraints:
         + [i for i in samples.population.values.tolist()]
         + [i for i in samples.depth.values.tolist()]
     ),
-    dp=(subsample[0] + "|.{0}" if len(subsample) == 2 else ".{0}"),
+    dp=".{0}|.dp[1-9][0-9]*",
     chunk="[0-9]+",
     sites="|".join(filters),
 

@@ -370,8 +370,6 @@ rule samtools_subsample:
         "logs/mapping/samtools/subsample/{dataset}_{sample}.{ref}{dp}.log",
     benchmark:
         "benchmarks/mapping/samtools/subsample/{dataset}_{sample}.{ref}{dp}.log"
-    wildcard_constraints:
-        dp=f".dp{config['subsample_dp']}",
     conda:
         "../envs/samtools.yaml"
     shadow:

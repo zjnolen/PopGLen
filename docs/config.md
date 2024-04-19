@@ -177,7 +177,10 @@ to exclude them where necessary.
   be a list in [].
 - `excl_pca-admix:` Sample name(s) that will be excluded *only* from PCA and
   Admixture analyses. Useful for close relatives that violate the assumptions
-  of these analyses, but that you want in others. Should be a list in [].
+  of these analyses, but that you want in others. Should be a list in []. If you
+  want relatives out of all downstream analyses, not just PCA/Admix, put them in
+  `exclude_ind` instead. Note this will trigger a re-run for relatedness
+  analyses, but you can just disable them now as they've already been run.
 
 #### Analysis Selection
 
@@ -249,8 +252,9 @@ settings for each analysis are set in the next section.
     setting here. (`true`/`false`)
   - `ld_decay:` Use ngsLD to plot LD decay curves for each population and for
     the dataset as a whole (`true`/`false`)
-  - `pca_pcangsd:` Perform Principal Component Analysis with PCAngsd
-    (`true`/`false`)
+  - `pca_pcangsd:` Perform Principal Component Analysis with PCAngsd. Currently
+    requires at least 4 samples to finish, as it will by default try to plot
+    PCs1-4. (`true`/`false`)
   - `admix_ngsadmix:` Perform admixture analysis with NGSadmix (`true`/`false`)
   - `relatedness:` Can be performed multiple ways, set any combination of the
     three options below. Note, that I've mostly incorporated these with the
@@ -353,6 +357,11 @@ for.
   the full depth bams will be used. If `subsample_by` is set to `"sitefilt"`
   this will have no effect, as the subsampling is already in reference to a set
   site list. (`true`/`false`)
+- `drop_samples`: When performing depth subsampling, you may want to leave some
+  samples out that you kept in your 'full' dataset. These can be listed here and
+  they will be removed from ALL depth subsampled analyses. A use case for this
+  might be if you have a couple samples that are below your targeted subsample
+  depth, and you don't want to include them. (list of strings: `[]`)
 - `subsample_analyses:` Individually enable analyses to be performed with the
   subsampled data. These are the same as the ones above in the analyses
   section. Enabling here will only run the analysis for the subsampled data,

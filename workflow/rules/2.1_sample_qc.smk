@@ -112,14 +112,16 @@ rule compile_endo_cont:
     input:
         lambda w: expand(
             "results/datasets/{{dataset}}/qc/endogenous_content/{{dataset}}.{sample}.{{ref}}.endo",
-            sample=get_samples_from_pop("all"),
+            sample=get_popfile_inds(w),
         ),
     output:
-        "results/datasets/{dataset}/qc/endogenous_content/{dataset}.{ref}_all.endo.tsv",
+        "results/datasets/{dataset}/qc/endogenous_content/{dataset}.{ref}_{population}{dp}.endo.tsv",
+    wildcard_constraints:
+        population="all",
     log:
-        "logs/datasets/{dataset}/qc/endogenous_content/{dataset}.{ref}_compile-endocont.log",
+        "logs/datasets/{dataset}/qc/endogenous_content/{dataset}.{ref}_{population}{dp}_compile-endocont.log",
     benchmark:
-        "benchmarks/datasets/{dataset}/qc/endogenous_content/{dataset}.{ref}_compile-endocont.log"
+        "benchmarks/datasets/{dataset}/qc/endogenous_content/{dataset}.{ref}_{population}{dp}_compile-endocont.log"
     conda:
         "../envs/shell.yaml"
     resources:
@@ -271,19 +273,21 @@ rule merge_ind_depth:
     input:
         depth=lambda w: expand(
             "{{prefix}}{{dataset}}.{{ref}}_{sample}{{dp}}_{{group}}.depthSample",
-            sample=get_samples_from_pop("all"),
+            sample=get_popfile_inds(w),
         ),
         summary=lambda w: expand(
             "{{prefix}}{{dataset}}.{{ref}}_{sample}{{dp}}_{{group}}.depth.sum",
-            sample=get_samples_from_pop("all"),
+            sample=get_popfile_inds(w),
         ),
     output:
-        dep="{prefix}{dataset}.{ref}_all{dp}_{group}.depth",
-        sum="{prefix}{dataset}.{ref}_all{dp}_{group}.depth.sum",
+        dep="{prefix}{dataset}.{ref}_{population}{dp}_{group}.depth",
+        sum="{prefix}{dataset}.{ref}_{population}{dp}_{group}.depth.sum",
+    wildcard_constraints:
+        population="all",
     log:
-        "logs/merge_depth/{prefix}{dataset}.{ref}_all{dp}_{group}.log",
+        "logs/merge_depth/{prefix}{dataset}.{ref}_{population}{dp}_{group}.log",
     benchmark:
-        "benchmarks/merge_depth/{prefix}{dataset}.{ref}_all{dp}_{group}.log"
+        "benchmarks/merge_depth/{prefix}{dataset}.{ref}_{population}{dp}_{group}.log"
     conda:
         "../envs/shell.yaml"
     shell:

@@ -31,14 +31,14 @@ rule popfile:
     are not propagated into downstream files.
     """
     output:
-        inds="results/datasets/{dataset}/poplists/{dataset}_{population}.indiv.list",
+        inds="results/datasets/{dataset}/poplists/{dataset}_{population}{dp}.indiv.list",
     log:
-        "logs/{dataset}/poplists/{dataset}_{population}_makelist.log",
+        "logs/{dataset}/poplists/{dataset}_{population}{dp}_makelist.log",
     conda:
         "../envs/python.yaml"
     params:
         samplelist=samples,
-        inds=lambda w: get_samples_from_pop(w.population),
+        inds=get_popfile_inds,
     script:
         "../scripts/make_popfile.py"
 

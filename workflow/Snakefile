@@ -48,6 +48,14 @@ wildcard_constraints:
         + [i for i in samples.population.values.tolist()]
         + [i for i in samples.depth.values.tolist()]
     ),
+    population1="|".join(
+        [i for i in samples.index.tolist()]
+        + [i for i in samples.population.values.tolist()]
+    ),
+    population2="|".join(
+        [i for i in samples.index.tolist()]
+        + [i for i in samples.population.values.tolist()]
+    ),
     dp=".{0}|.dp[1-9][0-9]*",
     chunk="[0-9]+",
     sites="|".join(filters),
@@ -351,7 +359,9 @@ if config["subsample_analyses"]["relatedness"]["ibsrelate_ibs"]:
     )
 
 if config["subsample_analyses"]["pca_pcangsd"]:
-    if config["excl_pca-admix"]:
+    exclinds = config["excl_pca-admix"]
+    exclinds = [s for s in exclinds if s not in config["drop_samples"]]
+    if exclinds:
         all_outputs.extend(
             expand(
                 [
@@ -436,7 +446,9 @@ if config["subsample_analyses"]["inbreeding_ngsf-hmm"]:
     )
 
 if config["subsample_analyses"]["admix_ngsadmix"]:
-    if config["excl_pca-admix"]:
+    exclinds = config["excl_pca-admix"]
+    exclinds = [s for s in exclinds if s not in config["drop_samples"]]
+    if exclinds:
         all_outputs.extend(
             expand(
                 [

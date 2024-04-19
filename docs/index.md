@@ -36,34 +36,28 @@ user-provided filter lists (e.g. to limit to neutral sites, genic regions,
 etc.).
 
 After samples have been processed, quality control reports produced, and the
-sites file has been produced, the pipeline can continue to the analyses. These
-are largely divided up into two categories - SNP based and allele frequency
-based.
-
-### SNP based
+sites file has been produced, the pipeline can continue to the analyses.
 
 - Linkage disequilibrium estimation, LD decay, LD pruning (ngsLD)
 - PCA (PCAngsd)
 - Admixture (NGSAdmix)
 - Inbreeding/Runs of Homozygosity (ngsF-HMM)
-- Relatedness (NGSRelate)
+- Relatedness (NGSRelate, IBSrelate)
 - Identity by state matrix (ANGSD)
-
-### Allele frequency based
-
-- Relatedness (IBSrelate)
 - Site frequency spectrum (ANGSD)
-- Watterson's , Nucleotide diversity (), Tajima's D (ANGSD)
-- Individual heterozygosity (ANGSD)
+- Watterson's estimator ($θ_w$), Nucleotide diversity ($π$), Tajima's $D$
+  (ANGSD)
+- Individual heterozygosity with bootstrapped confidence intervals (ANGSD)
 - Pairwise $F_{ST}$ (ANGSD)
 
 These all can be enabled and processed independently, and the pipeline will
-share input files across them, deleting temporary intermediate files when they
-are no longer needed.
+generate genotype likelihood input files using ANGSD and share them across
+analyses as appropriate, deleting temporary intermediate files when they are no
+longer needed.
 
 At any point after a successful completion of a portion of the pipeline, a
 report can be made that contains tables and figures summarizing the results
 for the currently enabled parts of the pipeline.
 
-If you're interested in using this, head to the [Getting Started](getting-started.md)
-page!
+If you're interested in using this, head to the
+[Getting Started](getting-started.md) page!

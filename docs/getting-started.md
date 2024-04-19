@@ -2,6 +2,10 @@
 
 ## Tutorial
 
+!!! note
+    A tutorial is in progress, but not yet available. The pipeline can still be
+    used by following the rest of the guide.
+
 A tutorial is available with a small(ish) dataset where biologically meaningful
 results can be produced. This can help get an understanding of a good workflow
 to use different modules. You can also follow along with your own data and just

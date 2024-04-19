@@ -502,8 +502,8 @@ def get_total_bed(wildcards):
 ## Gather sample QC output files for concatenation
 def get_sample_qcs(wildcards):
     dic = {
-        "inds": "results/datasets/{dataset}/poplists/{dataset}_all.indiv.list",
-        "endo": "results/datasets/{dataset}/qc/endogenous_content/{dataset}.{ref}_all.endo.tsv",
+        "inds": "results/datasets/{dataset}/poplists/{dataset}_all{dp}.indiv.list",
+        "endo": "results/datasets/{dataset}/qc/endogenous_content/{dataset}.{ref}_all{dp}.endo.tsv",
         "unfilt": "results/mapping/qc/ind_depth/unfiltered/{dataset}.{ref}_all{dp}_allsites-unfilt.depth.sum",
         "mapqbaseqfilt": expand(
             "results/mapping/qc/ind_depth/mapq-baseq-filtered/{{dataset}}.{{ref}}_all{{dp}}_allsites-mapq{mapq}-baseq{baseq}-filt.depth.sum",
@@ -589,21 +589,36 @@ def get_samples_from_pop(population):
         return [pop]
 
 
+# Return sample list for making popfiles, ensuring dropped samples are left out
+# in subsampled runs
+def get_popfile_inds(wildcards):
+    sam = get_samples_from_pop(wildcards.population)
+    if wildcards.dp != "":
+        sam = [s for s in sam if s not in config["drop_samples"]]
+    return sam
+
+
+# Return individual counts, dropping samples when required for subsampled runs
+def get_nind(wildcards):
+    sam = get_popfile_inds(wildcards)
+    return len(sam)
+
+
 # List bam files for a grouping
 def get_bamlist_bams(wildcards):
-    pop = wildcards.population
+    sam = get_popfile_inds(wildcards)
     return expand(
         "results/datasets/{{dataset}}/bams/{sample}.{{ref}}{{dp}}.bam",
-        sample=get_samples_from_pop(pop),
+        sample=sam,
     )
 
 
 # List bai files for a grouping
 def get_bamlist_bais(wildcards):
-    pop = wildcards.population
+    sam = get_popfile_inds(wildcards)
     return expand(
         "results/datasets/{{dataset}}/bams/{sample}.{{ref}}{{dp}}.bam.bai",
-        sample=get_samples_from_pop(pop),
+        sample=sam,
     )
 
 
@@ -653,14 +668,11 @@ def get_anc_ref(wildcards):
 # command line option
 def get_minind(wildcards):
     pop = wildcards.population
+    sam = get_popfile_inds(wildcards)
     if pop == "all":
-        minind = int(
-            len(get_samples_from_pop(pop)) * config["params"]["angsd"]["minind_dataset"]
-        )
+        minind = int(len(sam) * config["params"]["angsd"]["minind_dataset"])
     else:
-        minind = int(
-            len(get_samples_from_pop(pop)) * config["params"]["angsd"]["minind_pop"]
-        )
+        minind = int(len(sam) * config["params"]["angsd"]["minind_pop"])
     minindopt = f"-minInd {minind}"
     return minindopt
 
@@ -700,7 +712,8 @@ def get_ngsld_sampling(wildcards):
 ## Get sample size for r^2 sample size corrections on LD decay
 def get_ngsld_n(wildcards):
     if config["params"]["ngsld"]["fit_LDdecay_n_correction"]:
-        nind = len(get_samples_from_pop(wildcards.population))
+        sam = get_popfile_inds(wildcards)
+        nind = len(sam)
         return "--n_ind %s" % nind
     else:
         return ""
@@ -712,7 +725,9 @@ def get_ngsld_n(wildcards):
 ## Remove requested individuals from beagle for pca and admix
 def get_excl_ind_cols(wildcards):
     exclinds = config["excl_pca-admix"]
-    exclindex = [samples.index.to_list().index(i) for i in exclinds]
+    sam = get_popfile_inds(wildcards)
+    exclinds = [s for s in exclinds if s in sam]
+    exclindex = [sam.index(i) for i in exclinds]
     col1 = [x * 3 + 4 for x in exclindex]
     col2 = [x + 1 for x in col1]
     col3 = [x + 1 for x in col2]
@@ -726,7 +741,10 @@ def get_excl_ind_cols(wildcards):
 
 ## Get all possible kinship estimate pairings
 def get_kinship(wildcards):
-    combos = list(itertools.combinations(samples.index, 2))
+    sam = get_samples_from_pop("all")
+    if wildcards.dp != "":
+        sam = [s for s in sam if s not in config["drop_samples"]]
+    combos = list(itertools.combinations(sam, 2))
     # sort inds alphebetically, this ensures that should new inds be added
     # after generating some SFS, the reordering of the combinations won't
     # lead to generating identical SFS with the individuals swapped
@@ -758,7 +776,10 @@ def pairwise_combos(items):
 ## individuals or populations, for global or windowed estimates
 def get_fst(wildcards):
     if wildcards.unit == "ind":
-        unit = samples.index
+        sam = samples.index.tolist()
+        if wildcards.dp != "":
+            sam = [s for s in sam if s not in config["drop_samples"]]
+        unit = sam
     elif wildcards.unit == "pop":
         unit = pop_list
     combos = pairwise_combos(unit)

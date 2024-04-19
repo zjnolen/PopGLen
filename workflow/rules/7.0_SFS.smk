@@ -98,15 +98,6 @@ rule realSFS_2dSFS:
         "logs/{dataset}/realSFS/2dSFS/{dataset}.{ref}_{population1}-{population2}{dp}_{sites}-filts.log",
     benchmark:
         "benchmarks/{dataset}/realSFS/2dSFS/{dataset}.{ref}_{population1}-{population2}{dp}_{sites}-filts.log"
-    wildcard_constraints:
-        population1="|".join(
-            [i for i in samples.index.tolist()]
-            + [i for i in samples.population.values.tolist()]
-        ),
-        population2="|".join(
-            [i for i in samples.index.tolist()]
-            + [i for i in samples.population.values.tolist()]
-        ),
     params:
         fold=config["params"]["realsfs"]["fold"],
     threads: lambda wildcards, attempt: attempt * 2
@@ -147,15 +138,6 @@ rule realSFS_2dSFS_bootstrap:
         "logs/{dataset}/realSFS/2dSFS/{dataset}.{ref}_{population1}-{population2}{dp}_{sites}-filts.log",
     benchmark:
         "benchmarks/{dataset}/realSFS/2dSFS/{dataset}.{ref}_{population1}-{population2}{dp}_{sites}-filts.log"
-    wildcard_constraints:
-        population1="|".join(
-            [i for i in samples.index.tolist()]
-            + [i for i in samples.population.values.tolist()]
-        ),
-        population2="|".join(
-            [i for i in samples.index.tolist()]
-            + [i for i in samples.population.values.tolist()]
-        ),
     params:
         fold=config["params"]["realsfs"]["fold"],
         boot=config["params"]["realsfs"]["sfsboot"],

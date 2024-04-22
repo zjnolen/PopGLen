@@ -375,7 +375,7 @@ rule samtools_subsample:
     shadow:
         "minimal"
     params:
-        dp=config["subsample_dp"],
+        dp=lambda w: w.dp.replace(".dp", ""),
     resources:
         runtime=lambda wildcards, attempt: attempt * 720,
     shell:

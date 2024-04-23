@@ -387,7 +387,7 @@ rule samtools_subsample:
         if [ `awk 'BEGIN {{print ('$prop' <= 1.0)}}'` = 1 ]; then
             propdec=$(echo $prop | awk -F "." '{{print $2}}')
             samtools view -h -F 4 -q 30 -@ {threads} -u {input.bam} |
-                samtools view -h -s 0.${{propdec}} -@ {threads} -b \
+                samtools view -h -s $RANDOM.${{propdec}} -@ {threads} -b \
                 > {output.bam} 2> {log}
             samtools index {output.bam} 2>> {log}
         else

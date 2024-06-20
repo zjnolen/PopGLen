@@ -7,3 +7,4 @@ channels:
 dependencies:
   # core packages for workflow
   - snakemake =7.32.*
+  - mamba

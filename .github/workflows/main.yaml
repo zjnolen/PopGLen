@@ -66,6 +66,7 @@ jobs:
     - name: Test workflow
       shell: bash -l {0}
       run: |
+        conda config --set channel_priority strict
         mkdir -p temp
         workdir=$(pwd -P)
         TMPDIR=$workdir/temp

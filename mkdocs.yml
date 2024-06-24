@@ -1,4 +1,4 @@
-site_name: ANGSD Snakemake Pipeline
+site_name: PopGLen
 nav:
   - Home: index.md
   - Getting Started: getting-started.md
@@ -32,8 +32,8 @@ theme:
       toggle:
         icon: material/toggle-switch-off
         name: Switch to system preference
-repo_url: https://github.com/zjnolen/angsd-snakemake-pipeline
-repo_name: zjnolen/angsd-snakemake-pipeline
+repo_url: https://github.com/zjnolen/PopGLen
+repo_name: zjnolen/PopGLen
 plugins:
   - search
 extra:

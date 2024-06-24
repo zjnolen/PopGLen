@@ -1,4 +1,4 @@
-# Main Snakefile for ANGSD Snakemake Pipeline
+# Main Snakefile for PopGLen
 
 # Include all rule Snakefiles for workflow
 

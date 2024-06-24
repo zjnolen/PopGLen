@@ -75,7 +75,9 @@ SAMN13218652	SRR10398077	SAMN13218652	ILLUMINA				SRR10398077
   pre-processed bam files. Only one bam files should be provided per sample in
   the units file.
 - `sra` provides the NCBI SRA accession number for a set of paired end fastq
-  files that will be downloaded to be processed.
+  files that will be downloaded to be processed. If a sample has multiple runs
+  you would like to include, each run should be its own line in the units sheet,
+  just as separate sequencing runs would be.
 
 !!! note "Mixing samples with different starting points"
     It is possible to have different samples start from different inputs (i.e.
@@ -168,13 +170,9 @@ work, as calculating chunks is hard-coded to work on an uncompressed genome.
 
 #### Sample Set Configuration
 
-This will exclude individuals from analysis that are listed in the sample list.
-This may be useful if you run the workflow and find a poor quality sample, and
-want to re-run without it. Or if you have relatives in the dataset and you want
-to exclude them where necessary.
-
 - `exclude_ind:` Sample name(s) that will be excluded from the workflow. Should
-  be a list in [].
+  be a list in []. Putting a `#` in front of the sample in the sample list also
+  works. Mainly used to drop samples with poor quality after initial processing.
 - `excl_pca-admix:` Sample name(s) that will be excluded *only* from PCA and
   Admixture analyses. Useful for close relatives that violate the assumptions
   of these analyses, but that you want in others. Should be a list in []. If you
@@ -233,17 +231,33 @@ settings for each analysis are set in the next section.
     section of the yaml. (`true`/`false`)
   - `dataset_missing_data:` A floating point value between 0 and 1. Sites with
     data for fewer than this proportion of individuals across the whole dataset
-    will be filtered out in all analyses using the filtered sites file.
+    will be filtered out in all analyses using the filtered sites file. (This is
+    only needed if you need to ensure all your populations are using exactly the
+    same sites, which I find may result in coverage biases in results,
+    especially heterozygosity. Unless you explicitly need to ensure all groups
+    and analyses use the same sites, I would leave this blank, instead using
+    the \[`params`]\[`angsd`]\[`minind_pop`] to set a minimum individual
+    threshold for each analyses, allowing analyses to maximize sites per
+    group/sample. This is how most papers do it.)
   - `population_missing_data:` A floating point value between 0 and 1. Sites
     with data for fewer than this proportion of individuals in any population
     will be filtered out in all populations using the filtered sites file.
+    (This is only needed if you need to ensure all your populations are using
+    exactly the same sites, which I find may result in coverage biases in
+    results, especially heterozygosity. Unless you explicitly need to ensure all
+    groups and analyses use the same sites, I would leave this blank, instead
+    using the \[`params`]\[`angsd`]\[`minind_pop`] to set a minimum individual
+    threshold for each analyses, allowing analyses to maximize sites per
+    group/sample. This is how most papers do it.)
   - `qualimap:` Perform Qualimap bamqc on bam files for general quality stats
     (`true`/`false`)
   - `damageprofiler:` Estimate post-mortem DNA damage on historical samples
     with Damageprofiler (`true`/`false`) NOTE: This just adds the addition of
     Damageprofiler to the already default output of MapDamage.
   - `mapdamage_rescale:` Rescale base quality scores using MapDamage2 to help
-    account for post-mortem damage in analyses (`true`/`false`) [docs](https://ginolhac.github.io/mapDamage/)
+    account for post-mortem damage in analyses (if you only want to assess
+    damage, use damageprofiler instead, they return the same results)
+    (`true`/`false`) [docs](https://ginolhac.github.io/mapDamage/)
   - `estimate_ld:` Estimate pairwise linkage disquilibrium between sites with
     ngsLD for each popualation and the whole dataset. Note, only set this if
     you want to generate the LD estimates for use in downstream analyses
@@ -299,7 +313,7 @@ settings for each analysis are set in the next section.
   - `2dsfs:` Generates a two dimensional site frequency spectrum for all unique
     populations pairings in the sample list. Automatically enabled if
     `fst_angsd` is enabled. (`true`/`false`)
-  - `1dsfs_boot:` Generates N bootstrap replicates of the 2D site frequency
+  - `2dsfs_boot:` Generates N bootstrap replicates of the 2D site frequency
     spectrum for each population pair. N is determined from the `sfsboot`
     setting below (`true`/`false`)
   - `thetas_angsd:` Estimate pi, theta, and Tajima's D for each population in
@@ -404,11 +418,13 @@ filter_beds:
 
 It may also sometimes be desireable to skip analyses on `allsites-filts`, say
 if you are trying to only generate diversity estimates or generate SFS for a
-set of neutral sites you supply. To skip running any analyses for
-`allsites-filts` and only perform them for the BED files you supply, you can
-set `only_filter_beds: true` in the config file. This may also be useful in the
-event you have a set of already filtered sites, and want to run the workflow on
-those, ignoring any of the built in filter options by setting them to `false`.
+set of neutral sites you supply.
+
+To skip running any analyses for `allsites-filts` and only perform them for the
+BED files you supply, you can set `only_filter_beds: true` in the config file.
+This may also be useful in the event you have a set of already filtered sites,
+and want to run the workflow on those, ignoring any of the built in filter
+options by setting them to `false`.
 
 #### Software Configuration
 
@@ -431,12 +447,16 @@ or a pull request and I'll gladly put it in.
       essentially creates a BAM file of nearly equal size for every sample, so
       it may be nice to turn off if you don't care for this correction or have
       already applied it on the BAMs you supply. (`true`/`false`)
-  - `genmap:` Parameters for mappability analysis, see [GenMap's documentation](https://github.com/cpockrandt/genmap/)
-    for more details.
+  - `genmap:` Parameters for pileup mappability analysis, see
+    [GenMap's documentation](https://github.com/cpockrandt/genmap/) for more
+    details.
     - `K:`
     - `E:`
-    - `map_thresh:` A threshold mappability score. Sites with a mappability
-      score below this threshold are filtered out if GenMap is enabled.
+    - `map_thresh:` A threshold mappability score. Each site gets an average
+      mappability score taken by averaging the mappability of all K-mers that
+      would overlap it. A score of 1 means all K-mers are uniquely mappable,
+      allowing for `e` mismatches. This is doen via a custom script, and may
+      eventually be replaced by the SNPable method, which is more common.
       (integer/float, 0-1)
   - `extreme_depth_filt:` Parameters for excluding sites based on extreme high
     and/or low global depth. The final sites list will contain only sites that
@@ -462,6 +482,16 @@ or a pull request and I'll gladly put it in.
       for all the classes will be included. (`true`/`false`)
   - `fastp:`
     - `extra:` Additional options to pass to fastp trimming. (string)
+    - `min_overlap_hist:` Minimum overlap to collapse historical reads. Default
+      in fastp is 30. This effectively overrides the `--length_required` option
+      if it is larger than that. (INT)
+  - `bwa_aln:`
+    - `extra:` Additional options to pass to bwa aln for mapping of historical
+      sample reads. (string)
+  - `samtools:`
+    - `subsampling_seed:` Seed to use when subsampling bams to lower depth.
+      `"$RANDOM"` can be used to set a random seed, or any integer can be used
+      to set a consistent seed. (string or int)
   - `picard:`
     - `MarkDuplicates:` Additional options to pass to Picard MarkDuplicates.
       `--REMOVE_DUPLICATES true` is recommended. (string)
@@ -471,23 +501,24 @@ or a pull request and I'll gladly put it in.
     - `maxdepth:` When calculating individual depth, sites with depth higher
       than this will be binned to this value. Should be fine for most to leave
       at `1000`. (integer, [docs](http://www.popgen.dk/angsd/index.php/Depth))
-    - `rmtrans:` Removes transitions using ANGSD, effectively removing them
-      from downstream analyses. This is useful for removing DNA damage from
-      analyses, and will automatically set the appropriate ANGSD flags (i.e.
-      using `-noTrans 1` for SAF files and `-rmTrans 1` for Beagle files.)
     - `mindepthind:` Individuals with sequencing depth below this value at a
       position will be treated as having no data at that position by ANGSD.
       ANGSD defaults to 1 for this. Note that this can be separately set for
       individual heterozygosity estimates with `mindepthind_heterozygosity`
-      below. (integer, `-setMinDepthInd` option in ANGSD)
+      below. (integer, `-setMinDepthInd` option in ANGSD) (INT)
     - `minind_dataset:` Used to fill the `-minInd` option for any dataset wide
       ANGSD outputs (like Beagles for PCA/Admix). Should be a floating point
       value between 0 and 1 describing what proportion of the dataset must have
-      data at a site to include it in the output.
+      data at a site to include it in the output. (FLOAT)
     - `minind_pop:` Used to fill the `-minInd` option for any population level
       ANGSD outputs (like SAFs or Beagles for ngsF-HMM). Should be a floating
       point value between 0 and 1 describing what proportion of the population
-      must have data at a site to include it in the output.
+      must have data at a site to include it in the output. (FLOAT)
+    - `rmtrans:` Removes transitions using ANGSD, effectively removing them
+      from downstream analyses. This is useful for removing DNA damage from
+      analyses, and will automatically set the appropriate ANGSD flags (i.e.
+      using `-noTrans 1` for SAF files and `-rmTrans 1` for Beagle files.)
+      (`true`/`false`)
     - `extra:` Additional options to pass to ANGSD during genotype likelihood
       calculation at all times. This is primarily useful for adding BAM input
       filters. Note that `--remove_bads` and `-only_proper_pairs` are enabled
@@ -498,30 +529,37 @@ or a pull request and I'll gladly put it in.
       ANGSD for low/variable depth data. I recommend that these aren't included
       unless you know you need them. Since the workflow uses bwa to map,
       `-uniqueOnly 1` doesn't do anything if your minimum mapping quality is
-      \> 0. Don't put mapping and base quality thresholds here either, it will
-      use the ones defined above automatically. Although historical samples
-      will have DNA damaged assessed and to some extent, corrected, it may be
-      useful to put `-noTrans 1` or `-trim INT` here if you're interested in
-      stricter filters for degraded DNA. (string, [docs](http://www.popgen.dk/angsd/index.php/Input#BAM.2FCRAM))
+      \> 0. Mapping and base quality thresholds are also not needed, it will
+      use the ones defined above automatically. If you prefer to correct for
+      historical damage by trimming the ends of reads, this is where you'd want
+      to put `-trim INT`. (string)
+      (string, [docs](http://www.popgen.dk/angsd/index.php/Input#BAM.2FCRAM))
     - `extra_saf:` Same as `extra`, but only used when making SAF files (used
       for SFS, thetas, Fst, IBSrelate, heterozygosity includes invariable
-      sites).
+      sites). Doesn't require options already in `extra` or defined via other
+      params in the YAML (such as `notrans`, `minind`, `GL`, etc.) (string)
     - `extra_beagle:` Same as `extra`, but only used when making Beagle and Maf
       files (used for PCA, Admix, ngsF-HMM, doIBS, ngsrelate, includes only
-      variable sites).
-    - `snp_pval:` The p-value to use for calling SNPs (float, [docs](http://www.popgen.dk/angsd/index.php/SNP_calling))
+      variable sites). Doesn't require options already in `extra` or defined via
+      other params in the YAML (such as `rmtrans`, `minind`, `GL`, etc.)
+      (string)
+    - `snp_pval:` The p-value to use for calling SNPs
+      (float, [docs](http://www.popgen.dk/angsd/index.php/SNP_calling)) (float
+      or string)
     - `domajorminor:` Method for inferring the major and minor alleles. Set to
-      1 to infer from the genotype likelihoods, see [documentation](https://www.popgen.dk/angsd/index.php/Major_Minor)
+      1 to infer from the genotype likelihoods, see
+      [documentation](https://www.popgen.dk/angsd/index.php/Major_Minor)
       for other options. `1`, `2`, and `4` can be set without any additional
       configuration. `5` must also have an ancestral reference provided in the
       config, otherwise it will be the same as `4`. `3` is currently not
       possible, but please open an issue if you have a use case, I'd like to
-      add it, but would need some input on how it is used.
+      add it, but would need some input on how it is used. (int)
     - `domaf:` Method for inferring minor allele frequencies. Set to `1` to
       infer from genotype likelihoods using a known major and minor from the
-      `domajorminor` setting above. See [docs](http://www.popgen.dk/angsd/index.php/Allele_Frequencies)
-      for other options. I have not tested much beyond `1` and `8`, please open
-      an issue if you have problems.
+      `domajorminor` setting above. See
+      [docs](http://www.popgen.dk/angsd/index.php/Allele_Frequencies) for other
+      options. I have not tested much beyond `1` and `8`, please open an issue
+      if you have problems. (int)
     - `min_maf:` The minimum minor allele frequency required to call a SNP.
       This is set when generating the beagle file, so will filter SNPs for
       PCAngsd, NGSadmix, ngsF-HMM, and NGSrelate. If you would like each tool
@@ -529,17 +567,17 @@ or a pull request and I'll gladly put it in.
       (disabled). (float, [docs](http://www.popgen.dk/angsd/index.php/Allele_Frequencies))
     - `mindepthind_heterozygosity:` When estimating individual heterozygosity,
       sites with sequencing depth lower than this value will be dropped.
-      (integer, `-setMinDepthInd` option in ANGSD)
+      (integer, `-setMinDepthInd` option in ANGSD) (int)
   - `ngsld:` Settings for ngsLD ([docs](https://github.com/fgvieira/ngsLD))
     - `max_kb_dist_est-ld:` For the LD estimates generated when setting
       `estimate_ld: true` above, set the maximum distance between sites in kb
       that LD will be estimated for (`--max_kb_dist` in ngsLD, integer)
-    - `max_kb_dist_decay:` The same as `max_kb_dist_est-ld:`, but used when
-      estimating LD decay when setting `ld_decay: true` above (integer)
     - `rnd_sample_est-ld:` For the LD estimates generated when setting
       `estimate_ld: true` above, randomly sample this proportion of pairwise
       linkage estimates rather than estimating all (`--rnd_sample` in ngsLD,
       float)
+    - `max_kb_dist_decay:` The same as `max_kb_dist_est-ld:`, but used when
+      estimating LD decay when setting `ld_decay: true` above (integer)
     - `rnd_sample_decay:` The same as `rnd_sample_est-ld:`, but used when
       estimating LD decay when setting `ld_decay: true` above (float)
     - `fit_LDdecay_extra:` Additional plotting arguments to pass to
@@ -560,8 +598,8 @@ or a pull request and I'll gladly put it in.
     - `estimate_in_pops:` Set to `true` to run ngsF-HMM separately for each
       population in your dataset. Set to `false` to run for whole dataset at
       once. ngsF-HMM assumes Hardy-Weinberg Equilibrium (aside from inbreeding)
-      in the input data, so select the option that most reflects this. You can
-      use PCA and Admixture analyses to help determine this. (`true`/`false`)
+      in the input data, so select the option that most reflects this in your
+      data. (`true`/`false`)
     - `prune:` Whether or not to prune SNPs for LD before running the analysis.
       ngsF-HMM assumes independent sites, so it is preferred to set this to
       `true` to satisfy that expectation. (`true`/`false`)
@@ -600,6 +638,8 @@ or a pull request and I'll gladly put it in.
   - `thetas:` Settings for pi, theta, and Tajima's D estimation
     - `win_size:` Window size in bp for sliding window analysis (integer)
     - `win_step:` Window step size in bp for sliding window analysis (integer)
+    - `minsites:` Minimum sites to include window in report plot. This does not
+      remove them from the actual output, just the report plot.
   - `ngsadmix:` Settings for admixture analysis with NGSadmix. This analysis is
     performed for a set of K groupings, and each K has several replicates
     performed. Replicates will continue until a set of N highest likelihood
@@ -607,16 +647,18 @@ or a pull request and I'll gladly put it in.
     set here. Defaults for `reps`, `minreps`, `thresh`, and `conv` can be left
     as default for most.
     - `kvalues:` A list of values of K to fit the data to (list of integers)
-    - `reps:` The maximum number of replicates to perform per K (integer)
-    - `minreps:` The minimum number of replicates to perform, even if
-      replicates have converged (integer)
-    - `thresh:` The convergence threshold - the top replicates must all be
-      within this value of log-likelihood units to consider the run converged
+    - `reps:` The maximum number of replicates to perform per K. Default is 100.
       (integer)
+    - `minreps:` The minimum number of replicates to perform, even if
+      replicates have converged. Default is 20. (integer)
+    - `thresh:` The convergence threshold - the top replicates must all be
+      within this value of log-likelihood units to consider the run converged.
+      Default is 2. (integer)
     - `conv:` The number of top replicates to include in convergence
-      assessment. (integer)
+      assessment. Default is 3. (integer)
     - `extra:` Additional arguments to pass to NGSadmix (for instance,
       increasing `-maxiter`). (string, [docs](http://www.popgen.dk/software/index.php/NgsAdmix))
   - `ibs:` Settings for identity by state calculation with ANGSD
     - `-doIBS:` Whether to use a random (1) or consensus (2) base in IBS
-      distance calculation ([docs](http://www.popgen.dk/angsd/index.php/PCA_MDS))
+      distance calculation
+      ([docs](http://www.popgen.dk/angsd/index.php/PCA_MDS))

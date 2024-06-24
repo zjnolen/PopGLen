@@ -1,12 +1,11 @@
-# Welcome to the documentation for ANGSD Snakemake Pipeline
+# Welcome to the documentation for PopGLen
 
-ANGSD Snakemake Pipeline is aimed at enabling users to run population genomic
-analyses on their data within a genotype likelihood framework in an automated
-and reproducible fashion. Genotype likelihood based analyses avoid genotype
-calling, instead performing analyses on the likelihoods of each possible
-genotype, incorporating uncertainty about the true genotype into the analysis.
-This makes them especially suited for datasets with low coverage or that vary
-in coverage.
+PopGLen is aimed at enabling users to run population genomic analyses on their
+data within a genotype likelihood framework in an automated and reproducible
+fashion. Genotype likelihood based analyses avoid genotype calling, instead
+performing analyses on the likelihoods of each possible genotype, incorporating
+uncertainty about the true genotype into the analysis. This makes them
+especially suited for datasets with low coverage or that vary in coverage.
 
 This pipeline was developed in large part to make my own analyses easier. I
 work with many species being mapped to their own references within the same
@@ -18,9 +17,9 @@ a common workflow utilized by ANGSD users, so it is available for others to
 use, should it suit their needs.
 
 ??? question "Questions? Feature requests? Just ask!"
-    I'm glad to answer questions on the [GitHub Issues](https://github.com/zjnolen/angsd-snakemake-pipeline/issues)
-    page for the project, as well as take suggestions for features or
-    improvements!
+    I'm glad to answer questions on the
+    [GitHub Issues](https://github.com/zjnolen/PopGLen/issues) page for the
+    project, as well as take suggestions for features or improvements!
 
 ## Pipeline Summary
 

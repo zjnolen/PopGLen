@@ -44,10 +44,12 @@ mamba create -c conda-forge -c bioconda --name snakemake snakemake snakedeploy
 
 If you already have a Snakemake environment, you can use that, so long as
 it has `snakemake` (not just `snakemake-minimal`) installed. Snakemake
-versions >=7.25 are likely to work, but most testing is on 7.32.4. You can
-change the name of the environment if you'd like to isolate it any other
-Snakemake environments you might have. The only main dependency of this
-pipeline is `snakemake`.
+versions >=7.25 are likely to work, but most testing is on 7.32.4. It is
+compatible with Snakemake v8, but you may need to install additional plugins for
+cluster execution due to the new executor plugin system. See the
+[Snakemake docs](https://snakemake.github.io/snakemake-plugin-catalog/) for what
+additional executor plugin you might need to enable cluster execution for your
+system.
 
 Activate the Snakemake environment:
 
@@ -67,7 +69,7 @@ cd /path/to/work-dir
 And deploy the workflow, using the tag for the version you want to deploy:
 
 ```bash
-snakedeploy deploy-workflow https://github.com/zjnolen/angsd-snakemake-pipeline . --tag v0.2.0
+snakedeploy deploy-workflow https://github.com/zjnolen/PopGLen . --tag v0.2.0
 ```
 
 This will generate a simple Snakefile in a `workflow` folder that loads the
@@ -80,16 +82,16 @@ Go to the folder you would like you working directory to be created in and
 clone the GitHub repo:
 
 ```bash
-git clone https://github.com/zjnolen/angsd-snakemake-pipeline.git
+git clone https://github.com/zjnolen/PopGLen.git
 ```
 
 If you would like, you can change the name of the directory:
 
 ```bash
-mv angsd-snakemake-pipeline work-dir-name
+mv PopGLen work-dir-name
 ```
 
-Move into the working directory (`angsd-snakemake-pipeline` or `work-dir-name`
+Move into the working directory (`PopGLen` or `work-dir-name`
 if you changed it) and checkout the version you would like to use:
 
 ```bash

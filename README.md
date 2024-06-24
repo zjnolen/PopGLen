@@ -1,14 +1,24 @@
-# Genotype likelihood population genomics pipeline
+# PopGLen: A snakemake pipeline for performing population genomic analyses using genotype likelihood based methods
 
-This workflow is aimed at processing sequencing data and calculating population
-genomic statistics within a genotype likelihood framework. As a primary use
-case of genotype likelihood based methods is analysis of samples sequenced to
-low depth or from degraded samples, processing can optionally be adapted to
-account for DNA damage. It is aimed at single and multi-population analyses of
-samples mapped to the same reference, so is appropriate for datasets containing
-individuals from a single or multiple populations and allows for examining
-population structure, genetic diversity, genetic differentiation, allele
-frequencies, linkage disequilibrium, and more.
+> With v0.3.0, the pipeline is largely working, and should be usable for many
+> datasets performing the analyses described below. Work will continue on the
+> [develop branch](https://github.com/zjnolen/PopGLen/tree/develop), focused on
+> optimizing how certain analyses are done, improving resource allocation, and
+> improving documentation.
+>
+> If interested in using the pipeline, feel free to check out its current
+> [documentation](https://zjnolen.github.io/PopGLen/develop/getting-started/).
+
+This pipeline is aimed at processing sequencing data and calculating population
+genomic statistics within a genotype likelihood framework using a common
+workflow based on ANGSD and related softwares. As a primary use case of genotype
+likelihood based methods is analysis of samples sequenced to low depth or from
+degraded samples, processing can optionally be adapted to account for DNA
+damage. It is aimed at single and multi-population analyses of samples mapped to
+the same reference, so is appropriate for datasets containing individuals from a
+single or multiple populations and allows for examining population structure,
+genetic diversity, genetic differentiation, allele frequencies, linkage
+disequilibrium, and more.
 
 The workflow is designed with two entry points in mind. Users with raw
 sequencing data in FASTQ format stored locally or as an NCBI/ENA run accession
@@ -49,7 +59,8 @@ when you start with raw sequencing data or with processed BAM files.
 
 - Estimation of linkage disequilibrium across genome and LD decay using
   ngsLD[^11]
-- Linkage pruning where relevant with [fgvieira/prune_graph](https://github.com/fgvieira/prune_graph)
+- Linkage pruning where relevant with
+  [fgvieira/prune_graph](https://github.com/fgvieira/prune_graph)
 - PCA with PCAngsd[^12]
 - Admixture with NGSAdmix[^13]
 - Relatedness using NgsRelate[^14] and IBSrelate[^15]
@@ -103,7 +114,8 @@ following:
 - Singularity/Apptainer
 
 Once these softwares are installed, to deploy and configure the workflow, you
-can follow the instructions provided in the [Snakemake workflow catalog](https://snakemake.github.io/snakemake-workflow-catalog/?usage=zjnolen/angsd-snakemake-pipeline).
+can follow the instructions provided in the
+[Snakemake workflow catalog](https://snakemake.github.io/snakemake-workflow-catalog/?usage=zjnolen/PopGLen).
 You can refer to the Snakemake Documentation for additional information that
 may be relevant to your computing environment (running jobs through cluster job
 queues, setting default resources).
@@ -179,23 +191,6 @@ the [`rackham/config.yaml`](rackham/config.yaml) config to see an example of
 this. Right now, memory is only ever defined through threads, so you may need
 to lower the threads and add a memory resource to some rules using this method
 in order to optimize them for your system.
-
-## Workflow directed action graph
-
-Below is a graph of the workflow with most of the analyses enabled. This is
-generated directly by Snakemake, though I have removed the `all`, `popfile`,
-and `link_ref` rules to improve readability, as they are not needed to
-understand the analysis flow. A more condensed, readable diagram will be added
-shortly.
-
-In general, there a few stages that can be seen grouping here. A mapping stage
-at the top, ending with `symlink_bams`, followed by the creation of a set of
-filters for the dataset that ends with `combine_beds`. Afterwards, population
-genetic analyses are performed in primarily two pathways - allele frequency
-based results (starting with `angsd_doSaf_sample/pop`) and SNP based results
-(starting with `angsd_doGlf2` (beagle)).
-
-![A directed action graph (DAG) of the main workflow](images/rulegraph.svg)
 
 ## Acknowledgements
 

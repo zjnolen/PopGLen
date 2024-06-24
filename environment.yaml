@@ -1,4 +1,4 @@
-name: angsd-snakemake-pipeline
+name: popglen
 
 channels:
   - conda-forge

@@ -44,10 +44,10 @@ sites file has been produced, the pipeline can continue to the analyses.
 - Relatedness (NGSRelate, IBSrelate)
 - Identity by state matrix (ANGSD)
 - Site frequency spectrum (ANGSD)
-- Watterson's estimator ($θ_w$), Nucleotide diversity ($π$), Tajima's $D$
+- Watterson's estimator (*θ~w~*), Nucleotide diversity (*π*), Tajima's *D*
   (ANGSD)
 - Individual heterozygosity with bootstrapped confidence intervals (ANGSD)
-- Pairwise $F_{ST}$ (ANGSD)
+- Pairwise *F*~ST~ (ANGSD)
 
 These all can be enabled and processed independently, and the pipeline will
 generate genotype likelihood input files using ANGSD and share them across

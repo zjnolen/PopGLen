@@ -76,6 +76,7 @@ subsample_dp:
 
 subsample_by: "sitefilt" # three options: unfilt, mapqbaseq, sitefilt; sitefilt recommended (subsamples bams to `subsample_dp` within filtered regions)
 redo_depth_filts: false # has no effect when `subsample_by` == "sitefilt"
+drop_samples: [] # These samples won't be included in the downsampled dataset
 
 subsample_analyses:
   estimate_ld: false
@@ -127,6 +128,8 @@ params:
     min_overlap_hist: 20
   bwa_aln:
     extra: "-l 16500 -n 0.01 -o 2"
+  samtools:
+    subsampling_seed: "$RANDOM"
   picard:
     MarkDuplicates: "--REMOVE_DUPLICATES true --OPTICAL_DUPLICATE_PIXEL_DISTANCE 2500"
   damageprofiler:

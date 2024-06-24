@@ -98,7 +98,7 @@ rule ibsrelate:
     container:
         angsd_container
     params:
-        nind=lambda w: len(get_samples_from_pop(w.population)),
+        nind=get_nind,
         maxsites=config["chunk_size"],
         out=lambda w, output: os.path.splitext(output[0])[0],
     resources:
@@ -121,7 +121,7 @@ rule est_kinship_stats_ibs:
             "results/datasets/{{dataset}}/analyses/kinship/ibsrelate_ibs/{{dataset}}.{{ref}}_{{population}}{{dp}}_chunk{chunk}_{{sites}}-filts.ibspair",
             chunk=chunklist,
         ),
-        inds="results/datasets/{dataset}/poplists/{dataset}_all.indiv.list",
+        inds="results/datasets/{dataset}/poplists/{dataset}_{population}{dp}.indiv.list",
     output:
         "results/datasets/{dataset}/analyses/kinship/ibsrelate_ibs/{dataset}.{ref}_{population}{dp}_{sites}-filts.kinship",
     log:
@@ -163,21 +163,23 @@ rule ngsrelate:
     """
     input:
         beagle=expand(
-            "results/datasets/{{dataset}}/beagles/pruned/{{dataset}}.{{ref}}_all{{dp}}_{{sites}}-filts.pruned_maxkbdist-{maxkb}_minr2-{r2}.beagle.gz",
+            "results/datasets/{{dataset}}/beagles/pruned/{{dataset}}.{{ref}}_{{population}}{{dp}}_{{sites}}-filts.pruned_maxkbdist-{maxkb}_minr2-{r2}.beagle.gz",
             maxkb=config["params"]["ngsld"]["max_kb_dist_pruning_dataset"],
             r2=config["params"]["ngsld"]["pruning_min-weight_dataset"],
         ),
-        inds="results/datasets/{dataset}/poplists/{dataset}_all.indiv.list",
+        inds="results/datasets/{dataset}/poplists/{dataset}_{population}{dp}.indiv.list",
     output:
-        relate="results/datasets/{dataset}/analyses/kinship/ngsrelate/{dataset}.{ref}_all{dp}_{sites}-filts_relate.tsv",
-        samples="results/datasets/{dataset}/analyses/kinship/ngsrelate/{dataset}.{ref}_all{dp}_{sites}-filts_samples.list",
+        relate="results/datasets/{dataset}/analyses/kinship/ngsrelate/{dataset}.{ref}_{population}{dp}_{sites}-filts_relate.tsv",
+        samples="results/datasets/{dataset}/analyses/kinship/ngsrelate/{dataset}.{ref}_{population}{dp}_{sites}-filts_samples.list",
+    wildcard_constraints:
+        population="all",
     log:
-        "logs/{dataset}/kinship/ngsrelate/{dataset}.{ref}_all{dp}_{sites}-filts.log",
+        "logs/{dataset}/kinship/ngsrelate/{dataset}.{ref}_{population}{dp}_{sites}-filts.log",
     container:
         ngsrelate_container
     threads: lambda wildcards, attempt: attempt * 4
     params:
-        nind=lambda w: len(get_samples_from_pop("all")),
+        nind=get_nind,
     resources:
         runtime=lambda wildcards, attempt: attempt * 360,
     shell:

@@ -7,19 +7,19 @@ rule heterozygosity:
     Plots per population distributions of individual heterozygosity.
     """
     input:
-        sfs=expand(
+        sfs=lambda w: expand(
             "results/datasets/{{dataset}}/analyses/sfs/{{dataset}}.{{ref}}_{sample}{{dp}}_{{sites}}-filts.sfs",
-            sample=samples.index,
+            sample=get_popfile_inds(w),
         ),
-        bootsfs=expand(
+        bootsfs=lambda w: expand(
             "results/datasets/{{dataset}}/analyses/sfs/{{dataset}}.{{ref}}_{sample}{{dp}}_{{sites}}-filts.boot.sfs",
-            sample=samples.index,
+            sample=get_popfile_inds(w),
         ),
-        popfile="results/datasets/{dataset}/poplists/{dataset}_all.indiv.list",
+        popfile="results/datasets/{dataset}/poplists/{dataset}_all{dp}.indiv.list",
     output:
-        table="results/datasets/{dataset}/analyses/heterozygosity/{dataset}.{ref}_all{dp}_{sites}-filts_heterozygosity.tsv",
+        table="results/datasets/{dataset}/analyses/heterozygosity/{dataset}.{ref}_{population}{dp}_{sites}-filts_heterozygosity.tsv",
         popplot=report(
-            "results/datasets/{dataset}/plots/heterozygosity/{dataset}.{ref}_all{dp}_{sites}-filts_heterozygosity.populations.svg",
+            "results/datasets/{dataset}/plots/heterozygosity/{dataset}.{ref}_{population}{dp}_{sites}-filts_heterozygosity.populations.svg",
             category="04.4 Heterozygosity",
             labels=lambda w: {
                 "Filter": "{sites}",
@@ -28,7 +28,7 @@ rule heterozygosity:
             },
         ),
         indplot=report(
-            "results/datasets/{dataset}/plots/heterozygosity/{dataset}.{ref}_all{dp}_{sites}-filts_heterozygosity.individuals.svg",
+            "results/datasets/{dataset}/plots/heterozygosity/{dataset}.{ref}_{population}{dp}_{sites}-filts_heterozygosity.individuals.svg",
             category="04.4 Heterozygosity",
             labels=lambda w: {
                 "Filter": "{sites}",
@@ -36,10 +36,12 @@ rule heterozygosity:
                 "Type": "Individual Estimate Plot",
             },
         ),
+    wildcard_constraints:
+        population="all",
     log:
-        "logs/{dataset}/heterozygosity/{dataset}.{ref}_all{dp}_{sites}-filts_calc-plot.log",
+        "logs/{dataset}/heterozygosity/{dataset}.{ref}_{population}{dp}_{sites}-filts_calc-plot.log",
     benchmark:
-        "benchmarks/{dataset}/heterozygosity/{dataset}.{ref}_all{dp}_{sites}-filts_calc-plot.log"
+        "benchmarks/{dataset}/heterozygosity/{dataset}.{ref}_{population}{dp}_{sites}-filts_calc-plot.log"
     conda:
         "../envs/r.yaml"
     script:

@@ -26,8 +26,8 @@ rule ngsf_hmm:
         ngsf_hmm_container
     params:
         out=lambda w, output: os.path.splitext(output.pos)[0],
-        nind=lambda w: len(get_samples_from_pop(w.population)),
-    threads: lambda w: len(get_samples_from_pop(w.population))
+        nind=get_nind,
+    threads: get_nind
     resources:
         runtime=lambda wildcards, attempt: attempt * 2880,
     script:
@@ -40,7 +40,7 @@ rule convert_ibd:
     """
     input:
         ibd="results/datasets/{dataset}/analyses/ngsF-HMM/{dataset}.{ref}_{population}{dp}_{sites}-filts.ibd",
-        inds="results/datasets/{dataset}/poplists/{dataset}_{population}.indiv.list",
+        inds="results/datasets/{dataset}/poplists/{dataset}_{population}{dp}.indiv.list",
         pos="results/datasets/{dataset}/analyses/ngsF-HMM/{dataset}.{ref}_{population}{dp}_{sites}-filts.pos",
     output:
         roh="results/datasets/{dataset}/analyses/ngsF-HMM/{dataset}.{ref}_{population}{dp}_{sites}-filts.roh",
@@ -71,7 +71,7 @@ rule plot_froh:
             if config["params"]["ngsf-hmm"]["estimate_in_pops"]
             else "all",
         ),
-        inds="results/datasets/{dataset}/poplists/{dataset}_all.indiv.list",
+        inds="results/datasets/{dataset}/poplists/{dataset}_all{dp}.indiv.list",
         autos=get_auto_sum,
     output:
         barplot=report(

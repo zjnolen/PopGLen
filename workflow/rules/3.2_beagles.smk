@@ -39,7 +39,7 @@ rule angsd_doGlf2:
         majmin=config["params"]["angsd"]["domajorminor"],
         counts=get_docounts,
         trans=get_trans,
-        nind=lambda w: len(get_samples_from_pop(w.population)),
+        nind=get_nind,
         minind=get_minind,
         mininddp=config["params"]["angsd"]["mindepthind"],
         out=lambda w, output: os.path.splitext(output.arg)[0],

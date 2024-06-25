@@ -63,6 +63,8 @@ wildcard_constraints:
 
 # Accumulate desired output files from config file
 
+# Quality control
+
 all_outputs = [
     "results/datasets/{dataset}/qc/{dataset}.{ref}_all.sampleqc.html",
     "results/datasets/{dataset}/filters/combined/{dataset}.{ref}_{sites}-filts.html",
@@ -95,6 +97,16 @@ if len(pipebams) > 0:
 if config["analyses"]["qualimap"]:
     all_outputs.append(
         "results/datasets/{dataset}/qc/qualimap/qualimap_all.{ref}_mqc.html",
+    )
+
+
+if config["analyses"]["ibs_ref_bias"]:
+    all_outputs.extend(
+        expand(
+            "results/datasets/{{dataset}}/qc/ibs_refbias/{{dataset}}.{{ref}}_all{dp}_{filts}.refibs.html",
+            filts=["allsites-unfilt", "{sites}-filts"],
+            dp=subsample,
+        )
     )
 
 

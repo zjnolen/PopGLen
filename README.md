@@ -49,7 +49,9 @@ accessions from e.g. NCBI/ENA.
   DamageProfiler[^8]
 - Clipping of overlapping mapped paired end reads using BamUtil[^9]
 - Quality control information from fastp, Qualimap[^10], DamageProfiler, and
-  MapDamage2 (Qualimap is also available for users starting with BAM files)
+  MapDamage2 (Only Qualimap is available for samples starting from user-provided
+  BAMs). Additionally, several filtered and unfiltered depth statistics as well
+  as reference bias are calculated using ANGSD.
 
 ### Population Genomics
 

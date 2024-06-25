@@ -47,6 +47,7 @@ analyses:
   population_missing_data: 0.5
   # quality control
   qualimap: true
+  ibs_ref_bias: true
   damageprofiler: true
   mapdamage_rescale: false
   # population genomic analyses

@@ -251,6 +251,13 @@ settings for each analysis are set in the next section.
     group/sample. This is how most papers do it.)
   - `qualimap:` Perform Qualimap bamqc on bam files for general quality stats
     (`true`/`false`)
+  - `ibs_ref_bias:` Enable reference bias calculation. For each sample, one read
+    is randomly sampled at each position and compared to the reference base.
+    These are summarized as the proportion of the genome that is identical by
+    state to the reference for each sample to quantify reference bias. This is
+    done for all filter sets as well as for all sites without site filtering.
+    If transition removal or other arguments are passed to ANGSD, they are
+    included here. (`true`/`false`)
   - `damageprofiler:` Estimate post-mortem DNA damage on historical samples
     with Damageprofiler (`true`/`false`) NOTE: This just adds the addition of
     Damageprofiler to the already default output of MapDamage.

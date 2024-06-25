@@ -352,3 +352,215 @@ rule sample_qc_summary:
         "../envs/r-rectable.yaml"
     script:
         "../scripts/tsv2html.Rmd"
+
+
+rule ibs_ref_bias_nofilts:
+    """
+    Calculates the average identity by state to the reference for all sites,
+    even those filtered by the sites filter. Useful to determine if batches
+    of samples have reference biases. Compare to filtered version to see if
+    site filters reduce this bias.
+    """
+    input:
+        bam="results/datasets/{dataset}/bamlists/{dataset}.{ref}_{population}{dp}.bamlist",
+        bams=get_bamlist_bams,
+        bais=get_bamlist_bais,
+        ref="results/ref/{ref}/{ref}.fa",
+        reffai="results/ref/{ref}/{ref}.fa.fai",
+    output:
+        ibs=temp(
+            "results/datasets/{dataset}/qc/ibs_refbias/{dataset}.{ref}_{population}{dp}_allsites-unfilt.ibs.gz"
+        ),
+        arg="results/datasets/{dataset}/qc/ibs_refbias/{dataset}.{ref}_{population}{dp}_allsites-unfilt.arg",
+        stats="results/datasets/{dataset}/qc/ibs_refbias/{dataset}.{ref}_{population}{dp}_allsites-unfilt.refibs.tsv",
+    wildcard_constraints:
+        population="|".join(samples.index),
+    log:
+        "logs/{dataset}/angsd/ibs_ref_bias/{dataset}.{ref}_{population}{dp}_allsites-unfilt.log",
+    benchmark:
+        "benchmarks/{dataset}/angsd/ibs_ref_bias/{dataset}.{ref}_{population}{dp}_allsites-unfilt.log"
+    container:
+        angsd_container
+    params:
+        gl_model=config["params"]["angsd"]["gl_model"],
+        mindepthind=config["params"]["angsd"]["mindepthind"],
+        extra=config["params"]["angsd"]["extra"],
+        trans=get_trans,
+        mapQ=config["mapQ"],
+        baseQ=config["baseQ"],
+        out=lambda w, output: os.path.splitext(output.arg)[0],
+    threads: lambda wildcards, attempt: attempt
+    resources:
+        runtime=lambda wildcards, attempt: attempt * 720,
+    shell:
+        r"""
+        (angsd -doIBS 1 -bam {input.bam} -ref {input.ref} -nThreads {threads} \
+            -doMajorMinor 4 {params.extra} -GL {params.gl_model} \
+            -minMapQ {params.mapQ} -setMinDepthInd {params.mindepthind} \
+            -minQ {params.baseQ} -doCounts 1 -output01 1 \
+            -noTrans {params.trans} -out {params.out}
+        
+        ibs=$(zcat {output.ibs} | tail -n+2 | \
+            awk '{{ sum += $5 }} END {{ if (NR > 0) print 1 - (sum / NR) }}')
+        printf "{wildcards.population}\t$ibs\n" > {output.stats}) 2> {log}
+        """
+
+
+rule ibs_ref_bias_filts:
+    """
+    Calculates the average identity by state to the reference for all sites,
+    even those filtered by the sites filter. Useful to determine if batches
+    of samples have reference biases. Compare to filtered version to see if
+    site filters reduce this bias.
+    """
+    input:
+        unpack(filt_depth),
+        bam="results/datasets/{dataset}/bamlists/{dataset}.{ref}_{population}{dp}.bamlist",
+        bams=get_bamlist_bams,
+        bais=get_bamlist_bais,
+        ref="results/ref/{ref}/{ref}.fa",
+        reffai="results/ref/{ref}/{ref}.fa.fai",
+    output:
+        ibs=temp(
+            "results/datasets/{dataset}/qc/ibs_refbias/{dataset}.{ref}_{population}{dp}_{sites}-filts.ibs.gz"
+        ),
+        arg="results/datasets/{dataset}/qc/ibs_refbias/{dataset}.{ref}_{population}{dp}_{sites}-filts.arg",
+        stats="results/datasets/{dataset}/qc/ibs_refbias/{dataset}.{ref}_{population}{dp}_{sites}-filts.refibs.tsv",
+    wildcard_constraints:
+        population="|".join(samples.index),
+    log:
+        "logs/{dataset}/angsd/ibs_ref_bias/{dataset}.{ref}_{population}{dp}_{sites}-filts.log",
+    benchmark:
+        "benchmarks/{dataset}/angsd/ibs_ref_bias/{dataset}.{ref}_{population}{dp}_{sites}-filts.log"
+    container:
+        angsd_container
+    params:
+        gl_model=config["params"]["angsd"]["gl_model"],
+        mindepthind=config["params"]["angsd"]["mindepthind"],
+        extra=config["params"]["angsd"]["extra"],
+        trans=get_trans,
+        mapQ=config["mapQ"],
+        baseQ=config["baseQ"],
+        out=lambda w, output: os.path.splitext(output.arg)[0],
+    threads: lambda wildcards, attempt: attempt
+    resources:
+        runtime=lambda wildcards, attempt: attempt * 720,
+    shell:
+        r"""
+        (angsd -doIBS 1 -bam {input.bam} -ref {input.ref} -nThreads {threads} \
+            -doMajorMinor 4 {params.extra} -GL {params.gl_model} \
+            -minMapQ {params.mapQ} -setMinDepthInd {params.mindepthind} \
+            -minQ {params.baseQ} -doCounts 1 -output01 1 \
+            -noTrans {params.trans} -sites {input.sites} -out {params.out}
+        
+        ibs=$(zcat {output.ibs} | tail -n+2 | \
+            awk '{{ sum += $5 }} END {{ if (NR > 0) print 1 - (sum / NR) }}')
+        printf "{wildcards.population}\t$ibs\n" > {output.stats}) 2> {log}
+        """
+
+
+rule merge_ibs_ref_bias:
+    """
+    Combines all sample IBS ref bias results into a single table.
+    """
+    input:
+        lambda w: expand(
+            "results/datasets/{{dataset}}/qc/ibs_refbias/{{dataset}}.{{ref}}_{population}{{dp}}_{{filts}}.refibs.tsv",
+            population=get_popfile_inds(w),
+        ),
+    output:
+        ibs=temp(
+            "results/datasets/{dataset}/qc/ibs_refbias/{dataset}.{ref}_{population}{dp}_{filts}.refibs.merged.tsv"
+        ),
+    log:
+        "logs/{dataset}/angsd/ibs_ref_bias/{dataset}.{ref}_{population}{dp}_{filts}_merge.log",
+    benchmark:
+        "benchmarks/{dataset}/angsd/ibs_ref_bias/{dataset}.{ref}_{population}{dp}_{filts}_merge.log"
+    conda:
+        "../envs/shell.yaml"
+    resources:
+        runtime=lambda wildcards, attempt: attempt * 60,
+    shell:
+        r"""
+        printf "sample\tibs.to.ref\n" > {output}
+        cat {input} >> {output}
+        """
+
+
+rule plot_ibs_ref_bias:
+    """
+    Create a boxplot comparing groups for reference bias. Makes a plot for all
+    available groupings in the sample list: population, time, and depth. Does
+    not delve into user defined columns.
+    """
+    input:
+        ibs="results/datasets/{dataset}/qc/ibs_refbias/{dataset}.{ref}_all{dp}_{filts}.refibs.merged.tsv",
+        pops="results/datasets/{dataset}/poplists/{dataset}_all{dp}.indiv.list",
+    output:
+        pop_plot=report(
+            "results/datasets/{dataset}/plots/ibs_refbias/{dataset}.{ref}_all{dp}_{filts}.population.svg",
+            category="00 Quality Control",
+            subcategory="7 Sample IBS to reference (ref bias)",
+            labels=lambda w: {
+                **dp_report(w),
+                "Filter": "{filts}",
+                "Type": "Boxplot",
+                "Grouping": "Population",
+            },
+        ),
+        tim_plot=report(
+            "results/datasets/{dataset}/plots/ibs_refbias/{dataset}.{ref}_all{dp}_{filts}.time.svg",
+            category="00 Quality Control",
+            subcategory="7 Sample IBS to reference (ref bias)",
+            labels=lambda w: {
+                **dp_report(w),
+                "Filter": "{filts}",
+                "Type": "Boxplot",
+                "Grouping": "Time",
+            },
+        ),
+        dep_plot=report(
+            "results/datasets/{dataset}/plots/ibs_refbias/{dataset}.{ref}_all{dp}_{filts}.depth.svg",
+            category="00 Quality Control",
+            subcategory="7 Sample IBS to reference (ref bias)",
+            labels=lambda w: {
+                **dp_report(w),
+                "Filter": "{filts}",
+                "Type": "Boxplot",
+                "Grouping": "Depth",
+            },
+        ),
+        table="results/datasets/{dataset}/qc/ibs_refbias/{dataset}.{ref}_all{dp}_{filts}.refibs.tsv",
+    log:
+        "logs/{dataset}/angsd/ibs_ref_bias/{dataset}.{ref}_all{dp}_{filts}_plot.log",
+    benchmark:
+        "benchmarks/{dataset}/angsd/ibs_ref_bias/{dataset}.{ref}_all{dp}_{filts}_plot.log"
+    params:
+        plotpre=lambda w, output: output["pop_plot"].removesuffix(".population.svg"),
+    conda:
+        "../envs/r.yaml"
+    script:
+        "../scripts/plot_ref_bias.R"
+
+
+rule ibs_ref_bias_table_html:
+    """
+    Convert sample QC summary table to html for report
+    """
+    input:
+        "results/datasets/{dataset}/qc/ibs_refbias/{dataset}.{ref}_{population}{dp}_{filts}.refibs.tsv",
+    output:
+        report(
+            "results/datasets/{dataset}/qc/ibs_refbias/{dataset}.{ref}_{population}{dp}_{filts}.refibs.html",
+            category="00 Quality Control",
+            subcategory="7 Sample IBS to reference (ref bias)",
+            labels=lambda w: {**dp_report(w), "Filter": "{filts}", "Type": "Table"},
+        ),
+    log:
+        "logs/{dataset}/angsd/ibs_ref_bias/{dataset}.{ref}_{population}{dp}_{filts}_tsv2html.log",
+    benchmark:
+        "benchmarks/{dataset}/angsd/ibs_ref_bias/{dataset}.{ref}_{population}{dp}_{filts}_tsv2html.log"
+    conda:
+        "../envs/r-rectable.yaml"
+    script:
+        "../scripts/tsv2html.Rmd"

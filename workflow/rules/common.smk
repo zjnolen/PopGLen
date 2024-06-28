@@ -739,8 +739,8 @@ def get_excl_ind_cols(wildcards):
 # Kinship
 
 
-## Get all possible kinship estimate pairings
-def get_kinship(wildcards):
+## Get all possible kinship estimate pairings (SFS)
+def get_kinship_sfs(wildcards):
     sam = get_samples_from_pop("all")
     if wildcards.dp != "":
         sam = [s for s in sam if s not in config["drop_samples"]]
@@ -753,6 +753,26 @@ def get_kinship(wildcards):
     ind2 = [pair[1] for pair in combos]
     return expand(
         "results/datasets/{{dataset}}/analyses/kinship/ibsrelate_sfs/{{dataset}}.{{ref}}_{ind1}-{ind2}{{dp}}_{{sites}}-filts.kinship",
+        zip,
+        ind1=ind1,
+        ind2=ind2,
+    )
+
+
+## Get all possible kinship estimate pairings (IBS)
+def get_kinship_ibs(wildcards):
+    sam = get_samples_from_pop("all")
+    if wildcards.dp != "":
+        sam = [s for s in sam if s not in config["drop_samples"]]
+    combos = list(itertools.combinations(sam, 2))
+    # sort inds alphebetically, this ensures that should new inds be added
+    # after generating some SFS, the reordering of the combinations won't
+    # lead to generating identical SFS with the individuals swapped
+    combos = [sorted(pair) for pair in combos]
+    ind1 = [pair[0] for pair in combos]
+    ind2 = [pair[1] for pair in combos]
+    return expand(
+        "results/datasets/{{dataset}}/analyses/kinship/ibsrelate_ibs/{{dataset}}.{{ref}}_{ind1}-{ind2}{{dp}}_{{sites}}-filts.ibspair",
         zip,
         ind1=ind1,
         ind2=ind2,
@@ -825,7 +845,7 @@ def dp_report(wildcards):
     if dp == "":
         return {"Subsampling": "None"}
     else:
-        return {"Subsampling": f"{dp.replace('.dp','')}X"}
+        return {"Subsampling": f"{dp.replace('.dp' , '')}X"}
 
 
 # Get string to describe units for Fst for report

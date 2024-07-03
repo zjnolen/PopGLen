@@ -356,10 +356,11 @@ is recommended, as this will ensure that sequencing depth is made uniform at
 the analysis stage, as it is these filtered sites that analyses are performed
 for.
 
-- `subsample_dp:` A mean depth to subsample your reads to. This will be done
-  per sample, and subsample from all the reads. If a sample already has the
-  same, or lower, depth than this number, it will just be used as is in the
-  analysis. (INT)
+- `subsample_dp:` A list of mean depths to subsample your reads to. This will be
+  done per sample, and subsample from all the reads. Leaving list empty disables
+  subsampling, list can contain any number of depths to subsample to. If a
+  sample already has the same, or lower, depth than this number, it will just be
+  used as is in the analysis. (List of INT)
 - `subsample_by:` This determines how the 'full' sequencing depth of a sample
   is calculated to determine the amount of subsampling needed to reach the
   target depth. This should be one of three options: (1) `"unfilt"` will treat
@@ -382,7 +383,12 @@ for.
   samples out that you kept in your 'full' dataset. These can be listed here and
   they will be removed from ALL depth subsampled analyses. A use case for this
   might be if you have a couple samples that are below your targeted subsample
-  depth, and you don't want to include them. (list of strings: `[]`)
+  depth, and you don't want to include them. Note that if you configure multiple
+  `subsample_dp`, these samples will be dropped from all of them. If you need to
+  perform mutliple depth subsamplings with different subsets of samples, its
+  best to run each depth individually. Alternatively, a config file can be made
+  for each subsampled depth, however you may run into issues of file locking
+  blocking both from running at the same time. (list of strings: `[]`)
 - `subsample_analyses:` Individually enable analyses to be performed with the
   subsampled data. These are the same as the ones above in the analyses
   section. Enabling here will only run the analysis for the subsampled data,

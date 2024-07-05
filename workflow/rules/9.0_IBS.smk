@@ -24,6 +24,7 @@ rule angsd_doIBS:
     params:
         mapQ=config["mapQ"],
         baseQ=config["baseQ"],
+        trans=get_trans,
         ibs=config["params"]["ibs"]["doibs"],
         out=lambda w, output: os.path.splitext(output.arg)[0],
     threads: 8
@@ -31,7 +32,8 @@ rule angsd_doIBS:
         runtime=lambda wildcards, attempt: attempt * 2880,
     shell:
         """
-        angsd -doIBS {params.ibs} -bam {input.bamlist} -nThreads {threads} -doCounts 1 \
-            -minMapQ {params.mapQ} -minQ {params.baseQ} -sites {input.sites} \
-            -doMajorMinor 3 -makeMatrix 1 -out {params.out} &> {log}
+        angsd -doIBS {params.ibs} -bam {input.bamlist} -nThreads {threads} \
+            -doCounts 1 -minMapQ {params.mapQ} -minQ {params.baseQ} \
+            -sites {input.sites} -rmTrans {params.trans} -doMajorMinor 3 \
+            -makeMatrix 1 -out {params.out} &> {log}
         """

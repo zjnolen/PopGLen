@@ -398,7 +398,7 @@ rule ibs_ref_bias_nofilts:
             -doMajorMinor 4 {params.extra} -GL {params.gl_model} \
             -minMapQ {params.mapQ} -setMinDepthInd {params.mindepthind} \
             -minQ {params.baseQ} -doCounts 1 -output01 1 \
-            -noTrans {params.trans} -out {params.out}
+            -rmTrans {params.trans} -out {params.out}
         
         ibs=$(zcat {output.ibs} | tail -n+2 | \
             awk '{{ sum += $5 }} END {{ if (NR > 0) print 1 - (sum / NR) }}')

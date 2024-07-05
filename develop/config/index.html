@@ -16,7 +16,7 @@
       
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.27">
+      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.28">
     
     
       
@@ -1017,10 +1017,11 @@ is recommended, as this will ensure that sequencing depth is made uniform at
 the analysis stage, as it is these filtered sites that analyses are performed
 for.</p>
 <ul>
-<li><code>subsample_dp:</code> A mean depth to subsample your reads to. This will be done
-  per sample, and subsample from all the reads. If a sample already has the
-  same, or lower, depth than this number, it will just be used as is in the
-  analysis. (INT)</li>
+<li><code>subsample_dp:</code> A list of mean depths to subsample your reads to. This will be
+  done per sample, and subsample from all the reads. Leaving list empty disables
+  subsampling, list can contain any number of depths to subsample to. If a
+  sample already has the same, or lower, depth than this number, it will just be
+  used as is in the analysis. (List of INT)</li>
 <li><code>subsample_by:</code> This determines how the 'full' sequencing depth of a sample
   is calculated to determine the amount of subsampling needed to reach the
   target depth. This should be one of three options: (1) <code>"unfilt"</code> will treat
@@ -1043,7 +1044,12 @@ for.</p>
   samples out that you kept in your 'full' dataset. These can be listed here and
   they will be removed from ALL depth subsampled analyses. A use case for this
   might be if you have a couple samples that are below your targeted subsample
-  depth, and you don't want to include them. (list of strings: <code>[]</code>)</li>
+  depth, and you don't want to include them. Note that if you configure multiple
+  <code>subsample_dp</code>, these samples will be dropped from all of them. If you need to
+  perform mutliple depth subsamplings with different subsets of samples, its
+  best to run each depth individually. Alternatively, a config file can be made
+  for each subsampled depth, however you may run into issues of file locking
+  blocking both from running at the same time. (list of strings: <code>[]</code>)</li>
 <li><code>subsample_analyses:</code> Individually enable analyses to be performed with the
   subsampled data. These are the same as the ones above in the analyses
   section. Enabling here will only run the analysis for the subsampled data,
@@ -1401,7 +1407,7 @@ or a pull request and I'll gladly put it in.</p>
     <script id="__config" type="application/json">{"base": "..", "features": ["search.highlight"], "search": "../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../assets/javascripts/bundle.ad660dcc.min.js"></script>
+      <script src="../assets/javascripts/bundle.fe8b6f2b.min.js"></script>
       
     
   </body>

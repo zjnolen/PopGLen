@@ -36,8 +36,8 @@ rule damageprofiler:
         "logs/mapping/damageprofiler/{sample}.{ref}.log",
     benchmark:
         "benchmarks/mapping/damageprofiler/{sample}.{ref}.log"
-    conda:
-        "../envs/damageprofiler.yaml"
+    container:
+        damageprofiler_container
     params:
         out=lambda w, output: os.path.dirname(output[0]),
     threads: lambda wildcards, attempt: attempt

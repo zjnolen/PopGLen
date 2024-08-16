@@ -23,6 +23,7 @@ configfile: "config/config.yaml"
 
 angsd_container = "docker://zjnolen/angsd:0.940"
 bedtools_container = "https://depot.galaxyproject.org/singularity/bedtools:2.31.1--hf5e1c6e_2"
+damageprofiler_container = "https://depot.galaxyproject.org/singularity/damageprofiler:1.1--hdfd78af_2"
 pcangsd_container = "docker://zjnolen/pcangsd:1.10"
 evaladmix_container = "docker://zjnolen/evaladmix:0.961-alpine"
 ngsf_hmm_container = "docker://zjnolen/ngsf-hmm:1.1.0"

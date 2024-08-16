@@ -269,8 +269,8 @@ rule repeat_builddatabase:
             "nsq",
             "translation",
         ),
-    conda:
-        "../envs/repeatmasker.yaml"
+    container:
+        repeatmodmask_container
     log:
         "logs/ref/repeatmodeler/builddatabase/{ref}.log",
     benchmark:
@@ -295,8 +295,8 @@ rule repeatmodeler:
         "logs/ref/repeatmodeler/repeatmodeler/{ref}.log",
     benchmark:
         "benchmarks/ref/repeatmodeler/repeatmodeler/{ref}.log"
-    conda:
-        "../envs/repeatmasker.yaml"
+    container:
+        repeatmodmask_container
     params:
         db=lambda w, input: os.path.splitext(input[0])[0],
         ref="{ref}",
@@ -307,7 +307,7 @@ rule repeatmodeler:
         "minimal"
     shell:
         """
-        RepeatModeler -database {params.db} -pa {threads} &> {log}
+        RepeatModeler -database {params.db} -threads {threads} &> {log}
         """
 
 
@@ -321,23 +321,23 @@ rule repeatmasker:
         "logs/ref/repeatmasker/{ref}.log",
     benchmark:
         "benchmarks/ref/repeatmasker/{ref}.log"
-    conda:
-        "../envs/repeatmasker.yaml"
+    container:
+        repeatmodmask_container
     params:
         out=lambda w, output: os.path.dirname(output.gff),
         libpre="-species" if config["analyses"]["repeatmasker"]["dfam_lib"] else "-lib",
         lib=lambda w, input: f"'{config['analyses']['repeatmasker']['dfam_lib']}'"
         if config["analyses"]["repeatmasker"]["dfam_lib"]
         else input.lib,
-    threads: 5
+    threads: 4
     resources:
         runtime=720,
     shadow:
         "shallow"
     shell:
         """
-        RepeatMasker -pa {threads} {params.libpre} {params.lib} -gff -x -no_is \
-            -dir {params.out} {input.ref} &> {log}
+        RepeatMasker -pa 1 {params.libpre} {params.lib} -gff -x \
+            -no_is -dir {params.out} {input.ref} &> {log}
         """
 
 

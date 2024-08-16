@@ -27,7 +27,7 @@ evaladmix_container = "docker://zjnolen/evaladmix:0.961-alpine"
 ngsf_hmm_container = "docker://zjnolen/ngsf-hmm:1.1.0"
 ngsrelate_container = "docker://zjnolen/ngsrelate:20220925-ec95c8f"
 ngsld_container = "docker://zjnolen/ngsld:1.2.0-prune_graph"
-
+repeatmodmask_container = "https://depot.galaxyproject.org/singularity/repeatmodeler:2.0.5--pl5321hdfd78af_0"
 
 # Define function for genome chunks to break up analysis (for parallelization)
 

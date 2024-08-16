@@ -34,8 +34,8 @@ rule popfile:
         inds="results/datasets/{dataset}/poplists/{dataset}_{population}{dp}.indiv.list",
     log:
         "logs/{dataset}/poplists/{dataset}_{population}{dp}_makelist.log",
-    conda:
-        "../envs/python.yaml"
+    container:
+        pandas_container
     params:
         samplelist=samples,
         inds=get_popfile_inds,

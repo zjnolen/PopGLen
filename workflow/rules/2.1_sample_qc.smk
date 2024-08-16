@@ -13,12 +13,16 @@ rule samtools_flagstat:
         "results/{prefix}.bam",
     output:
         "results/{prefix}.flagstat",
+    container:
+        samtools_container
     log:
         "logs/mapping/samtools/flagstat/{prefix}.log",
     benchmark:
         "benchmarks/mapping/samtools/flagstat/{prefix}.log"
-    wrapper:
-        "v2.6.0/bio/samtools/flagstat"
+    shell:
+        """
+        samtools flagstat {input} > {output} 2> {log}
+        """
 
 
 rule qualimap:
@@ -87,7 +91,7 @@ rule qualimap_multiqc:
         extra="--cl-config \"extra_fn_clean_exts: ['.rmdup', '.clip']\" "
         '--cl-config "qualimap_config: { general_stats_coverage: [1,2,3,5,10,15] }"',
     wrapper:
-        "v3.5.0/bio/multiqc"
+        "v4.0.0/bio/multiqc"
 
 
 rule endo_cont:

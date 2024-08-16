@@ -62,7 +62,7 @@ rule bwa_index:
     benchmark:
         "benchmarks/ref/bwa_index/{ref}.log"
     wrapper:
-        "v2.6.0/bio/bwa/index"
+        "v4.0.0/bio/bwa/index"
 
 
 rule samtools_faidx:
@@ -71,12 +71,16 @@ rule samtools_faidx:
         "results/ref/{ref}/{prefix}.fa",
     output:
         "results/ref/{ref}/{prefix}.fa.fai",
+    container:
+        samtools_container
     log:
         "logs/ref/samtools_faidx/{ref}/{prefix}.log",
     benchmark:
         "benchmarks/ref/samtools_faidx/{ref}/{prefix}.log"
-    wrapper:
-        "v2.4.0/bio/samtools/faidx"
+    shell:
+        """
+        samtools faidx {input} 2> {log}
+        """
 
 
 rule ref_chunking:
@@ -108,4 +112,4 @@ rule picard_dict:
     benchmark:
         "benchmarks/ref/picard_dict/{ref}.log"
     wrapper:
-        "v2.4.0/bio/picard/createsequencedictionary"
+        "v4.0.0/bio/picard/createsequencedictionary"

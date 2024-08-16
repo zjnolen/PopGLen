@@ -22,7 +22,7 @@ rule bwa_aln_merged:
     resources:
         runtime="10d",
     wrapper:
-        "v2.6.0/bio/bwa/aln"
+        "v4.0.0/bio/bwa/aln"
 
 
 rule bwa_samse_merged:
@@ -44,7 +44,7 @@ rule bwa_samse_merged:
     resources:
         runtime="6h",
     wrapper:
-        "v2.6.0/bio/bwa/samse"
+        "v4.0.0/bio/bwa/samse"
 
 
 rule bwa_mem_paired:
@@ -71,7 +71,7 @@ rule bwa_mem_paired:
     resources:
         runtime=lambda wildcards, attempt: attempt * 2880,
     wrapper:
-        "v2.6.0/bio/bwa/mem"
+        "v4.0.0/bio/bwa/mem"
 
 
 rule bwa_mem_merged:
@@ -93,7 +93,7 @@ rule bwa_mem_merged:
     resources:
         runtime=lambda wildcards, attempt: attempt * 2880,
     wrapper:
-        "v2.6.0/bio/bwa/mem"
+        "v4.0.0/bio/bwa/mem"
 
 
 rule samtools_merge_collapsed_libs:
@@ -109,7 +109,7 @@ rule samtools_merge_collapsed_libs:
     resources:
         runtime=lambda wildcards, attempt: attempt * 720,
     wrapper:
-        "v2.6.0/bio/samtools/merge"
+        "v4.0.0/bio/samtools/merge"
 
 
 rule samtools_merge_paired_units:
@@ -125,7 +125,7 @@ rule samtools_merge_paired_units:
     resources:
         runtime=lambda wildcards, attempt: attempt * 720,
     wrapper:
-        "v2.6.0/bio/samtools/merge"
+        "v4.0.0/bio/samtools/merge"
 
 
 rule mark_duplicates:
@@ -147,7 +147,7 @@ rule mark_duplicates:
     resources:
         runtime=lambda wildcards, attempt: attempt * 1440,
     wrapper:
-        "v1.17.2/bio/picard/markduplicates"
+        "v4.0.0/bio/picard/markduplicates"
 
 
 rule dedup_merged:
@@ -201,7 +201,7 @@ rule samtools_merge_dedup:
     resources:
         runtime=lambda wildcards, attempt: attempt * 720,
     wrapper:
-        "v2.6.0/bio/samtools/merge"
+        "v4.0.0/bio/samtools/merge"
 
 
 rule realignertargetcreator:
@@ -222,7 +222,7 @@ rule realignertargetcreator:
     resources:
         runtime=lambda wildcards, attempt: attempt * 720,
     wrapper:
-        "v2.6.0/bio/gatk3/realignertargetcreator"
+        "v4.0.0/bio/gatk3/realignertargetcreator"
 
 
 rule indelrealigner:
@@ -244,7 +244,7 @@ rule indelrealigner:
     resources:
         runtime=lambda wildcards, attempt: attempt * 1440,
     wrapper:
-        "v2.6.0/bio/gatk3/indelrealigner"
+        "v4.0.0/bio/gatk3/indelrealigner"
 
 
 rule bam_clipoverlap:
@@ -259,8 +259,8 @@ rule bam_clipoverlap:
         "logs/mapping/bamutil/clipoverlap/{sample}.{ref}.rmdup.realn.log",
     benchmark:
         "benchmarks/mapping/bamutil/clipoverlap/{sample}.{ref}.rmdup.realn.log"
-    conda:
-        "../envs/bamutil.yaml"
+    container:
+        bamutil_container
     shadow:
         "minimal"
     threads: lambda wildcards, attempt: attempt * 2
@@ -300,8 +300,8 @@ rule bam_clipoverlap_userbams:
         "logs/mapping/bamutil/clipoverlap/{sample}.{ref}.user-processed.log",
     benchmark:
         "benchmarks/mapping/bamutil/clipoverlap/{sample}.{ref}.user-processed.log"
-    conda:
-        "../envs/bamutil.yaml"
+    container:
+        bamutil_container
     shadow:
         "minimal"
     threads: lambda wildcards, attempt: attempt * 2
@@ -324,12 +324,16 @@ rule samtools_index:
         "results/{prefix}.bam",
     output:
         "results/{prefix}.bam.bai",
+    container:
+        samtools_container
     log:
         "logs/mapping/samtools/index/{prefix}.log",
     benchmark:
         "benchmarks/mapping/samtools/index/{prefix}.log"
-    wrapper:
-        "v2.6.0/bio/samtools/index"
+    shell:
+        """
+        samtools index {input} {output} 2> {log}
+        """
 
 
 rule symlink_bams:
@@ -370,8 +374,8 @@ rule samtools_subsample:
         "logs/mapping/samtools/subsample/{dataset}_{sample}.{ref}{dp}.log",
     benchmark:
         "benchmarks/mapping/samtools/subsample/{dataset}_{sample}.{ref}{dp}.log"
-    conda:
-        "../envs/samtools.yaml"
+    container:
+        samtools_container
     shadow:
         "minimal"
     params:

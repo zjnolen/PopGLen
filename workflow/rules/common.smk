@@ -22,6 +22,7 @@ configfile: "config/config.yaml"
 # Create variables for software containers (for easier version updating)
 
 angsd_container = "docker://zjnolen/angsd:0.940"
+bamutil_container = "https://depot.galaxyproject.org/singularity/bamutil:1.0.15--h43eeafb_5"
 bedtools_container = "https://depot.galaxyproject.org/singularity/bedtools:2.31.1--hf5e1c6e_2"
 damageprofiler_container = "https://depot.galaxyproject.org/singularity/damageprofiler:1.1--hdfd78af_2"
 evaladmix_container = "docker://zjnolen/evaladmix:0.961-alpine"
@@ -32,6 +33,7 @@ pandas_container = "https://depot.galaxyproject.org/singularity/pandas:2.2.1"
 pcangsd_container = "docker://zjnolen/pcangsd:1.10"
 qualimap_container = "https://depot.galaxyproject.org/singularity/qualimap:2.3--hdfd78af_0"
 repeatmodmask_container = "https://depot.galaxyproject.org/singularity/repeatmodeler:2.0.5--pl5321hdfd78af_0"
+samtools_container = "https://depot.galaxyproject.org/singularity/samtools:1.20--h50ea8bc_1"
 
 # Define function for genome chunks to break up analysis (for parallelization)
 

@@ -12,7 +12,7 @@ rule ncbi_download:
         extra="--skip-technical -x",
     threads: 6
     wrapper:
-        "v3.3.6/bio/sra-tools/fasterq-dump"
+        "v4.0.0/bio/sra-tools/fasterq-dump"
 
 
 rule fastp_mergedout:
@@ -50,7 +50,7 @@ rule fastp_mergedout:
     resources:
         runtime=lambda wildcards, attempt: attempt * 480,
     wrapper:
-        "v2.5.0/bio/fastp"
+        "v4.0.0/bio/fastp"
 
 
 rule fastp_pairedout:
@@ -86,7 +86,7 @@ rule fastp_pairedout:
     resources:
         runtime=lambda wildcards, attempt: attempt * 480,
     wrapper:
-        "v2.5.0/bio/fastp"
+        "v4.0.0/bio/fastp"
 
 
 rule fastp_multiqc:
@@ -105,7 +105,7 @@ rule fastp_multiqc:
         extra="",
         use_input_files_only=True,
     wrapper:
-        "v3.5.0/bio/multiqc"
+        "v4.0.0/bio/multiqc"
 
 
 # rule fastp_pairedout:
@@ -141,4 +141,4 @@ rule fastp_multiqc:
 #     resources:
 #         runtime=lambda wildcards, attempt: attempt * 240,
 #     wrapper:
-#         "v2.5.0/bio/fastp"
+#         "v4.0.0/bio/fastp"

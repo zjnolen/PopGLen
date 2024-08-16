@@ -78,7 +78,7 @@ rule mapDamage2_rescaling:
         runtime=1440,
         mem_mb=lambda w, attempt: attempt * 6400,
     wrapper:
-        "v2.6.0/bio/mapdamage2"
+        "v4.0.0/bio/mapdamage2"
 
 
 rule dna_damage_multiqc:
@@ -96,4 +96,4 @@ rule dna_damage_multiqc:
     params:
         extra="--cl-config \"extra_fn_clean_exts: ['.rmdup']\" ",
     wrapper:
-        "v3.5.0/bio/multiqc"
+        "v4.0.0/bio/multiqc"

@@ -184,8 +184,8 @@ rule windowgen:
         "logs/ref/genmap/windowgen/{ref}_k{k}.log",
     benchmark:
         "benchmarks/ref/genmap/windowgen/{ref}_k{k}.log"
-    conda:
-        "../envs/bedtools.yaml"
+    container:
+        bedtools_container
     resources:
         runtime=720,
     shell:
@@ -236,8 +236,8 @@ rule genmap_filt_bed:
         "logs/{dataset}/filters/pileupmap/{ref}_k{k}_e{e}_{thresh}.log",
     benchmark:
         "benchmarks/{dataset}/filters/pileupmap/{ref}_k{k}_e{e}_{thresh}.log"
-    conda:
-        "../envs/bedtools.yaml"
+    container:
+        bedtools_container
     params:
         thresh=config["params"]["genmap"]["map_thresh"],
     shell:
@@ -353,8 +353,8 @@ rule repeat_sum:
         "logs/ref/repeatmasker/summarize_gff/{ref}.log",
     benchmark:
         "benchmarks/ref/repeatmasker/summarize_gff/{ref}.log"
-    conda:
-        "../envs/bedtools.yaml"
+    container:
+        bedtools_container
     shell:
         r"""
         (bedtools sort -i {input.rep} | bedtools merge > {output.bed}
@@ -479,8 +479,8 @@ if config["analyses"]["extreme_depth"]:
             "logs/{dataset}/filters/depth/bed/{dataset}.{ref}_{population}{dp}.log",
         benchmark:
             "benchmarks/{dataset}/filters/depth/bed/{dataset}.{ref}_{population}{dp}.log"
-        conda:
-            "../envs/bedtools.yaml"
+        container:
+            bedtools_container
         threads: lambda wildcards, attempt: attempt
         shell:
             r"""
@@ -611,8 +611,8 @@ rule missdata_bed:
         "logs/{dataset}/filters/missdata_bed/{dataset}.{ref}_{population}{dp}_under{miss}.log",
     benchmark:
         "benchmarks/{dataset}/filters/missdata_bed/{dataset}.{ref}_{population}{dp}_under{miss}.log"
-    conda:
-        "../envs/bedtools.yaml"
+    container:
+        bedtools_container
     shell:
         r"""
         # generate bed
@@ -650,8 +650,8 @@ rule combine_beds:
         "logs/{dataset}/filters/combine/{dataset}.{ref}{dp}_combine_beds.log",
     benchmark:
         "benchmarks/{dataset}/filters/combine/{dataset}.{ref}{dp}_combine_beds.log"
-    conda:
-        "../envs/bedtools.yaml"
+    container:
+        bedtools_container
     threads: lambda wildcards, attempt: attempt * 2
     resources:
         runtime=240,
@@ -707,8 +707,8 @@ rule user_sites:
         "logs/{dataset}/filters/user_sites/{dataset}.{ref}{dp}_{sites}-filt.log",
     benchmark:
         "benchmarks/{dataset}/filters/user_sites/{dataset}.{ref}{dp}_{sites}-filt.log"
-    conda:
-        "../envs/bedtools.yaml"
+    container:
+        bedtools_container
     threads: lambda wildcards, attempt: attempt * 2
     resources:
         runtime=240,

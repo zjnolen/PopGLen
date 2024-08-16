@@ -28,19 +28,21 @@ rule qualimap:
     input:
         unpack(get_final_bam),
     output:
-        directory("results/mapping/qc/qualimap/{sample}.{ref}"),
+        fold=directory("results/mapping/qc/qualimap/{sample}.{ref}"),
         rep="results/mapping/qc/qualimap/{sample}.{ref}/qualimapReport.html",
         txt="results/mapping/qc/qualimap/{sample}.{ref}/genome_results.txt",
-    params:
-        extra="",
+    container:
+        qualimap_container
     log:
         "logs/mapping/qualimap/{sample}.{ref}.log",
     benchmark:
         "benchmarks/mapping/qualimap/{sample}.{ref}.log"
     resources:
         runtime=360,
-    wrapper:
-        "v2.6.0/bio/qualimap/bamqc"
+    shell:
+        """
+        qualimap bamqc -bam {input.bam} -outdir {output.fold} 2> {log}
+        """
 
 
 rule qualimap_userprovided:
@@ -50,21 +52,23 @@ rule qualimap_userprovided:
     input:
         unpack(get_final_bam),
     output:
-        directory(
+        fold=directory(
             "results/datasets/{dataset}/qc/user-provided-bams/qualimap/{sample}.{ref}"
         ),
         rep="results/datasets/{dataset}/qc/user-provided-bams/qualimap/{sample}.{ref}/qualimapReport.html",
         txt="results/datasets/{dataset}/qc/user-provided-bams/qualimap/{sample}.{ref}/genome_results.txt",
-    params:
-        extra="",
+    container:
+        qualimap_container
     log:
         "logs/mapping/qualimap/{dataset}.{sample}.{ref}.log",
     benchmark:
         "benchmarks/mapping/qualimap/{dataset}.{sample}.{ref}.log"
     resources:
         runtime=360,
-    wrapper:
-        "v2.6.0/bio/qualimap/bamqc"
+    shell:
+        """
+        qualimap bamqc -bam {input.bam} -outdir {output.fold} 2> {log}
+        """
 
 
 rule qualimap_multiqc:

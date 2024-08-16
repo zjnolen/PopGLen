@@ -104,7 +104,7 @@ rule plot_evalAdmix:
         pops="results/datasets/{dataset}/poplists/{dataset}_{population}{dp}.indiv.list",
     output:
         report(
-            "results/datasets/{dataset}/plots/evaladmix/{dataset}.{ref}_{population}{dp}_{sites}-filts_K{kvalue}_evaladmix.html",
+            "results/datasets/{dataset}/plots/evaladmix/{dataset}.{ref}_{population}{dp}_{sites}-filts_K{kvalue}_evaladmix.png",
             category="03.2 Admixture",
             subcategory="evalAdmix",
             labels=lambda w: {
@@ -118,7 +118,7 @@ rule plot_evalAdmix:
         "logs/{dataset}/evaladmix/{dataset}.{ref}_{population}{dp}_{sites}-filts_K{kvalue}_plot.log",
     benchmark:
         "benchmarks/{dataset}/evaladmix/{dataset}.{ref}_{population}{dp}_{sites}-filts_K{kvalue}_plot.log"
-    container:
-        evaladmix_container
+    conda:
+        "../envs/r.yaml"
     script:
-        "../scripts/plot_evaladmix.Rmd"
+        "../scripts/plot_evaladmix.R"

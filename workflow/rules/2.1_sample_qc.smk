@@ -87,11 +87,16 @@ rule qualimap_multiqc:
         ),
     log:
         "logs/mapping/qualimap/{dataset}.{ref}_mqc.log",
+    container:
+        multiqc_container
     params:
         extra="--cl-config \"extra_fn_clean_exts: ['.rmdup', '.clip']\" "
         '--cl-config "qualimap_config: { general_stats_coverage: [1,2,3,5,10,15] }"',
-    wrapper:
-        "v4.0.0/bio/multiqc"
+    shell:
+        """
+        multiqc {params.extra} --no-data-dir \
+            --filename {output} {input} 2> {log}
+        """
 
 
 rule endo_cont:
@@ -103,8 +108,8 @@ rule endo_cont:
         unpack(get_endo_cont_stat),
     output:
         endo="results/datasets/{dataset}/qc/endogenous_content/{dataset}.{sample}.{ref}.endo",
-    conda:
-        "../envs/shell.yaml"
+    container:
+        shell_container
     log:
         "logs/datasets/{dataset}/qc/endogenous_content/{dataset}.{sample}.{ref}.log",
     benchmark:
@@ -130,8 +135,8 @@ rule compile_endo_cont:
         "logs/datasets/{dataset}/qc/endogenous_content/{dataset}.{ref}_{population}{dp}_compile-endocont.log",
     benchmark:
         "benchmarks/datasets/{dataset}/qc/endogenous_content/{dataset}.{ref}_{population}{dp}_compile-endocont.log"
-    conda:
-        "../envs/shell.yaml"
+    container:
+        shell_container
     resources:
         runtime=lambda wildcards, attempt: attempt * 15,
     shell:
@@ -267,8 +272,8 @@ rule summarize_ind_depth:
         "logs/summarize_ind_depth/{prefix}{dataset}.{ref}_{sample}{dp}_{group}.log",
     benchmark:
         "benchmarks/summarize_ind_depth/{prefix}{dataset}.{ref}_{sample}{dp}_{group}.log"
-    conda:
-        "../envs/r.yaml"
+    container:
+        r_container
     threads: lambda wildcards, attempt: attempt
     script:
         "../scripts/calc_depth.R"
@@ -296,8 +301,8 @@ rule merge_ind_depth:
         "logs/merge_depth/{prefix}{dataset}.{ref}_{population}{dp}_{group}.log",
     benchmark:
         "benchmarks/merge_depth/{prefix}{dataset}.{ref}_{population}{dp}_{group}.log"
-    conda:
-        "../envs/shell.yaml"
+    container:
+        shell_container
     shell:
         """
         (cat {input.depth} > {output.dep}
@@ -319,8 +324,8 @@ rule combine_sample_qc:
         "logs/datasets/{dataset}/combine_sample_qc/{dataset}.{ref}{dp}.log",
     benchmark:
         "benchmarks/datasets/{dataset}/combine_sample_qc/{dataset}.{ref}{dp}.log"
-    conda:
-        "../envs/shell.yaml"
+    container:
+        shell_container
     shadow:
         "minimal"
     shell:
@@ -356,8 +361,8 @@ rule sample_qc_summary:
         "logs/{dataset}/combine_sample_qc/{dataset}.{ref}{dp}_tsv2html.log",
     benchmark:
         "benchmarks/{dataset}/combine_sample_qc/{dataset}.{ref}{dp}_tsv2html.log"
-    conda:
-        "../envs/r-rectable.yaml"
+    container:
+        r_container
     script:
         "../scripts/tsv2html.Rmd"
 
@@ -484,8 +489,8 @@ rule merge_ibs_ref_bias:
         "logs/{dataset}/angsd/ibs_ref_bias/{dataset}.{ref}_{population}{dp}_{filts}_merge.log",
     benchmark:
         "benchmarks/{dataset}/angsd/ibs_ref_bias/{dataset}.{ref}_{population}{dp}_{filts}_merge.log"
-    conda:
-        "../envs/shell.yaml"
+    container:
+        shell_container
     resources:
         runtime=lambda wildcards, attempt: attempt * 60,
     shell:
@@ -545,8 +550,8 @@ rule plot_ibs_ref_bias:
         "benchmarks/{dataset}/angsd/ibs_ref_bias/{dataset}.{ref}_all{dp}_{filts}_plot.log"
     params:
         plotpre=lambda w, output: output["pop_plot"].removesuffix(".population.svg"),
-    conda:
-        "../envs/r.yaml"
+    container:
+        r_container
     script:
         "../scripts/plot_ref_bias.R"
 
@@ -568,7 +573,7 @@ rule ibs_ref_bias_table_html:
         "logs/{dataset}/angsd/ibs_ref_bias/{dataset}.{ref}_{population}{dp}_{filts}_tsv2html.log",
     benchmark:
         "benchmarks/{dataset}/angsd/ibs_ref_bias/{dataset}.{ref}_{population}{dp}_{filts}_tsv2html.log"
-    conda:
-        "../envs/r-rectable.yaml"
+    container:
+        r_container
     script:
         "../scripts/tsv2html.Rmd"

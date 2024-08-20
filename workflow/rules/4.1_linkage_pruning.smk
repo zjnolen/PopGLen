@@ -44,8 +44,8 @@ rule prune_chunk_beagle:
         "logs/{dataset}/ngsLD/prune_beagle/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.pruned_maxkbdist-{maxkb}_minr2-{r2}.log",
     benchmark:
         "benchmarks/{dataset}/ngsLD/prune_beagle/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.pruned_maxkbdist-{maxkb}_minr2-{r2}.log"
-    conda:
-        "../envs/shell.yaml"
+    container:
+        shell_container
     shadow:
         "minimal"
     threads: lambda wildcards, attempt: attempt
@@ -94,8 +94,8 @@ rule merge_pruned_beagles:
             + [i for i in samples.population.values.tolist()]
             + [i for i in samples.depth.values.tolist()]
         ),
-    conda:
-        "../envs/shell.yaml"
+    container:
+        shell_container
     resources:
         runtime=lambda wildcards, attempt: attempt * 60,
     shell:

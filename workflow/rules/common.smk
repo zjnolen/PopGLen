@@ -19,21 +19,45 @@ min_version("7.25.0")
 configfile: "config/config.yaml"
 
 
+# Containerize rules from Snakemake wrappers (only mapping rules)
+
+
+containerized: "docker://zjnolen/popglen-mapping:0.4.0"
+
+
 # Create variables for software containers (for easier version updating)
 
-angsd_container = "docker://zjnolen/angsd:0.940"
-bamutil_container = "https://depot.galaxyproject.org/singularity/bamutil:1.0.15--h43eeafb_5"
-bedtools_container = "https://depot.galaxyproject.org/singularity/bedtools:2.31.1--hf5e1c6e_2"
-damageprofiler_container = "https://depot.galaxyproject.org/singularity/damageprofiler:1.1--hdfd78af_2"
+angsd_container = "https://depot.galaxyproject.org/singularity/angsd:0.940--hf5e1c6e_3"
+bamutil_container = (
+    "https://depot.galaxyproject.org/singularity/bamutil:1.0.15--h43eeafb_5"
+)
+bedtools_container = (
+    "https://depot.galaxyproject.org/singularity/bedtools:2.31.1--hf5e1c6e_2"
+)
+damageprofiler_container = (
+    "https://depot.galaxyproject.org/singularity/damageprofiler:1.1--hdfd78af_2"
+)
+dedup_container = "https://depot.galaxyproject.org/singularity/dedup:0.12.8--hdfd78af_1"
 evaladmix_container = "docker://zjnolen/evaladmix:0.961-alpine"
+multiqc_container = (
+    "https://depot.galaxyproject.org/singularity/multiqc:1.23--pyhdfd78af_0"
+)
 ngsf_hmm_container = "docker://zjnolen/ngsf-hmm:1.1.0"
 ngsld_container = "docker://zjnolen/ngsld:1.2.0-prune_graph"
 ngsrelate_container = "docker://zjnolen/ngsrelate:20220925-ec95c8f"
 pandas_container = "https://depot.galaxyproject.org/singularity/pandas:2.2.1"
 pcangsd_container = "docker://zjnolen/pcangsd:1.10"
-qualimap_container = "https://depot.galaxyproject.org/singularity/qualimap:2.3--hdfd78af_0"
-repeatmodmask_container = "https://depot.galaxyproject.org/singularity/repeatmodeler:2.0.5--pl5321hdfd78af_0"
-samtools_container = "https://depot.galaxyproject.org/singularity/samtools:1.20--h50ea8bc_1"
+qualimap_container = (
+    "https://depot.galaxyproject.org/singularity/qualimap:2.3--hdfd78af_0"
+)
+r_container = "docker://zjnolen/popglen-r:0.4.0"
+repeatmodmask_container = (
+    "https://depot.galaxyproject.org/singularity/repeatmodeler:2.0.5--pl5321hdfd78af_0"
+)
+samtools_container = (
+    "https://depot.galaxyproject.org/singularity/samtools:1.20--h50ea8bc_1"
+)
+shell_container = "docker://zjnolen/popglen-shell:0.4.0"
 
 # Define function for genome chunks to break up analysis (for parallelization)
 
@@ -529,14 +553,14 @@ def multiqc_input_qualimap(wildcards):
     if len(pipebams) > 0:
         reports.extend(
             expand(
-                "results/mapping/qc/qualimap/{sample}.{{ref}}/qualimapReport.html",
+                "results/mapping/qc/qualimap/{sample}.{{ref}}/genome_results.txt",
                 sample=pipebams,
             )
         )
     if len(userbams) > 0:
         reports.extend(
             expand(
-                "results/datasets/{{dataset}}/qc/user-provided-bams/qualimap/{sample}.{{ref}}/qualimapReport.html",
+                "results/datasets/{{dataset}}/qc/user-provided-bams/qualimap/{sample}.{{ref}}/genome_results.txt",
                 sample=userbams,
             )
         )
@@ -831,7 +855,7 @@ def dp_report(wildcards):
     if dp == "":
         return {"Subsampling": "None"}
     else:
-        return {"Subsampling": f"{dp.replace('.dp','')}X"}
+        return {"Subsampling": f"{dp.replace('.dp', '')}X"}
 
 
 # Get string to describe units for Fst for report

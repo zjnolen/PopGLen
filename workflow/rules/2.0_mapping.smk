@@ -280,8 +280,8 @@ rule symlink_userbams:
         bam="results/mapping/user-provided-bams/{sample}.{ref}.user-processed.bam",
     log:
         "logs/symlink_bams/{sample}.{ref}.user-processed.log",
-    conda:
-        "../envs/shell.yaml"
+    container:
+        shell_container
     shell:
         """
         ln -sr {input.bam} {output.bam}
@@ -349,8 +349,8 @@ rule symlink_bams:
         bai="results/datasets/{dataset}/bams/{sample}.{ref}.bam.bai",
     log:
         "logs/{dataset}/symlink_bams/{sample}.{ref}.log",
-    conda:
-        "../envs/shell.yaml"
+    container:
+        shell_container
     shell:
         """
         ln -sr {input.bam} {output.bam}

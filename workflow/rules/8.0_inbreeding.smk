@@ -98,8 +98,8 @@ rule plot_froh:
         "logs/{dataset}/ngsF-HMM/{dataset}.{ref}_all{dp}_{sites}-filts_plot.log",
     benchmark:
         "benchmarks/{dataset}/ngsF-HMM/{dataset}.{ref}_all{dp}_{sites}-filts_plot.log"
-    conda:
-        "../envs/r.yaml"
+    container:
+        r_container
     params:
         bins=config["params"]["ngsf-hmm"]["roh_bins"],
         minroh=config["params"]["ngsf-hmm"]["min_roh_length"],

@@ -93,7 +93,12 @@ rule dna_damage_multiqc:
         ),
     log:
         "logs/mapping/dnadamage/{dataset}.{ref}_dnadmg-mqc.log",
+    container:
+        multiqc_container
     params:
         extra="--cl-config \"extra_fn_clean_exts: ['.rmdup']\" ",
-    wrapper:
-        "v4.0.0/bio/multiqc"
+    shell:
+        """
+        multiqc {params.extra} --no-data-dir \
+            --filename {output} {input} 2> {log}
+        """

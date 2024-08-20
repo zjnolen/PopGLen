@@ -16,8 +16,8 @@ rule link_ref:
         "results/ref/{ref}/{ref}.fa",
     log:
         "logs/ref/link_ref/{ref}.log",
-    conda:
-        "../envs/shell.yaml"
+    container:
+        shell_container
     shell:
         """
         ln -sr {input} {output} 2> {log}
@@ -34,8 +34,8 @@ if config["ancestral"]:
             "results/ref/{ref}/{ref}.anc.fa",
         log:
             "logs/ref/link_ref/{ref}.anc.log",
-        conda:
-            "../envs/shell.yaml"
+        container:
+            shell_container
         shell:
             """
             ln -sr {input} {output} 2> {log}
@@ -91,8 +91,8 @@ rule ref_chunking:
         "results/datasets/{dataset}/filters/chunks/{ref}_chunk{chunk}.rf",
     log:
         "logs/{dataset}/ref/chunking/{ref}_chunk{chunk}.rf",
-    conda:
-        "../envs/shell.yaml"
+    container:
+        shell_container
     params:
         contigs=lambda w: chunks[int(w.chunk) - 1].index.tolist(),
     shell:

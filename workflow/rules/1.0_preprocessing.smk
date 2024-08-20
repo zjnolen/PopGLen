@@ -101,11 +101,12 @@ rule fastp_multiqc:
         ),
     log:
         "logs/preprocessing/fastp/{dataset}.{ref}_mqc.log",
-    params:
-        extra="",
-        use_input_files_only=True,
-    wrapper:
-        "v4.0.0/bio/multiqc"
+    container:
+        multiqc_container
+    shell:
+        """
+        multiqc --no-data-dir --filename {output} {input} 2> {log}
+        """
 
 
 # rule fastp_pairedout:

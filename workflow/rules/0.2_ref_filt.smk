@@ -23,8 +23,8 @@ rule genome_bed:
         "logs/ref/genome_bed/{ref}.log",
     benchmark:
         "benchmarks/ref/genome_bed/{ref}.log"
-    conda:
-        "../envs/shell.yaml"
+    container:
+        shell_container
     shell:
         r"""
         (# generate bed
@@ -49,8 +49,8 @@ rule smallscaff_bed:
         "logs/{dataset}/filters/smallscaff/{ref}_scaff{size}bp.log",
     benchmark:
         "benchmarks/{dataset}/filters/smallscaff/{ref}_scaff{size}bp.log"
-    conda:
-        "../envs/shell.yaml"
+    container:
+        shell_container
     params:
         minsize="{size}",
     shell:
@@ -79,8 +79,8 @@ rule sexlink_bed:
         "logs/{dataset}/filters/sex-link_mito_excl/{ref}.log",
     benchmark:
         "benchmarks/{dataset}/filters/sex-link_mito_excl/{ref}.log"
-    conda:
-        "../envs/shell.yaml"
+    container:
+        shell_container
     params:
         sex=config["reference"]["sex-linked"],
         excl=config["reference"]["exclude"],
@@ -425,8 +425,8 @@ if config["analyses"]["extreme_depth"]:
             "logs/{dataset}/filters/depth/{dataset}.{ref}_{population}{dp}_combined.log",
         benchmark:
             "benchmarks/{dataset}/filters/depth/{dataset}.{ref}_{population}{dp}_combined.log"
-        conda:
-            "../envs/shell.yaml"
+        container:
+            shell_container
         shell:
             """
             cat {input} > {output} 2> {log}
@@ -452,8 +452,8 @@ if config["analyses"]["extreme_depth"]:
             "logs/{dataset}/filters/depth/{dataset}.{ref}_{population}{dp}_depth_extremes.log",
         benchmark:
             "benchmarks/{dataset}/filters/depth/{dataset}.{ref}_{population}{dp}_depth_extremes.log"
-        conda:
-            "../envs/r.yaml"
+        container:
+            r_container
         params:
             lower=config["params"]["extreme_depth_filt"]["bounds"][0],
             upper=config["params"]["extreme_depth_filt"]["bounds"][1],
@@ -746,7 +746,7 @@ rule filter_summary_table:
         "logs/{dataset}/filters/combine/{dataset}.{ref}{dp}_{sites}-filts_tsv2html.log",
     benchmark:
         "benchmarks/{dataset}/filters/combine/{dataset}.{ref}{dp}_{sites}-filts_tsv2html.log"
-    conda:
-        "../envs/r-rectable.yaml"
+    container:
+        r_container
     script:
         "../scripts/tsv2html.Rmd"

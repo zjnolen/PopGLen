@@ -17,11 +17,12 @@ rule angsd_makeBamlist:
         "results/datasets/{dataset}/bamlists/{dataset}.{ref}_{population}{dp}.bamlist",
     log:
         "logs/datasets/{dataset}/bamlists/{dataset}.{ref}_{population}{dp}.log",
-    conda:
-        "../envs/shell.yaml"
+    container:
+        shell_container
     shell:
         """
-        (readlink -f {input.bams} | perl -pe 'chomp if eof') > {output} 2> {log}
+        (readlink -f {input.bams} > {output}
+        truncate -s -1 {output}) 2> {log}
         """
 
 

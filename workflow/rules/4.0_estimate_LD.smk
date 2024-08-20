@@ -59,8 +59,8 @@ rule combine_LD_files:
         "logs/{dataset}/ngsLD/combine_LD_files/{dataset}.{ref}_{population}{dp}_{sites}-filts.ld_maxkbdist-{maxkb}_rndsample-{rndsmp}.log",
     benchmark:
         "benchmarks/{dataset}/ngsLD/combine_LD_files/{dataset}.{ref}_{population}{dp}_{sites}-filts.ld_maxkbdist-{maxkb}_rndsample-{rndsmp}.log"
-    conda:
-        "../envs/shell.yaml"
+    container:
+        shell_container
     shell:
         """
         cat {input.ldgz} > {output.ldgz} 2> {log}

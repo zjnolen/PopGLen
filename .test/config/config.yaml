@@ -36,7 +36,7 @@ analyses:
     historical_only_collapsed: false
     historical_collapsed_aligner: "aln"
   # sites file filters
-  pileup-mappability: true
+  pileup-mappability: false
   repeatmasker:
     bed:
     local_lib:

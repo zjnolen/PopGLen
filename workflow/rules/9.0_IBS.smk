@@ -9,8 +9,8 @@ rule angsd_doIBS:
         bamlist="results/datasets/{dataset}/bamlists/{dataset}.{ref}_{population}{dp}.bamlist",
         bams=get_bamlist_bams,
         bais=get_bamlist_bais,
-        sites="results/datasets/{dataset}/filters/snps/{dataset}.{ref}{dp}_{sites}-filts_snps.sites",
-        idx="results/datasets/{dataset}/filters/snps/{dataset}.{ref}{dp}_{sites}-filts_snps.sites.idx",
+        sites="results/datasets/{dataset}/filters/snps/{dataset}.{ref}_{population}{dp}_{sites}-filts_snps.sites",
+        idx="results/datasets/{dataset}/filters/snps/{dataset}.{ref}_{population}{dp}_{sites}-filts_snps.sites.idx",
     output:
         ibs="results/datasets/{dataset}/analyses/IBS/{dataset}.{ref}_{population}{dp}_{sites}-filts.ibs.gz",
         ibsmat="results/datasets/{dataset}/analyses/IBS/{dataset}.{ref}_{population}{dp}_{sites}-filts.ibsMat",
@@ -24,6 +24,7 @@ rule angsd_doIBS:
     params:
         mapQ=config["mapQ"],
         baseQ=config["baseQ"],
+        trans=get_trans,
         ibs=config["params"]["ibs"]["doibs"],
         out=lambda w, output: os.path.splitext(output.arg)[0],
     threads: 8
@@ -31,7 +32,8 @@ rule angsd_doIBS:
         runtime=lambda wildcards, attempt: attempt * 2880,
     shell:
         """
-        angsd -doIBS {params.ibs} -bam {input.bamlist} -nThreads {threads} -doCounts 1 \
-            -minMapQ {params.mapQ} -minQ {params.baseQ} -sites {input.sites} \
-            -doMajorMinor 3 -makeMatrix 1 -out {params.out} &> {log}
+        angsd -doIBS {params.ibs} -bam {input.bamlist} -nThreads {threads} \
+            -doCounts 1 -minMapQ {params.mapQ} -minQ {params.baseQ} \
+            -sites {input.sites} -rmTrans {params.trans} -doMajorMinor 3 \
+            -makeMatrix 1 -out {params.out} &> {log}
         """

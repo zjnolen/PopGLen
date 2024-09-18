@@ -1,15 +1,11 @@
-name: angsd-snakemake-pipeline
+name: popglen
 
 channels:
   - conda-forge
   - bioconda
-  - defaults
 
 dependencies:
   # core packages for workflow
-  - python =3.11.*
-  - snakemake-minimal =7.25.*
-  - pandas =2.0.1
+  - snakemake =7.32.*
+  - python =3.11
   - mamba
-  - graphviz
-  - pygments

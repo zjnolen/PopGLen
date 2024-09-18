@@ -9,7 +9,11 @@ rule ngsAdmix:
     replicates have been performed.
     """
     input:
-        beagle="results/datasets/{dataset}/beagles/pruned/{dataset}.{ref}_{population}{dp}_{sites}-filts_pruned.beagle.gz",
+        beagle=expand(
+            "results/datasets/{{dataset}}/beagles/pruned/{{dataset}}.{{ref}}_{{population}}{{dp}}_{{sites}}-filts.pruned_maxkbdist-{maxkb}_minr2-{r2}.beagle.gz",
+            maxkb=config["params"]["ngsld"]["max_kb_dist_pruning_dataset"],
+            r2=config["params"]["ngsld"]["pruning_min-weight_dataset"],
+        ),
     output:
         qopt="results/datasets/{dataset}/analyses/ngsadmix/{dataset}.{ref}_{population}{dp}_{sites}-filts_K{kvalue}.qopt",
         fopt="results/datasets/{dataset}/analyses/ngsadmix/{dataset}.{ref}_{population}{dp}_{sites}-filts_K{kvalue}.fopt.gz",
@@ -40,11 +44,11 @@ rule plot_admix:
     """
     input:
         "results/datasets/{dataset}/analyses/ngsadmix/{dataset}.{ref}_{population}{dp}_{sites}-filts_K{kvalue}.qopt",
-        "results/datasets/{dataset}/poplists/{dataset}_{population}.indiv.list",
+        "results/datasets/{dataset}/poplists/{dataset}_{population}{dp}.indiv.list",
     output:
         report(
             "results/datasets/{dataset}/plots/ngsadmix/{dataset}.{ref}_{population}{dp}_{sites}-filts_K{kvalue}.svg",
-            category="Admixture",
+            category="03.2 Admixture",
             subcategory="NGSadmix",
             labels=lambda w: {
                 "Filter": "{sites}",
@@ -68,7 +72,11 @@ rule evalAdmix:
     Perform evalAdmix analysis to get residuals on best fitting replicate for a given K.
     """
     input:
-        beagle="results/datasets/{dataset}/beagles/pruned/{dataset}.{ref}_{population}{dp}_{sites}-filts_pruned.beagle.gz",
+        beagle=expand(
+            "results/datasets/{{dataset}}/beagles/pruned/{{dataset}}.{{ref}}_{{population}}{{dp}}_{{sites}}-filts.pruned_maxkbdist-{maxkb}_minr2-{r2}.beagle.gz",
+            maxkb=config["params"]["ngsld"]["max_kb_dist_pruning_dataset"],
+            r2=config["params"]["ngsld"]["pruning_min-weight_dataset"],
+        ),
         qopt="results/datasets/{dataset}/analyses/ngsadmix/{dataset}.{ref}_{population}{dp}_{sites}-filts_K{kvalue}.qopt",
         fopt="results/datasets/{dataset}/analyses/ngsadmix/{dataset}.{ref}_{population}{dp}_{sites}-filts_K{kvalue}.fopt.gz",
     output:
@@ -93,11 +101,11 @@ rule plot_evalAdmix:
     input:
         corres="results/datasets/{dataset}/analyses/ngsadmix/{dataset}.{ref}_{population}{dp}_{sites}-filts_K{kvalue}.corres",
         qopt="results/datasets/{dataset}/analyses/ngsadmix/{dataset}.{ref}_{population}{dp}_{sites}-filts_K{kvalue}.qopt",
-        pops="results/datasets/{dataset}/poplists/{dataset}_{population}.indiv.list",
+        pops="results/datasets/{dataset}/poplists/{dataset}_{population}{dp}.indiv.list",
     output:
         report(
             "results/datasets/{dataset}/plots/evaladmix/{dataset}.{ref}_{population}{dp}_{sites}-filts_K{kvalue}_evaladmix.html",
-            category="Admixture",
+            category="03.2 Admixture",
             subcategory="evalAdmix",
             labels=lambda w: {
                 "Filter": "{sites}",

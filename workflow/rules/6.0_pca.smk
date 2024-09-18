@@ -8,13 +8,15 @@ rule remove_excl_pca_admix:
     results), while allowing them in all other analyses.
     """
     input:
-        "results/datasets/{dataset}/beagles/pruned/{dataset}.{ref}_all{dp}_{sites}-filts_pruned.beagle.gz",
+        "results/datasets/{dataset}/beagles/pruned/{dataset}.{ref}_{population}{dp}_{sites}-filts.pruned_maxkbdist-{maxkb}_minr2-{r2}.beagle.gz",
     output:
-        "results/datasets/{dataset}/beagles/pruned/{dataset}.{ref}_all_excl_pca-admix{dp}_{sites}-filts_pruned.beagle.gz",
+        "results/datasets/{dataset}/beagles/pruned/{dataset}.{ref}_{population}_excl_pca-admix{dp}_{sites}-filts.pruned_maxkbdist-{maxkb}_minr2-{r2}.beagle.gz",
+    wildcard_constraints:
+        population="all",
     log:
-        "logs/{dataset}/ngsLD/excl_pca_admix_beagle/{dataset}.{ref}_all_excl_pca-admix{dp}_{sites}-filts.log",
+        "logs/{dataset}/ngsLD/excl_pca_admix_beagle/{dataset}.{ref}_{population}_excl_pca-admix{dp}_{sites}-filts.pruned_maxkbdist-{maxkb}_minr2-{r2}.log",
     benchmark:
-        "benchmarks/{dataset}/ngsLD/excl_pca_admix_beagle/{dataset}.{ref}_all_excl_pca-admix{dp}_{sites}-filts.log"
+        "benchmarks/{dataset}/ngsLD/excl_pca_admix_beagle/{dataset}.{ref}_{population}_excl_pca-admix{dp}_{sites}-filts.pruned_maxkbdist-{maxkb}_minr2-{r2}.log"
     conda:
         "../envs/shell.yaml"
     params:
@@ -30,7 +32,11 @@ rule pca_pcangsd:
     Produces covariance matrix from SNP genotype likelihood data with PCAngsd.
     """
     input:
-        beagle="results/datasets/{dataset}/beagles/pruned/{dataset}.{ref}_{population}{dp}_{sites}-filts_pruned.beagle.gz",
+        beagle=expand(
+            "results/datasets/{{dataset}}/beagles/pruned/{{dataset}}.{{ref}}_{{population}}{{dp}}_{{sites}}-filts.pruned_maxkbdist-{maxkb}_minr2-{r2}.beagle.gz",
+            maxkb=config["params"]["ngsld"]["max_kb_dist_pruning_dataset"],
+            r2=config["params"]["ngsld"]["pruning_min-weight_dataset"],
+        ),
     output:
         cov="results/datasets/{dataset}/analyses/pcangsd/{dataset}.{ref}_{population}{dp}_{sites}-filts.cov",
     log:
@@ -56,11 +62,11 @@ rule plot_pca:
     """
     input:
         "results/datasets/{dataset}/analyses/pcangsd/{dataset}.{ref}_{population}{dp}_{sites}-filts.cov",
-        "results/datasets/{dataset}/poplists/{dataset}_{population}.indiv.list",
+        "results/datasets/{dataset}/poplists/{dataset}_{population}{dp}.indiv.list",
     output:
         report(
             "results/datasets/{dataset}/plots/pca/{dataset}.{ref}_{population}{dp}_{sites}-filts_pc{xpc}-{ypc}.svg",
-            category="PCA",
+            category="03.1 PCA",
             labels=lambda w: {
                 "Filter": "{sites}",
                 **dp_report(w),

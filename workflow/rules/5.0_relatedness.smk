@@ -51,13 +51,12 @@ rule compile_kinship_stats_sfs:
 
 rule doGlf1_ibsrelate:
     input:
+        unpack(filt_depth),
         bam="results/datasets/{dataset}/bamlists/{dataset}.{ref}_{population}{dp}.bamlist",
         bams=get_bamlist_bams,
         bais=get_bamlist_bais,
         ref="results/ref/{ref}/{ref}.fa",
         regions="results/datasets/{dataset}/filters/chunks/{ref}_chunk{chunk}.rf",
-        sites="results/datasets/{dataset}/filters/combined/{dataset}.{ref}_{sites}-filts.sites",
-        idx="results/datasets/{dataset}/filters/combined/{dataset}.{ref}_{sites}-filts.sites.idx",
     output:
         glf=temp(
             "results/datasets/{dataset}/glfs/chunks/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.glf.gz"
@@ -99,7 +98,7 @@ rule ibsrelate:
     container:
         angsd_container
     params:
-        nind=lambda w: len(get_samples_from_pop(w.population)),
+        nind=get_nind,
         maxsites=config["chunk_size"],
         out=lambda w, output: os.path.splitext(output[0])[0],
     resources:
@@ -122,7 +121,7 @@ rule est_kinship_stats_ibs:
             "results/datasets/{{dataset}}/analyses/kinship/ibsrelate_ibs/{{dataset}}.{{ref}}_{{population}}{{dp}}_chunk{chunk}_{{sites}}-filts.ibspair",
             chunk=chunklist,
         ),
-        inds="results/datasets/{dataset}/poplists/{dataset}_all.indiv.list",
+        inds="results/datasets/{dataset}/poplists/{dataset}_{population}{dp}.indiv.list",
     output:
         "results/datasets/{dataset}/analyses/kinship/ibsrelate_ibs/{dataset}.{ref}_{population}{dp}_{sites}-filts.kinship",
     log:
@@ -144,7 +143,7 @@ rule kinship_table_html:
     output:
         report(
             "results/datasets/{dataset}/analyses/kinship/ibsrelate_{type}/{dataset}.{ref}_all{dp}_{sites}-filts.kinship.html",
-            category="Relatedness",
+            category="02 Relatedness",
             subcategory="IBSrelate - {type}",
             labels=lambda w: {"Filter": "{sites}", **dp_report(w), "Type": "Table"},
         ),
@@ -163,18 +162,20 @@ rule ngsrelate:
     Estimates inbreeding and relatedness measures using NGSrelate.
     """
     input:
-        beagle="results/datasets/{dataset}/beagles/pruned/{dataset}.{ref}_all{dp}_{sites}-filts_pruned.beagle.gz",
-        inds="results/datasets/{dataset}/poplists/{dataset}_all.indiv.list",
+        unpack(get_ngsrelate_input),
+        inds="results/datasets/{dataset}/poplists/{dataset}_{population}{dp}.indiv.list",
     output:
-        relate="results/datasets/{dataset}/analyses/kinship/ngsrelate/{dataset}.{ref}_all{dp}_{sites}-filts_relate.tsv",
-        samples="results/datasets/{dataset}/analyses/kinship/ngsrelate/{dataset}.{ref}_all{dp}_{sites}-filts_samples.list",
+        relate="results/datasets/{dataset}/analyses/kinship/ngsrelate/{dataset}.{ref}_{population}{dp}_{sites}-filts_relate.tsv",
+        samples="results/datasets/{dataset}/analyses/kinship/ngsrelate/{dataset}.{ref}_{population}{dp}_{sites}-filts_samples.list",
+    wildcard_constraints:
+        population="all",
     log:
-        "logs/{dataset}/kinship/ngsrelate/{dataset}.{ref}_all{dp}_{sites}-filts.log",
+        "logs/{dataset}/kinship/ngsrelate/{dataset}.{ref}_{population}{dp}_{sites}-filts.log",
     container:
         ngsrelate_container
     threads: lambda wildcards, attempt: attempt * 4
     params:
-        nind=lambda w: len(get_samples_from_pop("all")),
+        nind=get_nind,
     resources:
         runtime=lambda wildcards, attempt: attempt * 360,
     shell:
@@ -197,7 +198,7 @@ rule ngsrelate_summary:
     output:
         report(
             "results/datasets/{dataset}/analyses/kinship/ngsrelate/{dataset}.{ref}_all{dp}_{sites}-filts_relate.html",
-            category="Relatedness",
+            category="02 Relatedness",
             subcategory="NgsRelate",
             labels=lambda w: {"Filter": "{sites}", **dp_report(w), "Type": "Table"},
         ),

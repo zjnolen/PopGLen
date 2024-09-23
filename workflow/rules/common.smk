@@ -44,7 +44,7 @@ multiqc_container = (
 )
 ngsf_hmm_container = "docker://zjnolen/ngsf-hmm:1.1.0"
 ngsld_container = "docker://zjnolen/ngsld:1.2.0-prune_graph"
-ngsrelate_container = "docker://zjnolen/ngsrelate:20220925-ec95c8f"
+ngsrelate_container = "docker://zjnolen/ngsrelate:20220925-ec95c8f-alpine"
 pandas_container = "https://depot.galaxyproject.org/singularity/pandas:2.2.1"
 pcangsd_container = "docker://zjnolen/pcangsd:1.10"
 qualimap_container = (

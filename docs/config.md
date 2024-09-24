@@ -43,13 +43,13 @@ This file connects your samples to input files and has a potential for eight
 
 ```
 sample	unit	lib	platform	fq1	fq2	bam	sra
-hist1	BHVN22DSX2.2	hist1	ILLUMINA	data/fastq/hist1.r1.fastq.gz	data/fastq/hist1.r2.fastq.gz	
-hist1	BHVN22DSX2.3	hist1	ILLUMINA	data/fastq/hist1.unit2.r1.fastq.gz	data/fastq/hist1.unit2.r2.fastq.gz	
-hist2	BHVN22DSX2.2	hist2	ILLUMINA	data/fastq/hist2.r1.fastq.gz	data/fastq/hist2.r2.fastq.gz	
-hist3	BHVN22DSX2.2	hist2	ILLUMINA	data/fastq/hist3.r1.fastq.gz	data/fastq/hist3.r2.fastq.gz	
-mod1	AHW5NGDSX2.3	mod1	ILLUMINA	data/fastq/mod1.r1.fastq.gz	data/fastq/mod1.r2.fastq.gz	
+hist1	BHVN22DSX2.2	hist1	ILLUMINA	data/fastq/hist1.r1.fastq.gz	data/fastq/hist1.r2.fastq.gz
+hist1	BHVN22DSX2.3	hist1	ILLUMINA	data/fastq/hist1.unit2.r1.fastq.gz	data/fastq/hist1.unit2.r2.fastq.gz
+hist2	BHVN22DSX2.2	hist2	ILLUMINA	data/fastq/hist2.r1.fastq.gz	data/fastq/hist2.r2.fastq.gz
+hist3	BHVN22DSX2.2	hist2	ILLUMINA	data/fastq/hist3.r1.fastq.gz	data/fastq/hist3.r2.fastq.gz
+mod1	AHW5NGDSX2.3	mod1	ILLUMINA	data/fastq/mod1.r1.fastq.gz	data/fastq/mod1.r2.fastq.gz
 mod2	AHW5NGDSX2.3	mod2	ILLUMINA			data/bam/mod2.bam
-mod3	AHW5NGDSX2.3	mod3	ILLUMINA	data/fastq/mod3.r1.fastq.gz	data/fastq/mod3.r2.fastq.gz	
+mod3	AHW5NGDSX2.3	mod3	ILLUMINA	data/fastq/mod3.r1.fastq.gz	data/fastq/mod3.r2.fastq.gz
 SAMN13218652	SRR10398077	SAMN13218652	ILLUMINA				SRR10398077
 ```
 
@@ -80,14 +80,14 @@ SAMN13218652	SRR10398077	SAMN13218652	ILLUMINA				SRR10398077
   just as separate sequencing runs would be.
 
 !!! note "Mixing samples with different starting points"
-    It is possible to have different samples start from different inputs (i.e.
-    some from bam, others from fastq, others from SRA). It is best to provide
-    only `fq1`+`fq2`, `bam`, or `sra` for each sample to be clear where each
-    sample starts. If multiple are provided for the same sample, the bam file
-    will override fastq or SRA entries, and the fastq will override SRA
-    entries. Note that this means it is not currently possible to have multiple
-    starting points for *the same* sample (i.e. FASTQ reads that would be
-    processed then merged into an existing BAM).
+It is possible to have different samples start from different inputs (i.e.
+some from bam, others from fastq, others from SRA). It is best to provide
+only `fq1`+`fq2`, `bam`, or `sra` for each sample to be clear where each
+sample starts. If multiple are provided for the same sample, the bam file
+will override fastq or SRA entries, and the fastq will override SRA
+entries. Note that this means it is not currently possible to have multiple
+starting points for _the same_ sample (i.e. FASTQ reads that would be
+processed then merged into an existing BAM).
 
 ## Configuration file
 
@@ -139,6 +139,7 @@ Required configuration of the reference.
   (but this isn't optimized yet, so it will do a couple unnecessary steps).
 
 - `reference:`
+
   - `name:` A name for your reference genome, will go in the file names.
   - `fasta:` A path to the reference fasta file (currently only supports
     uncompressed fasta files)
@@ -173,7 +174,7 @@ work, as calculating chunks is hard-coded to work on an uncompressed genome.
 - `exclude_ind:` Sample name(s) that will be excluded from the workflow. Should
   be a list in []. Putting a `#` in front of the sample in the sample list also
   works. Mainly used to drop samples with poor quality after initial processing.
-- `excl_pca-admix:` Sample name(s) that will be excluded *only* from PCA and
+- `excl_pca-admix:` Sample name(s) that will be excluded _only_ from PCA and
   Admixture analyses. Useful for close relatives that violate the assumptions
   of these analyses, but that you want in others. Should be a list in []. If you
   want relatives out of all downstream analyses, not just PCA/Admix, put them in
@@ -279,7 +280,7 @@ settings for each analysis are set in the next section.
   - `admix_ngsadmix:` Perform admixture analysis with NGSadmix (`true`/`false`)
   - `relatedness:` Can be performed multiple ways, set any combination of the
     three options below. Note, that I've mostly incorporated these with the
-    R0/R1/KING kinship methods in Waples et al. 2019, *Mol. Ecol.* in mind.
+    R0/R1/KING kinship methods in Waples et al. 2019, _Mol. Ecol._ in mind.
     These methods differ slightly from how they implement this method, and will
     give slightly more/less accurate estimates of kinship depending on your
     reference's relationship to your samples. `ibsrelate_ibs` uses the
@@ -302,12 +303,12 @@ settings for each analysis are set in the next section.
     - `ngsrelate:` Co-estimate inbreeding and pairwise relatedness with
       NGSrelate (`true`/`false`)
     - `ibsrelate_ibs:` Estimate pairwise relatedness with the IBS based method
-      from Waples et al. 2019, *Mol. Ecol.*. This can use a lot of memory, as
+      from Waples et al. 2019, _Mol. Ecol._. This can use a lot of memory, as
       it has genotype likelihoods for all sites from all samples loaded into
       memory, so it is done per 'chunk', which still takes a lot of time and
       memory. (`true`/`false`)
     - `ibsrelate_sfs:` Estimate pairwise relatedness with the SFS based method
-      from Waples et al. 2019, *Mol. Ecol.*. Enabling this can greatly increase
+      from Waples et al. 2019, _Mol. Ecol._. Enabling this can greatly increase
       the time needed to build the workflow DAG if you have many samples. As a
       form of this method is implemented in NGSrelate, it may be more
       efficient to only enable that. (`true`/`false`)
@@ -607,6 +608,9 @@ or a pull request and I'll gladly put it in.
     - `pruning_min-weight_dataset:` The minimum r^2 to assume two positions are
       in linkage disequilibrium when pruning for PCAngsd, NGSadmix, and
       NGSrelate analyses. (float)
+  - `ngsrelate:` Settings for NGSrelate
+    - `prune:` Set to `true` to prune Beagle file input for NGSrelate, set to
+      `false` to use all SNPs (`true`/`false`)
   - `ngsf-hmm:` Settings for ngsF-HMM
     - `estimate_in_pops:` Set to `true` to run ngsF-HMM separately for each
       population in your dataset. Set to `false` to run for whole dataset at

@@ -326,10 +326,12 @@ rule repeatmasker:
     params:
         out=lambda w, output: os.path.dirname(output.gff),
         libpre="-species" if config["analyses"]["repeatmasker"]["dfam_lib"] else "-lib",
-        lib=lambda w, input: f"'{config['analyses']['repeatmasker']['dfam_lib']}'"
-        if config["analyses"]["repeatmasker"]["dfam_lib"]
-        else input.lib,
-    threads: 4
+        lib=lambda w, input: (
+            f"'{config['analyses']['repeatmasker']['dfam_lib']}'"
+            if config["analyses"]["repeatmasker"]["dfam_lib"]
+            else input.lib
+        ),
+    threads: 5
     resources:
         runtime=720,
     shadow:

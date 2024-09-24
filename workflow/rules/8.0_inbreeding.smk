@@ -10,9 +10,11 @@ rule ngsf_hmm:
         beagle=expand(
             "results/datasets/{{dataset}}/beagles/{folder}{{dataset}}.{{ref}}_{{population}}{{dp}}_{{sites}}-filts{pruning}.beagle.gz",
             folder="pruned/" if config["params"]["ngsf-hmm"]["prune"] else "",
-            pruning=f".pruned_maxkbdist-{config['params']['ngsf-hmm']['max_kb_dist_pruning_pop']}_minr2-{config['params']['ngsf-hmm']['pruning_min-weight_pop']}"
-            if config["params"]["ngsf-hmm"]["prune"]
-            else "",
+            pruning=(
+                f".pruned_maxkbdist-{config['params']['ngsf-hmm']['max_kb_dist_pruning_pop']}_minr2-{config['params']['ngsf-hmm']['pruning_min-weight_pop']}"
+                if config["params"]["ngsf-hmm"]["prune"]
+                else ""
+            ),
         ),
     output:
         ibd="results/datasets/{dataset}/analyses/ngsF-HMM/{dataset}.{ref}_{population}{dp}_{sites}-filts.ibd",
@@ -67,9 +69,9 @@ rule plot_froh:
     input:
         roh=expand(
             "results/datasets/{{dataset}}/analyses/ngsF-HMM/{{dataset}}.{{ref}}_{population}{{dp}}_{{sites}}-filts.roh",
-            population=pop_list
-            if config["params"]["ngsf-hmm"]["estimate_in_pops"]
-            else "all",
+            population=(
+                pop_list if config["params"]["ngsf-hmm"]["estimate_in_pops"] else "all"
+            ),
         ),
         inds="results/datasets/{dataset}/poplists/{dataset}_all{dp}.indiv.list",
         autos=get_auto_sum,

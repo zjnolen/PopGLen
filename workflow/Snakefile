@@ -140,7 +140,7 @@ if config["analyses"]["estimate_ld"]:
 if config["analyses"]["ld_decay"]:
     all_outputs.extend(
         expand(
-            "results/datasets/{{dataset}}/plots/LD_decay/{{dataset}}.{{ref}}_{population}_{{sites}}-filts.LDdecay.svg",
+            "results/datasets/{{dataset}}/plots/LD_decay/{{dataset}}.{{ref}}_{population}_{{sites}}-filts.LDdecay.pdf",
             population=pop_list + ["all"],
         )
     )
@@ -302,7 +302,7 @@ if config["subsample_analyses"]["estimate_ld"]:
 if config["subsample_analyses"]["ld_decay"]:
     all_outputs.extend(
         expand(
-            "results/datasets/{{dataset}}/plots/LD_decay/{{dataset}}.{{ref}}_{population}{dp}_{{sites}}-filts.LDdecay.svg",
+            "results/datasets/{{dataset}}/plots/LD_decay/{{dataset}}.{{ref}}_{population}{dp}_{{sites}}-filts.LDdecay.pdf",
             population=pop_list + ["all"],
             dp=subdp,
         )

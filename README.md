@@ -65,7 +65,8 @@ when you start with raw sequencing data or with processed BAM files.
   [fgvieira/prune_graph](https://github.com/fgvieira/prune_graph)
 - PCA with PCAngsd[^12]
 - Admixture with NGSAdmix[^13]
-- Relatedness using NgsRelate[^14] and IBSrelate[^15]
+- Relatedness using IBSrelate[^14] (via ANGSD or NgsRelate[^15], allele freq.
+  based NgsRelate methods not currently implemented)
 - 1D and 2D Site frequency spectrum production with ANGSD[^16], bootstrap SFS
   can additionally be generated.
 - Diversity and statistics per population (Watterson's theta, pairwise
@@ -248,10 +249,10 @@ correction)
 [^13]: Skotte, L., Korneliussen, T. S., & Albrechtsen, A. (2013). Estimating Individual Admixture Proportions from Next Generation Sequencing Data. Genetics, 195(3), 693–702. <https://doi.org/10.1534/genetics.113.154138>
 (Admixture analysis)
 
-[^14]: Hanghøj, K., Moltke, I., Andersen, P. A., Manica, A., & Korneliussen, T. S. (2019). Fast and accurate relatedness estimation from high-throughput sequencing data in the presence of inbreeding. GigaScience, 8(5), giz034. <https://doi.org/10.1093/gigascience/giz034>
+[^14]: Waples, R. K., Albrechtsen, A., & Moltke, I. (2019). Allele frequency-free inference of close familial relationships from genotypes or low-depth sequencing data. Molecular Ecology, 28(1), 35–48. <https://doi.org/10.1111/mec.14954>
 (Relatedness estimation)
 
-[^15]: Waples, R. K., Albrechtsen, A., & Moltke, I. (2019). Allele frequency-free inference of close familial relationships from genotypes or low-depth sequencing data. Molecular Ecology, 28(1), 35–48. <https://doi.org/10.1111/mec.14954>
+[^15]: Hanghøj, K., Moltke, I., Andersen, P. A., Manica, A., & Korneliussen, T. S. (2019). Fast and accurate relatedness estimation from high-throughput sequencing data in the presence of inbreeding. GigaScience, 8(5), giz034. <https://doi.org/10.1093/gigascience/giz034>
 (Relatedness estimation)
 
 [^16]: Korneliussen, T. S., Albrechtsen, A., & Nielsen, R. (2014). ANGSD: Analysis of Next Generation Sequencing Data. BMC Bioinformatics, 15(1), Article 1. <https://doi.org/10.1186/s12859-014-0356-4>

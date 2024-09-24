@@ -42,7 +42,7 @@ evaladmix_container = "docker://zjnolen/evaladmix:0.961-alpine"
 multiqc_container = (
     "https://depot.galaxyproject.org/singularity/multiqc:1.23--pyhdfd78af_0"
 )
-ngsf_hmm_container = "docker://zjnolen/ngsf-hmm:1.1.0"
+ngsf_hmm_container = "docker://zjnolen/ngsf-hmm:1.1.0-alpine"
 ngsld_container = "docker://zjnolen/ngsld:1.2.0-prune_graph"
 ngsrelate_container = "docker://zjnolen/ngsrelate:20220925-ec95c8f-alpine"
 pandas_container = "https://depot.galaxyproject.org/singularity/pandas:2.2.1"

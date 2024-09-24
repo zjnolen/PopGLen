@@ -22,7 +22,7 @@ configfile: "config/config.yaml"
 # Containerize rules from Snakemake wrappers (only mapping rules)
 
 
-containerized: "docker://zjnolen/popglen-mapping:0.4.0"
+containerized: "docker://ghcr.io/zjnolen/popglen-mapping:0.4.0"
 
 
 # Create variables for software containers (for easier version updating)
@@ -38,26 +38,26 @@ damageprofiler_container = (
     "https://depot.galaxyproject.org/singularity/damageprofiler:1.1--hdfd78af_2"
 )
 dedup_container = "https://depot.galaxyproject.org/singularity/dedup:0.12.8--hdfd78af_1"
-evaladmix_container = "docker://zjnolen/evaladmix:0.961-alpine"
+evaladmix_container = "docker://ghcr.io/zjnolen/evaladmix:0.961"
 multiqc_container = (
     "https://depot.galaxyproject.org/singularity/multiqc:1.23--pyhdfd78af_0"
 )
-ngsf_hmm_container = "docker://zjnolen/ngsf-hmm:1.1.0-alpine"
-ngsld_container = "docker://zjnolen/ngsld:1.2.0-prune_graph"
-ngsrelate_container = "docker://zjnolen/ngsrelate:20220925-ec95c8f-alpine"
+ngsf_hmm_container = "docker://ghcr.io/zjnolen/ngsf-hmm:1.1.0"
+ngsld_container = "docker://ghcr.io/zjnolen/ngsld:1.2.0"
+ngsrelate_container = "docker://ghcr.io/zjnolen/ngsrelate:20220925-ec95c8f"
 pandas_container = "https://depot.galaxyproject.org/singularity/pandas:2.2.1"
-pcangsd_container = "docker://zjnolen/pcangsd:1.35"
+pcangsd_container = "docker://ghcr.io/zjnolen/pcangsd:1.35"
 qualimap_container = (
     "https://depot.galaxyproject.org/singularity/qualimap:2.3--hdfd78af_0"
 )
-r_container = "docker://zjnolen/popglen-r:0.4.0"
+r_container = "docker://ghcr.io/zjnolen/popglen-r:0.4.0"
 repeatmodmask_container = (
     "https://depot.galaxyproject.org/singularity/repeatmodeler:2.0.5--pl5321hdfd78af_0"
 )
 samtools_container = (
     "https://depot.galaxyproject.org/singularity/samtools:1.20--h50ea8bc_1"
 )
-shell_container = "docker://zjnolen/popglen-shell:0.4.0"
+shell_container = "docker://ghcr.io/zjnolen/popglen-shell:0.4.0"
 
 # Define function for genome chunks to break up analysis (for parallelization)
 

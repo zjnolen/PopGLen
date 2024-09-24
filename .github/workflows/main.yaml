@@ -25,18 +25,18 @@ jobs:
       uses: github/super-linter@v7
       env:
         VALIDATE_ALL_CODEBASE: false
-        DEFAULT_BRANCH: master
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         VALIDATE_SNAKEMAKE_SNAKEFMT: true
-  linting:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v4
-    - name: Linting
-      uses: snakemake/snakemake-github-action@v1.24.0
-      with:
-        snakefile: "workflow/Snakefile"
-        args: "--lint"
+        VALIDATE_SNAKEMAKE_LINT: true
+  # linting:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #   - uses: actions/checkout@v4
+  #   - name: Linting
+  #     uses: snakemake/snakemake-github-action@v1.24.0
+  #     with:
+  #       snakefile: "workflow/Snakefile"
+  #       args: "--lint"
 
   run-workflow:
     runs-on: ubuntu-latest

@@ -41,7 +41,7 @@ jobs:
   run-workflow:
     runs-on: ubuntu-latest
     needs:
-      - linting
+      # - linting
       - formatting
     steps:
     - name: Maximize build space

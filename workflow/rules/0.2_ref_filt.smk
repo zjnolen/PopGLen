@@ -134,8 +134,8 @@ rule genmap_index:
         "logs/ref/genmap/index/{ref}.log",
     benchmark:
         "benchmarks/ref/genmap/index/{ref}.log"
-    conda:
-        "../envs/genmap.yaml"
+    container:
+        genmap_container
     threads: lambda wildcards, attempt: attempt
     shell:
         """
@@ -158,8 +158,8 @@ rule genmap_map:
         "logs/ref/genmap/map/{ref}_k{k}_e{e}.log",
     benchmark:
         "benchmarks/ref/genmap/map/{ref}_k{k}_e{e}.log"
-    conda:
-        "../envs/genmap.yaml"
+    container:
+        genmap_container
     params:
         out=lambda w, output: os.path.splitext(output.bed)[0],
     threads: lambda wildcards, attempt: attempt
@@ -209,8 +209,8 @@ rule pileup_mappability:
         "logs/ref/genmap/pileupmap/{ref}_k{k}_e{e}.log",
     benchmark:
         "benchmarks/ref/genmap/pileupmap/{ref}_k{k}_e{e}.log"
-    conda:
-        "../envs/bedops.yaml"
+    container:
+        bedops_container
     resources:
         runtime=720,
     shell:

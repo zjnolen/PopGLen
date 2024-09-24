@@ -31,6 +31,9 @@ angsd_container = "https://depot.galaxyproject.org/singularity/angsd:0.940--hf5e
 bamutil_container = (
     "https://depot.galaxyproject.org/singularity/bamutil:1.0.15--h43eeafb_5"
 )
+bedops_container = (
+    "https://depot.galaxyproject.org/singularity/bedops:2.4.41--h9f5acd7_0"
+)
 bedtools_container = (
     "https://depot.galaxyproject.org/singularity/bedtools:2.31.1--hf5e1c6e_2"
 )
@@ -39,6 +42,9 @@ damageprofiler_container = (
 )
 dedup_container = "https://depot.galaxyproject.org/singularity/dedup:0.12.8--hdfd78af_1"
 evaladmix_container = "docker://ghcr.io/zjnolen/evaladmix:0.961"
+genmap_container = (
+    "https://depot.galaxyproject.org/singularity/genmap:1.3.0--he1b5a44_0"
+)
 multiqc_container = (
     "https://depot.galaxyproject.org/singularity/multiqc:1.23--pyhdfd78af_0"
 )

@@ -18,8 +18,7 @@ plot_evaladmix <- function(pop,qopt,corres,k) {
 
 	# Plot correlation of residuals
 	plot <- plotCorRes(cor_mat = r, pop = as.vector(pop[,2]), ord=ord, 
-		title=paste0("Evaluation of admixture proportions with K=",k),
-		max_z=0.1, min_z=-0.1)
+		title=paste0("Evaluation of admixture proportions with K=",k))
 	
 	return(plot)
 

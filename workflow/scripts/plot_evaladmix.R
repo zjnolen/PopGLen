@@ -1,8 +1,8 @@
 sink(file(snakemake@log[[1]], open="wt"), type = "message")
 
-plot_evaladmix <- function(pop,qopt,corres,k) {
+source("/usr/local/bin/visFuns.R")
 
-	source("https://raw.githubusercontent.com/GenisGE/evalAdmix/2a51aebaca70c9d3b5fb359d6c5c40145c58fce5/visFuns.R")
+plot_evaladmix <- function(pop,qopt,corres,k) {
 
 	# read population labels and estimated admixture proportions
 	pop<-read.table(pop, header = TRUE, sep = "\t")
@@ -18,7 +18,8 @@ plot_evaladmix <- function(pop,qopt,corres,k) {
 
 	# Plot correlation of residuals
 	plot <- plotCorRes(cor_mat = r, pop = as.vector(pop[,2]), ord=ord, 
-		title=paste0("Evaluation of admixture proportions with K=",k))
+		title=paste0("Evaluation of admixture proportions with K=",k),
+		max_z=0.1, min_z=-0.1)
 	
 	return(plot)
 

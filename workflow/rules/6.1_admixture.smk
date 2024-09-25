@@ -119,6 +119,6 @@ rule plot_evalAdmix:
     benchmark:
         "benchmarks/{dataset}/evaladmix/{dataset}.{ref}_{population}{dp}_{sites}-filts_K{kvalue}_plot.log"
     container:
-        r_container
+        evaladmix_container
     script:
         "../scripts/plot_evaladmix.R"

@@ -43,13 +43,13 @@ This file connects your samples to input files and has a potential for eight
 
 ```
 sample	unit	lib	platform	fq1	fq2	bam	sra
-hist1	BHVN22DSX2.2	hist1	ILLUMINA	data/fastq/hist1.r1.fastq.gz	data/fastq/hist1.r2.fastq.gz	
-hist1	BHVN22DSX2.3	hist1	ILLUMINA	data/fastq/hist1.unit2.r1.fastq.gz	data/fastq/hist1.unit2.r2.fastq.gz	
-hist2	BHVN22DSX2.2	hist2	ILLUMINA	data/fastq/hist2.r1.fastq.gz	data/fastq/hist2.r2.fastq.gz	
-hist3	BHVN22DSX2.2	hist2	ILLUMINA	data/fastq/hist3.r1.fastq.gz	data/fastq/hist3.r2.fastq.gz	
-mod1	AHW5NGDSX2.3	mod1	ILLUMINA	data/fastq/mod1.r1.fastq.gz	data/fastq/mod1.r2.fastq.gz	
+hist1	BHVN22DSX2.2	hist1	ILLUMINA	data/fastq/hist1.r1.fastq.gz	data/fastq/hist1.r2.fastq.gz
+hist1	BHVN22DSX2.3	hist1	ILLUMINA	data/fastq/hist1.unit2.r1.fastq.gz	data/fastq/hist1.unit2.r2.fastq.gz
+hist2	BHVN22DSX2.2	hist2	ILLUMINA	data/fastq/hist2.r1.fastq.gz	data/fastq/hist2.r2.fastq.gz
+hist3	BHVN22DSX2.2	hist2	ILLUMINA	data/fastq/hist3.r1.fastq.gz	data/fastq/hist3.r2.fastq.gz
+mod1	AHW5NGDSX2.3	mod1	ILLUMINA	data/fastq/mod1.r1.fastq.gz	data/fastq/mod1.r2.fastq.gz
 mod2	AHW5NGDSX2.3	mod2	ILLUMINA			data/bam/mod2.bam
-mod3	AHW5NGDSX2.3	mod3	ILLUMINA	data/fastq/mod3.r1.fastq.gz	data/fastq/mod3.r2.fastq.gz	
+mod3	AHW5NGDSX2.3	mod3	ILLUMINA	data/fastq/mod3.r1.fastq.gz	data/fastq/mod3.r2.fastq.gz
 SAMN13218652	SRR10398077	SAMN13218652	ILLUMINA				SRR10398077
 ```
 
@@ -80,14 +80,14 @@ SAMN13218652	SRR10398077	SAMN13218652	ILLUMINA				SRR10398077
   just as separate sequencing runs would be.
 
 !!! note "Mixing samples with different starting points"
-    It is possible to have different samples start from different inputs (i.e.
-    some from bam, others from fastq, others from SRA). It is best to provide
-    only `fq1`+`fq2`, `bam`, or `sra` for each sample to be clear where each
-    sample starts. If multiple are provided for the same sample, the bam file
-    will override fastq or SRA entries, and the fastq will override SRA
-    entries. Note that this means it is not currently possible to have multiple
-    starting points for *the same* sample (i.e. FASTQ reads that would be
-    processed then merged into an existing BAM).
+It is possible to have different samples start from different inputs (i.e.
+some from bam, others from fastq, others from SRA). It is best to provide
+only `fq1`+`fq2`, `bam`, or `sra` for each sample to be clear where each
+sample starts. If multiple are provided for the same sample, the bam file
+will override fastq or SRA entries, and the fastq will override SRA
+entries. Note that this means it is not currently possible to have multiple
+starting points for _the same_ sample (i.e. FASTQ reads that would be
+processed then merged into an existing BAM).
 
 ## Configuration file
 
@@ -139,6 +139,7 @@ Required configuration of the reference.
   (but this isn't optimized yet, so it will do a couple unnecessary steps).
 
 - `reference:`
+
   - `name:` A name for your reference genome, will go in the file names.
   - `fasta:` A path to the reference fasta file (currently only supports
     uncompressed fasta files)
@@ -173,7 +174,7 @@ work, as calculating chunks is hard-coded to work on an uncompressed genome.
 - `exclude_ind:` Sample name(s) that will be excluded from the workflow. Should
   be a list in []. Putting a `#` in front of the sample in the sample list also
   works. Mainly used to drop samples with poor quality after initial processing.
-- `excl_pca-admix:` Sample name(s) that will be excluded *only* from PCA and
+- `excl_pca-admix:` Sample name(s) that will be excluded _only_ from PCA and
   Admixture analyses. Useful for close relatives that violate the assumptions
   of these analyses, but that you want in others. Should be a list in []. If you
   want relatives out of all downstream analyses, not just PCA/Admix, put them in
@@ -288,13 +289,7 @@ settings for each analysis are set in the next section.
     are not represented in the reference. `ngsrelate` uses NGSrelate, but I have
     **not** implemented the allele frequency based approaches. So, this should
     be considered as a SNP based version of the IBSrelate method, which is
-    implemented in NGSrelate. In my experience, these methods have their own
-    caveats. NGSrelate's implementation often works well, but may not be as
-    precise as the others. The SFS based version can be more precise, but is
-    limited to positions where one of the segregating alleles is the reference
-    or ancestral allele, which may result in less accuracy in some datasets.
-    Since the IBS based method uses all possible genotypes, it seems to best
-    get at the true values.
+    implemented in NGSrelate.
     - `ngsrelate:` Estimate relatedness from SNPs using the IBSrelate method.
       Allele frequency based co-inference of inbreeding and relatedness (the
       main analyses involved in NGSrelate) may be added down the line, using the
@@ -351,10 +346,11 @@ is recommended, as this will ensure that sequencing depth is made uniform at
 the analysis stage, as it is these filtered sites that analyses are performed
 for.
 
-- `subsample_dp:` A mean depth to subsample your reads to. This will be done
-  per sample, and subsample from all the reads. If a sample already has the
-  same, or lower, depth than this number, it will just be used as is in the
-  analysis. (INT)
+- `subsample_dp:` A list of mean depths to subsample your reads to. This will be
+  done per sample, and subsample from all the reads. Leaving list empty disables
+  subsampling, list can contain any number of depths to subsample to. If a
+  sample already has the same, or lower, depth than this number, it will just be
+  used as is in the analysis. (List of INT)
 - `subsample_by:` This determines how the 'full' sequencing depth of a sample
   is calculated to determine the amount of subsampling needed to reach the
   target depth. This should be one of three options: (1) `"unfilt"` will treat
@@ -377,7 +373,12 @@ for.
   samples out that you kept in your 'full' dataset. These can be listed here and
   they will be removed from ALL depth subsampled analyses. A use case for this
   might be if you have a couple samples that are below your targeted subsample
-  depth, and you don't want to include them. (list of strings: `[]`)
+  depth, and you don't want to include them. Note that if you configure multiple
+  `subsample_dp`, these samples will be dropped from all of them. If you need to
+  perform mutliple depth subsamplings with different subsets of samples, its
+  best to run each depth individually. Alternatively, a config file can be made
+  for each subsampled depth, however you may run into issues of file locking
+  blocking both from running at the same time. (list of strings: `[]`)
 - `subsample_analyses:` Individually enable analyses to be performed with the
   subsampled data. These are the same as the ones above in the analyses
   section. Enabling here will only run the analysis for the subsampled data,
@@ -596,6 +597,9 @@ or a pull request and I'll gladly put it in.
     - `pruning_min-weight_dataset:` The minimum r^2 to assume two positions are
       in linkage disequilibrium when pruning for PCAngsd, NGSadmix, and
       NGSrelate analyses. (float)
+  - `ngsrelate:` Settings for NGSrelate
+    - `prune:` Set to `true` to prune Beagle file input for NGSrelate, set to
+      `false` to use all SNPs (`true`/`false`)
   - `ngsf-hmm:` Settings for ngsF-HMM
     - `estimate_in_pops:` Set to `true` to run ngsF-HMM separately for each
       population in your dataset. Set to `false` to run for whole dataset at

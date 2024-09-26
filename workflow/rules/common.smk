@@ -739,6 +739,21 @@ def get_excl_ind_cols(wildcards):
 # Kinship
 
 
+## Get beagle file for input to ngsrelate (either pruned or not)
+def get_ngsrelate_input(wildcards):
+    if config["params"]["ngsrelate"]["prune"]:
+        return {
+            "beagle": expand(
+                "results/datasets/{{dataset}}/beagles/pruned/{{dataset}}.{{ref}}_{{population}}{{dp}}_{{sites}}-filts.pruned_maxkbdist-{maxkb}_minr2-{r2}.beagle.gz",
+                maxkb=config["params"]["ngsld"]["max_kb_dist_pruning_dataset"],
+                r2=config["params"]["ngsld"]["pruning_min-weight_dataset"],
+            ),
+        }
+    return {
+        "beagle": "results/datasets/{dataset}/beagles/{dataset}.{ref}_{population}{dp}_{sites}-filts.beagle.gz"
+    }
+
+
 ## Get all possible kinship estimate pairings (SFS)
 def get_kinship_sfs(wildcards):
     sam = get_samples_from_pop("all")
@@ -845,7 +860,7 @@ def dp_report(wildcards):
     if dp == "":
         return {"Subsampling": "None"}
     else:
-        return {"Subsampling": f"{dp.replace('.dp' , '')}X"}
+        return {"Subsampling": f"{dp.replace('.dp', '')}X"}
 
 
 # Get string to describe units for Fst for report

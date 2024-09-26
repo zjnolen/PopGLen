@@ -31,8 +31,8 @@ include: "rules/9.0_IBS.smk"
 
 if config["subsample_dp"]:
     dp = config["subsample_dp"]
-    subdp = f".dp{dp}"
-    subsample = [f".dp{dp}", ""]
+    subdp = [".dp{}".format(depth) for depth in dp]
+    subsample = subdp + [""]
 else:
     subsample = [""]
 

@@ -73,7 +73,7 @@ analyses:
 
 #==================== Downsampling Configuration ======================#
 
-subsample_dp:
+subsample_dp: []
 
 subsample_by: "sitefilt" # three options: unfilt, mapqbaseq, sitefilt; sitefilt recommended (subsamples bams to `subsample_dp` within filtered regions)
 redo_depth_filts: false # has no effect when `subsample_by` == "sitefilt"
@@ -150,6 +150,8 @@ params:
     snp_pval: "1e-6"
     min_maf: -1 # Set -1 to disable
     mindepthind_heterozygosity: 1
+  ngsrelate:
+    prune: false
   ngsld:
     max_kb_dist_est-ld: 4000
     rnd_sample_est-ld: 0.001

@@ -210,4 +210,4 @@ else
 	echoerr "run."
 	echoerr "best like = $bestlike; output like = $yourlike"
 	exit -1
-fi) 2> "${snakemake_log[0]}"
+fi) &> "${snakemake_log[0]}"

@@ -19,7 +19,6 @@ min_version("7.25.0")
 configfile: "config/config.yaml"
 
 
-
 # Create variables for software containers (for easier version updating)
 
 angsd_container = "https://depot.galaxyproject.org/singularity/angsd:0.940--hf5e1c6e_3"

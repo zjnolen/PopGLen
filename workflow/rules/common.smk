@@ -19,11 +19,6 @@ min_version("7.25.0")
 configfile: "config/config.yaml"
 
 
-# Containerize rules from Snakemake wrappers (only mapping rules)
-
-
-containerized: "docker://ghcr.io/zjnolen/popglen-mapping:0.4.0"
-
 
 # Create variables for software containers (for easier version updating)
 

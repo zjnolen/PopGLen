@@ -30,3 +30,9 @@ reports
 benchmarks
 # documentation site
 site
+# caches
+.cache
+# java stuff
+.java
+# random outputs
+Rplots.pdf

@@ -36,8 +36,8 @@ rule damageprofiler:
         "logs/mapping/damageprofiler/{sample}.{ref}.log",
     benchmark:
         "benchmarks/mapping/damageprofiler/{sample}.{ref}.log"
-    conda:
-        "../envs/damageprofiler.yaml"
+    container:
+        damageprofiler_container
     params:
         out=lambda w, output: os.path.dirname(output[0]),
     threads: lambda wildcards, attempt: attempt
@@ -78,7 +78,7 @@ rule mapDamage2_rescaling:
         runtime=1440,
         mem_mb=lambda w, attempt: attempt * 6400,
     wrapper:
-        "v2.6.0/bio/mapdamage2"
+        "v4.0.0/bio/mapdamage2"
 
 
 rule dna_damage_multiqc:
@@ -93,7 +93,12 @@ rule dna_damage_multiqc:
         ),
     log:
         "logs/mapping/dnadamage/{dataset}.{ref}_dnadmg-mqc.log",
+    container:
+        multiqc_container
     params:
         extra="--cl-config \"extra_fn_clean_exts: ['.rmdup']\" ",
-    wrapper:
-        "v3.5.0/bio/multiqc"
+    shell:
+        """
+        multiqc {params.extra} --no-data-dir \
+            --filename {output} {input} 2> {log}
+        """

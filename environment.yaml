@@ -6,6 +6,6 @@ channels:
 
 dependencies:
   # core packages for workflow
-  - snakemake =7.32.*
-  - python =3.11
-  - mamba
+  - snakemake =8.20.*
+  - python =3.12
+  - mamba =1.5.9

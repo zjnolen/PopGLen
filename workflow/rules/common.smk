@@ -21,13 +21,43 @@ configfile: "config/config.yaml"
 
 # Create variables for software containers (for easier version updating)
 
-angsd_container = "docker://zjnolen/angsd:0.940"
-pcangsd_container = "docker://zjnolen/pcangsd:1.10"
-evaladmix_container = "docker://zjnolen/evaladmix:0.961"
-ngsf_hmm_container = "docker://zjnolen/ngsf-hmm:1.1.0"
-ngsrelate_container = "docker://zjnolen/ngsrelate:20220925-ec95c8f"
-ngsld_container = "docker://zjnolen/ngsld:1.2.0-prune_graph"
-
+angsd_container = "https://depot.galaxyproject.org/singularity/angsd:0.940--hf5e1c6e_3"
+bamutil_container = (
+    "https://depot.galaxyproject.org/singularity/bamutil:1.0.15--h43eeafb_5"
+)
+bedops_container = (
+    "https://depot.galaxyproject.org/singularity/bedops:2.4.41--h9f5acd7_0"
+)
+bedtools_container = (
+    "https://depot.galaxyproject.org/singularity/bedtools:2.31.1--hf5e1c6e_2"
+)
+damageprofiler_container = (
+    "https://depot.galaxyproject.org/singularity/damageprofiler:1.1--hdfd78af_2"
+)
+dedup_container = "https://depot.galaxyproject.org/singularity/dedup:0.12.8--hdfd78af_1"
+evaladmix_container = "docker://ghcr.io/zjnolen/evaladmix:0.961"
+genmap_container = (
+    "https://depot.galaxyproject.org/singularity/genmap:1.3.0--he1b5a44_0"
+)
+multiqc_container = (
+    "https://depot.galaxyproject.org/singularity/multiqc:1.23--pyhdfd78af_0"
+)
+ngsf_hmm_container = "docker://ghcr.io/zjnolen/ngsf-hmm:1.1.0"
+ngsld_container = "docker://ghcr.io/zjnolen/ngsld:1.2.0"
+ngsrelate_container = "docker://ghcr.io/zjnolen/ngsrelate:20220925-ec95c8f"
+pandas_container = "https://depot.galaxyproject.org/singularity/pandas:2.2.1"
+pcangsd_container = "docker://ghcr.io/zjnolen/pcangsd:1.35"
+qualimap_container = (
+    "https://depot.galaxyproject.org/singularity/qualimap:2.3--hdfd78af_0"
+)
+r_container = "docker://ghcr.io/zjnolen/popglen-r:0.4.0"
+repeatmodmask_container = (
+    "https://depot.galaxyproject.org/singularity/repeatmodeler:2.0.5--pl5321hdfd78af_0"
+)
+samtools_container = (
+    "https://depot.galaxyproject.org/singularity/samtools:1.20--h50ea8bc_1"
+)
+shell_container = "docker://ghcr.io/zjnolen/popglen-shell:0.4.0"
 
 # Define function for genome chunks to break up analysis (for parallelization)
 
@@ -523,14 +553,14 @@ def multiqc_input_qualimap(wildcards):
     if len(pipebams) > 0:
         reports.extend(
             expand(
-                "results/mapping/qc/qualimap/{sample}.{{ref}}/qualimapReport.html",
+                "results/mapping/qc/qualimap/{sample}.{{ref}}/genome_results.txt",
                 sample=pipebams,
             )
         )
     if len(userbams) > 0:
         reports.extend(
             expand(
-                "results/datasets/{{dataset}}/qc/user-provided-bams/qualimap/{sample}.{{ref}}/qualimapReport.html",
+                "results/datasets/{{dataset}}/qc/user-provided-bams/qualimap/{sample}.{{ref}}/genome_results.txt",
                 sample=userbams,
             )
         )

@@ -17,11 +17,12 @@ rule angsd_makeBamlist:
         "results/datasets/{dataset}/bamlists/{dataset}.{ref}_{population}{dp}.bamlist",
     log:
         "logs/datasets/{dataset}/bamlists/{dataset}.{ref}_{population}{dp}.log",
-    conda:
-        "../envs/shell.yaml"
+    container:
+        shell_container
     shell:
         """
-        (readlink -f {input.bams} | perl -pe 'chomp if eof') > {output} 2> {log}
+        (readlink -f {input.bams} > {output}
+        truncate -s -1 {output}) 2> {log}
         """
 
 
@@ -34,8 +35,8 @@ rule popfile:
         inds="results/datasets/{dataset}/poplists/{dataset}_{population}{dp}.indiv.list",
     log:
         "logs/{dataset}/poplists/{dataset}_{population}{dp}_makelist.log",
-    conda:
-        "../envs/python.yaml"
+    container:
+        pandas_container
     params:
         samplelist=samples,
         inds=get_popfile_inds,

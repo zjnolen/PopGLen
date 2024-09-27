@@ -140,7 +140,7 @@ if config["analyses"]["estimate_ld"]:
 if config["analyses"]["ld_decay"]:
     all_outputs.extend(
         expand(
-            "results/datasets/{{dataset}}/plots/LD_decay/{{dataset}}.{{ref}}_{population}_{{sites}}-filts.LDdecay.svg",
+            "results/datasets/{{dataset}}/plots/LD_decay/{{dataset}}.{{ref}}_{population}_{{sites}}-filts.LDdecay.pdf",
             population=pop_list + ["all"],
         )
     )
@@ -263,7 +263,7 @@ if config["analyses"]["admix_ngsadmix"]:
         all_outputs.extend(
             expand(
                 [
-                    "results/datasets/{{dataset}}/plots/evaladmix/{{dataset}}.{{ref}}_all_excl_pca-admix_{{sites}}-filts_K{kvalue}_evaladmix.html",
+                    "results/datasets/{{dataset}}/plots/evaladmix/{{dataset}}.{{ref}}_all_excl_pca-admix_{{sites}}-filts_K{kvalue}_evaladmix.png",
                     "results/datasets/{{dataset}}/plots/ngsadmix/{{dataset}}.{{ref}}_all_excl_pca-admix_{{sites}}-filts_K{kvalue}.svg",
                 ],
                 kvalue=config["params"]["ngsadmix"]["kvalues"],
@@ -273,7 +273,7 @@ if config["analyses"]["admix_ngsadmix"]:
         all_outputs.extend(
             expand(
                 [
-                    "results/datasets/{{dataset}}/plots/evaladmix/{{dataset}}.{{ref}}_all_{{sites}}-filts_K{kvalue}_evaladmix.html",
+                    "results/datasets/{{dataset}}/plots/evaladmix/{{dataset}}.{{ref}}_all_{{sites}}-filts_K{kvalue}_evaladmix.png",
                     "results/datasets/{{dataset}}/plots/ngsadmix/{{dataset}}.{{ref}}_all_{{sites}}-filts_K{kvalue}.svg",
                 ],
                 kvalue=config["params"]["ngsadmix"]["kvalues"],
@@ -302,7 +302,7 @@ if config["subsample_analyses"]["estimate_ld"]:
 if config["subsample_analyses"]["ld_decay"]:
     all_outputs.extend(
         expand(
-            "results/datasets/{{dataset}}/plots/LD_decay/{{dataset}}.{{ref}}_{population}{dp}_{{sites}}-filts.LDdecay.svg",
+            "results/datasets/{{dataset}}/plots/LD_decay/{{dataset}}.{{ref}}_{population}{dp}_{{sites}}-filts.LDdecay.pdf",
             population=pop_list + ["all"],
             dp=subdp,
         )
@@ -464,7 +464,7 @@ if config["subsample_analyses"]["admix_ngsadmix"]:
         all_outputs.extend(
             expand(
                 [
-                    "results/datasets/{{dataset}}/plots/evaladmix/{{dataset}}.{{ref}}_all_excl_pca-admix{dp}_{{sites}}-filts_K{kvalue}_evaladmix.html",
+                    "results/datasets/{{dataset}}/plots/evaladmix/{{dataset}}.{{ref}}_all_excl_pca-admix{dp}_{{sites}}-filts_K{kvalue}_evaladmix.png",
                     "results/datasets/{{dataset}}/plots/ngsadmix/{{dataset}}.{{ref}}_all_excl_pca-admix{dp}_{{sites}}-filts_K{kvalue}.svg",
                 ],
                 kvalue=config["params"]["ngsadmix"]["kvalues"],
@@ -475,7 +475,7 @@ if config["subsample_analyses"]["admix_ngsadmix"]:
         all_outputs.extend(
             expand(
                 [
-                    "results/datasets/{{dataset}}/plots/evaladmix/{{dataset}}.{{ref}}_all{dp}_{{sites}}-filts_K{kvalue}_evaladmix.html",
+                    "results/datasets/{{dataset}}/plots/evaladmix/{{dataset}}.{{ref}}_all{dp}_{{sites}}-filts_K{kvalue}_evaladmix.png",
                     "results/datasets/{{dataset}}/plots/ngsadmix/{{dataset}}.{{ref}}_all{dp}_{{sites}}-filts_K{kvalue}.svg",
                 ],
                 kvalue=config["params"]["ngsadmix"]["kvalues"],

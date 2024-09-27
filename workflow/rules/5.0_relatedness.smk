@@ -18,8 +18,8 @@ rule est_kinship_stats_sfs:
     wildcard_constraints:
         ind1="|".join([i for i in samples.index.tolist()]),
         ind2="|".join([i for i in samples.index.tolist()]),
-    conda:
-        "../envs/r.yaml"
+    container:
+        r_container
     resources:
         runtime=lambda wildcards, attempt: attempt * 15,
     script:
@@ -38,8 +38,8 @@ rule compile_kinship_stats_sfs:
         "logs/{dataset}/kinship/ibsrelate_sfs/{dataset}.{ref}_all{dp}_{sites}-filts_compile-stats.log",
     benchmark:
         "benchmarks/{dataset}/kinship/ibsrelate_sfs/{dataset}.{ref}_all{dp}_{sites}-filts_compile-stats.log"
-    conda:
-        "../envs/shell.yaml"
+    container:
+        shell_container
     resources:
         runtime=lambda wildcards, attempt: attempt * 15,
     shell:
@@ -128,8 +128,8 @@ rule est_kinship_stats_ibs:
         "logs/{dataset}/kinship/ibsrelate_ibs/{dataset}.{ref}_{population}{dp}_{sites}-filts_kinship.log",
     benchmark:
         "benchmarks/{dataset}/kinship/ibsrelate_ibs/{dataset}.{ref}_{population}{dp}_{sites}-filts_kinship.log"
-    conda:
-        "../envs/r.yaml"
+    container:
+        r_container
     script:
         "../scripts/kinship_ibs.R"
 
@@ -151,8 +151,8 @@ rule kinship_table_html:
         "logs/{dataset}/kinship/ibsrelate_{type}/{dataset}.{ref}_all{dp}_{sites}-filts_tsv2html.log",
     benchmark:
         "benchmarks/{dataset}/kinship/ibsrelate_{type}/{dataset}.{ref}_all{dp}_{sites}-filts_tsv2html.log"
-    conda:
-        "../envs/r-rectable.yaml"
+    container:
+        r_container
     script:
         "../scripts/tsv2html.Rmd"
 
@@ -204,7 +204,7 @@ rule ngsrelate_summary:
         ),
     log:
         "logs/{dataset}/kinship/ngsrelate/{dataset}.{ref}_all{dp}_{sites}-filts_tsv2html.log",
-    conda:
-        "../envs/r-rectable.yaml"
+    container:
+        r_container
     script:
         "../scripts/tsv2html.Rmd"

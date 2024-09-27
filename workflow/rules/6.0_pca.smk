@@ -17,8 +17,8 @@ rule remove_excl_pca_admix:
         "logs/{dataset}/ngsLD/excl_pca_admix_beagle/{dataset}.{ref}_{population}_excl_pca-admix{dp}_{sites}-filts.pruned_maxkbdist-{maxkb}_minr2-{r2}.log",
     benchmark:
         "benchmarks/{dataset}/ngsLD/excl_pca_admix_beagle/{dataset}.{ref}_{population}_excl_pca-admix{dp}_{sites}-filts.pruned_maxkbdist-{maxkb}_minr2-{r2}.log"
-    conda:
-        "../envs/shell.yaml"
+    container:
+        shell_container
     params:
         remcols=get_excl_ind_cols,
     shell:
@@ -78,7 +78,7 @@ rule plot_pca:
         "logs/{dataset}/pcangsd/{dataset}.{ref}_{population}{dp}_{sites}-filts_pc{xpc}-{ypc}_plot.log",
     benchmark:
         "benchmarks/{dataset}/pcangsd/{dataset}.{ref}_{population}{dp}_{sites}-filts_pc{xpc}-{ypc}_plot.log"
-    conda:
-        "../envs/r.yaml"
+    container:
+        r_container
     script:
         "../scripts/plot_PCA.R"

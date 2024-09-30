@@ -179,9 +179,9 @@ if config["analyses"]["2dsfs_boot"]:
         )
     )
 
-if config["analyses"]["relatedness"]["ngsrelate"]:
+if config["analyses"]["relatedness"]["ngsrelate_ibsrelate-only"]:
     all_outputs.append(
-        "results/datasets/{dataset}/analyses/kinship/ngsrelate/{dataset}.{ref}_all_{sites}-filts_relate.html"
+        "results/datasets/{dataset}/analyses/kinship/ngsrelate/{dataset}.{ref}_all_{sites}-filts_ibsrelate-nofreq.html"
     )
 
 if config["analyses"]["relatedness"]["ibsrelate_sfs"]:
@@ -346,10 +346,10 @@ if config["subsample_analyses"]["2dsfs_boot"]:
         )
     )
 
-if config["subsample_analyses"]["relatedness"]["ngsrelate"]:
+if config["subsample_analyses"]["relatedness"]["ngsrelate_ibsrelate-only"]:
     all_outputs.extend(
         expand(
-            "results/datasets/{{dataset}}/analyses/kinship/ngsrelate/{{dataset}}.{{ref}}_all{dp}_{{sites}}-filts_relate.html",
+            "results/datasets/{{dataset}}/analyses/kinship/ngsrelate/{{dataset}}.{{ref}}_all{dp}_{{sites}}-filts_ibsrelate-nofreq.html",
             dp=subdp,
         )
     )

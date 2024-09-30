@@ -55,10 +55,11 @@ analyses:
   ld_decay: true
   pca_pcangsd: true
   admix_ngsadmix: true
-  relatedness: 
-    ngsrelate: true
+  relatedness:
     ibsrelate_ibs: true
     ibsrelate_sfs: true
+    ngsrelate_ibsrelate-only: true
+    ngsrelate_freqbased: false
   1dsfs: true
   1dsfs_boot: true
   2dsfs: true
@@ -85,9 +86,10 @@ subsample_analyses:
   pca_pcangsd: false
   admix_ngsadmix: true
   relatedness:
-    ngsrelate: true
     ibsrelate_ibs: true
     ibsrelate_sfs: true
+    ngsrelate_ibsrelate-only: true
+    ngsrelate_freqbased: false
   1dsfs: true
   1dsfs_boot: true
   2dsfs: true

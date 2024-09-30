@@ -55,10 +55,11 @@ analyses:
   ld_decay: false
   pca_pcangsd: false
   admix_ngsadmix: false
-  relatedness: 
-    ngsrelate: false
+  relatedness:
     ibsrelate_ibs: false
     ibsrelate_sfs: false
+    ngsrelate_ibsrelate-only: false
+    ngsrelate_freqbased: false
   1dsfs: false
   1dsfs_boot: false
   2dsfs: false
@@ -85,9 +86,10 @@ subsample_analyses:
   pca_pcangsd: false
   admix_ngsadmix: false
   relatedness:
-    ngsrelate: false
     ibsrelate_ibs: false
     ibsrelate_sfs: false
+    ngsrelate_ibsrelate-only: false
+    ngsrelate_freqbased: false
   1dsfs: false
   1dsfs_boot: false
   2dsfs: false

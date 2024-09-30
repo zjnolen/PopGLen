@@ -149,12 +149,13 @@ params:
     extra_saf: "" # goes to all -doSaf runs
     extra_beagle: "" # goes to all -doGlf 2 runs
     domajorminor: 1 # Currently only compatible with values 1, 2, 4, 5
-    domaf: 1
+    domaf: 1 # Currently only compatible with values 1 & 2
     snp_pval: "1e-6"
     min_maf: -1 # Set -1 to disable
     mindepthind_heterozygosity: 1
   ngsrelate:
-    prune: true
+    ibsrelate-only-extra: ""
+    freqbased-extra: ""
   ngsld:
     max_kb_dist_est-ld: 200
     rnd_sample_est-ld: 0.001

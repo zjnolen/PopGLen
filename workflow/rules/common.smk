@@ -709,13 +709,10 @@ def get_minind(wildcards):
 
 # Determine if docounts is needed for beagle/maf calculation to keep it from
 # slowing things down when it is not. It is only needed if the major and minor
-# alleles are being inferred from counts (-doMajorMinor 2) or the minor allele
-# frequency is being inferred by counts (-doMaf 8, >8 possible if count
-# inference is combined with other inferences)
-def get_docounts(wildcard):
-    if (int(config["params"]["angsd"]["domajorminor"]) == 2) or (
-        int(config["params"]["angsd"]["domaf"]) >= 8
-    ):
+# alleles are being inferred from counts (-doMajorMinor 2). This would also be
+# needed if using -doMaf 8, but that is not supported currently by the pipeline.
+def get_docounts(wildcards):
+    if str(config["params"]["angsd"]["domajorminor"]) == "2":
         return "-doCounts 1"
     return ""
 
@@ -767,21 +764,6 @@ def get_excl_ind_cols(wildcards):
 
 
 # Kinship
-
-
-## Get beagle file for input to ngsrelate (either pruned or not)
-def get_ngsrelate_input(wildcards):
-    if config["params"]["ngsrelate"]["prune"]:
-        return {
-            "beagle": expand(
-                "results/datasets/{{dataset}}/beagles/pruned/{{dataset}}.{{ref}}_{{population}}{{dp}}_{{sites}}-filts.pruned_maxkbdist-{maxkb}_minr2-{r2}.beagle.gz",
-                maxkb=config["params"]["ngsld"]["max_kb_dist_pruning_dataset"],
-                r2=config["params"]["ngsld"]["pruning_min-weight_dataset"],
-            ),
-        }
-    return {
-        "beagle": "results/datasets/{dataset}/beagles/{dataset}.{ref}_{population}{dp}_{sites}-filts.beagle.gz"
-    }
 
 
 ## Get all possible kinship estimate pairings

@@ -41,7 +41,7 @@ rule angsd_doMaf:
         reffai="results/ref/{ref}/{ref}.fa.fai",
     output:
         maf="results/datasets/{dataset}/mafs/{dataset}.{ref}_{population}{dp}_{sites}-filts.dataset-maj.mafs.gz",
-        arg="results/datasets/{dataset}/mafs/chunks/{dataset}.{ref}_{population}{dp}_{sites}-filts.dataset-maj.arg",
+        arg="results/datasets/{dataset}/mafs/{dataset}.{ref}_{population}{dp}_{sites}-filts.dataset-maj.arg",
     log:
         "logs/{dataset}/angsd/doMaf/{dataset}.{ref}_{population}{dp}_{sites}-filts.dataset-maj.log",
     benchmark:

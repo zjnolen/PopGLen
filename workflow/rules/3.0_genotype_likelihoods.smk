@@ -19,10 +19,14 @@ rule angsd_makeBamlist:
         "logs/datasets/{dataset}/bamlists/{dataset}.{ref}_{population}{dp}.log",
     container:
         shell_container
+    params:
+        sampord=lambda w, input: f"{input.bams}",
     shell:
         """
-        (readlink -f {input.bams} > {output}
-        truncate -s -1 {output}) 2> {log}
+        (
+        echo "BAM order: {params.sampord}" > {log}
+        readlink -f {input.bams} > {output} 2>> {log}
+        truncate -s -1 {output}) 2>> {log}
         """
 
 

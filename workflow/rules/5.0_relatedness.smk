@@ -202,26 +202,27 @@ rule ngsrelate_ibsrelate_only:
 rule ngsrelate_freqbased:
     """
     Estimates inbreeding and relatedness measures using NGSrelate. This will use
-    allele frequencies, enabling all coefficients, including IBS relate ones.
-    All will be kept.
+    allele frequencies, enabling all coefficients, including IBS relate ones,
+    all will be kept.
     """
     input:
         beagle=lambda w: expand(
             "results/datasets/{{dataset}}/beagles/{{dataset}}.{{ref}}_{{population}}{{dp}}_{{sites}}-filts.{maj}maj.beagle.gz",
-            maj=get_maj(wildcards),
+            maj=get_maj,
         ),
         mafs=lambda w: expand(
             "results/datasets/{{dataset}}/beagles/{{dataset}}.{{ref}}_{{population}}{{dp}}_{{sites}}-filts.{maj}maj.mafs.gz",
-            maj=get_maj(wildcards),
+            maj=get_maj,
         ),
         inds="results/datasets/{dataset}/poplists/{dataset}_{population}{dp}.indiv.list",
     output:
-        relate="results/datasets/{dataset}/analyses/kinship/ngsrelate/{dataset}.{ref}_{population}{dp}_{sites}-filts_ngsrelate-freq-{maj}maj.tsv",
-        samples="results/datasets/{dataset}/analyses/kinship/ngsrelate/{dataset}.{ref}_{population}{dp}_{sites}-filts_samples.ngsrelate-freq-{maj}maj.list",
+        relate="results/datasets/{dataset}/analyses/kinship/ngsrelate/{dataset}.{ref}_{population}{dp}_{sites}-filts_ngsrelate-freq.tsv",
+        freq="results/datasets/{dataset}/analyses/kinship/ngsrelate/{dataset}.{ref}_{population}{dp}_{sites}-filts_ngsrelate-freq.freqs",
+        samples="results/datasets/{dataset}/analyses/kinship/ngsrelate/{dataset}.{ref}_{population}{dp}_{sites}-filts_samples.ngsrelate-freq.list",
     wildcard_constraints:
-        population=pop_list,
+        population="|".join(pop_list),
     log:
-        "logs/{dataset}/kinship/ngsrelate/{dataset}.{ref}_{population}{dp}_{sites}-filts.ngsrelate-freq-{maj}.log",
+        "logs/{dataset}/kinship/ngsrelate/{dataset}.{ref}_{population}{dp}_{sites}-filts.ngsrelate-freq.log",
     container:
         ngsrelate_container
     threads: lambda wildcards, attempt: attempt * 4
@@ -235,9 +236,30 @@ rule ngsrelate_freqbased:
         (echo "nind"
         echo {params.nind}
         cut -f1 {input.inds} | tail -n +2 > {output.samples}
-        zcat {input.mafs} | cut -f5 | sed 1d > {output.freq}
+        zcat {input.mafs} | cut -f7 | sed 1d > {output.freq}
         ngsRelate -G {input.beagle} -n {params.nind} -O {output.relate} \
             -z {output.samples} -f {output.freq} {params.extra}) &> {log}
+        """
+
+
+rule ngsrelate_freqbased_merge:
+    input:
+        relates=expand(
+            "results/datasets/{{dataset}}/analyses/kinship/ngsrelate/{{dataset}}.{{ref}}_{population}{{dp}}_{{sites}}-filts_ngsrelate-freq.tsv",
+            population=pop_list,
+        ),
+    output:
+        "results/datasets/{dataset}/analyses/kinship/ngsrelate/{dataset}.{ref}_all{dp}_{sites}-filts_ngsrelate-freq.tsv",
+    log:
+        "logs/{dataset}/kinship/ngsrelate/{dataset}.{ref}_all{dp}_{sites}-filts.ngsrelate-freq.log",
+    container:
+        shell_container
+    shell:
+        """
+        (head -n 1 {input.relates[0]} > {output}
+        for i in {input.relates}; do
+            tail -n+2 $i >> {output}
+        done) 2> {log}
         """
 
 

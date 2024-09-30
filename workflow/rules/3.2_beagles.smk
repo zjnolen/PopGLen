@@ -97,7 +97,7 @@ rule merge_maf:
             chunk=chunklist,
         ),
     output:
-        maf="results/datasets/{dataset}/mafs/{dataset}.{ref}_{population}{dp}_{sites}-filts.{maj}maj.mafs.gz",
+        maf="results/datasets/{dataset}/beagles/{dataset}.{ref}_{population}{dp}_{sites}-filts.{maj}maj.mafs.gz",
     log:
         "logs/{dataset}/angsd/doGlf2/{dataset}.{ref}_{population}{dp}_{sites}-filts.{maj}maj_merge-mafs.log",
     benchmark:
@@ -123,7 +123,7 @@ rule snpset:
     dataset.
     """
     input:
-        "results/datasets/{dataset}/mafs/{dataset}.{ref}_{population}{dp}_{sites}-filts.{maj}maj.mafs.gz",
+        "results/datasets/{dataset}/beagles/{dataset}.{ref}_{population}{dp}_{sites}-filts.{maj}maj.mafs.gz",
     output:
         "results/datasets/{dataset}/filters/snps/{dataset}.{ref}_{population}{dp}_{sites}-filts.{maj}maj_snps.sites",
     log:

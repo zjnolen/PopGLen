@@ -59,7 +59,7 @@ analyses:
     ibsrelate_ibs: true
     ibsrelate_sfs: true
     ngsrelate_ibsrelate-only: true
-    ngsrelate_freqbased: false
+    ngsrelate_freqbased: true
   1dsfs: true
   1dsfs_boot: true
   2dsfs: true
@@ -89,7 +89,7 @@ subsample_analyses:
     ibsrelate_ibs: true
     ibsrelate_sfs: true
     ngsrelate_ibsrelate-only: true
-    ngsrelate_freqbased: false
+    ngsrelate_freqbased: true
   1dsfs: true
   1dsfs_boot: true
   2dsfs: true

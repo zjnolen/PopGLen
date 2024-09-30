@@ -11,6 +11,8 @@ rule link_mafs:
         "logs/datasets/{dataset}/link_mafs/{dataset}.{ref}_{population}{dp}_{sites}-filts.pop-maj.mafs.gz",
     wildcard_constraints:
         population="|".join(pop_list),
+    container:
+        shell_container
     shell:
         """
         ln {input} {output} 2> {log}

@@ -7,14 +7,15 @@ rule ngsf_hmm:
     Estimate IBD tracts within individual genomes.
     """
     input:
-        beagle=expand(
-            "results/datasets/{{dataset}}/beagles/{folder}{{dataset}}.{{ref}}_{{population}}{{dp}}_{{sites}}-filts{pruning}.beagle.gz",
+        beagle=lambda w: expand(
+            "results/datasets/{{dataset}}/beagles/{folder}{{dataset}}.{{ref}}_{{population}}{{dp}}_{{sites}}-filts.{maj}maj{pruning}.beagle.gz",
             folder="pruned/" if config["params"]["ngsf-hmm"]["prune"] else "",
             pruning=(
                 f".pruned_maxkbdist-{config['params']['ngsf-hmm']['max_kb_dist_pruning_pop']}_minr2-{config['params']['ngsf-hmm']['pruning_min-weight_pop']}"
                 if config["params"]["ngsf-hmm"]["prune"]
                 else ""
             ),
+            maj=get_maj,
         ),
     output:
         ibd="results/datasets/{dataset}/analyses/ngsF-HMM/{dataset}.{ref}_{population}{dp}_{sites}-filts.ibd",

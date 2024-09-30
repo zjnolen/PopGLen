@@ -8,15 +8,15 @@ rule remove_excl_pca_admix:
     results), while allowing them in all other analyses.
     """
     input:
-        "results/datasets/{dataset}/beagles/pruned/{dataset}.{ref}_{population}{dp}_{sites}-filts.pruned_maxkbdist-{maxkb}_minr2-{r2}.beagle.gz",
+        "results/datasets/{dataset}/beagles/pruned/{dataset}.{ref}_{population}{dp}_{sites}-filts.{maj}maj.pruned_maxkbdist-{maxkb}_minr2-{r2}.beagle.gz",
     output:
-        "results/datasets/{dataset}/beagles/pruned/{dataset}.{ref}_{population}_excl_pca-admix{dp}_{sites}-filts.pruned_maxkbdist-{maxkb}_minr2-{r2}.beagle.gz",
+        "results/datasets/{dataset}/beagles/pruned/{dataset}.{ref}_{population}_excl_pca-admix{dp}_{sites}-filts.{maj}maj.pruned_maxkbdist-{maxkb}_minr2-{r2}.beagle.gz",
     wildcard_constraints:
         population="all",
     log:
-        "logs/{dataset}/ngsLD/excl_pca_admix_beagle/{dataset}.{ref}_{population}_excl_pca-admix{dp}_{sites}-filts.pruned_maxkbdist-{maxkb}_minr2-{r2}.log",
+        "logs/{dataset}/ngsLD/excl_pca_admix_beagle/{dataset}.{ref}_{population}_excl_pca-admix{dp}_{sites}-filts.{maj}maj.pruned_maxkbdist-{maxkb}_minr2-{r2}.log",
     benchmark:
-        "benchmarks/{dataset}/ngsLD/excl_pca_admix_beagle/{dataset}.{ref}_{population}_excl_pca-admix{dp}_{sites}-filts.pruned_maxkbdist-{maxkb}_minr2-{r2}.log"
+        "benchmarks/{dataset}/ngsLD/excl_pca_admix_beagle/{dataset}.{ref}_{population}_excl_pca-admix{dp}_{sites}-filts.{maj}maj.pruned_maxkbdist-{maxkb}_minr2-{r2}.log"
     container:
         shell_container
     params:
@@ -32,10 +32,11 @@ rule pca_pcangsd:
     Produces covariance matrix from SNP genotype likelihood data with PCAngsd.
     """
     input:
-        beagle=expand(
-            "results/datasets/{{dataset}}/beagles/pruned/{{dataset}}.{{ref}}_{{population}}{{dp}}_{{sites}}-filts.pruned_maxkbdist-{maxkb}_minr2-{r2}.beagle.gz",
+        beagle=lambda w: expand(
+            "results/datasets/{{dataset}}/beagles/pruned/{{dataset}}.{{ref}}_{{population}}{{dp}}_{{sites}}-filts.{maj}maj.pruned_maxkbdist-{maxkb}_minr2-{r2}.beagle.gz",
             maxkb=config["params"]["ngsld"]["max_kb_dist_pruning_dataset"],
             r2=config["params"]["ngsld"]["pruning_min-weight_dataset"],
+            maj=get_maj,
         ),
     output:
         cov="results/datasets/{dataset}/analyses/pcangsd/{dataset}.{ref}_{population}{dp}_{sites}-filts.cov",

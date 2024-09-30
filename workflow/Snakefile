@@ -13,6 +13,7 @@ include: "rules/2.2_dna_damage.smk"
 include: "rules/3.0_genotype_likelihoods.smk"
 include: "rules/3.1_safs.smk"
 include: "rules/3.2_beagles.smk"
+include: "rules/3.3_mafs.smk"
 include: "rules/4.0_estimate_LD.smk"
 include: "rules/4.1_linkage_pruning.smk"
 include: "rules/4.2_linkage_decay.smk"
@@ -290,6 +291,15 @@ if config["analyses"]["ibs_matrix"]:
         "results/datasets/{dataset}/analyses/IBS/{dataset}.{ref}_all_{sites}-filts.ibsMat"
     )
 
+if config["analyses"]["pop_allele_freqs"]:
+    all_outputs.extend(
+        expand(
+            "results/datasets/{{dataset}}/mafs/{{dataset}}.{{ref}}_{population}_{{sites}}-filts.{maj}-maj.mafs.gz",
+            population=pop_list,
+            maj=["pop", "dataset"],
+        )
+    )
+
 # Downsampled analyses
 
 if config["subsample_analyses"]["estimate_ld"]:
@@ -501,6 +511,16 @@ if config["subsample_analyses"]["ibs_matrix"]:
         expand(
             "results/datasets/{{dataset}}/analyses/IBS/{{dataset}}.{{ref}}_all{dp}_{{sites}}-filts.ibsMat",
             dp=subdp,
+        )
+    )
+
+if config["subsample_analyses"]["pop_allele_freqs"]:
+    all_outputs.extend(
+        expand(
+            "results/datasets/{{dataset}}/mafs/{{dataset}}.{{ref}}_{population}{dp}_{{sites}}-filts.{maj}-maj.mafs.gz",
+            population=pop_list,
+            dp=subdp,
+            maj=["pop", "dataset"],
         )
     )
 

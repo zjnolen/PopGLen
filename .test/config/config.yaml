@@ -71,6 +71,7 @@ analyses:
     individuals: true
   inbreeding_ngsf-hmm: true
   ibs_matrix: true
+  pop_allele_freqs: true
 
 #==================== Downsampling Configuration ======================#
 
@@ -101,6 +102,7 @@ subsample_analyses:
     individuals: true
   inbreeding_ngsf-hmm: true
   ibs_matrix: true
+  pop_allele_freqs: true
 
 #=========================== Filter Sets ==============================#
 

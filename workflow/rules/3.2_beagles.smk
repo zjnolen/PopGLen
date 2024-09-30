@@ -9,7 +9,7 @@ rule angsd_doGlf2:
     population beagle files, even if a population is fixed for a certain allele.
     """
     input:
-        unpack(get_sitesfile),
+        unpack(filt_depth),
         unpack(get_anc_ref),
         bam="results/datasets/{dataset}/bamlists/{dataset}.{ref}_{population}{dp}.bamlist",
         bams=get_bamlist_bams,
@@ -18,13 +18,13 @@ rule angsd_doGlf2:
         reffai="results/ref/{ref}/{ref}.fa.fai",
         regions="results/datasets/{dataset}/filters/chunks/{ref}_chunk{chunk}.rf",
     output:
-        beagle="results/datasets/{dataset}/beagles/chunks/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.{maj}maj.beagle.gz",
-        maf="results/datasets/{dataset}/beagles/chunks/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.{maj}maj.mafs.gz",
-        arg="results/datasets/{dataset}/beagles/chunks/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.{maj}maj.arg",
+        beagle="results/datasets/{dataset}/beagles/chunks/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.beagle.gz",
+        maf="results/datasets/{dataset}/beagles/chunks/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.mafs.gz",
+        arg="results/datasets/{dataset}/beagles/chunks/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.arg",
     log:
-        "logs/{dataset}/angsd/doGlf2/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.{maj}maj.log",
+        "logs/{dataset}/angsd/doGlf2/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.log",
     benchmark:
-        "benchmarks/{dataset}/angsd/doGlf2/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.{maj}maj.log"
+        "benchmarks/{dataset}/angsd/doGlf2/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.log"
     container:
         angsd_container
     params:
@@ -33,9 +33,10 @@ rule angsd_doGlf2:
         extra_beagle=config["params"]["angsd"]["extra_beagle"],
         mapQ=config["mapQ"],
         baseQ=config["baseQ"],
+        snp_pval=config["params"]["angsd"]["snp_pval"],
         maf=config["params"]["angsd"]["domaf"],
-        snp_pval_maf=get_snppval_maf,
-        majmin=get_majmin,
+        minmaf=config["params"]["angsd"]["min_maf"],
+        majmin=config["params"]["angsd"]["domajorminor"],
         counts=get_docounts,
         trans=get_trans,
         nind=get_nind,
@@ -48,12 +49,12 @@ rule angsd_doGlf2:
     shell:
         """
         angsd -doGlf 2 -bam {input.bam} -GL {params.gl_model} -ref {input.ref} \
-            {params.majmin} -doMaf {params.maf} {params.snp_pval_maf} \
-            -nThreads {threads} {params.extra} -minMapQ {params.mapQ} \
-            -minQ {params.baseQ} -sites {input.sites} -anc {input.anc} \
-            {params.extra_beagle} -rf {input.regions} {params.minind} \
-            -setMinDepthInd {params.mininddp} {params.counts} \
-            -rmTrans {params.trans} -out {params.out} &> {log}
+            -doMajorMinor {params.majmin} -doMaf {params.maf} -minMaf {params.minmaf} \
+            -SNP_pval {params.snp_pval} -nThreads {threads} {params.extra} \
+            -minMapQ {params.mapQ} -minQ {params.baseQ} -sites {input.sites} \
+            -anc {input.anc} {params.extra_beagle} -rf {input.regions} {params.minind} \
+            -setMinDepthInd {params.mininddp} {params.counts} -rmTrans {params.trans} \
+            -out {params.out} &> {log}
         """
 
 
@@ -63,15 +64,15 @@ rule merge_beagle:
     """
     input:
         lambda w: expand(
-            "results/datasets/{{dataset}}/beagles/chunks/{{dataset}}.{{ref}}_{{population}}{{dp}}_chunk{chunk}_{{sites}}-filts.{{maj}}maj.beagle.gz",
+            "results/datasets/{{dataset}}/beagles/chunks/{{dataset}}.{{ref}}_{{population}}{{dp}}_chunk{chunk}_{{sites}}-filts.beagle.gz",
             chunk=chunklist,
         ),
     output:
-        beagle="results/datasets/{dataset}/beagles/{dataset}.{ref}_{population}{dp}_{sites}-filts.{maj}maj.beagle.gz",
+        beagle="results/datasets/{dataset}/beagles/{dataset}.{ref}_{population}{dp}_{sites}-filts.beagle.gz",
     log:
-        "logs/{dataset}/angsd/doGlf2/{dataset}.{ref}_{population}{dp}_{sites}-filts.{maj}maj_merge-beagle.log",
+        "logs/{dataset}/angsd/doGlf2/{dataset}.{ref}_{population}{dp}_{sites}-filts_merge-beagle.log",
     benchmark:
-        "benchmarks/{dataset}/angsd/doGlf2/{dataset}.{ref}_{population}{dp}_{sites}-filts.{maj}maj_merge-beagle.log"
+        "benchmarks/{dataset}/angsd/doGlf2/{dataset}.{ref}_{population}{dp}_{sites}-filts_merge-beagle.log"
     container:
         shell_container
     resources:
@@ -93,15 +94,15 @@ rule merge_maf:
     """
     input:
         lambda w: expand(
-            "results/datasets/{{dataset}}/beagles/chunks/{{dataset}}.{{ref}}_{{population}}{{dp}}_chunk{chunk}_{{sites}}-filts.{{maj}}maj.mafs.gz",
+            "results/datasets/{{dataset}}/beagles/chunks/{{dataset}}.{{ref}}_{{population}}{{dp}}_chunk{chunk}_{{sites}}-filts.mafs.gz",
             chunk=chunklist,
         ),
     output:
-        maf="results/datasets/{dataset}/beagles/{dataset}.{ref}_{population}{dp}_{sites}-filts.{maj}maj.mafs.gz",
+        maf="results/datasets/{dataset}/mafs/{dataset}.{ref}_{population}{dp}_{sites}-filts.mafs.gz",
     log:
-        "logs/{dataset}/angsd/doGlf2/{dataset}.{ref}_{population}{dp}_{sites}-filts.{maj}maj_merge-mafs.log",
+        "logs/{dataset}/angsd/doGlf2/{dataset}.{ref}_{population}{dp}_{sites}-filts_merge-mafs.log",
     benchmark:
-        "benchmarks/{dataset}/angsd/doGlf2/{dataset}.{ref}_{population}{dp}_{sites}-filts.{maj}maj_merge-mafs.log"
+        "benchmarks/{dataset}/angsd/doGlf2/{dataset}.{ref}_{population}{dp}_{sites}-filts_merge-mafs.log"
     container:
         shell_container
     resources:
@@ -123,13 +124,13 @@ rule snpset:
     dataset.
     """
     input:
-        "results/datasets/{dataset}/beagles/{dataset}.{ref}_{population}{dp}_{sites}-filts.{maj}maj.mafs.gz",
+        "results/datasets/{dataset}/mafs/{dataset}.{ref}_{population}{dp}_{sites}-filts.mafs.gz",
     output:
-        "results/datasets/{dataset}/filters/snps/{dataset}.{ref}_{population}{dp}_{sites}-filts.{maj}maj_snps.sites",
+        "results/datasets/{dataset}/filters/snps/{dataset}.{ref}_{population}{dp}_{sites}-filts_snps.sites",
     log:
-        "logs/{dataset}/filters/snps/{dataset}.{ref}_{population}{dp}_{sites}-filts.{maj}maj_snps.log",
+        "logs/{dataset}/filters/snps/{dataset}.{ref}_{population}{dp}_{sites}-filts_snps.log",
     benchmark:
-        "benchmarks/{dataset}/filters/snps/{dataset}.{ref}_{population}{dp}_{sites}-filts.{maj}maj_snps.log"
+        "benchmarks/{dataset}/filters/snps/{dataset}.{ref}_{population}{dp}_{sites}-filts_snps.log"
     container:
         shell_container
     shell:

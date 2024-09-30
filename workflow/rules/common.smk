@@ -709,88 +709,15 @@ def get_minind(wildcards):
 
 # Determine if docounts is needed for beagle/maf calculation to keep it from
 # slowing things down when it is not. It is only needed if the major and minor
-# alleles are being inferred from counts (-doMajorMinor 2). This would also be
-# needed if using -doMaf 8, but that is not supported currently by the pipeline.
-def get_docounts(wildcards):
-    if str(config["params"]["angsd"]["domajorminor"]) == "2":
+# alleles are being inferred from counts (-doMajorMinor 2) or the minor allele
+# frequency is being inferred by counts (-doMaf 8, >8 possible if count
+# inference is combined with other inferences)
+def get_docounts(wildcard):
+    if (int(config["params"]["angsd"]["domajorminor"]) == 2) or (
+        int(config["params"]["angsd"]["domaf"]) >= 8
+    ):
         return "-doCounts 1"
     return ""
-
-
-# Determine how what -doMajorMinor value to pass to Beagle/MAF calculation. The
-# primary way minor and major will be inferred is set in the config, however,
-# sometimes the pipeline may set these from a -sites file, for instance when
-# polarizing major/minor in pops to the dataset major/minor.
-def get_majmin(wildcards):
-    maj = wildcards.maj
-    pop = wildcards.population
-    polarize = config["params"]["angsd"]["popmafmaj"]
-    configmaj = config["params"]["angsd"]["domajorminor"]
-    # If desired major is reference, always use -doMajorMinor 4
-    if maj == "ref":
-        return "-doMajorMinor 4"
-    # If desired major is ancestral, always use -doMajorMinor 5
-    if maj == "anc":
-        return "-doMajorMinor 5"
-    # If desired major is major of all samples, use -doMajorMinor 3 for pops
-    if (pop != "all") & (polarize == "all"):
-        return "-doMajorMinor 3"
-    # In all other cases, use the configured value
-    return f"-doMajorMinor {configmaj}"
-
-
-# Determine which sites file to use for Beagle/MAF calculation. In almost all
-# cases, this is the filtered sites lists. In the event the user wants
-# population Beagle/MAFs to be polarized to the major across all samples, the
-# sites list produced by the all samples Beagle will be used.
-def get_sitesfile(wildcards):
-    wildmaj = wildcards.maj
-    pop = wildcards.population
-    polarize = config["params"]["angsd"]["popmafmaj"]
-    configmaj = str(config["params"]["angsd"]["domajorminor"])
-    if (pop != "all") & (polarize == "all") & (configmaj in ["1", "2"]):
-        return {
-            "sites": "results/datasets/{dataset}/filters/snps/{dataset}.{ref}_all{dp}_{sites}-filts.{maj}maj_snps.sites",
-            "idx": "results/datasets/{dataset}/filters/snps/{dataset}.{ref}_all{dp}_{sites}-filts.{maj}maj_snps.sites.idx",
-        }
-    return filt_depth(wildcards)
-
-
-# In the event we do polarize to the major allele across all samples within the
-# population Beagle/MAF files, it may mean that fixed sites within the
-# populations are interesting. We'll override the user's set -minMaf and
-# -SNP_pval options in that case to keep any site that was variable in the
-# dataset, even if not in one population.
-def get_snppval_maf(wildcards):
-    pop = wildcards.population
-    snppval = config["params"]["angsd"]["snp_pval"]
-    minmaf = config["params"]["angsd"]["min_maf"]
-    polarize = config["params"]["angsd"]["popmafmaj"]
-    configmaj = str(config["params"]["angsd"]["domajorminor"])
-    if (pop != "all") & (polarize == "all") & (configmaj in ["1", "2"]):
-        return "-SNP_pval 1 -minMaf -1"
-    return f"-SNP_pval {snppval} -minMaf {minmaf}"
-
-
-# Determine which major to set in the filename
-def get_maj(wildcards):
-    pop = wildcards.population
-    configmaj = str(config["params"]["angsd"]["domajorminor"])
-    polarize = config["params"]["angsd"]["popmafmaj"]
-    if configmaj not in ["1", "2", "4", "5"]:
-        raise ValueError(
-            f"Config invalid - you have set a 'domajorminor' parameter "
-            f"incompatible with this workflow. You can only select from 1, 2, "
-            f"4, and 5 for -doMajorMinor at this time. Please change the "
-            f"'domajorminor' entry in the config file to one of these values."
-        )
-    if configmaj == "4":
-        return "ref"
-    if configmaj == "5":
-        return "anc"
-    if (pop in pop_list) & (polarize == "population"):
-        return "pop"
-    return "all"
 
 
 # Determine whether transitions should be removed based on user configuration
@@ -840,6 +767,21 @@ def get_excl_ind_cols(wildcards):
 
 
 # Kinship
+
+
+## Get beagle file for input to ngsrelate (either pruned or not)
+def get_ngsrelate_input(wildcards):
+    if config["params"]["ngsrelate"]["prune"]:
+        return {
+            "beagle": expand(
+                "results/datasets/{{dataset}}/beagles/pruned/{{dataset}}.{{ref}}_{{population}}{{dp}}_{{sites}}-filts.pruned_maxkbdist-{maxkb}_minr2-{r2}.beagle.gz",
+                maxkb=config["params"]["ngsld"]["max_kb_dist_pruning_dataset"],
+                r2=config["params"]["ngsld"]["pruning_min-weight_dataset"],
+            ),
+        }
+    return {
+        "beagle": "results/datasets/{dataset}/beagles/{dataset}.{ref}_{population}{dp}_{sites}-filts.beagle.gz"
+    }
 
 
 ## Get all possible kinship estimate pairings

@@ -7,13 +7,13 @@ rule ngsLD_prune_sites:
     Prunes SNPs to produce a list of SNPs in linkage equilibrium.
     """
     input:
-        ld="results/datasets/{dataset}/beagles/pruned/ngsLD/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.{maj}maj.ld_maxkbdist-{maxkb}_rndsample-1.gz",
+        ld="results/datasets/{dataset}/beagles/pruned/ngsLD/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.ld_maxkbdist-{maxkb}_rndsample-1.gz",
     output:
-        sites="results/datasets/{dataset}/beagles/pruned/ngsLD/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.{maj}maj.pruned_maxkbdist-{maxkb}_minr2-{r2}.sites",
+        sites="results/datasets/{dataset}/beagles/pruned/ngsLD/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.pruned_maxkbdist-{maxkb}_minr2-{r2}.sites",
     log:
-        "logs/{dataset}/ngsLD/prune_sites/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.{maj}maj_maxkbdist-{maxkb}_minr2-{r2}.log",
+        "logs/{dataset}/ngsLD/prune_sites/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts_maxkbdist-{maxkb}_minr2-{r2}.log",
     benchmark:
-        "benchmarks/{dataset}/ngsLD/prune_sites/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.{maj}maj_maxkbdist-{maxkb}_minr2-{r2}.log"
+        "benchmarks/{dataset}/ngsLD/prune_sites/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts_maxkbdist-{maxkb}_minr2-{r2}.log"
     container:
         ngsld_container
     threads: 4
@@ -36,21 +36,21 @@ rule prune_chunk_beagle:
     Subsets beagle file to pruned SNPs.
     """
     input:
-        beagle="results/datasets/{dataset}/beagles/chunks/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.{maj}maj.beagle.gz",
-        sites="results/datasets/{dataset}/beagles/pruned/ngsLD/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.{maj}maj.pruned_maxkbdist-{maxkb}_minr2-{r2}.sites",
+        beagle="results/datasets/{dataset}/beagles/chunks/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.beagle.gz",
+        sites="results/datasets/{dataset}/beagles/pruned/ngsLD/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.pruned_maxkbdist-{maxkb}_minr2-{r2}.sites",
     output:
-        prunedgz="results/datasets/{dataset}/beagles/pruned/chunks/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.{maj}maj.pruned_maxkbdist-{maxkb}_minr2-{r2}.beagle.gz",
+        prunedgz="results/datasets/{dataset}/beagles/pruned/chunks/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.pruned_maxkbdist-{maxkb}_minr2-{r2}.beagle.gz",
     log:
-        "logs/{dataset}/ngsLD/prune_beagle/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.{maj}maj.pruned_maxkbdist-{maxkb}_minr2-{r2}.log",
+        "logs/{dataset}/ngsLD/prune_beagle/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.pruned_maxkbdist-{maxkb}_minr2-{r2}.log",
     benchmark:
-        "benchmarks/{dataset}/ngsLD/prune_beagle/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.{maj}maj.pruned_maxkbdist-{maxkb}_minr2-{r2}.log"
+        "benchmarks/{dataset}/ngsLD/prune_beagle/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.pruned_maxkbdist-{maxkb}_minr2-{r2}.log"
     container:
         shell_container
     shadow:
         "minimal"
     threads: lambda wildcards, attempt: attempt
     params:
-        pruned="results/datasets/{dataset}/beagles/pruned/chunks/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.{maj}maj.pruned_maxkbdist-{maxkb}_minr2-{r2}.beagle",
+        pruned="results/datasets/{dataset}/beagles/pruned/chunks/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.pruned_maxkbdist-{maxkb}_minr2-{r2}.beagle",
     resources:
         runtime=lambda wildcards, attempt: attempt * 120,
     shell:
@@ -78,15 +78,15 @@ rule merge_pruned_beagles:
     """
     input:
         pruned=lambda w: expand(
-            "results/datasets/{{dataset}}/beagles/pruned/chunks/{{dataset}}.{{ref}}_{{population}}{{dp}}_chunk{chunk}_{{sites}}-filts.{{maj}}maj.pruned_maxkbdist-{{maxkb}}_minr2-{{r2}}.beagle.gz",
+            "results/datasets/{{dataset}}/beagles/pruned/chunks/{{dataset}}.{{ref}}_{{population}}{{dp}}_chunk{chunk}_{{sites}}-filts.pruned_maxkbdist-{{maxkb}}_minr2-{{r2}}.beagle.gz",
             chunk=chunklist,
         ),
     output:
-        beagle="results/datasets/{dataset}/beagles/pruned/{dataset}.{ref}_{population}{dp}_{sites}-filts.{maj}maj.pruned_maxkbdist-{maxkb}_minr2-{r2}.beagle.gz",
+        beagle="results/datasets/{dataset}/beagles/pruned/{dataset}.{ref}_{population}{dp}_{sites}-filts.pruned_maxkbdist-{maxkb}_minr2-{r2}.beagle.gz",
     log:
-        "logs/{dataset}/ngsLD/merge_pruned/{dataset}.{ref}_{population}{dp}_{sites}-filts.{maj}maj_merge.pruned_maxkbdist-{maxkb}_minr2-{r2}.log",
+        "logs/{dataset}/ngsLD/merge_pruned/{dataset}.{ref}_{population}{dp}_{sites}-filts_merge.pruned_maxkbdist-{maxkb}_minr2-{r2}.log",
     benchmark:
-        "benchmarks/{dataset}/ngsLD/merge_pruned/{dataset}.{ref}_{population}{dp}_{sites}-filts.{maj}maj_merge.pruned_maxkbdist-{maxkb}_minr2-{r2}.log"
+        "benchmarks/{dataset}/ngsLD/merge_pruned/{dataset}.{ref}_{population}{dp}_{sites}-filts_merge.pruned_maxkbdist-{maxkb}_minr2-{r2}.log"
     wildcard_constraints:
         population="|".join(
             ["all"]

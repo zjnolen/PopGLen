@@ -9,14 +9,8 @@ rule angsd_doIBS:
         bamlist="results/datasets/{dataset}/bamlists/{dataset}.{ref}_{population}{dp}.bamlist",
         bams=get_bamlist_bams,
         bais=get_bamlist_bais,
-        sites=lambda w: expand(
-            "results/datasets/{{dataset}}/filters/snps/{{dataset}}.{{ref}}_{{population}}{{dp}}_{{sites}}-filts.{maj}maj_snps.sites",
-            maj=get_maj,
-        ),
-        idx=lambda w: expand(
-            "results/datasets/{{dataset}}/filters/snps/{{dataset}}.{{ref}}_{{population}}{{dp}}_{{sites}}-filts.{maj}maj_snps.sites.idx",
-            maj=get_maj,
-        ),
+        sites="results/datasets/{dataset}/filters/snps/{dataset}.{ref}_{population}{dp}_{sites}-filts_snps.sites",
+        idx="results/datasets/{dataset}/filters/snps/{dataset}.{ref}_{population}{dp}_{sites}-filts_snps.sites.idx",
     output:
         ibs="results/datasets/{dataset}/analyses/IBS/{dataset}.{ref}_{population}{dp}_{sites}-filts.ibs.gz",
         ibsmat="results/datasets/{dataset}/analyses/IBS/{dataset}.{ref}_{population}{dp}_{sites}-filts.ibsMat",

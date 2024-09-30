@@ -8,19 +8,19 @@ rule ngsLD_estLD:
     Estimates pairwise linkage disequilibrium between SNPs.
     """
     input:
-        beagle="results/datasets/{dataset}/beagles/chunks/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.{maj}maj.beagle.gz",
+        beagle="results/datasets/{dataset}/beagles/chunks/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.beagle.gz",
         bamlist="results/datasets/{dataset}/bamlists/{dataset}.{ref}_{population}{dp}.bamlist",
     output:
         ld=temp(
-            "results/datasets/{dataset}/{path}/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.{maj}maj.ld_maxkbdist-{maxkb}_rndsample-{rndsmp}.gz"
+            "results/datasets/{dataset}/{path}/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.ld_maxkbdist-{maxkb}_rndsample-{rndsmp}.gz"
         ),
         pos=temp(
-            "results/datasets/{dataset}/{path}/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.{maj}maj.ld_maxkbdist-{maxkb}_rndsample-{rndsmp}.pos",
+            "results/datasets/{dataset}/{path}/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.ld_maxkbdist-{maxkb}_rndsample-{rndsmp}.pos",
         ),
     log:
-        "logs/{dataset}/ngsLD/estLD/{path}/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.{maj}maj.ld_maxkbdist-{maxkb}_rndsample-{rndsmp}.log",
+        "logs/{dataset}/ngsLD/estLD/{path}/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.ld_maxkbdist-{maxkb}_rndsample-{rndsmp}.log",
     benchmark:
-        "benchmarks/{dataset}/ngsLD/estLD/{path}/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.{maj}maj.ld_maxkbdist-{maxkb}_rndsample-{rndsmp}.log"
+        "benchmarks/{dataset}/ngsLD/estLD/{path}/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.ld_maxkbdist-{maxkb}_rndsample-{rndsmp}.log"
     container:
         ngsld_container
     threads: lambda wildcards, attempt: attempt
@@ -50,9 +50,8 @@ rule ngsLD_estLD:
 rule combine_LD_files:
     input:
         ldgz=expand(
-            "results/datasets/{{dataset}}/analyses/ngsLD/chunks/{{dataset}}.{{ref}}_{{population}}{{dp}}_chunk{chunk}_{{sites}}-filts.{maj}maj.ld_maxkbdist-{{maxkb}}_rndsample-{{rndsmp}}.gz",
+            "results/datasets/{{dataset}}/analyses/ngsLD/chunks/{{dataset}}.{{ref}}_{{population}}{{dp}}_chunk{chunk}_{{sites}}-filts.ld_maxkbdist-{{maxkb}}_rndsample-{{rndsmp}}.gz",
             chunk=chunklist,
-            maj=get_maj,
         ),
     output:
         ldgz="results/datasets/{dataset}/analyses/ngsLD/{dataset}.{ref}_{population}{dp}_{sites}-filts.ld_maxkbdist-{maxkb}_rndsample-{rndsmp}.gz",

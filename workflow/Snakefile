@@ -59,7 +59,6 @@ wildcard_constraints:
     dp=".{0}|.dp[1-9][0-9]*",
     chunk="[0-9]+",
     sites="|".join(filters),
-    maj="all|pop|anc|ref",
 
 
 # Accumulate desired output files from config file

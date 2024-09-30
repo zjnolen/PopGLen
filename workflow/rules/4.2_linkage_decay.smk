@@ -1,19 +1,19 @@
 rule combine_LDdecay_files:
     input:
         ldgz=expand(
-            "results/datasets/{{dataset}}/analyses/ngsLD/chunks/{{dataset}}.{{ref}}_{{population}}{{dp}}_chunk{chunk}_{{sites}}-filts.{{maj}}maj.ld_maxkbdist-{maxkb}_rndsample-{rndsmp}.gz",
+            "results/datasets/{{dataset}}/analyses/ngsLD/chunks/{{dataset}}.{{ref}}_{{population}}{{dp}}_chunk{chunk}_{{sites}}-filts.ld_maxkbdist-{maxkb}_rndsample-{rndsmp}.gz",
             chunk=chunklist,
             maxkb=config["params"]["ngsld"]["max_kb_dist_decay"],
             rndsmp=config["params"]["ngsld"]["rnd_sample_decay"],
         ),
     output:
         ldgz=temp(
-            "results/datasets/{dataset}/analyses/ngsLD/decay/{dataset}.{ref}_{population}{dp}_{sites}-filts.{maj}maj.LDdecay.gz"
+            "results/datasets/{dataset}/analyses/ngsLD/decay/{dataset}.{ref}_{population}{dp}_{sites}-filts.LDdecay.gz"
         ),
     log:
-        "logs/{dataset}/ngsLD/combine_LDdecay_files/{dataset}.{ref}_{population}{dp}_{sites}-filts.{maj}maj.ld_decay.log",
+        "logs/{dataset}/ngsLD/combine_LDdecay_files/{dataset}.{ref}_{population}{dp}_{sites}-filts.ld_decay.log",
     benchmark:
-        "benchmarks/{dataset}/ngsLD/combine_LDdecay_files/{dataset}.{ref}_{population}{dp}_{sites}-filts.{maj}maj.ld_decay.log"
+        "benchmarks/{dataset}/ngsLD/combine_LDdecay_files/{dataset}.{ref}_{population}{dp}_{sites}-filts.ld_decay.log"
     container:
         shell_container
     shell:
@@ -24,10 +24,7 @@ rule combine_LDdecay_files:
 
 rule fit_LD_decay:
     input:
-        lambda w: expand(
-            "results/datasets/{{dataset}}/analyses/ngsLD/decay/{{dataset}}.{{ref}}_{{population}}{{dp}}_{{sites}}-filts.{maj}maj.LDdecay.gz",
-            maj=get_maj,
-        ),
+        "results/datasets/{dataset}/analyses/ngsLD/decay/{dataset}.{ref}_{population}{dp}_{sites}-filts.LDdecay.gz",
     output:
         plot=report(
             "results/datasets/{dataset}/plots/LD_decay/{dataset}.{ref}_{population}{dp}_{sites}-filts.LDdecay.pdf",

@@ -31,7 +31,8 @@ rule compile_kinship_stats_sfs:
     Compiles kinship stats for all pairs into a single table.
     """
     input:
-        get_kinship,
+        get_kinship_sfs,
+        inds="results/datasets/{dataset}/poplists/{dataset}_all{dp}.indiv.list",
     output:
         "results/datasets/{dataset}/analyses/kinship/ibsrelate_sfs/{dataset}.{ref}_all{dp}_{sites}-filts.kinship",
     log:
@@ -86,28 +87,53 @@ rule doGlf1_ibsrelate:
         """
 
 
-rule ibsrelate:
+rule ibsrelate_chunks:
     input:
-        "results/datasets/{dataset}/glfs/chunks/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.glf.gz",
+        unpack(filt_depth),
+        bams=[
+            "results/datasets/{dataset}/bams/{ind1}.{ref}{dp}.bam",
+            "results/datasets/{dataset}/bams/{ind2}.{ref}{dp}.bam",
+        ],
+        bais=[
+            "results/datasets/{dataset}/bams/{ind1}.{ref}{dp}.bam.bai",
+            "results/datasets/{dataset}/bams/{ind2}.{ref}{dp}.bam.bai",
+        ],
+        ref="results/ref/{ref}/{ref}.fa",
     output:
-        "results/datasets/{dataset}/analyses/kinship/ibsrelate_ibs/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.ibspair",
+        glf=temp(
+            "results/datasets/{dataset}/analyses/kinship/ibsrelate_ibs/{dataset}.{ref}_{ind1}-{ind2}{dp}_{sites}-filts.glf.gz"
+        ),
+        ibspair="results/datasets/{dataset}/analyses/kinship/ibsrelate_ibs/{dataset}.{ref}_{ind1}-{ind2}{dp}_{sites}-filts.ibspair",
     log:
-        "logs/{dataset}/angsd/ibsrelate_ibs/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.log",
+        "logs/{dataset}/angsd/ibsrelate_ibs/{dataset}.{ref}_{ind1}-{ind2}{dp}_{sites}-filts.log",
+    wildcard_constraints:
+        ind1="|".join([i for i in samples.index.tolist()]),
+        ind2="|".join([i for i in samples.index.tolist()]),
     benchmark:
-        "benchmarks/{dataset}/angsd/ibsrelate_ibs/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.log"
+        "benchmarks/{dataset}/angsd/ibsrelate_ibs/{dataset}.{ref}_{ind1}-{ind2}{dp}_{sites}-filts.log"
     container:
         angsd_container
     params:
-        nind=get_nind,
+        gl_model=config["params"]["angsd"]["gl_model"],
+        extra=config["params"]["angsd"]["extra"],
+        mapQ=config["mapQ"],
+        baseQ=config["baseQ"],
         maxsites=config["chunk_size"],
-        out=lambda w, output: os.path.splitext(output[0])[0],
+        out=lambda w, output: os.path.splitext(output.ibspair)[0],
     resources:
-        runtime="7d",
-    threads: lambda wildcards, attempt: attempt * 10
+        runtime="2d",
+    threads: lambda wildcards, attempt: attempt * 2
     shell:
-        """
-        ibs -glf {input} -model 0 -nInd {params.nind} -allpairs 1 \
-            -m {params.maxsites} -outFileName {params.out}
+        r"""
+        angsd -bam <(readlink -f {input.bams} | perl -pe 'chomp if eof') \
+            -doGlf 1 -GL {params.gl_model} -ref {input.ref} \
+            -nThreads {threads} {params.extra} -minMapQ {params.mapQ} \
+            -minQ {params.baseQ} -sites {input.sites} -out {params.out}
+        
+        ibs -glf {output.glf} -model 0 -nInd 2 -allpairs 1 \
+            -outFileName {params.out}
+        
+        sed -i 's/^0\t1\t/{wildcards.ind1}\t{wildcards.ind2}\t/' {output.ibspair}
         """
 
 
@@ -117,10 +143,7 @@ rule est_kinship_stats_ibs:
     robust kinship between all sample pairings.
     """
     input:
-        ibs=expand(
-            "results/datasets/{{dataset}}/analyses/kinship/ibsrelate_ibs/{{dataset}}.{{ref}}_{{population}}{{dp}}_chunk{chunk}_{{sites}}-filts.ibspair",
-            chunk=chunklist,
-        ),
+        ibs=get_kinship_ibs,
         inds="results/datasets/{dataset}/poplists/{dataset}_{population}{dp}.indiv.list",
     output:
         "results/datasets/{dataset}/analyses/kinship/ibsrelate_ibs/{dataset}.{ref}_{population}{dp}_{sites}-filts.kinship",

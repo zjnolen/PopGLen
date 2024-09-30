@@ -12,8 +12,8 @@
 This pipeline is aimed at processing sequencing data and calculating population
 genomic statistics within a genotype likelihood framework using a common
 workflow based on ANGSD and related softwares. As a primary use case of genotype
-likelihood based methods is analysis of samples sequenced to low depth or from
-degraded samples, processing can optionally be adapted to account for DNA
+likelihood based methods is analysis of samples sequenced to low depth or
+from degraded samples, processing can optionally be adapted to account for DNA
 damage. It is aimed at single and multi-population analyses of samples mapped to
 the same reference, so is appropriate for datasets containing individuals from a
 single or multiple populations and allows for examining population structure,

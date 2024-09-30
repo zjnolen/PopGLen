@@ -280,38 +280,27 @@ settings for each analysis are set in the next section.
   - `admix_ngsadmix:` Perform admixture analysis with NGSadmix (`true`/`false`)
   - `relatedness:` Can be performed multiple ways, set any combination of the
     three options below. Note, that I've mostly incorporated these with the
-    R0/R1/KING kinship methods in Waples et al. 2019, _Mol. Ecol._ in mind.
-    These methods differ slightly from how they implement this method, and will
-    give slightly more/less accurate estimates of kinship depending on your
-    reference's relationship to your samples. `ibsrelate_ibs` uses the
-    probabilities of all possible genotypes, so should be the most accurate
-    regardless, but can use a lot of memory and take a long time with many
-    samples. `ibsrelate_sfs` is a bit more efficient, as it does things in a
-    pairwise fashion in parallel, but may be biased if the segregating alleles
-    in your populations are not represented in the reference. `ngsrelate` uses
-    several methods, one of which is similar to `ibsrelate_sfs`, but may be
-    less accurate due to incorporating in less data. In my experience,
-    NGSrelate is suitable to identify up to third degree relatives in the
-    dataset, but only if the exact relationship can be somewhat uncertain (i.e.
-    you don't need to know the difference between, say, parent/offspring and
-    full sibling pairs, or between second degree and third degree relatives).
-    IBSrelate_sfs can get you greater accuracy, but may erroneously inflate
-    kinship if your datset has many alleles not represented in your reference.
-    If you notice, for instance, a large number of third degree relatives
-    (KING ~0.03 - 0.07) in your dataset that is not expected, it may be worth
-    trying the IBS based method (`ibsrelate_ibs`).
-    - `ngsrelate:` Co-estimate inbreeding and pairwise relatedness with
-      NGSrelate (`true`/`false`)
+    R0/R1/KING kinship methods in Waples et al. 2019, *Mol. Ecol.* in mind, and
+    all three methods focus on that. `ibsrelate_ibs` uses the probabilities of
+    all possible genotypes, so should be the most accurate regardless, but can
+    use a lot of memory and take a long time with many samples. `ibsrelate_sfs`
+    is a bit more efficient, as it does things in a pairwise fashion in
+    parallel, but may be biased if the segregating alleles in your populations
+    are not represented in the reference. `ngsrelate` uses NGSrelate, but I have
+    **not** implemented the allele frequency based approaches. So, this should
+    be considered as a SNP based version of the IBSrelate method, which is
+    implemented in NGSrelate.
+    - `ngsrelate:` Estimate relatedness from SNPs using the IBSrelate method.
+      Allele frequency based co-inference of inbreeding and relatedness (the
+      main analyses involved in NGSrelate) may be added down the line, using the
+      dataset or defined populations in `samples.tsv` as the units to calculate
+      frequencies for. (`true`/`false`)
     - `ibsrelate_ibs:` Estimate pairwise relatedness with the IBS based method
-      from Waples et al. 2019, _Mol. Ecol._. This can use a lot of memory, as
-      it has genotype likelihoods for all sites from all samples loaded into
-      memory, so it is done per 'chunk', which still takes a lot of time and
-      memory. (`true`/`false`)
+      for IBSrelate. Enabling this can greatly increase the time needed to build
+      the workflow DAG if you have many samples. (`true`/`false`)
     - `ibsrelate_sfs:` Estimate pairwise relatedness with the SFS based method
-      from Waples et al. 2019, _Mol. Ecol._. Enabling this can greatly increase
-      the time needed to build the workflow DAG if you have many samples. As a
-      form of this method is implemented in NGSrelate, it may be more
-      efficient to only enable that. (`true`/`false`)
+      for IBSrelate. Enabling this can greatly increase the time needed to build
+      the workflow DAG if you have many samples. (`true`/`false`)
   - `1dsfs:` Generates a one dimensional site frequency spectrum for all
     populations in the sample list. Automatically enabled if `thetas_angsd` is
     enabled. (`true`/`false`)

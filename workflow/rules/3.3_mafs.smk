@@ -33,7 +33,7 @@ rule angsd_doMaf:
     input:
         unpack(get_anc_ref),
         sites="results/datasets/{dataset}/filters/snps/{dataset}.{ref}_all{dp}_{sites}-filts_snps.sites",
-        idx="results/datasets/{dataset}/filters/snps/{dataset}.{ref}_all{dp}_{sites}-filts_snps.sites",
+        idx="results/datasets/{dataset}/filters/snps/{dataset}.{ref}_all{dp}_{sites}-filts_snps.sites.idx",
         bam="results/datasets/{dataset}/bamlists/{dataset}.{ref}_{population}{dp}.bamlist",
         bams=get_bamlist_bams,
         bais=get_bamlist_bais,

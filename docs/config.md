@@ -4,9 +4,8 @@ Running the workflow requires configuring three files: `config.yaml`,
 `samples.tsv`, and `units.tsv`. `config.yaml` is used to configure the
 analyses, `samples.tsv` categorizes your samples into groups, and `units.tsv`
 connects sample names to their input data files. The workflow will use
-`config/config.yaml` automatically, but you can name this whatever you want
-(good for separating datasets in same working directory) and point to it when
-running snakemake with `--configfile <path>`.
+`config/config.yaml` automatically, but it can be good to name it something
+informative and point to it when running snakemake with `--configfile <path>`.
 
 ### `samples.tsv`
 
@@ -54,23 +53,24 @@ SAMN13218652	SRR10398077	SAMN13218652	ILLUMINA				SRR10398077
 ```
 
 - `sample` contains the ID of a sample. Must be same as in `samples.tsv` and
-  may be listed multiple times when inputting multiple sequencing runs/libraries.
+  may be listed multiple times when inputting multiple sequencing
+  runs/libraries.
 - `unit` contains the sequencing unit, i.e. the sequencing lane barcode and
   lane number. This is used in the PU and (part of) the ID read groups. If you
   don't have multiple sequencing lanes per samples, this won't impact anything.
   Doesn't do anything when using bam input.
 - `lib` contains the name of the library identifier for the entry. Fills in
   the LB and (part of) the ID read groups and is used for PCR duplicate removal.
-  Best practice would be to have the combination of `unit` and `lib` to be unique
-  per line. An easy way to use this is to use the Illumina library identifier or
-  another unique library identifier, or simply combine a generic name with the
-  sample name (sample1A, sample1B, etc.). Doesn't do anything when using bam
-  input.
+  Best practice would be to have the combination of `unit` and `lib` to be
+  unique per line. An easy way to use this is to use the Illumina library
+  identifier or another unique library identifier, or simply combine a generic
+  name with the sample name (sample1A, sample1B, etc.). Doesn't do anything when
+  using bam input.
 - `platform` is used to fill the PL read group. Commonly is just 'ILLUMINA'.
   Doesn't do anything when using bam input.
 - `fq1` and `fq2` provides the absolute or relative to the working directory
-  paths to the raw sequencing files corresponding to the metadata in the previous
-  columns.
+  paths to the raw sequencing files corresponding to the metadata in the
+  previous columns.
 - `bam` provides the absolute or relative to the working directory path of
   pre-processed bam files. Only one bam files should be provided per sample in
   the units file.
@@ -82,8 +82,8 @@ SAMN13218652	SRR10398077	SAMN13218652	ILLUMINA				SRR10398077
 !!! note "Mixing samples with different starting points"
 It is possible to have different samples start from different inputs (i.e.
 some from bam, others from fastq, others from SRA). It is best to provide
-only `fq1`+`fq2`, `bam`, or `sra` for each sample to be clear where each
-sample starts. If multiple are provided for the same sample, the bam file
+only `fq1`+`fq2`, `bam`, or `sra` for a single sample to be clear where that
+sample starts. If multiple starts are provided for the same sample, the bam file
 will override fastq or SRA entries, and the fastq will override SRA
 entries. Note that this means it is not currently possible to have multiple
 starting points for _the same_ sample (i.e. FASTQ reads that would be
@@ -94,9 +94,9 @@ processed then merged into an existing BAM).
 `config.yaml` contains the configuration for the workflow, this is where you
 will put what analyses, filters, and options you want. Below I describe the
 configuration options. The [`config.yaml`](../config/config.yaml) in this
-repository serves as a template, but includes some 'default' parameters that
-may be good starting points for some users. If `--configfile` is not specified
-in the snakemake command, the workflow will default to `config/config.yaml`.
+repository serves as a template and includes some 'default' parameters that may
+be good starting points for many users. If `--configfile` is not specified in
+the snakemake command, the workflow will default to `config/config.yaml`.
 
 ### Configuration options
 
@@ -111,20 +111,29 @@ Required configuration of the 'dataset'.
 - `dataset:` A name for this dataset run - essentially, an identifier for a
   batch of samples to be analysed together with the same configuration.
 
-Here, dataset means a set of samples and configurations that the workflow will
-be run with. Each dataset should have its own `samples.tsv` and `config.yaml`,
-but the same `units.tsv` can be used for multiple if you prefer. Essentially,
-what the dataset identifier does is keeps your outputs organized into projects,
-so that the same BAM files can be used in multiple datasets without having to
-be remade.
+It is best to name your dataset something descriptive, but concise. This is
+because this name will be used in organizing the results. Outputs of analyses
+will be placed in the folder `results/{dataset}`, and files will be prefaced
+with the dataset. This allows for multiple datasets to be run in the same
+working directory, even in parallel (if they aren't trying to make the same
+files), which is useful for multi-species projects or for testing out different
+filters. You can simply have a config for each dataset and choose which one to
+run with `--configfile`. A similar approach can be used to trying out different
+analysis parameters.
 
-So, say you have `dataset1_samples.tsv` and `dataset2_samples.tsv`, with
-corresponding `dataset1_config.tsv` and `dataset2_config.yaml`. The sample
-files contain different samples, though some are shared between the datasets.
-The workflow for dataset1 can be run, and then dataset2 can be run. When
-dataset2 runs, it map new samples, but won't re-map samples processed in
-dataset1. Each will perform downstream analyses independently with their sample
-set and configuration files, storing these results in dataset specific folders.
+??? note "Example use of multiple datasets
+    Say you want to run PopGLen on two sets of samples, but use the same
+    reference. You can have two sample lists: `dataset1_samples.tsv` and
+    `dataset2_samples.tsv`, and two config files: `dataset1_config.tsv` and
+    `dataset2_config.yaml`. In the configs, the `samples:` option should point
+    to the corresponding sample list. The workflow for dataset1 can be run, if
+    you pass `--configfile config/dataset1_config.yaml` to Snakemake, then the
+    same can be done for dataset2. However, when dataset2 is run, it will use
+    any outputs from dataset1 it can, such as reference indices, reference
+    filters, etc. Additionally, if the two datasets share samples, those samples
+    will not have to be remapped for dataset2, they'll be taken from the
+    dataset1 run. The actual analyses are partitioned by dataset, into the
+    folders `results/dataset1` and `results/dataset2`.
 
 #### Reference Configuration
 
@@ -233,13 +242,13 @@ settings for each analysis are set in the next section.
   - `dataset_missing_data:` A floating point value between 0 and 1. Sites with
     data for fewer than this proportion of individuals across the whole dataset
     will be filtered out in all analyses using the filtered sites file. (This is
-    only needed if you need to ensure all your populations are using exactly the
+    only needed if you need to ensure all your analyses are using exactly the
     same sites, which I find may result in coverage biases in results,
     especially heterozygosity. Unless you explicitly need to ensure all groups
     and analyses use the same sites, I would leave this blank, instead using
-    the \[`params`]\[`angsd`]\[`minind_pop`] to set a minimum individual
-    threshold for each analyses, allowing analyses to maximize sites per
-    group/sample. This is how most papers do it.)
+    the \[`params`]\[`angsd`]\[`minind_dataset`] to set a minimum individual
+    threshold for dataset level analyses, allowing analyses to maximize sites
+    per group/sample. This is how most papers do it.)
   - `population_missing_data:` A floating point value between 0 and 1. Sites
     with data for fewer than this proportion of individuals in any population
     will be filtered out in all populations using the filtered sites file.
@@ -278,40 +287,40 @@ settings for each analysis are set in the next section.
     requires at least 4 samples to finish, as it will by default try to plot
     PCs1-4. (`true`/`false`)
   - `admix_ngsadmix:` Perform admixture analysis with NGSadmix (`true`/`false`)
-  - `relatedness:` Can be performed multiple ways, set any combination of the
-    three options below. Note, that I've mostly incorporated these with the
-    R0/R1/KING kinship methods in Waples et al. 2019, _Mol. Ecol._ in mind.
-    These methods differ slightly from how they implement this method, and will
-    give slightly more/less accurate estimates of kinship depending on your
-    reference's relationship to your samples. `ibsrelate_ibs` uses the
-    probabilities of all possible genotypes, so should be the most accurate
-    regardless, but can use a lot of memory and take a long time with many
-    samples. `ibsrelate_sfs` is a bit more efficient, as it does things in a
-    pairwise fashion in parallel, but may be biased if the segregating alleles
-    in your populations are not represented in the reference. `ngsrelate` uses
-    several methods, one of which is similar to `ibsrelate_sfs`, but may be
-    less accurate due to incorporating in less data. In my experience,
-    NGSrelate is suitable to identify up to third degree relatives in the
-    dataset, but only if the exact relationship can be somewhat uncertain (i.e.
-    you don't need to know the difference between, say, parent/offspring and
-    full sibling pairs, or between second degree and third degree relatives).
-    IBSrelate_sfs can get you greater accuracy, but may erroneously inflate
-    kinship if your datset has many alleles not represented in your reference.
-    If you notice, for instance, a large number of third degree relatives
-    (KING ~0.03 - 0.07) in your dataset that is not expected, it may be worth
-    trying the IBS based method (`ibsrelate_ibs`).
-    - `ngsrelate:` Co-estimate inbreeding and pairwise relatedness with
-      NGSrelate (`true`/`false`)
+  - `relatedness:` Relatedness is estimated using two methods: IBSrelate (Waples
+    et al. 2019, _Mol. Ecol._) and NgsRelate v2 (Hanghøj et al. 2019;
+    _GigaScience_). IBSrelate does not require allele frequencies, which is
+    useful if you do not have sufficient sample size to confidently estimate
+    allele frequencies for your populations. In this pipeline, it is can be run
+    three ways: using the (1) IBS and (2) SFS based methods described in the
+    Waples paper using ANGSD or (3) using the SFS based method's implementation
+    in NgsRelate v2 (which still does not require allele frequencies). NgsRelate
+    v2 also offers an allele frequency based method, which enables co-inference
+    of inbreeding and relatedness coefficients. If using this method, PopGLen
+    will calculate the allele frequencies for your populations and input them
+    into NgsRelate. These different methods have trade-offs in memory usage and
+    run time. Generally, I recommend starting with the NgsRelate, using
+    IBSrelate only (`ngsrelate_ibsrelate-only`), using the other approaches as
+    you need them.
     - `ibsrelate_ibs:` Estimate pairwise relatedness with the IBS based method
       from Waples et al. 2019, _Mol. Ecol._. This can use a lot of memory, as
       it has genotype likelihoods for all sites from all samples loaded into
       memory, so it is done per 'chunk', which still takes a lot of time and
-      memory. (`true`/`false`)
+      memory. NOTE: For those removing transitions, this method does not include
+      transition removal. All other relatedness methods here do.
+      (`true`/`false`)
     - `ibsrelate_sfs:` Estimate pairwise relatedness with the SFS based method
       from Waples et al. 2019, _Mol. Ecol._. Enabling this can greatly increase
       the time needed to build the workflow DAG if you have many samples. As a
       form of this method is implemented in NGSrelate, it may be more
       efficient to only enable that. (`true`/`false`)
+    - `ngsrelate_ibsrelate-only:` Performs the IBSrelate SFS method, but on SNPs
+      using NgsRelate. Does not need to estimate allele frequencies.
+      (`true`/`false`)
+    - `ngsrelate_freqbased:` Performs the allele frequency based co-inference of
+      relatedness and inbreeding that NgsRelate is primarly intended for. Will
+      estimate allele frequencies per population and use them in the analysis.
+      Also runs the IBSrelate SFS method in NgsRelate. (`true`/`false`)
   - `1dsfs:` Generates a one dimensional site frequency spectrum for all
     populations in the sample list. Automatically enabled if `thetas_angsd` is
     enabled. (`true`/`false`)
@@ -343,6 +352,14 @@ settings for each analysis are set in the next section.
     homozygosity over a certain length. (`true`/`false`)
   - `ibs_matrix:` Estimate pairwise identity by state distance between all
     samples using ANGSD. (`true`/`false`)
+  - `pop_allele_freqs:` Estimates population-specific minor allele frequencies
+    for each population in the dataset using ANGSD. Two outputs are generated
+    per population: (1) population-specific minor allele frequencies, where only
+    sites variable in the population are included and the minor allele is set
+    to the minor of the population, and (2) dataset-wide minor allele
+    frequencies, where the minor allele is set to the minor of the entire
+    dataset and includes sites that are fixed within the population if they are
+    variable in the dataset.
 
 #### Subsampling Section
 
@@ -442,9 +459,22 @@ options by setting them to `false`.
 
 #### Software Configuration
 
-These are software specific settings that can be user configured in the
-workflow. If you are missing a configurable setting you need, open up an issue
-or a pull request and I'll gladly put it in.
+This section contains the specific settings for each software, allowing users to
+customize the settings used. The default configuration file contains settings
+that are commonly used, and should be applicable to most datasets sequenced on
+patterened flow cells, but please check that they make sense for your analysis.
+If you are missing a configurable setting you need, open up an issue or a pull
+request and I'll gladly put it in if possible.
+
+!!! note "Note to historical sample users wanting to remove transitions"
+    While most the defaults below are good for most datasets, including ones
+    with historical samples and using MapDamage rescaling, transition removal is
+    turned off by default. To enable transition removal to account for
+    post-mortem DNA damage, enable the option `rmtrans` in the `angsd` section
+    below. This will fill in the appropriate flag `-rmTrans` or `-noTrans`
+    depending on the analysis, and remove transitions from all analyses. Only
+    the IBS based IBSrelate method currently does not support transition
+    removal.
 
 - `mapQ:` Phred-scaled mapping quality filter. Reads below this threshold will
   be filtered out. (integer)
@@ -566,14 +596,18 @@ or a pull request and I'll gladly put it in.
       for other options. `1`, `2`, and `4` can be set without any additional
       configuration. `5` must also have an ancestral reference provided in the
       config, otherwise it will be the same as `4`. `3` is currently not
-      possible, but please open an issue if you have a use case, I'd like to
-      add it, but would need some input on how it is used. (int)
+      possible, and is used for generating the dataset minor allele MAFs. If you
+      have a use for `3` that PopGLen is suited for, please open an issue and I
+      will look into it. (int)
     - `domaf:` Method for inferring minor allele frequencies. Set to `1` to
       infer from genotype likelihoods using a known major and minor from the
-      `domajorminor` setting above. See
-      [docs](http://www.popgen.dk/angsd/index.php/Allele_Frequencies) for other
-      options. I have not tested much beyond `1` and `8`, please open an issue
-      if you have problems. (int)
+      `domajorminor` setting above. Set to `2` to assume the minor is unknown.
+      See [docs](http://www.popgen.dk/angsd/index.php/Allele_Frequencies) for
+      more information. `3` is possible, and will estimate the frequencies both
+      assuming a known and unknown minor. If you choose this option, you'll get
+      both in the MAF outputs, but only the known will be passed to NgsRelate if
+      you also use that. Other values are currently unsupported in PopGLen.
+      (int)
     - `min_maf:` The minimum minor allele frequency required to call a SNP.
       This is set when generating the beagle file, so will filter SNPs for
       PCAngsd, NGSadmix, ngsF-HMM, and NGSrelate. If you would like each tool
@@ -609,8 +643,12 @@ or a pull request and I'll gladly put it in.
       in linkage disequilibrium when pruning for PCAngsd, NGSadmix, and
       NGSrelate analyses. (float)
   - `ngsrelate:` Settings for NGSrelate
-    - `prune:` Set to `true` to prune Beagle file input for NGSrelate, set to
-      `false` to use all SNPs (`true`/`false`)
+    - `ibsrelate-only-extra:` Any extra command line parameters to be passed to
+      NgsRelate when performing an IBSrelate only (no allele frequencies) run.
+      (string)
+    - `freqbased-extra:` Any extra command line parameters to be passed to
+      NgsRelate when performing a standard, allele frequency based, run.
+      (string)
   - `ngsf-hmm:` Settings for ngsF-HMM
     - `estimate_in_pops:` Set to `true` to run ngsF-HMM separately for each
       population in your dataset. Set to `false` to run for whole dataset at
@@ -640,7 +678,8 @@ or a pull request and I'll gladly put it in.
       bin will group all ROH larger than the final entry in the list. (list)
   - `realSFS:` Settings for realSFS
     - `fold:` Whether or not to fold the produced SFS. Set to 1 if you have not
-      provided an ancestral-state reference (0 or 1, [docs](http://www.popgen.dk/angsd/index.php/SFS_Estimation))
+      provided an ancestral-state reference (0 or 1,
+      [docs](http://www.popgen.dk/angsd/index.php/SFS_Estimation))
     - `sfsboot:` Determines number of bootstrap replicates to use when
       requesting bootstrapped SFS. Is used for both 1dsfs and 2dsfs (this is
       very easy to separate, open an issue if desired). Automatically used
@@ -674,7 +713,8 @@ or a pull request and I'll gladly put it in.
     - `conv:` The number of top replicates to include in convergence
       assessment. Default is 3. (integer)
     - `extra:` Additional arguments to pass to NGSadmix (for instance,
-      increasing `-maxiter`). (string, [docs](http://www.popgen.dk/software/index.php/NgsAdmix))
+      increasing `-maxiter`). (string,
+      [docs](http://www.popgen.dk/software/index.php/NgsAdmix))
   - `ibs:` Settings for identity by state calculation with ANGSD
     - `-doIBS:` Whether to use a random (1) or consensus (2) base in IBS
       distance calculation

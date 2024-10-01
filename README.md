@@ -81,6 +81,7 @@ when you start with raw sequencing data or with processed BAM files.
   whole dataset instead of per population, but this may break the assumption
   of Hardy-Weinberg Equilibrium)
 - Identity by state (IBS) matrix between all samples using ANGSD
+- Population allele frequencies using ANGSD
 
 Additionally, several data filtering options are available:
 
@@ -91,7 +92,7 @@ Additionally, several data filtering options are available:
   Mappability estimated with GenMap[^20] and converted to 'pileup mappability'
   using a custom script.
 - Removal of regions with extreme high or low global depth
-- Removal of regions with a certain amount of missing data
+- Global filtering of sites based on missing data
 - Multiple filter sets from user-provided BED files that can be intersected
   with other enabled filters (for instance, performing analyses on neutral
   sites and genic regions separately)
@@ -200,7 +201,9 @@ The computations required for developing and testing this workflow has been
 enabled by resources provided by the National Academic Infrastructure for
 Supercomputing in Sweden (NAISS) and the Swedish National Infrastructure for
 Computing (SNIC) at UPPMAX partially funded by the Swedish Research Council
-through grant agreements no. 2022-06725 and no. 2018-05973.
+through grant agreements no. 2022-06725 and no. 2018-05973. This pipeline was
+developed on the following small compute projects: SNIC 2022/22-427,
+NAISS 2023/22-600, and NAISS 2024/22-996.
 
 ## References
 

@@ -735,15 +735,15 @@ SAMN13218652	SRR10398077	SAMN13218652	ILLUMINA				SRR10398077
 </ul>
 <div class="admonition note">
 <p class="admonition-title">Mixing samples with different starting points</p>
-</div>
 <p>It is possible to have different samples start from different inputs (i.e.
 some from bam, others from fastq, others from SRA). It is best to provide
 only <code>fq1</code>+<code>fq2</code>, <code>bam</code>, or <code>sra</code> for a single sample to be clear where that
-sample starts. If multiple starts are provided for the same sample, the bam file
-will override fastq or SRA entries, and the fastq will override SRA
+sample starts. If multiple starts are provided for the same sample, the bam
+file will override fastq or SRA entries, and the fastq will override SRA
 entries. Note that this means it is not currently possible to have multiple
 starting points for <em>the same</em> sample (i.e. FASTQ reads that would be
 processed then merged into an existing BAM).</p>
+</div>
 <h2 id="configuration-file">Configuration file</h2>
 <p><code>config.yaml</code> contains the configuration for the workflow, this is where you
 will put what analyses, filters, and options you want. Below I describe the
@@ -771,19 +771,21 @@ files), which is useful for multi-species projects or for testing out different
 filters. You can simply have a config for each dataset and choose which one to
 run with <code>--configfile</code>. A similar approach can be used to trying out different
 analysis parameters.</p>
-<p>??? note "Example use of multiple datasets
-    Say you want to run PopGLen on two sets of samples, but use the same
-    reference. You can have two sample lists: <code>dataset1_samples.tsv</code> and
-    <code>dataset2_samples.tsv</code>, and two config files: <code>dataset1_config.tsv</code> and
-    <code>dataset2_config.yaml</code>. In the configs, the <code>samples:</code> option should point
-    to the corresponding sample list. The workflow for dataset1 can be run, if
-    you pass <code>--configfile config/dataset1_config.yaml</code> to Snakemake, then the
-    same can be done for dataset2. However, when dataset2 is run, it will use
-    any outputs from dataset1 it can, such as reference indices, reference
-    filters, etc. Additionally, if the two datasets share samples, those samples
-    will not have to be remapped for dataset2, they'll be taken from the
-    dataset1 run. The actual analyses are partitioned by dataset, into the
-    folders <code>results/dataset1</code> and <code>results/dataset2</code>.</p>
+<details class="note">
+<summary>Example use of multiple datasets</summary>
+<p>Say you want to run PopGLen on two sets of samples, but use the same
+reference. You can have two sample lists: <code>dataset1_samples.tsv</code> and
+<code>dataset2_samples.tsv</code>, and two config files: <code>dataset1_config.tsv</code> and
+<code>dataset2_config.yaml</code>. In the configs, the <code>samples:</code> option should point
+to the corresponding sample list. The workflow for dataset1 can be run, if
+you pass <code>--configfile config/dataset1_config.yaml</code> to Snakemake, then the
+same can be done for dataset2. However, when dataset2 is run, it will use
+any outputs from dataset1 it can, such as reference indices, reference
+filters, etc. Additionally, if the two datasets share samples, those samples
+will not have to be remapped for dataset2, they'll be taken from the
+dataset1 run. The actual analyses are partitioned by dataset, into the
+folders <code>results/dataset1</code> and <code>results/dataset2</code>.</p>
+</details>
 <h4 id="reference-configuration">Reference Configuration</h4>
 <p>Required configuration of the reference.</p>
 <ul>

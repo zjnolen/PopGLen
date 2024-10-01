@@ -80,14 +80,14 @@ SAMN13218652	SRR10398077	SAMN13218652	ILLUMINA				SRR10398077
   just as separate sequencing runs would be.
 
 !!! note "Mixing samples with different starting points"
-It is possible to have different samples start from different inputs (i.e.
-some from bam, others from fastq, others from SRA). It is best to provide
-only `fq1`+`fq2`, `bam`, or `sra` for a single sample to be clear where that
-sample starts. If multiple starts are provided for the same sample, the bam file
-will override fastq or SRA entries, and the fastq will override SRA
-entries. Note that this means it is not currently possible to have multiple
-starting points for _the same_ sample (i.e. FASTQ reads that would be
-processed then merged into an existing BAM).
+    It is possible to have different samples start from different inputs (i.e.
+    some from bam, others from fastq, others from SRA). It is best to provide
+    only `fq1`+`fq2`, `bam`, or `sra` for a single sample to be clear where that
+    sample starts. If multiple starts are provided for the same sample, the bam
+    file will override fastq or SRA entries, and the fastq will override SRA
+    entries. Note that this means it is not currently possible to have multiple
+    starting points for _the same_ sample (i.e. FASTQ reads that would be
+    processed then merged into an existing BAM).
 
 ## Configuration file
 
@@ -121,7 +121,7 @@ filters. You can simply have a config for each dataset and choose which one to
 run with `--configfile`. A similar approach can be used to trying out different
 analysis parameters.
 
-??? note "Example use of multiple datasets
+??? note "Example use of multiple datasets"
     Say you want to run PopGLen on two sets of samples, but use the same
     reference. You can have two sample lists: `dataset1_samples.tsv` and
     `dataset2_samples.tsv`, and two config files: `dataset1_config.tsv` and

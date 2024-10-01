@@ -1,7 +1,8 @@
 rule link_mafs:
     """
     The population inferred major allele MAFs are the same as those made during
-    population level SNP calling and can just be linked.
+    population level SNP calling and can just be copied to the desired folder.
+    Since the input is a temp file, it will be deleted after the copy.
     """
     input:
         "results/datasets/{dataset}/beagles/{dataset}.{ref}_{population}{dp}_{sites}-filts.mafs.gz",
@@ -15,7 +16,7 @@ rule link_mafs:
         shell_container
     shell:
         """
-        ln {input} {output} 2> {log}
+        cp {input} {output} 2> {log}
         """
 
 

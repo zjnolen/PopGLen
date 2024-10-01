@@ -98,7 +98,9 @@ rule merge_maf:
             chunk=chunklist,
         ),
     output:
-        maf="results/datasets/{dataset}/beagles/{dataset}.{ref}_{population}{dp}_{sites}-filts.mafs.gz",
+        maf=temp(
+            "results/datasets/{dataset}/beagles/{dataset}.{ref}_{population}{dp}_{sites}-filts.mafs.gz"
+        ),
     log:
         "logs/{dataset}/angsd/doGlf2/{dataset}.{ref}_{population}{dp}_{sites}-filts_merge-mafs.log",
     benchmark:

@@ -111,8 +111,8 @@ rule plot_thetas:
         "logs/{dataset}/thetaStat/{dataset}.{ref}_all{dp}_{sites}-filts.{win}_{step}.plot.log",
     benchmark:
         "benchmarks/{dataset}/thetaStat/{dataset}.{ref}_all{dp}_{sites}-filts.{win}_{step}.plot.log"
-    conda:
-        "../envs/r.yaml"
+    container:
+        r_container
     params:
         popnames=pop_list,
         plotpre=lambda w, output: output["watterson"].removesuffix(".watterson.pdf"),
@@ -142,7 +142,7 @@ rule theta_tables:
         ),
     log:
         "logs/{dataset}/thetaStat/{dataset}.{ref}_all{dp}_{sites}-filts.{win}_{step}.{stat}_tsv2html.log",
-    conda:
-        "../envs/r-rectable.yaml"
+    container:
+        r_container
     script:
         "../scripts/tsv2html.Rmd"

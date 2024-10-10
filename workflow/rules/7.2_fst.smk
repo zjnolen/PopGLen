@@ -105,8 +105,8 @@ rule aggregate_fst_global:
         "logs/{dataset}/realSFS/fst/aggregate/{dataset}.{ref}_{unit}pairs{dp}_{sites}-filts.{scale}.log",
     benchmark:
         "benchmarks/{dataset}/realSFS/fst/aggregate/{dataset}.{ref}_{unit}pairs{dp}_{sites}-filts.{scale}.log"
-    conda:
-        "../envs/shell.yaml"
+    container:
+        shell_container
     wildcard_constraints:
         unit="ind|pop",
         scale="global",
@@ -129,8 +129,8 @@ rule aggregate_fst_window:
         "logs/{dataset}/realSFS/fst/aggregate/{dataset}.{ref}_{unit}pairs{dp}_{sites}-filts.{scale}_{win}_{step}.log",
     benchmark:
         "benchmarks/{dataset}/realSFS/fst/aggregate/{dataset}.{ref}_{unit}pairs{dp}_{sites}-filts.{scale}_{win}_{step}.log"
-    conda:
-        "../envs/shell.yaml"
+    container:
+        shell_container
     wildcard_constraints:
         unit="ind|pop",
         scale="window",
@@ -166,7 +166,7 @@ rule plot_fst:
         "logs/{dataset}/realSFS/fst/plot/{dataset}.{ref}_{unit}pairs{dp}_{sites}-filts.log",
     benchmark:
         "benchmarks/{dataset}/realSFS/fst/plot/{dataset}.{ref}_{unit}pairs{dp}_{sites}-filts.log"
-    conda:
-        "../envs/r.yaml"
+    container:
+        r_container
     script:
         "../scripts/plot_fst.R"

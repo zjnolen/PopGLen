@@ -145,7 +145,7 @@ else
 fi
 
 # log what got set
-if (( $(echo "$thresh > 0" | bc -l) )); then
+if (( $(($thresh > 0)) )); then
 echoerr "Beginning ngsadmix replicates, will perform replicate runs until "
 echoerr "until $reps replicates have finished. If you'd like to change "
 echoerr 'these convergence criteria, edit the reps, thresh, or conv '
@@ -173,7 +173,7 @@ mkdir -p $temp/bestrep
 
 # run replicates of ngsadmix until we hit either convergence or $reps
 for i in $(seq 1 $reps); do
-	if (( $(echo "$thresh > 0" | bc -l) )); then
+	if (( $(($thresh > 0)) )); then
 		# check if loop should break when convergence is reached
 		if (( "$i" > "$minreps" )); then
 			# sort likelihoods, see if top three are within $thresh of each other

@@ -42,8 +42,8 @@ rule heterozygosity:
         "logs/{dataset}/heterozygosity/{dataset}.{ref}_{population}{dp}_{sites}-filts_calc-plot.log",
     benchmark:
         "benchmarks/{dataset}/heterozygosity/{dataset}.{ref}_{population}{dp}_{sites}-filts_calc-plot.log"
-    conda:
-        "../envs/r.yaml"
+    container:
+        r_container
     script:
         "../scripts/plot_heterozygosity.R"
 
@@ -64,7 +64,7 @@ rule heterozygosity_table:
         "logs/{dataset}/heterozygosity/{dataset}.{ref}_all{dp}_{sites}-filts_tsv2html.log",
     benchmark:
         "benchmarks/{dataset}/heterozygosity/{dataset}.{ref}_all{dp}_{sites}-filts_tsv2html.log"
-    conda:
-        "../envs/r-rectable.yaml"
+    container:
+        r_container
     script:
         "../scripts/tsv2html.Rmd"

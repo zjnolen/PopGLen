@@ -4,4 +4,4 @@ channels:
 
 dependencies:
   - dedup =0.12.8
-  - samtools =1.15
+  - samtools =1.20

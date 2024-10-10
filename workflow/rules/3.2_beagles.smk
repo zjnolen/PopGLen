@@ -73,8 +73,8 @@ rule merge_beagle:
         "logs/{dataset}/angsd/doGlf2/{dataset}.{ref}_{population}{dp}_{sites}-filts_merge-beagle.log",
     benchmark:
         "benchmarks/{dataset}/angsd/doGlf2/{dataset}.{ref}_{population}{dp}_{sites}-filts_merge-beagle.log"
-    conda:
-        "../envs/shell.yaml"
+    container:
+        shell_container
     resources:
         runtime=lambda wildcards, attempt: attempt * 60,
     shell:
@@ -98,13 +98,15 @@ rule merge_maf:
             chunk=chunklist,
         ),
     output:
-        maf="results/datasets/{dataset}/mafs/{dataset}.{ref}_{population}{dp}_{sites}-filts.mafs.gz",
+        maf=temp(
+            "results/datasets/{dataset}/beagles/{dataset}.{ref}_{population}{dp}_{sites}-filts.mafs.gz"
+        ),
     log:
         "logs/{dataset}/angsd/doGlf2/{dataset}.{ref}_{population}{dp}_{sites}-filts_merge-mafs.log",
     benchmark:
         "benchmarks/{dataset}/angsd/doGlf2/{dataset}.{ref}_{population}{dp}_{sites}-filts_merge-mafs.log"
-    conda:
-        "../envs/shell.yaml"
+    container:
+        shell_container
     resources:
         runtime=lambda wildcards, attempt: attempt * 60,
     shell:
@@ -124,15 +126,15 @@ rule snpset:
     dataset.
     """
     input:
-        "results/datasets/{dataset}/mafs/{dataset}.{ref}_{population}{dp}_{sites}-filts.mafs.gz",
+        "results/datasets/{dataset}/beagles/{dataset}.{ref}_{population}{dp}_{sites}-filts.mafs.gz",
     output:
         "results/datasets/{dataset}/filters/snps/{dataset}.{ref}_{population}{dp}_{sites}-filts_snps.sites",
     log:
         "logs/{dataset}/filters/snps/{dataset}.{ref}_{population}{dp}_{sites}-filts_snps.log",
     benchmark:
         "benchmarks/{dataset}/filters/snps/{dataset}.{ref}_{population}{dp}_{sites}-filts_snps.log"
-    conda:
-        "../envs/shell.yaml"
+    container:
+        shell_container
     shell:
         """
         zcat {input} | tail -n +2 | cut -f1-4 > {output} 2> {log}

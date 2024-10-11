@@ -63,11 +63,14 @@ jobs:
       with:
         environment-file: environment.yaml
         micromamba-version: '1.5.9-0'
-        create-args: >-
-          apptainer
     - name: Test workflow
       shell: bash -l {0}
       run: |
+        sudo apt update
+        sudo apt install -y software-properties-common
+        sudo add-apt-repository -y ppa:apptainer/ppa
+        sudo apt update
+        sudo apt install -y apptainer
         conda config --set channel_priority strict
         mkdir -p temp
         workdir=$(pwd -P)

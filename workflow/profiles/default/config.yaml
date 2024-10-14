@@ -95,7 +95,7 @@ set-threads:
   link_mafs: 1
   angsd_doMaf: "attempt"
   # Linkage disequilibrium (LD) calculation, decay, and pruning
-  ngsLD_estLD: "threads"
+  ngsLD_estLD: "attempt"
   combine_LD_files: 1
   ngsLD_prune_sites: 4
   prune_chunk_beagle: "attempt"

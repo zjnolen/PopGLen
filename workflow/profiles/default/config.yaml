@@ -76,7 +76,7 @@ set-threads:
   plot_ibs_ref_bias: 1
   ibs_ref_bias_table_html: 1
   # Post-mortem DNA damage
-  damageprofiler: "threads"
+  damageprofiler: "attempt"
   mapDamage2_rescaling: 1
   dna_damage_multiqc: 1
   # ANGSD input file preparation

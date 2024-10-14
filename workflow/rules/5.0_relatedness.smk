@@ -154,7 +154,7 @@ rule kinship_table_html:
     container:
         r_container
     script:
-        "../scripts/tsv2html.Rmd"
+        "../scripts/tsv2html.R"
 
 
 rule ngsrelate_ibsrelate_only:
@@ -276,4 +276,4 @@ rule ngsrelate_summary:
     container:
         r_container
     script:
-        "../scripts/tsv2html.Rmd"
+        "../scripts/tsv2html.R"

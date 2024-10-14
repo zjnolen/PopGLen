@@ -145,4 +145,4 @@ rule theta_tables:
     container:
         r_container
     script:
-        "../scripts/tsv2html.Rmd"
+        "../scripts/tsv2html.R"

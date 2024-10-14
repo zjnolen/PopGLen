@@ -364,7 +364,7 @@ rule sample_qc_summary:
     container:
         r_container
     script:
-        "../scripts/tsv2html.Rmd"
+        "../scripts/tsv2html.R"
 
 
 rule ibs_ref_bias_nofilts:
@@ -576,4 +576,4 @@ rule ibs_ref_bias_table_html:
     container:
         r_container
     script:
-        "../scripts/tsv2html.Rmd"
+        "../scripts/tsv2html.R"

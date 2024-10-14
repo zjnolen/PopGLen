@@ -1,0 +1,302 @@
+set-threads:
+  # Reference Prep
+  link_ref: 1
+  link_anc_ref: 1
+  bwa_index: 1
+  samtools_faidx: 1
+  ref_chunking: 1
+  picard_dict: 1
+  # Site filtering
+  genome_bed: 1
+  smallscaff_bed: 1
+  sexlink_bed: 1
+  ## Mappability filtering
+  genmap_index: "attempt"
+  genmap_map: "attempt"
+  windowgen: 1
+  pileup_mappability: 1
+  genmap_filt_bed: 1
+  ## Repeat filtering
+  repeat_builddatabase:
+  repeatmodeler: 10
+  repeatmasker: 5
+  repeat_sum: 1
+  ## Depth filtering
+  angsd_depth: "attempt * 2"
+  combine_depths:
+  summarize_depths: "attempt * 2"
+  depth_bed: "attempt"
+  ## Site-based missing data filtering
+  angsd_missdata: "attempt * 2"
+  missdata_bed: 1
+  ## Generate combined filter files
+  combine_beds: "attempt * 2"
+  user_sites: "attempt * 2"
+  filter_summary_table: 1
+  # Raw sequencing data processing
+  ncbi_download: 6
+  fastp_mergedout: "attempt * 2"
+  fastp_pairedout: "attempt * 2"
+  fastp_multiqc: 1
+  # Mapping
+  bwa_aln_merged: 20
+  bwa_samse_merged: "attempt"
+  bwa_mem_paired: "attempt * 10"
+  bwa_mem_merged: "attempt * 10"
+  samtools_merge_collapsed_libs: "attempt * 4"
+  samtools_merge_paired_units: "attempt * 4"
+  mark_duplicates: "attempt * 4"
+  dedup_merged: "attempt * 2"
+  samtools_merge_dedup: "attempt * 4"
+  realignertargetcreator: "attempt * 2"
+  indelrealigner: "attempt * 4"
+  bam_clipoverlap: "attempt * 2"
+  symlink_userbams: 1
+  bam_clipoverlap_userbams: "attempt * 2"
+  samtools_index: 1
+  symlink_bams: 1
+  samtools_subsample: 1
+  # Sample QC
+  samtools_flagstat: 1
+  qualimap: 1
+  qualimap_userprovided: 1
+  qualimap_multiqc: 1
+  endo_cont: 1
+  compile_endo_cont: 1
+  ind_unfiltered_depth: "attempt"
+  ind_mapQ_baseQ_depth: "attempt"
+  ind_filtered_depth: "attempt"
+  summarize_ind_depth: "attempt"
+  merge_ind_depth: 1
+  combine_sample_qc: 1
+  sample_qc_summary: 1
+  ibs_ref_bias_nofilts: "attempt"
+  ibs_ref_bias_filts: "attempt"
+  merge_ibs_ref_bias: 1
+  plot_ibs_ref_bias: 1
+  ibs_ref_bias_table_html: 1
+  # Post-mortem DNA damage
+  damageprofiler: "threads"
+  mapDamage2_rescaling: 1
+  dna_damage_multiqc: 1
+  # ANGSD input file preparation
+  angsd_makeBamlist: 1
+  popfile: 1
+  angsd_sites_index: 1
+  # ANGSD -doSaf
+  angsd_doSaf_pop: "attempt * 2"
+  realSFS_catsaf: 1
+  angsd_doSaf_sample: 1
+  # ANGSD -doGlf2/-doMaf (Beagle/MAFs)
+  angsd_doGlf2: "attempt"
+  merge_beagle: 1
+  merge_maf: 1
+  snpset: 1
+  link_mafs: 1
+  angsd_doMaf: "attempt"
+  # Linkage disequilibrium (LD) calculation, decay, and pruning
+  ngsLD_estLD: "threads"
+  combine_LD_files: 1
+  ngsLD_prune_sites: 4
+  prune_chunk_beagle: "attempt"
+  merge_pruned_beagles: 1
+  combine_LDdecay_files: 1
+  fit_LD_decay: "attempt"
+  # Kinship/relatedness
+  est_kinship_stats_sfs:
+  compile_kinship_stats_sfs:
+  doGlf1_ibsrelate: "attempt * 2"
+  ibsrelate: "attempt * 10" # This is due to high RAM usage in cluster environments where RAM is tied to threads. If it is not in yours, you can set the mem_mb resource for this below and lower this
+  est_kinship_stats_ibs: 1
+  kinship_table_html: 1
+  ngsrelate_ibsrelate_only: "attempt * 4"
+  ngsrelate_freqbased: "attempt * 4"
+  ngsrelate_freqbased_merge: 1
+  ngsrelate_summary: 1
+  # PCA/Admixture
+  remove_excl_pca_admix: 1
+  pca_pcangsd: "attempt"
+  plot_pca: 1
+  ngsAdmix: 4
+  plot_admix: 1
+  evalAdmix: 1
+  plot_evalAdmix: 1
+  # Site frequency spectra (SFS)
+  realSFS_1dSFS: "attempt * 2"
+  realSFS_1dSFS_bootstrap: "attempt * 2"
+  realSFS_2dSFS: "attempt * 2"
+  realSFS_2dSFS_bootstrap: "attempt * 2"
+  # Thetas (nucleotide diversity, Watterson's theta, Tajima's D)
+  realSFS_saf2theta: 1
+  thetaStat: 1
+  plot_thetas: 1
+  theta_tables: 1
+  # FST
+  realSFS_fst_index: 1
+  realSFS_fst_stats: 1
+  realSFS_fst_stats2: 1
+  aggregate_fst_global: 1
+  aggregate_fst_window: 1
+  plot_fst: 1
+  # Heterozygosity
+  heterozygosity: 1
+  heterozygosity_table: 1
+  # Inbreeding/Runs of homozygosity
+  ngsf_hmm: "get_nind" # This tool multithreads over individuals
+  convert_ibd: 1
+  plot_froh: 1
+  # Identity by state matrix
+  angsd_doIBS: 8
+set-resources:
+#   # Reference Prep
+#   link_ref:
+#   link_anc_ref:
+#   bwa_index:
+#   samtools_faidx:
+#   ref_chunking:
+#   picard_dict:
+#   # Site filtering
+#   genome_bed:
+#   smallscaff_bed:
+#   sexlink_bed:
+#   ## Mappability filtering
+#   genmap_index:
+#   genmap_map:
+#   windowgen:
+#   pileup_mappability:
+#   genmap_filt_bed:
+#   ## Repeat filtering
+#   repeat_builddatabase:
+#   repeatmodeler:
+#   repeatmasker:
+#   repeat_sum:
+#   ## Depth filtering
+#   angsd_depth:
+#   combine_depths:
+#   summarize_depths:
+#   depth_bed:
+#   ## Site-based missing data filtering
+#   angsd_missdata:
+#   missdata_bed:
+#   ## Generate combined filter files
+#   combine_beds:
+#   user_sites:
+#   filter_summary_table:
+#   # Raw sequencing data processing
+#   ncbi_download:
+#   fastp_mergedout:
+#   fastp_pairedout:
+#   fastp_multiqc:
+#   # Mapping
+  bwa_aln_merged:
+    runtime: "7d"
+#   bwa_samse_merged:
+#   bwa_mem_paired:
+#   bwa_mem_merged:
+#   samtools_merge_collapsed_libs:
+#   samtools_merge_paired_units:
+#   mark_duplicates:
+#   dedup_merged:
+#   dedup_sort:
+#   samtools_merge_dedup:
+#   realignertargetcreator:
+#   indelrealigner:
+#   bam_clipoverlap:
+#   symlink_userbams:
+#   bam_clipoverlap_userbams:
+#   samtools_index:
+#   symlink_bams:
+#   samtools_subsample:
+#   # Sample QC
+#   samtools_flagstat:
+#   qualimap:
+#   qualimap_userprovided:
+#   qualimap_multiqc:
+#   endo_cont:
+#   compile_endo_cont:
+#   ind_unfiltered_depth:
+#   ind_mapQ_baseQ_depth:
+#   ind_filtered_depth:
+#   summarize_ind_depth:
+#   merge_ind_depth:
+#   combine_sample_qc:
+#   sample_qc_summary:
+#   ibs_ref_bias_nofilts:
+#   ibs_ref_bias_filts:
+#   merge_ibs_ref_bias:
+#   plot_ibs_ref_bias:
+#   ibs_ref_bias_table_html:
+#   damageprofiler:
+#   mapDamage2_rescaling:
+#   dna_damage_multiqc:
+#   # ANGSD input file preparation
+#   angsd_makeBamlist:
+#   popfile:
+#   angsd_sites_index:
+#   # ANGSD -doSaf
+#   angsd_doSaf_pop:
+#   realSFS_catsaf:
+#   angsd_doSaf_sample:
+#   # ANGSD -doGlf2/-doMaf (Beagle/MAFs)
+#   angsd_doGlf2:
+#   merge_beagle:
+#   merge_maf:
+#   snpset:
+#   link_mafs:
+#   angsd_doMaf:
+#   # Linkage disequilibrium (LD) calculation, decay, and pruning
+#   ngsLD_estLD:
+#   combine_LD_files:
+  ngsLD_prune_sites:
+    runtime: "7d"
+  prune_chunk_beagle:
+    runtime: "7d"
+#   merge_pruned_beagles:
+#   combine_LDdecay_files:
+#   fit_LD_decay:
+#   # Kinship/relatedness
+#   est_kinship_stats_sfs:
+#   compile_kinship_stats_sfs:
+#   doGlf1_ibsrelate:
+#   ibsrelate:
+#   est_kinship_stats_ibs:
+#   kinship_table_html:
+#   ngsrelate_ibsrelate_only:
+#   ngsrelate_freqbased:
+#   ngsrelate_freqbased_merge:
+#   ngsrelate_summary:
+#   # PCA/Admixture
+#   remove_excl_pca_admix:
+#   pca_pcangsd:
+#   plot_pca:
+  ngsAdmix:
+    runtime: "7d"
+#   plot_admix:
+#   evalAdmix:
+#   plot_evalAdmix:
+#   # Site frequency spectra (SFS)
+#   realSFS_1dSFS:
+#   realSFS_1dSFS_bootstrap:
+#   realSFS_2dSFS:
+#   realSFS_2dSFS_bootstrap:
+#   # Thetas (nucleotide diversity, Watterson's theta, Tajima's D)
+#   realSFS_saf2theta:
+#   thetaStat:
+#   plot_thetas:
+#   theta_tables:
+#   # FST
+#   realSFS_fst_index:
+#   realSFS_fst_stats:
+#   realSFS_fst_stats2:
+#   aggregate_fst_global:
+#   aggregate_fst_window:
+#   plot_fst:
+#   # Heterozygosity
+#   heterozygosity:
+#   heterozygosity_table:
+#   # Inbreeding/Runs of homozygosity
+#   ngsf_hmm:
+#   convert_ibd:
+#   plot_froh:
+#   # Identity by state matrix
+#   angsd_doIBS:

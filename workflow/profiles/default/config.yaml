@@ -142,7 +142,7 @@ set-threads:
   heterozygosity: 1
   heterozygosity_table: 1
   # Inbreeding/Runs of homozygosity
-  ngsf_hmm: "get_nind" # This tool multithreads over individuals
+  # ngsf_hmm: 4 # By default sets 1 thread per individual, only uncomment this if you want to override this
   convert_ibd: 1
   plot_froh: 1
   # Identity by state matrix

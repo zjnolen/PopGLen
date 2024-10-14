@@ -17,13 +17,13 @@ set-threads:
   pileup_mappability: 1
   genmap_filt_bed: 1
   ## Repeat filtering
-  repeat_builddatabase:
+  repeat_builddatabase: 1
   repeatmodeler: 10
   repeatmasker: 5
   repeat_sum: 1
   ## Depth filtering
   angsd_depth: "attempt * 2"
-  combine_depths:
+  combine_depths: 1
   summarize_depths: "attempt * 2"
   depth_bed: "attempt"
   ## Site-based missing data filtering
@@ -103,8 +103,8 @@ set-threads:
   combine_LDdecay_files: 1
   fit_LD_decay: "attempt"
   # Kinship/relatedness
-  est_kinship_stats_sfs:
-  compile_kinship_stats_sfs:
+  est_kinship_stats_sfs: 1
+  compile_kinship_stats_sfs: 1
   doGlf1_ibsrelate: "attempt * 2"
   ibsrelate: "attempt * 10" # This is due to high RAM usage in cluster environments where RAM is tied to threads. If it is not in yours, you can set the mem_mb resource for this below and lower this
   est_kinship_stats_ibs: 1

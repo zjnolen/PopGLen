@@ -32,30 +32,45 @@ plot_thetas <- function(pestPGcomb, plotpre) {
   require(ggplot2)
   require(Hmisc)
 
-  ggplot(pestPGcomb, aes(x=pop, y=watterson, fill=pop)) +
-    geom_violin() +
+
+  # Some variables to automatically adjust the width of the plot based on the
+  # number of categories on the x-axis. This is kind of based on the assumption
+  # that 5ish fit comfortably at the default dimensions (7x7in), so we add 1/5
+  # of the width for every sample above 5.
+  npops <- length(unique(pestPGcomb$pop))
+  if (npops <= 5) {
+    wpop <- 7
+  } else {
+    wpop <- (7/5)*npops
+  }
+
+  ggplot(pestPGcomb, aes(x=pop, y=watterson)) +
+    geom_violin(fill = "darkgoldenrod2") +
     stat_summary(fun.data = mean_cl_boot, geom = "pointrange", 
       color = "black") +
+    labs(y = "Watterson's θ", x = "Population") +
     theme_classic()
   
-  ggsave(paste0(plotpre,".watterson.pdf"))
+  ggsave(paste0(plotpre,".watterson.pdf"), width = wpop, units = "in")
 
-  ggplot(pestPGcomb, aes(x=pop, y=pi, fill=pop)) +
-    geom_violin() +
+  ggplot(pestPGcomb, aes(x=pop, y=pi)) +
+    geom_violin(fill = "darkgoldenrod2") +
     stat_summary(fun.data = mean_cl_boot, geom = "pointrange", 
       color = "black") +
+    labs(y = "Nucleotide Diversity (π)", x = "Population") +
     theme_classic()
   
-  ggsave(paste0(plotpre,".pi.pdf"))
+  ggsave(paste0(plotpre,".pi.pdf"), width = wpop, units = "in")
 
-  ggplot(pestPGcomb, aes(x=pop, y=Tajima, fill=pop)) +
-    geom_violin() +
+  ggplot(pestPGcomb, aes(x=pop, y=Tajima)) +
+    geom_violin(fill = "darkgoldenrod2") +
     stat_summary(fun.data = mean_cl_boot, geom = "pointrange", 
       color = "black") +
+    labs(y = "Tajima's D", x = "Population") +
     ylim(c(-2,2)) +
     theme_classic()
   
-  ggsave(paste0(plotpre,".tajima.pdf"))
+  ggsave(paste0(plotpre,".tajima.pdf"), width = wpop, units = "in")
 
 }
 

@@ -511,7 +511,7 @@ rule plot_ibs_ref_bias:
         pops="results/datasets/{dataset}/poplists/{dataset}_all{dp}.indiv.list",
     output:
         pop_plot=report(
-            "results/datasets/{dataset}/plots/ibs_refbias/{dataset}.{ref}_all{dp}_{filts}.population.svg",
+            "results/datasets/{dataset}/plots/ibs_refbias/{dataset}.{ref}_all{dp}_{filts}.population.pdf",
             category="00 Quality Control",
             subcategory="7 Sample IBS to reference (ref bias)",
             labels=lambda w: {
@@ -522,7 +522,7 @@ rule plot_ibs_ref_bias:
             },
         ),
         tim_plot=report(
-            "results/datasets/{dataset}/plots/ibs_refbias/{dataset}.{ref}_all{dp}_{filts}.time.svg",
+            "results/datasets/{dataset}/plots/ibs_refbias/{dataset}.{ref}_all{dp}_{filts}.time.pdf",
             category="00 Quality Control",
             subcategory="7 Sample IBS to reference (ref bias)",
             labels=lambda w: {
@@ -533,7 +533,7 @@ rule plot_ibs_ref_bias:
             },
         ),
         dep_plot=report(
-            "results/datasets/{dataset}/plots/ibs_refbias/{dataset}.{ref}_all{dp}_{filts}.depth.svg",
+            "results/datasets/{dataset}/plots/ibs_refbias/{dataset}.{ref}_all{dp}_{filts}.depth.pdf",
             category="00 Quality Control",
             subcategory="7 Sample IBS to reference (ref bias)",
             labels=lambda w: {

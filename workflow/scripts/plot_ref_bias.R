@@ -17,7 +17,7 @@ ggplot(ibstable, aes(x = population, y = ibs.to.ref)) +
   xlab("Population") +
   theme_classic()
 
-ggsave(paste0(plotpre, ".population.svg"))
+ggsave(paste0(plotpre, ".population.pdf"))
 
 ggplot(ibstable, aes(x = time, y = ibs.to.ref)) +
   geom_boxplot(outlier.shape = NA) +
@@ -26,7 +26,7 @@ ggplot(ibstable, aes(x = time, y = ibs.to.ref)) +
   xlab("Time Period") +
   theme_classic()
 
-ggsave(paste0(plotpre, ".time.svg"))
+ggsave(paste0(plotpre, ".time.pdf"))
 
 ggplot(ibstable, aes(x = depth, y = ibs.to.ref)) +
   geom_boxplot(outlier.shape = NA) +
@@ -35,7 +35,7 @@ ggplot(ibstable, aes(x = depth, y = ibs.to.ref)) +
   xlab("Depth Class") +
   theme_classic()
 
-ggsave(paste0(plotpre, ".depth.svg"))
+ggsave(paste0(plotpre, ".depth.pdf"))
 
 write.table(ibstable, file = snakemake@output[["table"]], quote=FALSE,
   sep = '\t', row.names = FALSE)

@@ -65,7 +65,7 @@ rule plot_pca:
         "results/datasets/{dataset}/poplists/{dataset}_{population}{dp}.indiv.list",
     output:
         report(
-            "results/datasets/{dataset}/plots/pca/{dataset}.{ref}_{population}{dp}_{sites}-filts_pc{xpc}-{ypc}.svg",
+            "results/datasets/{dataset}/plots/pca/{dataset}.{ref}_{population}{dp}_{sites}-filts_pc{xpc}-{ypc}.pdf",
             category="03.1 PCA",
             labels=lambda w: {
                 "Filter": "{sites}",

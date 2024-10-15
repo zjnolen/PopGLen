@@ -204,15 +204,15 @@ if config["analyses"]["pca_pcangsd"]:
     if config["excl_pca-admix"]:
         all_outputs.extend(
             [
-                "results/datasets/{dataset}/plots/pca/{dataset}.{ref}_all_excl_pca-admix_{sites}-filts_pc1-2.svg",
-                "results/datasets/{dataset}/plots/pca/{dataset}.{ref}_all_excl_pca-admix_{sites}-filts_pc3-4.svg",
+                "results/datasets/{dataset}/plots/pca/{dataset}.{ref}_all_excl_pca-admix_{sites}-filts_pc1-2.pdf",
+                "results/datasets/{dataset}/plots/pca/{dataset}.{ref}_all_excl_pca-admix_{sites}-filts_pc3-4.pdf",
             ]
         )
     else:
         all_outputs.extend(
             [
-                "results/datasets/{dataset}/plots/pca/{dataset}.{ref}_all_{sites}-filts_pc1-2.svg",
-                "results/datasets/{dataset}/plots/pca/{dataset}.{ref}_all_{sites}-filts_pc3-4.svg",
+                "results/datasets/{dataset}/plots/pca/{dataset}.{ref}_all_{sites}-filts_pc1-2.pdf",
+                "results/datasets/{dataset}/plots/pca/{dataset}.{ref}_all_{sites}-filts_pc3-4.pdf",
             ]
         )
 
@@ -400,8 +400,8 @@ if config["subsample_analyses"]["pca_pcangsd"]:
         all_outputs.extend(
             expand(
                 [
-                    "results/datasets/{{dataset}}/plots/pca/{{dataset}}.{{ref}}_all_excl_pca-admix{dp}_{{sites}}-filts_pc1-2.svg",
-                    "results/datasets/{{dataset}}/plots/pca/{{dataset}}.{{ref}}_all_excl_pca-admix{dp}_{{sites}}-filts_pc3-4.svg",
+                    "results/datasets/{{dataset}}/plots/pca/{{dataset}}.{{ref}}_all_excl_pca-admix{dp}_{{sites}}-filts_pc1-2.pdf",
+                    "results/datasets/{{dataset}}/plots/pca/{{dataset}}.{{ref}}_all_excl_pca-admix{dp}_{{sites}}-filts_pc3-4.pdf",
                 ],
                 dp=subdp,
             )
@@ -410,8 +410,8 @@ if config["subsample_analyses"]["pca_pcangsd"]:
         all_outputs.extend(
             expand(
                 [
-                    "results/datasets/{{dataset}}/plots/pca/{{dataset}}.{{ref}}_all{dp}_{{sites}}-filts_pc1-2.svg",
-                    "results/datasets/{{dataset}}/plots/pca/{{dataset}}.{{ref}}_all{dp}_{{sites}}-filts_pc3-4.svg",
+                    "results/datasets/{{dataset}}/plots/pca/{{dataset}}.{{ref}}_all{dp}_{{sites}}-filts_pc1-2.pdf",
+                    "results/datasets/{{dataset}}/plots/pca/{{dataset}}.{{ref}}_all{dp}_{{sites}}-filts_pc3-4.pdf",
                 ],
                 dp=subdp,
             )

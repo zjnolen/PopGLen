@@ -19,7 +19,8 @@ plot_pca <- function(cov, pop, xpc, ypc, plotout){
     theme_classic() +
     theme(aspect.ratio = 1) +
     labs(x = paste0("PC",toString(xpc)," (",loadings[as.integer(xpc)],"%)"), 
-      y = paste0("PC",toString(ypc)," (",loadings[as.integer(ypc)],"%)"))
+      y = paste0("PC",toString(ypc)," (",loadings[as.integer(ypc)],"%)"),
+      col = "Population")
 
   ggsave(plotout)
 

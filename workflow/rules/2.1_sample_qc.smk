@@ -549,7 +549,7 @@ rule plot_ibs_ref_bias:
     benchmark:
         "benchmarks/{dataset}/angsd/ibs_ref_bias/{dataset}.{ref}_all{dp}_{filts}_plot.log"
     params:
-        plotpre=lambda w, output: output["pop_plot"].removesuffix(".population.svg"),
+        plotpre=lambda w, output: output["pop_plot"].removesuffix(".population.pdf"),
     container:
         r_container
     script:

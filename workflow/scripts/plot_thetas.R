@@ -48,7 +48,7 @@ plot_thetas <- function(pestPGcomb, plotpre) {
     geom_violin(fill = "darkgoldenrod2") +
     stat_summary(fun.data = mean_cl_boot, geom = "pointrange", 
       color = "black") +
-    labs(y = "Watterson's θ", x = "Population") +
+    labs(y = "Watterson's \u03b8", x = "Population") +
     theme_classic()
   
   ggsave(paste0(plotpre,".watterson.pdf"), width = wpop, units = "in")
@@ -57,13 +57,14 @@ plot_thetas <- function(pestPGcomb, plotpre) {
     geom_violin(fill = "darkgoldenrod2") +
     stat_summary(fun.data = mean_cl_boot, geom = "pointrange", 
       color = "black") +
-    labs(y = "Nucleotide Diversity (π)", x = "Population") +
+    labs(y = "Nucleotide Diversity (\u03c0)", x = "Population") +
     theme_classic()
   
   ggsave(paste0(plotpre,".pi.pdf"), width = wpop, units = "in")
 
   ggplot(pestPGcomb, aes(x=pop, y=Tajima)) +
     geom_violin(fill = "darkgoldenrod2") +
+    geom_hline(yintercept=0, linetype = "dashed") +
     stat_summary(fun.data = mean_cl_boot, geom = "pointrange", 
       color = "black") +
     labs(y = "Tajima's D", x = "Population") +

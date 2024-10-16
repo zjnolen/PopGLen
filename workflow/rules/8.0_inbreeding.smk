@@ -94,8 +94,8 @@ rule plot_froh:
                 "Type": "Nroh ~ Lroh Scatterplot",
             },
         ),
-        roh="results/datasets/{dataset}/analyses/ngsF-HMM/inbreeding/{dataset}.{ref}_all{dp}_{sites}-filts.all_roh.bed",
-        froh="results/datasets/{dataset}/analyses/ngsF-HMM/inbreeding/{dataset}.{ref}_all{dp}_{sites}-filts.ind_froh.tsv",
+        roh="results/datasets/{dataset}/analyses/ngsF-HMM/{dataset}.{ref}_all{dp}_{sites}-filts.all_roh.bed",
+        froh="results/datasets/{dataset}/analyses/ngsF-HMM/{dataset}.{ref}_all{dp}_{sites}-filts.ind_froh.tsv",
     log:
         "logs/{dataset}/ngsF-HMM/{dataset}.{ref}_all{dp}_{sites}-filts_plot.log",
     benchmark:

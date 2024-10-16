@@ -189,8 +189,8 @@ params:
     kvalues: [1,2,3,4]
     reps: 100
     minreps: 20
-    thresh:
-    conv:
+    thresh: 2
+    conv: 3
     extra: "-maxiter 4000"
   ibs:
     doibs: 1

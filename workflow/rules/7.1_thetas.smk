@@ -144,5 +144,7 @@ rule theta_tables:
         "logs/{dataset}/thetaStat/{dataset}.{ref}_all{dp}_{sites}-filts.{win}_{step}.{stat}_tsv2html.log",
     container:
         r_container
+    shadow:
+        "minimal"
     script:
         "../scripts/tsv2html.R"

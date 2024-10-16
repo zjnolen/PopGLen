@@ -362,6 +362,8 @@ rule sample_qc_summary:
         "benchmarks/{dataset}/combine_sample_qc/{dataset}.{ref}{dp}_tsv2html.log"
     container:
         r_container
+    shadow:
+        "minimal"
     script:
         "../scripts/tsv2html.R"
 
@@ -574,5 +576,7 @@ rule ibs_ref_bias_table_html:
         "benchmarks/{dataset}/angsd/ibs_ref_bias/{dataset}.{ref}_{population}{dp}_{filts}_tsv2html.log"
     container:
         r_container
+    shadow:
+        "minimal"
     script:
         "../scripts/tsv2html.R"

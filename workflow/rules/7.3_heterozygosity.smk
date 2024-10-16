@@ -66,5 +66,7 @@ rule heterozygosity_table:
         "benchmarks/{dataset}/heterozygosity/{dataset}.{ref}_all{dp}_{sites}-filts_tsv2html.log"
     container:
         r_container
+    shadow:
+        "minimal"
     script:
         "../scripts/tsv2html.R"

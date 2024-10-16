@@ -750,5 +750,7 @@ rule filter_summary_table:
         "benchmarks/{dataset}/filters/combine/{dataset}.{ref}{dp}_{sites}-filts_tsv2html.log"
     container:
         r_container
+    shadow:
+        "minimal"
     script:
         "../scripts/tsv2html.R"

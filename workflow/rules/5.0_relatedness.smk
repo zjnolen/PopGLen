@@ -153,6 +153,8 @@ rule kinship_table_html:
         "benchmarks/{dataset}/kinship/ibsrelate_{type}/{dataset}.{ref}_all{dp}_{sites}-filts_tsv2html.log"
     container:
         r_container
+    shadow:
+        "minimal"
     script:
         "../scripts/tsv2html.R"
 
@@ -275,5 +277,7 @@ rule ngsrelate_summary:
         "logs/{dataset}/kinship/ngsrelate/{dataset}.{ref}_all{dp}_{sites}-filts_{method}.tsv2html.log",
     container:
         r_container
+    shadow:
+        "minimal"
     script:
         "../scripts/tsv2html.R"

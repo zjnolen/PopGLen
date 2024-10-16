@@ -105,7 +105,8 @@ rule plot_froh:
     params:
         bins=config["params"]["ngsf-hmm"]["roh_bins"],
         minroh=config["params"]["ngsf-hmm"]["min_roh_length"],
-        outpre=lambda w, output: output["barplot"].removesuffix(".froh_bins.pdf"),
+        outpreplot=lambda w, output: output["barplot"].removesuffix(".froh_bins.pdf"),
+        outpretab=lambda w, output: output["roh"].removesuffix(".all_roh.bed"),
     script:
         "../scripts/plot_Froh.R"
 
@@ -132,5 +133,7 @@ rule froh_table:
         "benchmarks/{dataset}/ngsF-HMM/{dataset}.{ref}_all{dp}_{sites}-filts_tsv2html.log"
     container:
         r_container
+    shadow:
+        "minimal"
     script:
         "../scripts/tsv2html.R"

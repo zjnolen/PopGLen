@@ -98,7 +98,7 @@ plot_bins <- function(frohs, minroh, bins, plotpre) {
       panel.grid.minor = element_blank()
     )
   
-  ggsave(paste0(plotpre,".froh_bins.svg"), width = 18, height = 6)
+  ggsave(paste0(plotpre,".froh_bins.pdf"), width = 18, height = 6)
 }
 
 # Plot Nroh ~ Cumulative roh length for individuals with rohs
@@ -111,7 +111,7 @@ plot_cumroh_nroh <- function(nroh_cumroh, plotpre) {
     theme_classic() +
     labs(color = "Population")
 
-  ggsave(paste0(plotpre,".cumroh_nroh.svg"), width = 9, height = 7)
+  ggsave(paste0(plotpre,".cumroh_nroh.pdf"), width = 9, height = 7)
 }
 
 

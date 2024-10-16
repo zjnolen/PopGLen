@@ -261,7 +261,7 @@ if config["analyses"]["heterozygosity_angsd"]:
 
 if config["analyses"]["inbreeding_ngsf-hmm"]:
     all_outputs.append(
-        "results/datasets/{dataset}/plots/inbreeding/{dataset}.{ref}_all_{sites}-filts.ind_froh.tsv"
+        "results/datasets/{dataset}/analyses/ngsF-HMM/{dataset}.{ref}_all_{sites}-filts.ind_froh.html"
     )
 
 if config["analyses"]["admix_ngsadmix"]:
@@ -475,7 +475,7 @@ if config["subsample_analyses"]["heterozygosity_angsd"]:
 if config["subsample_analyses"]["inbreeding_ngsf-hmm"]:
     all_outputs.extend(
         expand(
-            "results/datasets/{{dataset}}/plots/inbreeding/{{dataset}}.{{ref}}_all{dp}_{{sites}}-filts.ind_froh.tsv",
+            "results/datasets/{{dataset}}/analyses/ngsF-HMM/{{dataset}}.{{ref}}_all{dp}_{{sites}}-filts.ind_froh.html",
             dp=subdp,
         )
     )

@@ -77,7 +77,7 @@ rule plot_froh:
         autos=get_auto_sum,
     output:
         barplot=report(
-            "results/datasets/{dataset}/plots/inbreeding/{dataset}.{ref}_all{dp}_{sites}-filts.froh_bins.svg",
+            "results/datasets/{dataset}/plots/inbreeding/{dataset}.{ref}_all{dp}_{sites}-filts.froh_bins.pdf",
             category="06 Inbreeding",
             labels=lambda w: {
                 "Filter": "{sites}",
@@ -86,7 +86,7 @@ rule plot_froh:
             },
         ),
         scatter=report(
-            "results/datasets/{dataset}/plots/inbreeding/{dataset}.{ref}_all{dp}_{sites}-filts.cumroh_nroh.svg",
+            "results/datasets/{dataset}/plots/inbreeding/{dataset}.{ref}_all{dp}_{sites}-filts.cumroh_nroh.pdf",
             category="06 Inbreeding",
             labels=lambda w: {
                 "Filter": "{sites}",
@@ -94,8 +94,8 @@ rule plot_froh:
                 "Type": "Nroh ~ Lroh Scatterplot",
             },
         ),
-        roh="results/datasets/{dataset}/plots/inbreeding/{dataset}.{ref}_all{dp}_{sites}-filts.all_roh.bed",
-        froh="results/datasets/{dataset}/plots/inbreeding/{dataset}.{ref}_all{dp}_{sites}-filts.ind_froh.tsv",
+        roh="results/datasets/{dataset}/analyses/ngsF-HMM/inbreeding/{dataset}.{ref}_all{dp}_{sites}-filts.all_roh.bed",
+        froh="results/datasets/{dataset}/analyses/ngsF-HMM/inbreeding/{dataset}.{ref}_all{dp}_{sites}-filts.ind_froh.tsv",
     log:
         "logs/{dataset}/ngsF-HMM/{dataset}.{ref}_all{dp}_{sites}-filts_plot.log",
     benchmark:
@@ -105,6 +105,32 @@ rule plot_froh:
     params:
         bins=config["params"]["ngsf-hmm"]["roh_bins"],
         minroh=config["params"]["ngsf-hmm"]["min_roh_length"],
-        outpre=lambda w, output: output["barplot"].removesuffix(".froh_bins.svg"),
+        outpre=lambda w, output: output["barplot"].removesuffix(".froh_bins.pdf"),
     script:
         "../scripts/plot_Froh.R"
+
+
+rule froh_table:
+    """
+    Converts Froh estimates from tsv to html.
+    """
+    input:
+        "results/datasets/{dataset}/analyses/ngsF-HMM/{dataset}.{ref}_all{dp}_{sites}-filts.ind_froh.tsv",
+    output:
+        report(
+            "results/datasets/{dataset}/analyses/ngsF-HMM/{dataset}.{ref}_all{dp}_{sites}-filts.ind_froh.html",
+            category="06 Inbreeding",
+            labels=lambda w: {
+                "Filter": "{sites}",
+                **dp_report(w),
+                "Type": "Individual Froh Table",
+            },
+        ),
+    log:
+        "logs/{dataset}/ngsF-HMM/{dataset}.{ref}_all{dp}_{sites}-filts_tsv2html.log",
+    benchmark:
+        "benchmarks/{dataset}/ngsF-HMM/{dataset}.{ref}_all{dp}_{sites}-filts_tsv2html.log"
+    container:
+        r_container
+    script:
+        "../scripts/tsv2html.R"

@@ -270,7 +270,7 @@ if config["analyses"]["admix_ngsadmix"]:
             expand(
                 [
                     "results/datasets/{{dataset}}/plots/evaladmix/{{dataset}}.{{ref}}_all_excl_pca-admix_{{sites}}-filts_K{kvalue}_evaladmix.png",
-                    "results/datasets/{{dataset}}/plots/ngsadmix/{{dataset}}.{{ref}}_all_excl_pca-admix_{{sites}}-filts_K{kvalue}.svg",
+                    "results/datasets/{{dataset}}/plots/ngsadmix/{{dataset}}.{{ref}}_all_excl_pca-admix_{{sites}}-filts_K{kvalue}.pdf",
                 ],
                 kvalue=config["params"]["ngsadmix"]["kvalues"],
             )
@@ -280,7 +280,7 @@ if config["analyses"]["admix_ngsadmix"]:
             expand(
                 [
                     "results/datasets/{{dataset}}/plots/evaladmix/{{dataset}}.{{ref}}_all_{{sites}}-filts_K{kvalue}_evaladmix.png",
-                    "results/datasets/{{dataset}}/plots/ngsadmix/{{dataset}}.{{ref}}_all_{{sites}}-filts_K{kvalue}.svg",
+                    "results/datasets/{{dataset}}/plots/ngsadmix/{{dataset}}.{{ref}}_all_{{sites}}-filts_K{kvalue}.pdf",
                 ],
                 kvalue=config["params"]["ngsadmix"]["kvalues"],
             )
@@ -488,7 +488,7 @@ if config["subsample_analyses"]["admix_ngsadmix"]:
             expand(
                 [
                     "results/datasets/{{dataset}}/plots/evaladmix/{{dataset}}.{{ref}}_all_excl_pca-admix{dp}_{{sites}}-filts_K{kvalue}_evaladmix.png",
-                    "results/datasets/{{dataset}}/plots/ngsadmix/{{dataset}}.{{ref}}_all_excl_pca-admix{dp}_{{sites}}-filts_K{kvalue}.svg",
+                    "results/datasets/{{dataset}}/plots/ngsadmix/{{dataset}}.{{ref}}_all_excl_pca-admix{dp}_{{sites}}-filts_K{kvalue}.pdf",
                 ],
                 kvalue=config["params"]["ngsadmix"]["kvalues"],
                 dp=subdp,
@@ -499,7 +499,7 @@ if config["subsample_analyses"]["admix_ngsadmix"]:
             expand(
                 [
                     "results/datasets/{{dataset}}/plots/evaladmix/{{dataset}}.{{ref}}_all{dp}_{{sites}}-filts_K{kvalue}_evaladmix.png",
-                    "results/datasets/{{dataset}}/plots/ngsadmix/{{dataset}}.{{ref}}_all{dp}_{{sites}}-filts_K{kvalue}.svg",
+                    "results/datasets/{{dataset}}/plots/ngsadmix/{{dataset}}.{{ref}}_all{dp}_{{sites}}-filts_K{kvalue}.pdf",
                 ],
                 kvalue=config["params"]["ngsadmix"]["kvalues"],
                 dp=subdp,

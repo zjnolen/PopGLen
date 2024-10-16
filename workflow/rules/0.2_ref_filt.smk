@@ -441,7 +441,7 @@ if config["analyses"]["extreme_depth"]:
         output:
             summ="results/datasets/{dataset}/filters/depth/{dataset}.{ref}_{population}{dp}_depth.summary",
             plot=report(
-                "results/datasets/{dataset}/plots/depth_dist/{dataset}.{ref}_{population}{dp}_depth.svg",
+                "results/datasets/{dataset}/plots/depth_dist/{dataset}.{ref}_{population}{dp}_depth.pdf",
                 category="00 Quality Control",
                 subcategory="2 Depth distributions and filters",
                 labels=lambda w: {

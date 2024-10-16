@@ -31,7 +31,7 @@ if (snakemake@params[["method"]] == "percentile") {
   )
 }
 
-svg(file=snakemake@output[["plot"]])
+pdf(file=snakemake@output[["plot"]])
 xlim <- min(which(genome.dp.cumsum > genome.dp.cumsum[length(genome.dp.cumsum)]*0.995))
 cov <- with(df, rep(x = dp, times = count))
 hist(cov[cov <= xlim],

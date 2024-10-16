@@ -38,7 +38,7 @@ ngsrelate_container = "docker://ghcr.io/zjnolen/ngsrelate:20220925-ec95c8f"
 pandas_container = "docker://quay.io/biocontainers/pandas:2.2.1"
 pcangsd_container = "docker://ghcr.io/zjnolen/pcangsd:1.35"
 qualimap_container = "docker://quay.io/biocontainers/qualimap:2.3--hdfd78af_0"
-r_container = "docker://ghcr.io/zjnolen/popglen-r:0.4.0"
+r_container = "docker://ghcr.io/zjnolen/popglen-r:develop-241016"
 repeatmodmask_container = (
     "docker://quay.io/biocontainers/repeatmodeler:2.0.5--pl5321hdfd78af_0"
 )

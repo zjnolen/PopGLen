@@ -90,8 +90,7 @@ rule qualimap_multiqc:
     container:
         multiqc_container
     params:
-        extra="--cl-config \"extra_fn_clean_exts: ['.rmdup', '.clip']\" "
-        '--cl-config "qualimap_config: { general_stats_coverage: [1,2,3,5,10,15] }"',
+        extra="--cl-config \"extra_fn_clean_exts: ['.rmdup', '.clip']\" ",
     shell:
         """
         multiqc {params.extra} --no-data-dir \

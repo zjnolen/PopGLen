@@ -43,28 +43,64 @@ rule plot_admix:
     Plot admixture proportions for a given K.
     """
     input:
-        "results/datasets/{dataset}/analyses/ngsadmix/{dataset}.{ref}_{population}{dp}_{sites}-filts_K{kvalue}.qopt",
-        "results/datasets/{dataset}/poplists/{dataset}_{population}{dp}.indiv.list",
+        qopts=expand(
+            "results/datasets/{{dataset}}/analyses/ngsadmix/{{dataset}}.{{ref}}_{{population}}{{dp}}_{{sites}}-filts_K{kvalue}.qopt",
+            kvalue=config["params"]["ngsadmix"]["kvalues"],
+        ),
+        poplist="results/datasets/{dataset}/poplists/{dataset}_{population}{dp}.indiv.list",
+        optwrap=expand(
+            "results/datasets/{{dataset}}/analyses/ngsadmix/{{dataset}}.{{ref}}_{{population}}{{dp}}_{{sites}}-filts_K{kvalue}_optimization_wrapper.log",
+            kvalue=config["params"]["ngsadmix"]["kvalues"],
+        ),
     output:
         report(
-            "results/datasets/{dataset}/plots/ngsadmix/{dataset}.{ref}_{population}{dp}_{sites}-filts_K{kvalue}.pdf",
+            "results/datasets/{dataset}/plots/ngsadmix/{dataset}.{ref}_{population}{dp}_{sites}-filts.pdf",
             category="03.2 Admixture",
-            subcategory="NGSadmix",
             labels=lambda w: {
                 "Filter": "{sites}",
                 **dp_report(w),
-                "K-value": "{kvalue}",
                 "Type": "Admixture plot",
             },
         ),
+        convsumm="results/datasets/{dataset}/analyses/ngsadmix/{dataset}.{ref}_{population}{dp}_{sites}-filts.convergence_summary.tsv",
     log:
-        "logs/{dataset}/ngsadmix/{dataset}.{ref}_{population}{dp}_{sites}-filts_K{kvalue}_plot.log",
+        "logs/{dataset}/ngsadmix/{dataset}.{ref}_{population}{dp}_{sites}-filts_plot.log",
     benchmark:
-        "benchmarks/{dataset}/ngsadmix/{dataset}.{ref}_{population}{dp}_{sites}-filts_K{kvalue}_plot.log"
+        "benchmarks/{dataset}/ngsadmix/{dataset}.{ref}_{population}{dp}_{sites}-filts_plot.log"
+    params:
+        kvals=config["params"]["ngsadmix"]["kvalues"],
+        thresh=config["params"]["ngsadmix"]["thresh"],
+        conv=config["params"]["ngsadmix"]["conv"],
     container:
         r_container
     script:
         "../scripts/plot_admix.R"
+
+
+rule admix_convergence_table:
+    """Produce table convergence summary to add to report"""
+    input:
+        "results/datasets/{dataset}/analyses/ngsadmix/{dataset}.{ref}_{population}{dp}_{sites}-filts.convergence_summary.tsv",
+    output:
+        report(
+            "results/datasets/{dataset}/analyses/ngsadmix/{dataset}.{ref}_{population}{dp}_{sites}-filts.convergence_summary.html",
+            category="03.2 Admixture",
+            labels=lambda w: {
+                "Filter": "{sites}",
+                **dp_report(w),
+                "Type": "Convergence Table",
+            },
+        ),
+    log:
+        "logs/{dataset}/filters/combine/{dataset}.{ref}{dp}_{sites}-filts_tsv2html.log",
+    benchmark:
+        "benchmarks/{dataset}/filters/combine/{dataset}.{ref}{dp}_{sites}-filts_tsv2html.log"
+    container:
+        r_container
+    shadow:
+        "minimal"
+    script:
+        "../scripts/tsv2html.R"
 
 
 rule evalAdmix:
@@ -111,7 +147,7 @@ rule plot_evalAdmix:
                 "Filter": "{sites}",
                 **dp_report(w),
                 "K-value": "{kvalue}",
-                "Type": "Admix Residuals Plot",
+                "Type": "Admix Corr. Residuals Plot",
             },
         ),
     log:

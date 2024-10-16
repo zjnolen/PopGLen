@@ -92,9 +92,9 @@ rule admix_convergence_table:
             },
         ),
     log:
-        "logs/{dataset}/filters/combine/{dataset}.{ref}{dp}_{sites}-filts_tsv2html.log",
+        "logs/{dataset}/ngsadmix/{dataset}.{ref}_{population}{dp}_{sites}-filts_tsv2html.log",
     benchmark:
-        "benchmarks/{dataset}/filters/combine/{dataset}.{ref}{dp}_{sites}-filts_tsv2html.log"
+        "benchmarks/{dataset}/ngsadmix/{dataset}.{ref}_{population}{dp}_{sites}-filts_tsv2html.log"
     container:
         r_container
     shadow:

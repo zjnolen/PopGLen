@@ -13,12 +13,16 @@ rule samtools_flagstat:
         "results/{prefix}.bam",
     output:
         "results/{prefix}.flagstat",
+    container:
+        samtools_container
     log:
         "logs/mapping/samtools/flagstat/{prefix}.log",
     benchmark:
         "benchmarks/mapping/samtools/flagstat/{prefix}.log"
-    wrapper:
-        "v2.6.0/bio/samtools/flagstat"
+    shell:
+        """
+        samtools flagstat {input} > {output} 2> {log}
+        """
 
 
 rule qualimap:
@@ -28,19 +32,21 @@ rule qualimap:
     input:
         unpack(get_final_bam),
     output:
-        directory("results/mapping/qc/qualimap/{sample}.{ref}"),
+        fold=directory("results/mapping/qc/qualimap/{sample}.{ref}"),
         rep="results/mapping/qc/qualimap/{sample}.{ref}/qualimapReport.html",
         txt="results/mapping/qc/qualimap/{sample}.{ref}/genome_results.txt",
-    params:
-        extra="",
+    container:
+        qualimap_container
     log:
         "logs/mapping/qualimap/{sample}.{ref}.log",
     benchmark:
         "benchmarks/mapping/qualimap/{sample}.{ref}.log"
     resources:
         runtime=360,
-    wrapper:
-        "v2.6.0/bio/qualimap/bamqc"
+    shell:
+        """
+        qualimap bamqc -bam {input.bam} -outdir {output.fold} 2> {log}
+        """
 
 
 rule qualimap_userprovided:
@@ -50,21 +56,23 @@ rule qualimap_userprovided:
     input:
         unpack(get_final_bam),
     output:
-        directory(
+        fold=directory(
             "results/datasets/{dataset}/qc/user-provided-bams/qualimap/{sample}.{ref}"
         ),
         rep="results/datasets/{dataset}/qc/user-provided-bams/qualimap/{sample}.{ref}/qualimapReport.html",
         txt="results/datasets/{dataset}/qc/user-provided-bams/qualimap/{sample}.{ref}/genome_results.txt",
-    params:
-        extra="",
+    container:
+        qualimap_container
     log:
         "logs/mapping/qualimap/{dataset}.{sample}.{ref}.log",
     benchmark:
         "benchmarks/mapping/qualimap/{dataset}.{sample}.{ref}.log"
     resources:
         runtime=360,
-    wrapper:
-        "v2.6.0/bio/qualimap/bamqc"
+    shell:
+        """
+        qualimap bamqc -bam {input.bam} -outdir {output.fold} 2> {log}
+        """
 
 
 rule qualimap_multiqc:
@@ -79,11 +87,15 @@ rule qualimap_multiqc:
         ),
     log:
         "logs/mapping/qualimap/{dataset}.{ref}_mqc.log",
+    container:
+        multiqc_container
     params:
-        extra="--cl-config \"extra_fn_clean_exts: ['.rmdup', '.clip']\" "
-        '--cl-config "qualimap_config: { general_stats_coverage: [1,2,3,5,10,15] }"',
-    wrapper:
-        "v3.5.0/bio/multiqc"
+        extra="--cl-config \"extra_fn_clean_exts: ['.rmdup', '.clip']\" ",
+    shell:
+        """
+        multiqc {params.extra} --no-data-dir \
+            --filename {output} {input} 2> {log}
+        """
 
 
 rule endo_cont:
@@ -95,8 +107,8 @@ rule endo_cont:
         unpack(get_endo_cont_stat),
     output:
         endo="results/datasets/{dataset}/qc/endogenous_content/{dataset}.{sample}.{ref}.endo",
-    conda:
-        "../envs/shell.yaml"
+    container:
+        shell_container
     log:
         "logs/datasets/{dataset}/qc/endogenous_content/{dataset}.{sample}.{ref}.log",
     benchmark:
@@ -122,8 +134,8 @@ rule compile_endo_cont:
         "logs/datasets/{dataset}/qc/endogenous_content/{dataset}.{ref}_{population}{dp}_compile-endocont.log",
     benchmark:
         "benchmarks/datasets/{dataset}/qc/endogenous_content/{dataset}.{ref}_{population}{dp}_compile-endocont.log"
-    conda:
-        "../envs/shell.yaml"
+    container:
+        shell_container
     resources:
         runtime=lambda wildcards, attempt: attempt * 15,
     shell:
@@ -259,8 +271,8 @@ rule summarize_ind_depth:
         "logs/summarize_ind_depth/{prefix}{dataset}.{ref}_{sample}{dp}_{group}.log",
     benchmark:
         "benchmarks/summarize_ind_depth/{prefix}{dataset}.{ref}_{sample}{dp}_{group}.log"
-    conda:
-        "../envs/r.yaml"
+    container:
+        r_container
     threads: lambda wildcards, attempt: attempt
     script:
         "../scripts/calc_depth.R"
@@ -288,8 +300,8 @@ rule merge_ind_depth:
         "logs/merge_depth/{prefix}{dataset}.{ref}_{population}{dp}_{group}.log",
     benchmark:
         "benchmarks/merge_depth/{prefix}{dataset}.{ref}_{population}{dp}_{group}.log"
-    conda:
-        "../envs/shell.yaml"
+    container:
+        shell_container
     shell:
         """
         (cat {input.depth} > {output.dep}
@@ -311,8 +323,8 @@ rule combine_sample_qc:
         "logs/datasets/{dataset}/combine_sample_qc/{dataset}.{ref}{dp}.log",
     benchmark:
         "benchmarks/datasets/{dataset}/combine_sample_qc/{dataset}.{ref}{dp}.log"
-    conda:
-        "../envs/shell.yaml"
+    container:
+        shell_container
     shadow:
         "minimal"
     shell:
@@ -348,10 +360,12 @@ rule sample_qc_summary:
         "logs/{dataset}/combine_sample_qc/{dataset}.{ref}{dp}_tsv2html.log",
     benchmark:
         "benchmarks/{dataset}/combine_sample_qc/{dataset}.{ref}{dp}_tsv2html.log"
-    conda:
-        "../envs/r-rectable.yaml"
+    container:
+        r_container
+    shadow:
+        "minimal"
     script:
-        "../scripts/tsv2html.Rmd"
+        "../scripts/tsv2html.R"
 
 
 rule ibs_ref_bias_nofilts:
@@ -476,8 +490,8 @@ rule merge_ibs_ref_bias:
         "logs/{dataset}/angsd/ibs_ref_bias/{dataset}.{ref}_{population}{dp}_{filts}_merge.log",
     benchmark:
         "benchmarks/{dataset}/angsd/ibs_ref_bias/{dataset}.{ref}_{population}{dp}_{filts}_merge.log"
-    conda:
-        "../envs/shell.yaml"
+    container:
+        shell_container
     resources:
         runtime=lambda wildcards, attempt: attempt * 60,
     shell:
@@ -498,7 +512,7 @@ rule plot_ibs_ref_bias:
         pops="results/datasets/{dataset}/poplists/{dataset}_all{dp}.indiv.list",
     output:
         pop_plot=report(
-            "results/datasets/{dataset}/plots/ibs_refbias/{dataset}.{ref}_all{dp}_{filts}.population.svg",
+            "results/datasets/{dataset}/plots/ibs_refbias/{dataset}.{ref}_all{dp}_{filts}.population.pdf",
             category="00 Quality Control",
             subcategory="7 Sample IBS to reference (ref bias)",
             labels=lambda w: {
@@ -509,7 +523,7 @@ rule plot_ibs_ref_bias:
             },
         ),
         tim_plot=report(
-            "results/datasets/{dataset}/plots/ibs_refbias/{dataset}.{ref}_all{dp}_{filts}.time.svg",
+            "results/datasets/{dataset}/plots/ibs_refbias/{dataset}.{ref}_all{dp}_{filts}.time.pdf",
             category="00 Quality Control",
             subcategory="7 Sample IBS to reference (ref bias)",
             labels=lambda w: {
@@ -520,7 +534,7 @@ rule plot_ibs_ref_bias:
             },
         ),
         dep_plot=report(
-            "results/datasets/{dataset}/plots/ibs_refbias/{dataset}.{ref}_all{dp}_{filts}.depth.svg",
+            "results/datasets/{dataset}/plots/ibs_refbias/{dataset}.{ref}_all{dp}_{filts}.depth.pdf",
             category="00 Quality Control",
             subcategory="7 Sample IBS to reference (ref bias)",
             labels=lambda w: {
@@ -536,9 +550,9 @@ rule plot_ibs_ref_bias:
     benchmark:
         "benchmarks/{dataset}/angsd/ibs_ref_bias/{dataset}.{ref}_all{dp}_{filts}_plot.log"
     params:
-        plotpre=lambda w, output: output["pop_plot"].removesuffix(".population.svg"),
-    conda:
-        "../envs/r.yaml"
+        plotpre=lambda w, output: output["pop_plot"].removesuffix(".population.pdf"),
+    container:
+        r_container
     script:
         "../scripts/plot_ref_bias.R"
 
@@ -560,7 +574,9 @@ rule ibs_ref_bias_table_html:
         "logs/{dataset}/angsd/ibs_ref_bias/{dataset}.{ref}_{population}{dp}_{filts}_tsv2html.log",
     benchmark:
         "benchmarks/{dataset}/angsd/ibs_ref_bias/{dataset}.{ref}_{population}{dp}_{filts}_tsv2html.log"
-    conda:
-        "../envs/r-rectable.yaml"
+    container:
+        r_container
+    shadow:
+        "minimal"
     script:
-        "../scripts/tsv2html.Rmd"
+        "../scripts/tsv2html.R"

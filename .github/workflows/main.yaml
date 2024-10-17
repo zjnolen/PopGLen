@@ -21,11 +21,12 @@ jobs:
     steps:
     - name: Checkout with submodules
       uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
     - name: Formatting
-      uses: github/super-linter@v5
+      uses: github/super-linter@v7
       env:
         VALIDATE_ALL_CODEBASE: false
-        DEFAULT_BRANCH: master
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         VALIDATE_SNAKEMAKE_SNAKEFMT: true
   linting:
@@ -33,7 +34,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Linting
-      uses: snakemake/snakemake-github-action@v1.24.0
+      uses: snakemake/snakemake-github-action@v1
       with:
         snakefile: "workflow/Snakefile"
         args: "--lint"
@@ -61,11 +62,15 @@ jobs:
       uses: mamba-org/setup-micromamba@v1
       with:
         environment-file: environment.yaml
-        create-args: >-
-          apptainer
+        micromamba-version: '1.5.9-0'
     - name: Test workflow
       shell: bash -l {0}
       run: |
+        sudo apt update
+        sudo apt install -y software-properties-common
+        sudo add-apt-repository -y ppa:apptainer/ppa
+        sudo apt update
+        sudo apt install -y apptainer-suid
         conda config --set channel_priority strict
         mkdir -p temp
         workdir=$(pwd -P)

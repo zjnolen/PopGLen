@@ -25,7 +25,15 @@ plot_fst <- function(fst_table, plotout) {
 			legend.title = element_markdown()
 		)
 
-	ggsave(plotout)
+	npop <- length(unique(fst$pop1))
+
+	if (npop > 6) {
+		wh <- 7+(0.77*npop)
+	} else {
+		wh <- 7
+	}
+
+	ggsave(plotout, width = wh, height = wh)
 
 }
 

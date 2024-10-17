@@ -2,6 +2,8 @@ sink(file(snakemake@log[[1]], open="wt"), type = "message")
 
 plot_fst <- function(fst_table, plotout) {
 	require(ggplot2)
+	require(ggtext)
+	require(RColorBrewer)
 
 	fst <- as.data.frame(read.table(fst_table, header = TRUE))
 	fst2 <- fst
@@ -9,11 +11,19 @@ plot_fst <- function(fst_table, plotout) {
 	fst2$pop2 <- fst$pop1
 	fst <- rbind(fst,fst2)
 
-	ggplot(fst, aes(pop1,pop2,fill=weight.fst,label=round(weight.fst,4))) +
+	ggplot(fst, aes(pop1, pop2, fill=weight.fst, label=round(weight.fst,4))) +
 		geom_tile() +
 		geom_text() +
+		labs(fill = "Weighted *F*~ST~") +
+		scale_fill_distiller(palette = "YlOrRd", direction = 1) +
 		theme_classic() +
-		theme(aspect.ratio = 1)
+		theme(
+			aspect.ratio = 1,
+			axis.title.x=element_blank(),
+			axis.title.y=element_blank(),
+			axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
+			legend.title = element_markdown()
+		)
 
 	ggsave(plotout)
 

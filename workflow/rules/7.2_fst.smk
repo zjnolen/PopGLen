@@ -1,6 +1,11 @@
 # Rules for estimating pairwise population Fst
 
 
+localrules:
+    aggregate_fst_global,
+    aggregate_fst_window,
+
+
 rule realSFS_fst_index:
     """
     Generates Fst index file for producing Fst estimates.
@@ -36,7 +41,9 @@ rule realSFS_fst_index:
         out=lambda w, output: output.fstidx.removesuffix(".fst.idx"),
         fst=config["params"]["fst"]["whichFst"],
     resources:
-        runtime=lambda wildcards, attempt: attempt * 120,
+        runtime="2h",
+    group:
+        "fst"
     shell:
         """
         realSFS fst index -whichFst {params.fst} \
@@ -61,7 +68,9 @@ rule realSFS_fst_stats:
     benchmark:
         "benchmarks/{dataset}/realSFS/fst/stats/{dataset}.{ref}_{population1}-{population2}{dp}_{sites}-filts.log"
     resources:
-        runtime=lambda wildcards, attempt: attempt * 60,
+        runtime="2h",
+    group:
+        "fst"
     shell:
         r"""
         realSFS fst stats {input.fstidx} | \
@@ -85,6 +94,10 @@ rule realSFS_fst_stats2:
         "logs/{dataset}/realSFS/fst/stats2/{dataset}.{ref}_{population1}-{population2}{dp}_{sites}-filts.window_{win}_{step}.log",
     benchmark:
         "benchmarks/{dataset}/realSFS/fst/stats2/{dataset}.{ref}_{population1}-{population2}{dp}_{sites}-filts.window_{win}_{step}.log"
+    resources:
+        runtime="2h",
+    group:
+        "fst"
     shell:
         r"""
         realSFS fst stats2 {input.fstidx} -win {wildcards.win} -step {wildcards.step} \
@@ -110,6 +123,8 @@ rule aggregate_fst_global:
     wildcard_constraints:
         unit="ind|pop",
         scale="global",
+    resources:
+        runtime="1h",
     shell:
         """
         (printf "pop1\tpop2\tunweight.fst\tweight.fst\n" > {output.glob}
@@ -134,6 +149,8 @@ rule aggregate_fst_window:
     wildcard_constraints:
         unit="ind|pop",
         scale="window",
+    resources:
+        runtime="1h",
     shell:
         """
         (printf "pop1\tpop2\twindow\tchr\twindow_center\tNsites\tweight.fst\n" \
@@ -168,5 +185,7 @@ rule plot_fst:
         "benchmarks/{dataset}/realSFS/fst/plot/{dataset}.{ref}_{unit}pairs{dp}_{sites}-filts.log"
     container:
         r_container
+    resources:
+        runtime="1h",
     script:
         "../scripts/plot_fst.R"

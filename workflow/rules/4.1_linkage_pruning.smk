@@ -18,7 +18,7 @@ rule ngsLD_prune_sites:
         ngsld_container
     threads: 4
     resources:
-        runtime="10d",
+        runtime="1d",
     shell:
         """
         if [ -s {input.ld} ]; then
@@ -52,7 +52,7 @@ rule prune_chunk_beagle:
     params:
         pruned="results/datasets/{dataset}/beagles/pruned/chunks/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.pruned_maxkbdist-{maxkb}_minr2-{r2}.beagle",
     resources:
-        runtime=lambda wildcards, attempt: attempt * 120,
+        runtime="6h",
     shell:
         r"""
         (set +o pipefail;
@@ -97,7 +97,7 @@ rule merge_pruned_beagles:
     container:
         shell_container
     resources:
-        runtime=lambda wildcards, attempt: attempt * 60,
+        runtime="4h",
     shell:
         r"""
         (echo "cat file order:"

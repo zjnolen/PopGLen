@@ -1,10 +1,11 @@
-# Estimates of individual genome wide heterozygosity from site frequency spectrum
+# Estimates of individual genome wide heterozygosity from site frequency
+# spectrum
 
 
 rule heterozygosity:
     """
-    Calculates individual heterozygosity for all samples from single sample 1D SFS.
-    Plots per population distributions of individual heterozygosity.
+    Calculates individual heterozygosity for all samples from single sample 1D
+    SFS. Plots per population distributions of individual heterozygosity.
     """
     input:
         sfs=lambda w: expand(
@@ -44,6 +45,10 @@ rule heterozygosity:
         "benchmarks/{dataset}/heterozygosity/{dataset}.{ref}_{population}{dp}_{sites}-filts_calc-plot.log"
     container:
         r_container
+    resources:
+        runtime="1h",
+    group:
+        "heterozygosity"
     script:
         "../scripts/plot_heterozygosity.R"
 
@@ -68,5 +73,9 @@ rule heterozygosity_table:
         r_container
     shadow:
         "minimal"
+    resources:
+        runtime="15m",
+    group:
+        "heterozygosity"
     script:
         "../scripts/tsv2html.R"

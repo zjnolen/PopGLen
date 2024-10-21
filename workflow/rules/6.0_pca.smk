@@ -21,6 +21,10 @@ rule remove_excl_pca_admix:
         shell_container
     params:
         remcols=get_excl_ind_cols,
+    resources:
+        runtime="1h",
+    group:
+        "pca"
     shell:
         """
         zcat {input} | cut -f{params.remcols} --complement | gzip > {output} 2> {log}
@@ -49,7 +53,9 @@ rule pca_pcangsd:
         prefix=lambda w, output: os.path.splitext(output.cov)[0],
     threads: lambda wildcards, attempt: attempt
     resources:
-        runtime=lambda wildcards, attempt: attempt * 60,
+        runtime="4h",
+    group:
+        "pca"
     shell:
         """
         pcangsd -b {input.beagle} -o {params.prefix} &> {log}
@@ -80,5 +86,9 @@ rule plot_pca:
         "benchmarks/{dataset}/pcangsd/{dataset}.{ref}_{population}{dp}_{sites}-filts_pc{xpc}-{ypc}_plot.log"
     container:
         r_container
+    resources:
+        runtime="15m",
+    group:
+        "pca"
     script:
         "../scripts/plot_PCA.R"

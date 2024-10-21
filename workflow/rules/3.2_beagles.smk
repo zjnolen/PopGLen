@@ -4,9 +4,10 @@
 
 rule angsd_doGlf2:
     """
-    Generates beagle and minor allele frequency files for a given population and genome 
-    chunk. Calls SNPs from the whole dataset, and uses these same sites across all 
-    population beagle files, even if a population is fixed for a certain allele.
+    Generates beagle and minor allele frequency files for a given population and
+    genome chunk. Calls SNPs from the whole dataset, and uses these same sites
+    across all population beagle files, even if a population is fixed for a
+    certain allele.
     """
     input:
         unpack(filt_depth),
@@ -76,7 +77,7 @@ rule merge_beagle:
     container:
         shell_container
     resources:
-        runtime=lambda wildcards, attempt: attempt * 60,
+        runtime="4h",
     shell:
         r"""
         (set +o pipefail;
@@ -108,7 +109,7 @@ rule merge_maf:
     container:
         shell_container
     resources:
-        runtime=lambda wildcards, attempt: attempt * 60,
+        runtime="4h",
     shell:
         r"""
         (set +o pipefail;
@@ -135,6 +136,8 @@ rule snpset:
         "benchmarks/{dataset}/filters/snps/{dataset}.{ref}_{population}{dp}_{sites}-filts_snps.log"
     container:
         shell_container
+    resources:
+        runtime="1h",
     shell:
         """
         zcat {input} | tail -n +2 | cut -f1-4 > {output} 2> {log}

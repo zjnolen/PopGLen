@@ -3,6 +3,10 @@
 # accross genome, etc.)
 
 
+localrules:
+    combine_LD_files,
+
+
 rule ngsLD_estLD:
     """
     Estimates pairwise linkage disequilibrium between SNPs.
@@ -48,6 +52,7 @@ rule ngsLD_estLD:
 
 
 rule combine_LD_files:
+    """Merge LD files across chunks"""
     input:
         ldgz=expand(
             "results/datasets/{{dataset}}/analyses/ngsLD/chunks/{{dataset}}.{{ref}}_{{population}}{{dp}}_chunk{chunk}_{{sites}}-filts.ld_maxkbdist-{{maxkb}}_rndsample-{{rndsmp}}.gz",
@@ -61,6 +66,8 @@ rule combine_LD_files:
         "benchmarks/{dataset}/ngsLD/combine_LD_files/{dataset}.{ref}_{population}{dp}_{sites}-filts.ld_maxkbdist-{maxkb}_rndsample-{rndsmp}.log"
     container:
         shell_container
+    resources:
+        runtime="1h",
     shell:
         """
         cat {input.ldgz} > {output.ldgz} 2> {log}

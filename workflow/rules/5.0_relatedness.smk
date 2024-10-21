@@ -1,11 +1,16 @@
-# Pairwise individual relatedness with NGSrelate and  R0, R1, KING-robust kinship
-# method from Waples et al. 2019, MolEcol
+# Pairwise individual relatedness with NGSrelate and IBSrelate
+
+
+localrules:
+    compile_kinship_stats_sfs,
+    ngsrelate_freqbased_merge,
+    ngsrelate_freqbased_merge,
 
 
 rule est_kinship_stats_sfs:
     """
-    Uses the equations from Waples et al. 2019, MolEcol to estimate R0, R1, and KING-
-    robust kinship between all sample pairings.
+    Uses the equations from Waples et al. 2019, MolEcol to estimate R0, R1, and
+    KING-robust kinship between all sample pairings.
     """
     input:
         sfs="results/datasets/{dataset}/analyses/sfs/{dataset}.{ref}_{ind1}-{ind2}{dp}_{sites}-filts.sfs",
@@ -21,7 +26,9 @@ rule est_kinship_stats_sfs:
     container:
         r_container
     resources:
-        runtime=lambda wildcards, attempt: attempt * 15,
+        runtime="1h",
+    group:
+        "sfs-ibsrelate"
     script:
         "../scripts/kinship_sfs.R"
 
@@ -41,7 +48,9 @@ rule compile_kinship_stats_sfs:
     container:
         shell_container
     resources:
-        runtime=lambda wildcards, attempt: attempt * 15,
+        runtime="15m",
+    group:
+        "sfs-ibsrelate"
     shell:
         """
         (printf "ind1\tind2\tR0\tR1\tKING\n" > {output}
@@ -50,6 +59,10 @@ rule compile_kinship_stats_sfs:
 
 
 rule doGlf1_ibsrelate:
+    """
+    Generate binary format genotype likelihoods for all filtered positions for
+    all samples to run IBSrelate IBS-based version
+    """
     input:
         unpack(filt_depth),
         bam="results/datasets/{dataset}/bamlists/{dataset}.{ref}_{population}{dp}.bamlist",
@@ -87,6 +100,9 @@ rule doGlf1_ibsrelate:
 
 
 rule ibsrelate:
+    """
+    Run IBS-based version of IBS relate for all pairs of samples
+    """
     input:
         "results/datasets/{dataset}/glfs/chunks/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.glf.gz",
     output:
@@ -113,8 +129,8 @@ rule ibsrelate:
 
 rule est_kinship_stats_ibs:
     """
-    Uses the equations from Waples et al. 2019, MolEcol to estimate R0, R1, and KING-
-    robust kinship between all sample pairings.
+    Uses the equations from Waples et al. 2019, MolEcol to estimate R0, R1, and
+    KING-robust kinship between all sample pairings.
     """
     input:
         ibs=expand(
@@ -130,6 +146,10 @@ rule est_kinship_stats_ibs:
         "benchmarks/{dataset}/kinship/ibsrelate_ibs/{dataset}.{ref}_{population}{dp}_{sites}-filts_kinship.log"
     container:
         r_container
+    resources:
+        runtime="1h",
+    group:
+        "ibs-ibsrelate"
     script:
         "../scripts/kinship_ibs.R"
 
@@ -155,6 +175,10 @@ rule kinship_table_html:
         r_container
     shadow:
         "minimal"
+    resources:
+        runtime="15m",
+    group:
+        "ibs-ibsrelate"
     script:
         "../scripts/tsv2html.R"
 
@@ -235,6 +259,10 @@ rule ngsrelate_freqbased:
 
 
 rule ngsrelate_freqbased_merge:
+    """
+    Merge NGSrelate (freq-based) relatedness estimates for all populations into
+    one table for the dataset.
+    """
     input:
         relates=expand(
             "results/datasets/{{dataset}}/analyses/kinship/ngsrelate/{{dataset}}.{{ref}}_{population}{{dp}}_{{sites}}-filts_ngsrelate-freq.tsv",
@@ -246,6 +274,8 @@ rule ngsrelate_freqbased_merge:
         "logs/{dataset}/kinship/ngsrelate/{dataset}.{ref}_all{dp}_{sites}-filts.ngsrelate-freq.log",
     container:
         shell_container
+    resources:
+        runtime="15m",
     shell:
         """
         (head -n 1 {input.relates[0]} > {output}
@@ -279,5 +309,7 @@ rule ngsrelate_summary:
         r_container
     shadow:
         "minimal"
+    resources:
+        runtime="15m",
     script:
         "../scripts/tsv2html.R"

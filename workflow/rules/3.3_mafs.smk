@@ -1,3 +1,6 @@
+# Rules for estimating population specific allele frequencies.
+
+
 rule link_mafs:
     """
     The population inferred major allele MAFs are the same as those made during
@@ -14,6 +17,8 @@ rule link_mafs:
         population="|".join(pop_list),
     container:
         shell_container
+    resources:
+        runtime="1h",
     shell:
         """
         cp {input} {output} 2> {log}

@@ -28,7 +28,9 @@ rule realSFS_saf2theta:
         out=lambda w, output: output.thetas.removesuffix(".thetas.gz"),
         fold=config["params"]["realsfs"]["fold"],
     resources:
-        runtime=lambda wildcards, attempt: attempt * 120,
+        runtime="4h",
+    group:
+        "theta"
     shell:
         """
         realSFS saf2theta {input.safidx} -sfs {input.sfs} -fold {params.fold} \
@@ -52,7 +54,9 @@ rule thetaStat:
     params:
         out=lambda w, output: os.path.splitext(output.thetas)[0],
     resources:
-        runtime=lambda wildcards, attempt: attempt * 120,
+        runtime="4h",
+    group:
+        "theta"
     shell:
         """
         thetaStat do_stat {input.thetasidx} -win {wildcards.win} -type 0 \
@@ -118,6 +122,8 @@ rule plot_thetas:
         plotpre=lambda w, output: output["watterson"].removesuffix(".watterson.pdf"),
         tabpre=lambda w, output: output["tables"][0].removesuffix(".watterson.mean.tsv"),
         minsites=config["params"]["thetas"]["minsites"],
+    resources:
+        runtime="1h",
     script:
         "../scripts/plot_thetas.R"
 
@@ -146,5 +152,7 @@ rule theta_tables:
         r_container
     shadow:
         "minimal"
+    resources:
+        runtime="15m",
     script:
         "../scripts/tsv2html.R"

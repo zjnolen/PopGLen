@@ -1,5 +1,6 @@
-# Estimates of inbreeding in the form of F_ROH - an inbreeding coefficient representing
-# the proportion of the genome in runs of homozygosity greater than a certain length
+# Estimates of inbreeding in the form of F_ROH - an inbreeding coefficient
+# representing the proportion of the genome in runs of homozygosity greater than
+# a certain length
 
 
 rule ngsf_hmm:
@@ -31,7 +32,9 @@ rule ngsf_hmm:
         nind=get_nind,
     threads: get_nind
     resources:
-        runtime=lambda wildcards, attempt: attempt * 2880,
+        runtime="1d",
+    group:
+        "froh"
     script:
         "../scripts/ngsF-HMM.sh"
 
@@ -54,6 +57,8 @@ rule convert_ibd:
         ngsf_hmm_container
     shadow:
         "minimal"
+    group:
+        "froh"
     shell:
         """
         convert_ibd.pl --pos {input.pos} --ind <(tail -n +2 {input.inds}) \
@@ -107,6 +112,10 @@ rule plot_froh:
         minroh=config["params"]["ngsf-hmm"]["min_roh_length"],
         outpreplot=lambda w, output: output["barplot"].removesuffix(".froh_bins.pdf"),
         outpretab=lambda w, output: output["roh"].removesuffix(".all_roh.bed"),
+    resources:
+        runtime="1h",
+    group:
+        "plot_froh"
     script:
         "../scripts/plot_Froh.R"
 
@@ -135,5 +144,9 @@ rule froh_table:
         r_container
     shadow:
         "minimal"
+    resources:
+        runtime="15m",
+    group:
+        "plot_froh"
     script:
         "../scripts/tsv2html.R"

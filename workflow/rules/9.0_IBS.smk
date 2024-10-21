@@ -3,7 +3,8 @@
 
 rule angsd_doIBS:
     """
-    Estimates IBS matrix as well as position specific states for all individuals.
+    Estimates IBS matrix as well as position specific states for all
+    individuals.
     """
     input:
         bamlist="results/datasets/{dataset}/bamlists/{dataset}.{ref}_{population}{dp}.bamlist",
@@ -29,7 +30,7 @@ rule angsd_doIBS:
         out=lambda w, output: os.path.splitext(output.arg)[0],
     threads: 8
     resources:
-        runtime=lambda wildcards, attempt: attempt * 2880,
+        runtime="1d",
     shell:
         """
         angsd -doIBS {params.ibs} -bam {input.bamlist} -nThreads {threads} \

@@ -7,6 +7,9 @@ localrules:
 
 
 rule bwa_aln_merged:
+    """
+    Align reads to reference using BWA ALN algorithm.
+    """
     input:
         fastq="results/preprocessing/fastp/{sample}_{unit}_{lib}.merged.fastq.gz",
         idx=rules.bwa_index.output,
@@ -20,12 +23,15 @@ rule bwa_aln_merged:
         extra=config["params"]["bwa_aln"]["extra"],
     threads: 20
     resources:
-        runtime="10d",
+        runtime="7d",
     wrapper:
         "v4.0.0/bio/bwa/aln"
 
 
 rule bwa_samse_merged:
+    """
+    Convert alignment into BAM format using bwa samse.
+    """
     input:
         fastq="results/preprocessing/fastp/{sample}_{unit}_{lib}.merged.fastq.gz",
         sai="results/mapping/mapped/{sample}_{unit}_{lib}.{ref}.aln.merged.sai",
@@ -189,6 +195,9 @@ rule dedup_merged:
 
 
 rule samtools_merge_dedup:
+    """
+    Merge deduplicated BAMs of historical sample libraries
+    """
     input:
         get_dedup_bams,
     output:
@@ -265,7 +274,7 @@ rule bam_clipoverlap:
         "minimal"
     threads: lambda wildcards, attempt: attempt * 2
     resources:
-        runtime=lambda wildcards, attempt: attempt * 1440,
+        runtime=lambda wildcards, attempt: attempt * 720,
     shell:
         """
         bam clipOverlap --in {input.bam} --out {output.bam} --stats 2> {log}
@@ -282,6 +291,8 @@ rule symlink_userbams:
         "logs/symlink_bams/{sample}.{ref}.user-processed.log",
     container:
         shell_container
+    resources:
+        runtime="5m",
     shell:
         """
         ln -sr {input.bam} {output.bam}
@@ -306,7 +317,7 @@ rule bam_clipoverlap_userbams:
         "minimal"
     threads: lambda wildcards, attempt: attempt * 2
     resources:
-        runtime=lambda wildcards, attempt: attempt * 1440,
+        runtime=lambda wildcards, attempt: attempt * 720,
     shell:
         """
         bam clipOverlap --in {input.bam} --out {output.bam} --stats 2> {log}
@@ -319,7 +330,7 @@ ruleorder: samtools_subsample > samtools_index
 
 
 rule samtools_index:
-    """Index bam files """
+    """Index bam files"""
     input:
         "results/{prefix}.bam",
     output:
@@ -330,6 +341,8 @@ rule samtools_index:
         "logs/mapping/samtools/index/{prefix}.log",
     benchmark:
         "benchmarks/mapping/samtools/index/{prefix}.log"
+    resources:
+        runtime="1h",
     shell:
         """
         samtools index {input} {output} 2> {log}
@@ -338,9 +351,9 @@ rule samtools_index:
 
 rule symlink_bams:
     """
-    Link bam files to be used in a dataset into the dataset folder. Leaving bam files 
-    outside the dataset folder allows them to be reused in other datasets if processed 
-    the same way
+    Link bam files to be used in a dataset into the dataset folder. Leaving bam
+    files outside the dataset folder allows them to be reused in other datasets
+    if processed the same way
     """
     input:
         unpack(get_final_bam),
@@ -351,6 +364,8 @@ rule symlink_bams:
         "logs/{dataset}/symlink_bams/{sample}.{ref}.log",
     container:
         shell_container
+    resources:
+        runtime="5m",
     shell:
         """
         ln -sr {input.bam} {output.bam}
@@ -360,8 +375,8 @@ rule symlink_bams:
 
 rule samtools_subsample:
     """
-    Subsample all bam files down to the same coverage to examine effects of variance in 
-    coverage
+    Subsample all bam files down to the same coverage to examine effects of
+    variance in coverage
     """
     input:
         bam="results/datasets/{dataset}/bams/{sample}.{ref}.bam",

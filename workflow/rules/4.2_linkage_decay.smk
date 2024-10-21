@@ -1,3 +1,10 @@
+# Rules for estimating linkage disequilibrium decay
+
+
+localrules:
+    combine_LDdecay_files,
+
+
 rule combine_LDdecay_files:
     input:
         ldgz=expand(
@@ -16,6 +23,8 @@ rule combine_LDdecay_files:
         "benchmarks/{dataset}/ngsLD/combine_LDdecay_files/{dataset}.{ref}_{population}{dp}_{sites}-filts.ld_decay.log"
     container:
         shell_container
+    resources:
+        runtime="1h",
     shell:
         """
         cat {input.ldgz} > {output.ldgz} 2> {log}
@@ -45,7 +54,7 @@ rule fit_LD_decay:
         ngsld_container
     threads: lambda w, attempt: attempt
     resources:
-        runtime=lambda w, attempt: attempt * 120,
+        runtime="8h",
     params:
         extra=config["params"]["ngsld"]["fit_LDdecay_extra"],
         nind=get_ngsld_n,

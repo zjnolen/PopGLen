@@ -10,6 +10,7 @@ localrules:
     sexlink_bed,
     genmap_filt_bed,
     repeat_sum,
+    combine_depths,
 
 
 rule genome_bed:
@@ -25,6 +26,10 @@ rule genome_bed:
         "benchmarks/ref/genome_bed/{ref}.log"
     container:
         shell_container
+    resources:
+        runtime="10m",
+    group:
+        "basic_beds"
     shell:
         r"""
         (# generate bed
@@ -51,8 +56,12 @@ rule smallscaff_bed:
         "benchmarks/{dataset}/filters/smallscaff/{ref}_scaff{size}bp.log"
     container:
         shell_container
+    resources:
+        runtime="10m",
     params:
         minsize="{size}",
+    group:
+        "basic_beds"
     shell:
         r"""
         (# generate bed
@@ -67,7 +76,9 @@ rule smallscaff_bed:
 
 
 rule sexlink_bed:
-    """Create bed files of specified sex-linked contigs and other excluded contigs"""
+    """
+    Create bed files of specified sex-linked contigs and other excluded contigs
+    """
     input:
         genbed="results/ref/{ref}/beds/genome.bed",
         gensum="results/ref/{ref}/beds/genome.bed.sum",
@@ -81,10 +92,14 @@ rule sexlink_bed:
         "benchmarks/{dataset}/filters/sex-link_mito_excl/{ref}.log"
     container:
         shell_container
+    resources:
+        runtime="10m",
     params:
         sex=config["reference"]["sex-linked"],
         excl=config["reference"]["exclude"],
         mito=config["reference"]["mito"],
+    group:
+        "basic_beds"
     shell:
         r"""
         (# generate beds
@@ -137,10 +152,14 @@ rule genmap_index:
     container:
         genmap_container
     threads: lambda wildcards, attempt: attempt
+    resources:
+        runtime="60m",
+    group:
+        "genmap"
     shell:
         """
-        # genmap index annoyingly fails if directory already exists,
-        # delete it to keep it happy
+        # delete index folder if it already exists, which it will as snakemake
+        # creates it
         rm -r {output.fold} 2> {log}
 
         genmap index -F {input.ref} -I {output.fold} &>> {log}
@@ -165,6 +184,8 @@ rule genmap_map:
     threads: lambda wildcards, attempt: attempt
     resources:
         runtime=lambda wildcards, attempt: attempt * 360,
+    group:
+        "genmap"
     shell:
         """
         genmap map -K {wildcards.k} -E {wildcards.e} -I {input.fold} \
@@ -187,7 +208,7 @@ rule windowgen:
     container:
         bedtools_container
     resources:
-        runtime=720,
+        runtime="12h",
     shell:
         """
         bedtools makewindows -b {input.bed} -w {wildcards.k} -s 1 > {output.bed} 2> {log}
@@ -212,7 +233,9 @@ rule pileup_mappability:
     container:
         bedops_container
     resources:
-        runtime=720,
+        runtime="8h",
+    group:
+        "mappability_bed"
     shell:
         r"""
         awk '{{print $1"\t"$2"\t"$3"\t"$2"-"$3"\t"$4}}' {input.bgr} > {output.tmp}
@@ -222,7 +245,9 @@ rule pileup_mappability:
 
 
 rule genmap_filt_bed:
-    """Create a bed containing all sites with a mappability below a set threshold"""
+    """
+    Create a bed containing all sites with a mappability below a set threshold
+    """
     input:
         genbed="results/ref/{ref}/genmap/pileup/{ref}_pileup_mappability_k{k}_e{e}.bed",
         gensum="results/ref/{ref}/beds/genome.bed.sum",
@@ -240,6 +265,10 @@ rule genmap_filt_bed:
         bedtools_container
     params:
         thresh=config["params"]["genmap"]["map_thresh"],
+    resources:
+        runtime="1h",
+    group:
+        "mappability_bed"
     shell:
         r"""
         # generate bed
@@ -277,6 +306,10 @@ rule repeat_builddatabase:
         "benchmarks/ref/repeatmodeler/builddatabase/{ref}.log"
     params:
         db=lambda w, output: os.path.splitext(output[0])[0],
+    resources:
+        runtime="1h",
+    group:
+        "repeatmod"
     shell:
         """
         BuildDatabase -name {params.db} {input.ref} &> {log}
@@ -302,9 +335,11 @@ rule repeatmodeler:
         ref="{ref}",
     threads: 10
     resources:
-        runtime=10080,
+        runtime="7d",
     shadow:
         "minimal"
+    group:
+        "repeatmod"
     shell:
         """
         RepeatModeler -database {params.db} -threads {threads} &> {log}
@@ -333,9 +368,11 @@ rule repeatmasker:
         ),
     threads: 5
     resources:
-        runtime=720,
+        runtime="720m",
     shadow:
         "shallow"
+    group:
+        "repmask"
     shell:
         """
         RepeatMasker -pa 1 {params.libpre} {params.lib} -gff -x \
@@ -357,6 +394,10 @@ rule repeat_sum:
         "benchmarks/ref/repeatmasker/summarize_gff/{ref}.log"
     container:
         bedtools_container
+    resources:
+        runtime="1h",
+    group:
+        "repmask"
     shell:
         r"""
         (bedtools sort -i {input.rep} | bedtools merge > {output.bed}
@@ -369,7 +410,10 @@ rule repeat_sum:
 if config["analyses"]["extreme_depth"]:
 
     rule angsd_depth:
-        """Estimate global depth for different subsets of samples, performed in chunks"""
+        """
+        Estimate global depth for different subsets of samples, performed in
+        chunks
+        """
         input:
             bamlist="results/datasets/{dataset}/bamlists/{dataset}.{ref}_{population}{dp}.bamlist",
             regions="results/datasets/{dataset}/filters/chunks/{ref}_chunk{chunk}.rf",
@@ -429,13 +473,19 @@ if config["analyses"]["extreme_depth"]:
             "benchmarks/{dataset}/filters/depth/{dataset}.{ref}_{population}{dp}_combined.log"
         container:
             shell_container
+        resources:
+            runtime="10m",
+        group:
+            "depth_bed"
         shell:
             """
             cat {input} > {output} 2> {log}
             """
 
     rule summarize_depths:
-        """Estimate mean and bounds of middle 95% of the global depth distribution"""
+        """
+        Estimate extremes of the depth distribution based on the configuration
+        """
         input:
             "results/datasets/{dataset}/filters/depth/{dataset}.{ref}_{population}{dp}.depthGlobal",
         output:
@@ -461,6 +511,10 @@ if config["analyses"]["extreme_depth"]:
             upper=config["params"]["extreme_depth_filt"]["bounds"][1],
             method=config["params"]["extreme_depth_filt"]["method"],
         threads: lambda wildcards, attempt: attempt * 2
+        resources:
+            runtime="1h",
+        group:
+            "depth_bed"
         script:
             "../scripts/depth_extremes.R"
 
@@ -484,6 +538,10 @@ if config["analyses"]["extreme_depth"]:
         container:
             bedtools_container
         threads: lambda wildcards, attempt: attempt
+        resources:
+            runtime="1h",
+        group:
+            "depth_bed"
         shell:
             r"""
             (lower=$(awk '{{print $2}}' {input.quants})
@@ -505,52 +563,10 @@ if config["analyses"]["extreme_depth"]:
             """
 
 
-# rule combine_depth_bed:
-#     """
-#     Combine beds for each subset to get a set of regions with extreme depth in any
-#     subset
-#     """
-#     input:
-#         beds=expand(
-#             "results/datasets/{{dataset}}/filters/depth/{{dataset}}.{{ref}}_{population}{{dp}}_extreme-depth.bed",
-#             population=["all"] + list(set(samples.depth.values)),
-#         ),
-#         gensum="results/ref/{ref}/beds/genome.bed.sum",
-#     output:
-#         bed="results/datasets/{dataset}/filters/depth/{dataset}.{ref}{dp}_extreme-depth.bed",
-#         sum="results/datasets/{dataset}/filters/depth/{dataset}.{ref}{dp}_extreme-depth.bed.sum",
-#     log:
-#         "logs/{dataset}/filters/depth/bed/{dataset}.{ref}{dp}_combine-bed.log",
-#     benchmark:
-#         "benchmarks/{dataset}/filters/depth/bed/{dataset}.{ref}{dp}_combine-bed.log"
-#     conda:
-#         "../envs/bedtools.yaml"
-#     shadow:
-#         "minimal"
-#     resources:
-#         runtime=240,
-#     shell:
-#         """
-#         # combine beds
-#         (cat {input.beds} > {output.bed}.tmp
-#         sort -k1,1 -k2,2n {output.bed}.tmp > {output.bed}.tmp.sort
-#         rm {output.bed}.tmp
-
-#         bedtools merge -i {output.bed}.tmp.sort > {output.bed}
-#         rm {output.bed}.tmp.sort
-
-#         # summarize bed
-#         len=$(awk 'BEGIN{{SUM=0}}{{SUM+=$3-$2}}END{{print SUM}}' {output.bed})
-#         echo $len $(awk -F "\t" '{{print $2}}' {input.gensum}) | \
-#             awk '{{print "Depth\t"$2-$1"\t"($2-$1)/$2*100}}' \
-#             > {output.sum}) 2> {log}
-#         """
-
-
 rule angsd_missdata:
     """
-    Print sites with data for more than a set proportion of individuals per population
-    and across the whole dataset
+    Print sites with data for more than a set proportion of individuals per
+    population and across the whole dataset
     """
     input:
         bamlist="results/datasets/{dataset}/bamlists/{dataset}.{ref}_{population}{dp}.bamlist",
@@ -595,7 +611,9 @@ rule angsd_missdata:
 
 
 rule missdata_bed:
-    """Create bed file containing only sites passing all missing data thresholds"""
+    """
+    Create bed file containing only sites passing all missing data thresholds
+    """
     input:
         pos=lambda w: expand(
             "results/datasets/{{dataset}}/filters/missdata/{{dataset}}.{{ref}}_{{population}}{{dp}}_chunk{chunk}_over{{miss}}.pos.gz",
@@ -615,6 +633,8 @@ rule missdata_bed:
         "benchmarks/{dataset}/filters/missdata_bed/{dataset}.{ref}_{population}{dp}_under{miss}.log"
     container:
         bedtools_container
+    resources:
+        runtime="1h",
     shell:
         r"""
         # generate bed
@@ -638,8 +658,8 @@ rule missdata_bed:
 
 rule combine_beds:
     """
-    Subtract all the BED files produced above from the whole genome BED to get a list
-    of filtered sites to use for analyses
+    Subtract all the BED files produced above from the whole genome BED to get a
+    list of filtered sites to use for analyses
     """
     input:
         unpack(get_bed_filts),
@@ -656,7 +676,7 @@ rule combine_beds:
         bedtools_container
     threads: lambda wildcards, attempt: attempt * 2
     resources:
-        runtime=240,
+        runtime="4h",
     shell:
         r"""
         (printf '%s\n' {input.filt} > {output.lis}
@@ -687,8 +707,8 @@ rule combine_beds:
 
 rule user_sites:
     """
-    When users provide subsets of the genome to provide analyses on, create a bed and
-    sites file for each subset, to limit analyses with.
+    When users provide subsets of the genome to provide analyses on, create a
+    bed and sites file for each subset, to limit analyses with.
     """
     input:
         gen="results/ref/{ref}/beds/genome.bed",
@@ -713,7 +733,7 @@ rule user_sites:
         bedtools_container
     threads: lambda wildcards, attempt: attempt * 2
     resources:
-        runtime=240,
+        runtime="4h",
     shell:
         r"""
         (sed \$d {input.sum} > {output.sum}
@@ -752,5 +772,7 @@ rule filter_summary_table:
         r_container
     shadow:
         "minimal"
+    resources:
+        runtime="10m",
     script:
         "../scripts/tsv2html.R"

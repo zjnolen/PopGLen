@@ -33,14 +33,14 @@ rule ngsAdmix:
         conv=config["params"]["ngsadmix"]["conv"],
     threads: 4
     resources:
-        runtime=lambda wildcards, attempt: attempt * 2880,
+        runtime="7d",
     script:
         "../scripts/ngsadmix.sh"
 
 
 rule plot_admix:
     """
-    Plot admixture proportions for a given K.
+    Plot admixture proportions across all values of K.
     """
     input:
         qopts=expand(
@@ -73,6 +73,10 @@ rule plot_admix:
         conv=config["params"]["ngsadmix"]["conv"],
     container:
         r_container
+    resources:
+        runtime="1h",
+    group:
+        "plot_admix"
     script:
         "../scripts/plot_admix.R"
 
@@ -99,6 +103,10 @@ rule admix_convergence_table:
         r_container
     shadow:
         "minimal"
+    resources:
+        runtime="15m",
+    group:
+        "plot_admix"
     script:
         "../scripts/tsv2html.R"
 
@@ -123,6 +131,10 @@ rule evalAdmix:
         "benchmarks/{dataset}/evaladmix/{dataset}.{ref}_{population}{dp}_{sites}-filts_K{kvalue}.log"
     container:
         evaladmix_container
+    resources:
+        runtime="1h",
+    group:
+        "evaladmix"
     shell:
         """
         evalAdmix -beagle {input.beagle} -fname {input.fopt} \
@@ -156,5 +168,9 @@ rule plot_evalAdmix:
         "benchmarks/{dataset}/evaladmix/{dataset}.{ref}_{population}{dp}_{sites}-filts_K{kvalue}_plot.log"
     container:
         evaladmix_container
+    resources:
+        runtime="15m",
+    group:
+        "evaladmix"
     script:
         "../scripts/plot_evaladmix.R"

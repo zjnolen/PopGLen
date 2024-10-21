@@ -3,6 +3,10 @@
 
 localrules:
     combine_sample_qc,
+    endo_cont,
+    compile_endo_cont,
+    merge_ibs_ref_bias,
+    merge_ind_depth,
 
 
 rule samtools_flagstat:
@@ -19,6 +23,10 @@ rule samtools_flagstat:
         "logs/mapping/samtools/flagstat/{prefix}.log",
     benchmark:
         "benchmarks/mapping/samtools/flagstat/{prefix}.log"
+    resources:
+        runtime="1h",
+    group:
+        "endocont"
     shell:
         """
         samtools flagstat {input} > {output} 2> {log}
@@ -42,7 +50,7 @@ rule qualimap:
     benchmark:
         "benchmarks/mapping/qualimap/{sample}.{ref}.log"
     resources:
-        runtime=360,
+        runtime="6h",
     shell:
         """
         qualimap bamqc -bam {input.bam} -outdir {output.fold} 2> {log}
@@ -68,7 +76,7 @@ rule qualimap_userprovided:
     benchmark:
         "benchmarks/mapping/qualimap/{dataset}.{sample}.{ref}.log"
     resources:
-        runtime=360,
+        runtime="6h",
     shell:
         """
         qualimap bamqc -bam {input.bam} -outdir {output.fold} 2> {log}
@@ -76,6 +84,9 @@ rule qualimap_userprovided:
 
 
 rule qualimap_multiqc:
+    """
+    Merge Qualimap outputs into a MultiQC report.
+    """
     input:
         multiqc_input_qualimap,
     output:
@@ -91,6 +102,8 @@ rule qualimap_multiqc:
         multiqc_container
     params:
         extra="--cl-config \"extra_fn_clean_exts: ['.rmdup', '.clip']\" ",
+    resources:
+        runtime="1h",
     shell:
         """
         multiqc {params.extra} --no-data-dir \
@@ -100,8 +113,8 @@ rule qualimap_multiqc:
 
 rule endo_cont:
     """
-    Estimate the proportion of reads mapping to the reference as a proxy for endogenous
-    content.
+    Estimate the proportion of reads mapping to the reference as a proxy for
+    endogenous content.
     """
     input:
         unpack(get_endo_cont_stat),
@@ -113,6 +126,10 @@ rule endo_cont:
         "logs/datasets/{dataset}/qc/endogenous_content/{dataset}.{sample}.{ref}.log",
     benchmark:
         "benchmarks/datasets/{dataset}/qc/endogenous_content/{dataset}.{sample}.{ref}.log"
+    resources:
+        runtime="15m",
+    group:
+        "endocont"
     script:
         "../scripts/calc_endocont.sh"
 
@@ -137,7 +154,7 @@ rule compile_endo_cont:
     container:
         shell_container
     resources:
-        runtime=lambda wildcards, attempt: attempt * 15,
+        runtime="15m",
     shell:
         """
         (printf "sample\tperc.collapsed.map\tperc.uncollapsed.map\tperc.total.map\n" > {output}
@@ -274,6 +291,8 @@ rule summarize_ind_depth:
     container:
         r_container
     threads: lambda wildcards, attempt: attempt
+    resources:
+        runtime="1h",
     script:
         "../scripts/calc_depth.R"
 
@@ -302,6 +321,8 @@ rule merge_ind_depth:
         "benchmarks/merge_depth/{prefix}{dataset}.{ref}_{population}{dp}_{group}.log"
     container:
         shell_container
+    resources:
+        runtime="15m",
     shell:
         """
         (cat {input.depth} > {output.dep}
@@ -327,6 +348,8 @@ rule combine_sample_qc:
         shell_container
     shadow:
         "minimal"
+    resources:
+        runtime="15m",
     shell:
         """
         (for i in {input}; do
@@ -364,6 +387,8 @@ rule sample_qc_summary:
         r_container
     shadow:
         "minimal"
+    resources:
+        runtime="15m",
     script:
         "../scripts/tsv2html.R"
 
@@ -493,7 +518,9 @@ rule merge_ibs_ref_bias:
     container:
         shell_container
     resources:
-        runtime=lambda wildcards, attempt: attempt * 60,
+        runtime="15m",
+    group:
+        "combine_ibsrefbias"
     shell:
         r"""
         printf "sample\tibs.to.ref\n" > {output}
@@ -553,6 +580,10 @@ rule plot_ibs_ref_bias:
         plotpre=lambda w, output: output["pop_plot"].removesuffix(".population.pdf"),
     container:
         r_container
+    resources:
+        runtime="30m",
+    group:
+        "combine_ibsrefbias"
     script:
         "../scripts/plot_ref_bias.R"
 
@@ -578,5 +609,9 @@ rule ibs_ref_bias_table_html:
         r_container
     shadow:
         "minimal"
+    resources:
+        runtime="15m",
+    group:
+        "combine_ibsrefbias"
     script:
         "../scripts/tsv2html.R"

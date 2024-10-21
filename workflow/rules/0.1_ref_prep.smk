@@ -5,6 +5,8 @@
 
 localrules:
     link_ref,
+    link_anc_ref,
+    samtools_faidx,
     ref_chunking,
 
 
@@ -18,6 +20,8 @@ rule link_ref:
         "logs/ref/link_ref/{ref}.log",
     container:
         shell_container
+    resources:
+        runtime="5m",
     shell:
         """
         ln -sr {input} {output} 2> {log}
@@ -36,6 +40,8 @@ if config["ancestral"]:
             "logs/ref/link_ref/{ref}.anc.log",
         container:
             shell_container
+        resources:
+            runtime="5m",
         shell:
             """
             ln -sr {input} {output} 2> {log}
@@ -58,7 +64,7 @@ rule bwa_index:
     log:
         "logs/ref/bwa_index/{ref}.log",
     resources:
-        runtime=120,
+        runtime="120m",
     benchmark:
         "benchmarks/ref/bwa_index/{ref}.log"
     wrapper:
@@ -66,7 +72,9 @@ rule bwa_index:
 
 
 rule samtools_faidx:
-    """Index reference genome using samtools (fai index used by several tools)"""
+    """
+    Index reference genome using samtools (fai index used by several tools)
+    """
     input:
         "results/ref/{ref}/{prefix}.fa",
     output:
@@ -77,6 +85,8 @@ rule samtools_faidx:
         "logs/ref/samtools_faidx/{ref}/{prefix}.log",
     benchmark:
         "benchmarks/ref/samtools_faidx/{ref}/{prefix}.log"
+    resources:
+        runtime="10m",
     shell:
         """
         samtools faidx {input} 2> {log}
@@ -95,6 +105,8 @@ rule ref_chunking:
         shell_container
     params:
         contigs=lambda w: chunks[int(w.chunk) - 1].index.tolist(),
+    resources:
+        runtime="5m",
     shell:
         r"""
         echo {params.contigs} | tr " " "\n" > {output} 2> {log}
@@ -111,5 +123,7 @@ rule picard_dict:
         "logs/ref/picard_dict/{ref}.log",
     benchmark:
         "benchmarks/ref/picard_dict/{ref}.log"
+    resources:
+        runtime="10m",
     wrapper:
         "v4.0.0/bio/picard/createsequencedictionary"

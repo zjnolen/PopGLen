@@ -1,3 +1,10 @@
+# Rules for estimating linkage disequilibrium decay
+
+
+localrules:
+    combine_LDdecay_files,
+
+
 rule combine_LDdecay_files:
     input:
         ldgz=expand(
@@ -14,8 +21,10 @@ rule combine_LDdecay_files:
         "logs/{dataset}/ngsLD/combine_LDdecay_files/{dataset}.{ref}_{population}{dp}_{sites}-filts.ld_decay.log",
     benchmark:
         "benchmarks/{dataset}/ngsLD/combine_LDdecay_files/{dataset}.{ref}_{population}{dp}_{sites}-filts.ld_decay.log"
-    conda:
-        "../envs/shell.yaml"
+    container:
+        shell_container
+    resources:
+        runtime="1h",
     shell:
         """
         cat {input.ldgz} > {output.ldgz} 2> {log}
@@ -27,7 +36,7 @@ rule fit_LD_decay:
         "results/datasets/{dataset}/analyses/ngsLD/decay/{dataset}.{ref}_{population}{dp}_{sites}-filts.LDdecay.gz",
     output:
         plot=report(
-            "results/datasets/{dataset}/plots/LD_decay/{dataset}.{ref}_{population}{dp}_{sites}-filts.LDdecay.svg",
+            "results/datasets/{dataset}/plots/LD_decay/{dataset}.{ref}_{population}{dp}_{sites}-filts.LDdecay.pdf",
             category="01 Linkage Disequilibrium Decay",
             subcategory="{sites}",
             labels=lambda w: {
@@ -45,7 +54,7 @@ rule fit_LD_decay:
         ngsld_container
     threads: lambda w, attempt: attempt
     resources:
-        runtime=lambda w, attempt: attempt * 120,
+        runtime="8h",
     params:
         extra=config["params"]["ngsld"]["fit_LDdecay_extra"],
         nind=get_ngsld_n,

@@ -1,8 +1,0 @@
-channels:
-  - conda-forge
-  - bioconda
-dependencies:
-  - r-base =4.2.*
-  - r-essentials =4.2
-  - r-svglite =2.1.1
-  - r-hmisc =5.1_0

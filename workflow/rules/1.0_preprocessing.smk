@@ -3,6 +3,10 @@
 
 
 rule ncbi_download:
+    """
+    If SRA accessions are the only input in a row of the units list, download
+    the FASTQ files from NCBI.
+    """
     output:
         temp("results/downloaded_fastq/{accession}_1.fastq.gz"),
         temp("results/downloaded_fastq/{accession}_2.fastq.gz"),
@@ -11,8 +15,10 @@ rule ncbi_download:
     params:
         extra="--skip-technical -x",
     threads: 6
+    resources:
+        runtime="6h",
     wrapper:
-        "v3.3.6/bio/sra-tools/fasterq-dump"
+        "v4.0.0/bio/sra-tools/fasterq-dump"
 
 
 rule fastp_mergedout:
@@ -50,7 +56,7 @@ rule fastp_mergedout:
     resources:
         runtime=lambda wildcards, attempt: attempt * 480,
     wrapper:
-        "v2.5.0/bio/fastp"
+        "v4.0.0/bio/fastp"
 
 
 rule fastp_pairedout:
@@ -86,10 +92,11 @@ rule fastp_pairedout:
     resources:
         runtime=lambda wildcards, attempt: attempt * 480,
     wrapper:
-        "v2.5.0/bio/fastp"
+        "v4.0.0/bio/fastp"
 
 
 rule fastp_multiqc:
+    """Combine fastp reports into a single MultiQC for all samples"""
     input:
         multiqc_input_fastp,
     output:
@@ -101,44 +108,11 @@ rule fastp_multiqc:
         ),
     log:
         "logs/preprocessing/fastp/{dataset}.{ref}_mqc.log",
-    params:
-        extra="",
-        use_input_files_only=True,
-    wrapper:
-        "v3.5.0/bio/multiqc"
-
-
-# rule fastp_pairedout:
-#     """Process modern reads with fastp, trimming adapters and low quality bases"""
-#     input:
-#         unpack(get_raw_fastq),
-#     output:
-#         trimmed=temp(
-#             expand(
-#                 "results/preprocessing/fastp/{{sample}}_{{unit}}_{{lib}}.{read}.fastq.gz",
-#                 read=["R1", "R2"],
-#             )
-#         ),
-#         html=report(
-#             "results/preprocessing/qc/fastp/{sample}_{unit}_{lib}_paired.html",
-#             category="Quality Control",
-#             subcategory="Trimming Reports",
-#             labels={
-#                 "Sample": "{sample}",
-#                 "Unit": "{unit}",
-#                 "Lib": "{lib}",
-#                 "Type": "fastp Report",
-#             },
-#         ),
-#         json="results/preprocessing/qc/fastp/{sample}_{unit}_{lib}_paired.json",
-#     log:
-#         "logs/preprocessing/fastp/{sample}_{unit}_{lib}.paired.log",
-#     benchmark:
-#         "benchmarks/preprocessing/fastp/{sample}_{unit}_{lib}.paired.log"
-#     params:
-#         extra=config["params"]["fastp"]["extra"],
-#     threads: lambda wildcards, attempt: attempt * 2
-#     resources:
-#         runtime=lambda wildcards, attempt: attempt * 240,
-#     wrapper:
-#         "v2.5.0/bio/fastp"
+    container:
+        multiqc_container
+    resources:
+        runtime="1h",
+    shell:
+        """
+        multiqc --no-data-dir --filename {output} {input} 2> {log}
+        """

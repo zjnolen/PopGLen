@@ -1,13 +1,8 @@
----
-output: html_document
----
-
-```{r, echo = FALSE}
 sink(file(snakemake@log[[1]], open="wt"), type = "message")
 
-plot_evaladmix <- function(pop,qopt,corres,k) {
+source("/usr/local/bin/visFuns.R")
 
-	source("/usr/local/bin/visFuns.R")
+plot_evaladmix <- function(pop,qopt,corres,k) {
 
 	# read population labels and estimated admixture proportions
 	pop<-read.table(pop, header = TRUE, sep = "\t")
@@ -30,6 +25,6 @@ plot_evaladmix <- function(pop,qopt,corres,k) {
 
 }
 
+pdf(snakemake@output[[1]], width = 11.8, height = 9.8)
 plot_evaladmix(snakemake@input[["pops"]],snakemake@input[["qopt"]],
 	snakemake@input[["corres"]],snakemake@wildcards[["kvalue"]])
-```

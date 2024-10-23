@@ -10,18 +10,19 @@ genome.dp <- colSums(chrom.dp.table)
 df <- data.frame(matrix(nrow = length(genome.dp), ncol = 0))
 df$dp <- seq(from = 0, to = length(genome.dp)-1)
 df$count <- genome.dp
-mean <- with(df, mean(rep(x = dp, times = count)))
-median <- with(df, median(rep(x = dp, times = count)))
+mean <- sum(df$dp * df$count)/sum(df$count)
 genome.dp.cumsum <- cumsum(as.numeric(genome.dp))
+qmed <- genome.dp.cumsum[length(genome.dp.cumsum)]*0.5
+median <- min(which(genome.dp.cumsum >= qmed))-1
 
 if (snakemake@params[["method"]] == "percentile") {
   qup <- genome.dp.cumsum[length(genome.dp.cumsum)]*snakemake@params[["upper"]]
   qlow <- genome.dp.cumsum[length(genome.dp.cumsum)]*snakemake@params[["lower"]]
-  upper <- min(which(genome.dp.cumsum > qup))
+  upper <- min(which(genome.dp.cumsum > qup))-1
   if (snakemake@params[["lower"]] == 0) {
     lower <- 0
   } else {
-    lower <- min(which(genome.dp.cumsum > qlow))
+    lower <- max(min(which(genome.dp.cumsum > qlow))-1, 0)
   }
   quants <- c(lower, upper)
 } else if (snakemake@params[["method"]] == "median") {
@@ -31,22 +32,26 @@ if (snakemake@params[["method"]] == "percentile") {
   )
 }
 
-svg(file=snakemake@output[["plot"]])
-xlim <- min(which(genome.dp.cumsum > genome.dp.cumsum[length(genome.dp.cumsum)]*0.995))
-cov <- with(df, rep(x = dp, times = count))
-hist(cov[cov <= xlim],
-  main = paste0(
+## Make plot of depth distribution and cutoffs
+xlim <- min(
+  which(genome.dp.cumsum > genome.dp.cumsum[length(genome.dp.cumsum)]*0.995)
+)
+ggplot(df[c(1:xlim), ], aes(y = count, x = dp)) +
+  geom_bar(stat='identity', fill = "gray40") +
+  ggtitle(paste0(
     "Global depth distribution ",
     snakemake@wildcards[["population"]],
     " depth samples"
-  ),
-  xlab = "Global Depth",
-  ylab = "Count",
-  breaks = 100
-)
-abline(v=max(0,quants[1]-1), col = "red")
-abline(v=quants[2], col = "red")
-dev.off()
+    )
+  ) +
+  xlab("Global Depth") +
+  ylab("Count") +
+  xlim(c(0,xlim)) +
+  geom_vline(xintercept=quants[1], color = "red") +
+  geom_vline(xintercept=quants[2], color = "red") +
+  theme_classic()
+
+ggsave(snakemake@output[["plot"]])
 
 toprint <- c(mean,as.integer(quants),median)
 write(toprint, snakemake@output[["summ"]])

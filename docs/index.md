@@ -48,6 +48,7 @@ sites file has been produced, the pipeline can continue to the analyses.
   (ANGSD)
 - Individual heterozygosity with bootstrapped confidence intervals (ANGSD)
 - Pairwise *F*~ST~ (ANGSD)
+- Population allele frequencies (ANGSD)
 
 These all can be enabled and processed independently, and the pipeline will
 generate genotype likelihood input files using ANGSD and share them across

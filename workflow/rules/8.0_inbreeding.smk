@@ -1,5 +1,6 @@
-# Estimates of inbreeding in the form of F_ROH - an inbreeding coefficient representing
-# the proportion of the genome in runs of homozygosity greater than a certain length
+# Estimates of inbreeding in the form of F_ROH - an inbreeding coefficient
+# representing the proportion of the genome in runs of homozygosity greater than
+# a certain length
 
 
 rule ngsf_hmm:
@@ -10,9 +11,11 @@ rule ngsf_hmm:
         beagle=expand(
             "results/datasets/{{dataset}}/beagles/{folder}{{dataset}}.{{ref}}_{{population}}{{dp}}_{{sites}}-filts{pruning}.beagle.gz",
             folder="pruned/" if config["params"]["ngsf-hmm"]["prune"] else "",
-            pruning=f".pruned_maxkbdist-{config['params']['ngsf-hmm']['max_kb_dist_pruning_pop']}_minr2-{config['params']['ngsf-hmm']['pruning_min-weight_pop']}"
-            if config["params"]["ngsf-hmm"]["prune"]
-            else "",
+            pruning=(
+                f".pruned_maxkbdist-{config['params']['ngsf-hmm']['max_kb_dist_pruning_pop']}_minr2-{config['params']['ngsf-hmm']['pruning_min-weight_pop']}"
+                if config["params"]["ngsf-hmm"]["prune"]
+                else ""
+            ),
         ),
     output:
         ibd="results/datasets/{dataset}/analyses/ngsF-HMM/{dataset}.{ref}_{population}{dp}_{sites}-filts.ibd",
@@ -29,7 +32,9 @@ rule ngsf_hmm:
         nind=get_nind,
     threads: get_nind
     resources:
-        runtime=lambda wildcards, attempt: attempt * 2880,
+        runtime="1d",
+    group:
+        "froh"
     script:
         "../scripts/ngsF-HMM.sh"
 
@@ -52,6 +57,8 @@ rule convert_ibd:
         ngsf_hmm_container
     shadow:
         "minimal"
+    group:
+        "froh"
     shell:
         """
         convert_ibd.pl --pos {input.pos} --ind <(tail -n +2 {input.inds}) \
@@ -67,15 +74,15 @@ rule plot_froh:
     input:
         roh=expand(
             "results/datasets/{{dataset}}/analyses/ngsF-HMM/{{dataset}}.{{ref}}_{population}{{dp}}_{{sites}}-filts.roh",
-            population=pop_list
-            if config["params"]["ngsf-hmm"]["estimate_in_pops"]
-            else "all",
+            population=(
+                pop_list if config["params"]["ngsf-hmm"]["estimate_in_pops"] else "all"
+            ),
         ),
         inds="results/datasets/{dataset}/poplists/{dataset}_all{dp}.indiv.list",
         autos=get_auto_sum,
     output:
         barplot=report(
-            "results/datasets/{dataset}/plots/inbreeding/{dataset}.{ref}_all{dp}_{sites}-filts.froh_bins.svg",
+            "results/datasets/{dataset}/plots/inbreeding/{dataset}.{ref}_all{dp}_{sites}-filts.froh_bins.pdf",
             category="06 Inbreeding",
             labels=lambda w: {
                 "Filter": "{sites}",
@@ -84,7 +91,7 @@ rule plot_froh:
             },
         ),
         scatter=report(
-            "results/datasets/{dataset}/plots/inbreeding/{dataset}.{ref}_all{dp}_{sites}-filts.cumroh_nroh.svg",
+            "results/datasets/{dataset}/plots/inbreeding/{dataset}.{ref}_all{dp}_{sites}-filts.cumroh_nroh.pdf",
             category="06 Inbreeding",
             labels=lambda w: {
                 "Filter": "{sites}",
@@ -92,17 +99,54 @@ rule plot_froh:
                 "Type": "Nroh ~ Lroh Scatterplot",
             },
         ),
-        roh="results/datasets/{dataset}/plots/inbreeding/{dataset}.{ref}_all{dp}_{sites}-filts.all_roh.bed",
-        froh="results/datasets/{dataset}/plots/inbreeding/{dataset}.{ref}_all{dp}_{sites}-filts.ind_froh.tsv",
+        roh="results/datasets/{dataset}/analyses/ngsF-HMM/{dataset}.{ref}_all{dp}_{sites}-filts.all_roh.bed",
+        froh="results/datasets/{dataset}/analyses/ngsF-HMM/{dataset}.{ref}_all{dp}_{sites}-filts.ind_froh.tsv",
     log:
         "logs/{dataset}/ngsF-HMM/{dataset}.{ref}_all{dp}_{sites}-filts_plot.log",
     benchmark:
         "benchmarks/{dataset}/ngsF-HMM/{dataset}.{ref}_all{dp}_{sites}-filts_plot.log"
-    conda:
-        "../envs/r.yaml"
+    container:
+        r_container
     params:
         bins=config["params"]["ngsf-hmm"]["roh_bins"],
         minroh=config["params"]["ngsf-hmm"]["min_roh_length"],
-        outpre=lambda w, output: output["barplot"].removesuffix(".froh_bins.svg"),
+        outpreplot=lambda w, output: output["barplot"].removesuffix(".froh_bins.pdf"),
+        outpretab=lambda w, output: output["roh"].removesuffix(".all_roh.bed"),
+    resources:
+        runtime="1h",
+    group:
+        "plot_froh"
     script:
         "../scripts/plot_Froh.R"
+
+
+rule froh_table:
+    """
+    Converts Froh estimates from tsv to html.
+    """
+    input:
+        "results/datasets/{dataset}/analyses/ngsF-HMM/{dataset}.{ref}_all{dp}_{sites}-filts.ind_froh.tsv",
+    output:
+        report(
+            "results/datasets/{dataset}/analyses/ngsF-HMM/{dataset}.{ref}_all{dp}_{sites}-filts.ind_froh.html",
+            category="06 Inbreeding",
+            labels=lambda w: {
+                "Filter": "{sites}",
+                **dp_report(w),
+                "Type": "Individual Froh Table",
+            },
+        ),
+    log:
+        "logs/{dataset}/ngsF-HMM/{dataset}.{ref}_all{dp}_{sites}-filts_tsv2html.log",
+    benchmark:
+        "benchmarks/{dataset}/ngsF-HMM/{dataset}.{ref}_all{dp}_{sites}-filts_tsv2html.log"
+    container:
+        r_container
+    shadow:
+        "minimal"
+    resources:
+        runtime="15m",
+    group:
+        "plot_froh"
+    script:
+        "../scripts/tsv2html.R"

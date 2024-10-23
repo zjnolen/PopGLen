@@ -3,7 +3,8 @@
 
 rule angsd_doSaf_pop:
     """
-    Generate a site allele frequency file for a given population and genome chunk.
+    Generate a site allele frequency file for a given population and genome
+    chunk.
     """
     input:
         unpack(filt_depth),
@@ -110,8 +111,8 @@ rule realSFS_catsaf:
 
 rule angsd_doSaf_sample:
     """
-    Generate a site allele frequency file for a given subsampled population and genome
-    chunk.
+    Generate a site allele frequency file for a given subsampled population and
+    genome chunk.
     """
     input:
         unpack(filt_depth),

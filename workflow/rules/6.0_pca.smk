@@ -17,10 +17,14 @@ rule remove_excl_pca_admix:
         "logs/{dataset}/ngsLD/excl_pca_admix_beagle/{dataset}.{ref}_{population}_excl_pca-admix{dp}_{sites}-filts.pruned_maxkbdist-{maxkb}_minr2-{r2}.log",
     benchmark:
         "benchmarks/{dataset}/ngsLD/excl_pca_admix_beagle/{dataset}.{ref}_{population}_excl_pca-admix{dp}_{sites}-filts.pruned_maxkbdist-{maxkb}_minr2-{r2}.log"
-    conda:
-        "../envs/shell.yaml"
+    container:
+        shell_container
     params:
         remcols=get_excl_ind_cols,
+    resources:
+        runtime="1h",
+    group:
+        "pca"
     shell:
         """
         zcat {input} | cut -f{params.remcols} --complement | gzip > {output} 2> {log}
@@ -49,7 +53,9 @@ rule pca_pcangsd:
         prefix=lambda w, output: os.path.splitext(output.cov)[0],
     threads: lambda wildcards, attempt: attempt
     resources:
-        runtime=lambda wildcards, attempt: attempt * 60,
+        runtime="4h",
+    group:
+        "pca"
     shell:
         """
         pcangsd -b {input.beagle} -o {params.prefix} &> {log}
@@ -65,7 +71,7 @@ rule plot_pca:
         "results/datasets/{dataset}/poplists/{dataset}_{population}{dp}.indiv.list",
     output:
         report(
-            "results/datasets/{dataset}/plots/pca/{dataset}.{ref}_{population}{dp}_{sites}-filts_pc{xpc}-{ypc}.svg",
+            "results/datasets/{dataset}/plots/pca/{dataset}.{ref}_{population}{dp}_{sites}-filts_pc{xpc}-{ypc}.pdf",
             category="03.1 PCA",
             labels=lambda w: {
                 "Filter": "{sites}",
@@ -78,7 +84,11 @@ rule plot_pca:
         "logs/{dataset}/pcangsd/{dataset}.{ref}_{population}{dp}_{sites}-filts_pc{xpc}-{ypc}_plot.log",
     benchmark:
         "benchmarks/{dataset}/pcangsd/{dataset}.{ref}_{population}{dp}_{sites}-filts_pc{xpc}-{ypc}_plot.log"
-    conda:
-        "../envs/r.yaml"
+    container:
+        r_container
+    resources:
+        runtime="15m",
+    group:
+        "pca"
     script:
         "../scripts/plot_PCA.R"

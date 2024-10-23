@@ -4,9 +4,10 @@
 
 rule angsd_doGlf2:
     """
-    Generates beagle and minor allele frequency files for a given population and genome 
-    chunk. Calls SNPs from the whole dataset, and uses these same sites across all 
-    population beagle files, even if a population is fixed for a certain allele.
+    Generates beagle and minor allele frequency files for a given population and
+    genome chunk. Calls SNPs from the whole dataset, and uses these same sites
+    across all population beagle files, even if a population is fixed for a
+    certain allele.
     """
     input:
         unpack(filt_depth),
@@ -73,10 +74,10 @@ rule merge_beagle:
         "logs/{dataset}/angsd/doGlf2/{dataset}.{ref}_{population}{dp}_{sites}-filts_merge-beagle.log",
     benchmark:
         "benchmarks/{dataset}/angsd/doGlf2/{dataset}.{ref}_{population}{dp}_{sites}-filts_merge-beagle.log"
-    conda:
-        "../envs/shell.yaml"
+    container:
+        shell_container
     resources:
-        runtime=lambda wildcards, attempt: attempt * 60,
+        runtime="4h",
     shell:
         r"""
         (set +o pipefail;
@@ -98,15 +99,17 @@ rule merge_maf:
             chunk=chunklist,
         ),
     output:
-        maf="results/datasets/{dataset}/mafs/{dataset}.{ref}_{population}{dp}_{sites}-filts.mafs.gz",
+        maf=temp(
+            "results/datasets/{dataset}/beagles/{dataset}.{ref}_{population}{dp}_{sites}-filts.mafs.gz"
+        ),
     log:
         "logs/{dataset}/angsd/doGlf2/{dataset}.{ref}_{population}{dp}_{sites}-filts_merge-mafs.log",
     benchmark:
         "benchmarks/{dataset}/angsd/doGlf2/{dataset}.{ref}_{population}{dp}_{sites}-filts_merge-mafs.log"
-    conda:
-        "../envs/shell.yaml"
+    container:
+        shell_container
     resources:
-        runtime=lambda wildcards, attempt: attempt * 60,
+        runtime="4h",
     shell:
         r"""
         (set +o pipefail;
@@ -124,15 +127,17 @@ rule snpset:
     dataset.
     """
     input:
-        "results/datasets/{dataset}/mafs/{dataset}.{ref}_{population}{dp}_{sites}-filts.mafs.gz",
+        "results/datasets/{dataset}/beagles/{dataset}.{ref}_{population}{dp}_{sites}-filts.mafs.gz",
     output:
         "results/datasets/{dataset}/filters/snps/{dataset}.{ref}_{population}{dp}_{sites}-filts_snps.sites",
     log:
         "logs/{dataset}/filters/snps/{dataset}.{ref}_{population}{dp}_{sites}-filts_snps.log",
     benchmark:
         "benchmarks/{dataset}/filters/snps/{dataset}.{ref}_{population}{dp}_{sites}-filts_snps.log"
-    conda:
-        "../envs/shell.yaml"
+    container:
+        shell_container
+    resources:
+        runtime="1h",
     shell:
         """
         zcat {input} | tail -n +2 | cut -f1-4 > {output} 2> {log}

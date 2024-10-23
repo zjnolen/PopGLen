@@ -152,7 +152,7 @@ rule plot_evalAdmix:
         pops="results/datasets/{dataset}/poplists/{dataset}_{population}{dp}.indiv.list",
     output:
         report(
-            "results/datasets/{dataset}/plots/evaladmix/{dataset}.{ref}_{population}{dp}_{sites}-filts_K{kvalue}_evaladmix.png",
+            "results/datasets/{dataset}/plots/evaladmix/{dataset}.{ref}_{population}{dp}_{sites}-filts_K{kvalue}_evaladmix.pdf",
             category="03.2 Admixture",
             subcategory="evalAdmix",
             labels=lambda w: {

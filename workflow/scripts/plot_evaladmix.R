@@ -25,7 +25,6 @@ plot_evaladmix <- function(pop,qopt,corres,k) {
 
 }
 
-png(snakemake@output[[1]], res = 300, width = 30, height = 25, units = "cm")
+pdf(snakemake@output[[1]], width = 11.8, height = 9.8)
 plot_evaladmix(snakemake@input[["pops"]],snakemake@input[["qopt"]],
 	snakemake@input[["corres"]],snakemake@wildcards[["kvalue"]])
-dev.off()

@@ -34,7 +34,7 @@ set-threads:
   ## Depth filtering
   angsd_depth: "attempt * 2"
   combine_depths: 1
-  summarize_depths: "attempt * 2"
+  summarize_depths: 1
   depth_bed: "attempt"
   ## Site-based missing data filtering
   angsd_missdata: "attempt * 2"
@@ -205,7 +205,7 @@ set-resources:
   combine_depths:
     runtime: "10m"
   summarize_depths:
-    runtime: "1h"
+    runtime: "15m"
   depth_bed:
     runtime: "1h"
   ## Site-based missing data filtering

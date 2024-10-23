@@ -2,7 +2,7 @@ sink(file(snakemake@log[[1]], open="wt"), type = "message")
 
 total_len <- function(filtersum) {
 	df <- read.table(filtersum, header = FALSE, sep = "\t")
-	total <- df[nrow(df), 2]
+	total <- as.numeric(df[nrow(df), 2])
 	return(total)
 }
 

@@ -76,7 +76,7 @@ set-threads:
   ind_unfiltered_depth: "attempt"
   ind_mapQ_baseQ_depth: "attempt"
   ind_filtered_depth: "attempt"
-  summarize_ind_depth: "attempt"
+  summarize_ind_depth: 1
   merge_ind_depth: 1
   combine_sample_qc: 1
   sample_qc_summary: 1
@@ -282,7 +282,7 @@ set-resources:
   ind_filtered_depth:
     runtime: "attempt * 60"
   summarize_ind_depth:
-    runtime: "1h"
+    runtime: "15m"
   merge_ind_depth:
     runtime: "15m"
   combine_sample_qc:

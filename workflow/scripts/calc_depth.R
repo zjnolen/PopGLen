@@ -1,8 +1,8 @@
 sink(file(snakemake@log[[1]], open="wt"), type = "message")
 
-bed_total_len <- function(bedfile) {
-	df <- data.frame(read.table(bedfile))
-	total <- sum(df[,3]-df[,2])
+total_len <- function(filtersum) {
+	df <- read.table(filtersum, header = FALSE, sep = "\t")
+	total <- df[nrow(df), 2]
 	return(total)
 }
 
@@ -14,8 +14,11 @@ summarize_depth <- function(depth, sample, length) {
 	df$dp <- seq(from = 0, to = length(depth)-1)
 	df$count <- depth
 
-	mean <- round(with(df, mean(rep(x = dp, times = count))), digits = 8)
-	stdev <- round(with(df, sd(rep(x=dp,times=count))), digits = 8)
+	mean <- round(sum(df$dp * df$count)/sum(df$count), digits = 4)
+	stdev <- round(
+		sqrt(sum(df$count*(df$dp-mean)^2)/(sum(df$count)-1)),
+		digits = 4
+	)
 
 	return(c(sample,mean,stdev))
 }
@@ -23,10 +26,11 @@ summarize_depth <- function(depth, sample, length) {
 
 
 write(
-	summarize_depth(snakemake@input[["sample_hist"]], 
-					snakemake@wildcards[["sample"]],
-					bed_total_len(snakemake@input[["bed"]])
-					),
+	summarize_depth(
+		snakemake@input[["sample_hist"]], 
+		snakemake@wildcards[["sample"]],
+		total_len(snakemake@input[["filtersum"]])
+	),
 	file = snakemake@output[["sample_summ"]],
 	sep = "\t",
 	ncolumns=3

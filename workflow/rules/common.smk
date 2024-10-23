@@ -504,15 +504,15 @@ def get_endo_cont_stat(wildcards):
 
 ## Get bedfile for whole genome or filtered genome, to set the denomintor of coverage
 ## calculation
-def get_total_bed(wildcards):
+def get_filter_sum(wildcards):
     if (
         wildcards.prefix
         == f"results/datasets/{wildcards.dataset}/qc/ind_depth/filtered/"
     ):
         if (config["subsample_by"] != "sitefilt") and config["redo_depth_filts"]:
-            return "results/datasets/{dataset}/filters/combined/{dataset}.{ref}{dp}_{group}.bed"
-        return "results/datasets/{dataset}/filters/combined/{dataset}.{ref}_{group}.bed"
-    return "results/ref/{ref}/beds/genome.bed"
+            return "results/datasets/{dataset}/filters/combined/{dataset}.{ref}{dp}_{group}.sum"
+        return "results/datasets/{dataset}/filters/combined/{dataset}.{ref}_{group}.sum"
+    return "results/ref/{ref}/beds/genome.bed.sum"
 
 
 ## Gather sample QC output files for concatenation

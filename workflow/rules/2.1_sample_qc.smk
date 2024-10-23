@@ -281,7 +281,7 @@ rule summarize_ind_depth:
     """
     input:
         sample_hist="{prefix}{dataset}.{ref}_{sample}{dp}_{group}.depthSample",
-        bed=get_total_bed,
+        filtersum=get_filter_sum,
     output:
         sample_summ="{prefix}{dataset}.{ref}_{sample}{dp}_{group}.depth.sum",
     log:

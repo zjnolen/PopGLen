@@ -108,7 +108,8 @@ rule qualimap_multiqc:
         runtime="1h",
     shell:
         """
-        multiqc {params.extra} --filename {output} {input} 2> {log}
+        multiqc {params.extra} --no-data-dir \
+            --filename {output} {input} 2> {log}
         """
 
 

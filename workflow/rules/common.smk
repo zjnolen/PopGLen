@@ -539,14 +539,14 @@ def multiqc_input_qualimap(wildcards):
     if len(pipebams) > 0:
         reports.extend(
             expand(
-                "results/mapping/qc/qualimap/{sample}.{{ref}}/genome_results.txt",
+                "results/mapping/qc/qualimap/{sample}.{{ref}}",
                 sample=pipebams,
             )
         )
     if len(userbams) > 0:
         reports.extend(
             expand(
-                "results/datasets/{{dataset}}/qc/user-provided-bams/qualimap/{sample}.{{ref}}/genome_results.txt",
+                "results/datasets/{{dataset}}/qc/user-provided-bams/qualimap/{sample}.{{ref}}",
                 sample=userbams,
             )
         )

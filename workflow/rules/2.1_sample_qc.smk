@@ -101,13 +101,14 @@ rule qualimap_multiqc:
     container:
         multiqc_container
     params:
-        extra="--cl-config \"extra_fn_clean_exts: ['.rmdup', '.clip']\" ",
+        extra="--cl-config \"extra_fn_clean_exts: ['.rmdup', '.clip']\" "
+        '--cl-config "qualimap_config: { '
+        'general_stats_coverage: [1,2,3,5,10,15] }"',
     resources:
         runtime="1h",
     shell:
         """
-        multiqc {params.extra} --no-data-dir \
-            --filename {output} {input} 2> {log}
+        multiqc {params.extra} --filename {output} {input} 2> {log}
         """
 
 

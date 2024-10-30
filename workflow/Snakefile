@@ -112,10 +112,9 @@ if config["analyses"]["ibs_ref_bias"]:
 
 
 if config["analyses"]["damageprofiler"]:
-    if len(pipebams) > 0:
-        all_outputs.append(
-            "results/datasets/{dataset}/qc/dna-damage-mqc/dna-damage_all.{ref}_mqc.html",
-        )
+    all_outputs.append(
+        "results/datasets/{dataset}/qc/dna-damage-mqc/dna-damage_all.{ref}_mqc.html",
+    )
 
 
 if config["analyses"]["mapdamage_rescale"]:

@@ -78,7 +78,7 @@ plot_heterozygosity <- function(agghz, popplot, indplot) {
     geom_errorbar(aes(x=sample, ymin=lower_95_CI, ymax=upper_95_CI)) +
     theme_classic() +
     theme(
-      x.axis.text = element_text(angle = 90)
+      axis.text.x = element_text(angle = 90)
     )
 
   ggsave(indplot, width = wind, units = "in")

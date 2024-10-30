@@ -56,6 +56,7 @@ rule plot_admix:
         report(
             "results/datasets/{dataset}/plots/ngsadmix/{dataset}.{ref}_{population}{dp}_{sites}-filts.pdf",
             category="03.2 Admixture",
+            subcategory="1 NGSadmix",
             labels=lambda w: {
                 "Filter": "{sites}",
                 **dp_report(w),
@@ -154,7 +155,7 @@ rule plot_evalAdmix:
         report(
             "results/datasets/{dataset}/plots/evaladmix/{dataset}.{ref}_{population}{dp}_{sites}-filts_K{kvalue}_evaladmix.pdf",
             category="03.2 Admixture",
-            subcategory="evalAdmix",
+            subcategory="2 EvalAdmix",
             labels=lambda w: {
                 "Filter": "{sites}",
                 **dp_report(w),

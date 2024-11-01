@@ -328,6 +328,24 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#manuscripts-utilizing-popglen" class="md-nav__link">
+    <span class="md-ellipsis">
+      Manuscripts utilizing PopGLen
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#software-utilized-by-popglen" class="md-nav__link">
+    <span class="md-ellipsis">
+      Software utilized by PopGLen
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -347,7 +365,7 @@
         
   
   <span class="md-ellipsis">
-    Getting Started
+    Getting started
   </span>
   
 
@@ -383,11 +401,91 @@
   
   
     <li class="md-nav__item">
+      <a href="config-cheat/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Config cheat sheet
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="tutorial/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
     Tutorial
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="cluster-execution/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Cluster execution
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="resources/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Setting job resources
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="outfile-summ/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Output file path overview
   </span>
   
 
@@ -431,6 +529,24 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#manuscripts-utilizing-popglen" class="md-nav__link">
+    <span class="md-ellipsis">
+      Manuscripts utilizing PopGLen
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#software-utilized-by-popglen" class="md-nav__link">
+    <span class="md-ellipsis">
+      Software utilized by PopGLen
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -456,14 +572,24 @@ fashion. Genotype likelihood based analyses avoid genotype calling, instead
 performing analyses on the likelihoods of each possible genotype, incorporating
 uncertainty about the true genotype into the analysis. This makes them
 especially suited for datasets with low coverage or that vary in coverage.</p>
-<p>This pipeline was developed in large part to make my own analyses easier. I
-work with many species being mapped to their own references within the same
-project. I developed this pipeline so that I could ensure standardized
-processing for datasets within the same project and to automate the many steps
-that go into performing these analyses. As it needed to fit many datasets, it
-is generalizable and customizable through a single configuration file and uses
-a common workflow utilized by ANGSD users, so it is available for others to
-use, should it suit their needs.</p>
+<p>This pipeline was developed in initially to make my own analyses easier. I work
+with many species being mapped to their own references within the same project.
+I developed this pipeline so that I could ensure standardized processing for
+datasets within the same project and to automate the many steps that go into
+performing these analyses. As it needed to fit many datasets, it is
+generalizable and customizable through a single configuration file, uses
+a common workflow utilized by ANGSD users, and provides reporting features to
+quickly assess sample quality, filtering, and results. As such, it is applicable
+to a wide variety of studies that utilize population genomics on whole genome
+data.</p>
+<p>This webpage contains documentation so others can utilize the features of this
+pipeline, including a short <a href="getting-started/">getting started</a> page, a
+detailed <a href="config/">configuration</a> summary, a <a href="tutorial/">tutorial</a> to walk
+users through running all analyses in the pipeline, as well as more specialized
+documentation describing how to
+<a href="cluster-execution/">configure the pipeline to run on a HPC cluster</a>, how to
+<a href="resources/">modify the requested resources for jobs</a>, and the
+<a href="outfile-summ/">file paths for all major output files</a> for reference.</p>
 <details class="question">
 <summary>Questions? Feature requests? Just ask!</summary>
 <p>I'm glad to answer questions on the
@@ -471,16 +597,18 @@ use, should it suit their needs.</p>
 project, as well as take suggestions for features or improvements!</p>
 </details>
 <h2 id="pipeline-summary">Pipeline Summary</h2>
+<p><img alt="A summary flowchart of the workflow" src="images/workflow.png" /></p>
 <p>The pipeline aims to follow the general path many users will use when working
-with ANGSD and other GL based tools. Raw equencing data is processed into BAM
+with ANGSD and other GL based tools. Raw sequencing data is processed into BAM
 files (with optional configuration for historical degraded samples) or BAM
-files are provided directly. From there several quality control reports are
+files are provided directly. From there, several quality control reports are
 generated to help determine what samples are included. The pipeline then builds
 a 'sites' file to perform analyses with. This sites file is made from several
-user-configured filters, intersecting all and outputing a list of sites for the
-analyses to be performed on across all samples. This can also be extended by
-user-provided filter lists (e.g. to limit to neutral sites, genic regions,
-etc.).</p>
+user-configured filters (including identification and removal of repetitive
+content, sites with extreme global sequencing depth, and/or low mappability),
+intersecting all and outputing a list of sites for the analyses to be performed
+on across all samples. This can also be extended by user-provided filter lists
+(e.g. to limit to neutral sites, genic regions, etc.).</p>
 <p>After samples have been processed, quality control reports produced, and the
 sites file has been produced, the pipeline can continue to the analyses.</p>
 <ul>
@@ -488,7 +616,7 @@ sites file has been produced, the pipeline can continue to the analyses.</p>
 <li>PCA (PCAngsd)</li>
 <li>Admixture (NGSAdmix)</li>
 <li>Inbreeding/Runs of Homozygosity (ngsF-HMM)</li>
-<li>Relatedness (NGSRelate, IBSrelate)</li>
+<li>Relatedness (NgsRelate, IBSrelate)</li>
 <li>Identity by state matrix (ANGSD)</li>
 <li>Site frequency spectrum (ANGSD)</li>
 <li>Watterson's estimator (<em>θ<sub>w</sub></em>), Nucleotide diversity (<em>π</em>), Tajima's <em>D</em>
@@ -506,6 +634,106 @@ report can be made that contains tables and figures summarizing the results
 for the currently enabled parts of the pipeline.</p>
 <p>If you're interested in using this, head to the
 <a href="getting-started/">Getting Started</a> page!</p>
+<h2 id="manuscripts-utilizing-popglen">Manuscripts utilizing PopGLen</h2>
+<p>Early versions of PopGLen have been used in the following manuscripts, which may
+help to give an idea of the scope of analyses that it can be utilized for:</p>
+<p>Nolen ZJ, Rundlöf M, Runemark A. 2024 Species-specific erosion of genetic
+diversity in grassland butterflies depends on landscape land cover.
+Biological Conservation 296, 110694.
+<a href="https://doi.org/10.1016/j.biocon.2024.110694">(doi:10.1016/j.biocon.2024.110694)</a></p>
+<p>Nolen ZJ, Jamelska P, Torres Lara AS, Wahlberg N, Runemark A. 2024
+[<strong>preprint</strong>] Species-specific loss of genetic diversity and accumulation of
+genetic load following agricultural intensification. bioRxiv, 2024.10.07.616612.
+<a href="https://doi.org/10.1101/2024.10.07.616612">(doi:10.1101/2024.10.07.616612)</a></p>
+<h2 id="software-utilized-by-popglen">Software utilized by PopGLen</h2>
+<p>PopGLen is a workflow that incorporates several underlying tools. Here, you will
+find a list of references for the main underlying tools and when they are
+utilized. Please cite the underlying tool if you utilize it through PopGLen.</p>
+<p>fastp: Chen, S., Zhou, Y., Chen, Y., &amp; Gu, J. (2018). fastp: An ultra-fast
+all-in-one FASTQ preprocessor. Bioinformatics, 34(17), i884–i890.
+<a href="https://doi.org/10.1093/bioinformatics/bty560">https://doi.org/10.1093/bioinformatics/bty560</a> (Adapter trimming, read
+collapsing, fastq QC)</p>
+<p>BWA: Li, H., &amp; Durbin, R. (2009). Fast and accurate short read alignment with
+Burrows–Wheeler transform. Bioinformatics, 25(14), 1754–1760.
+<a href="https://doi.org/10.1093/bioinformatics/btp324">https://doi.org/10.1093/bioinformatics/btp324</a> (Read mapping)</p>
+<p>SAMtools: Danecek, P., Bonfield, J. K., Liddle, J., Marshall, J., Ohan, V.,
+Pollard, M. O., Whitwham, A., Keane, T., McCarthy, S. A., Davies, R. M., &amp;
+Li, H. (2021). Twelve years of SAMtools and BCFtools. GigaScience, 10(2).
+<a href="https://doi.org/10.1093/gigascience/giab008">https://doi.org/10.1093/gigascience/giab008</a> (Endogenous content calculation,
+depth subsampling, bam file manipulation)</p>
+<p>Picard: Picard toolkit. (2019). Broad Institute, GitHub Repository.
+<a href="https://broadinstitute.github.io/picard/">https://broadinstitute.github.io/picard/</a> (Duplicate removal for paired end
+reads)</p>
+<p>Dedup: Peltzer, A., Jäger, G., Herbig, A., Seitz, A., Kniep, C., Krause, J., &amp;
+Nieselt, K. (2016). EAGER: Efficient ancient genome reconstruction. Genome
+Biology, 17(1), Article 1. <a href="https://doi.org/10.1186/s13059-016-0918-z">https://doi.org/10.1186/s13059-016-0918-z</a>
+(Duplicate removal for collapsed reads)</p>
+<p>GATK: Auwera, G. A. V. der, &amp; O’Connor, B. D. (2020). Genomics in the Cloud:
+Using Docker, GATK, and WDL in Terra. O’Reilly Media, Inc. (Realignment around
+indels)</p>
+<p>mapDamage2.0: Jónsson, H., Ginolhac, A., Schubert, M., Johnson, P. L. F., &amp;
+Orlando, L. (2013). mapDamage2.0: Fast approximate Bayesian estimates of ancient
+DNA damage parameters. Bioinformatics, 29(13), 1682–1684.
+<a href="https://doi.org/10.1093/bioinformatics/btt193">https://doi.org/10.1093/bioinformatics/btt193</a> (Estimation of post-mortem DNA
+damage, base recalibration for damage correction)</p>
+<p>DamageProfiler: Neukamm, J., Peltzer, A., &amp; Nieselt, K. (2021). DamageProfiler:
+Fast damage pattern calculation for ancient DNA. Bioinformatics, 37(20),
+3652–3653. <a href="https://doi.org/10.1093/bioinformatics/btab190">https://doi.org/10.1093/bioinformatics/btab190</a> (Estimation of
+post-mortem DNA damage)</p>
+<p>bamUtil: Jun, G., Wing, M. K., Abecasis, G. R., &amp; Kang, H. M. (2015). An
+efficient and scalable analysis framework for variant extraction and refinement
+from population scale DNA sequence data. Genome Research, gr.176552.114.
+<a href="https://doi.org/10.1101/gr.176552.114">https://doi.org/10.1101/gr.176552.114</a> (Clipping of overlapping reads so they
+are not double counted by ANGSD)</p>
+<p>Qualimap: García-Alcalde, F., Okonechnikov, K., Carbonell, J., Cruz, L. M.,
+Götz, S., Tarazona, S., Dopazo, J., Meyer, T. F., &amp; Conesa, A. (2012). Qualimap:
+Evaluating next-generation sequencing alignment data. Bioinformatics, 28(20),
+2678–2679. <a href="https://doi.org/10.1093/bioinformatics/bts503">https://doi.org/10.1093/bioinformatics/bts503</a> (General BAM file QC)</p>
+<p>ngsLD: Fox, E. A., Wright, A. E., Fumagalli, M., &amp; Vieira, F. G. (2019). ngsLD:
+Evaluating linkage disequilibrium using genotype likelihoods. Bioinformatics,
+35(19), 3855–3856. <a href="https://doi.org/10.1093/bioinformatics/btz200">https://doi.org/10.1093/bioinformatics/btz200</a> (Estimation
+of linkage disequilibrium for pruning, LD decay, LD sampling)</p>
+<p>PCAngsd: Meisner, J., &amp; Albrechtsen, A. (2018). Inferring Population Structure
+and Admixture Proportions in Low-Depth NGS Data. Genetics, 210(2), 719–731.
+<a href="https://doi.org/10.1534/genetics.118.301336">https://doi.org/10.1534/genetics.118.301336</a> (Principal component analysis)</p>
+<p>NGSadmix: Skotte, L., Korneliussen, T. S., &amp; Albrechtsen, A. (2013). Estimating
+Individual Admixture Proportions from Next Generation Sequencing Data. Genetics,
+195(3), 693–702. <a href="https://doi.org/10.1534/genetics.113.154138">https://doi.org/10.1534/genetics.113.154138</a> (Admixture
+analysis)</p>
+<p>ngsRelateV2: Hanghøj, K., Moltke, I., Andersen, P. A., Manica, A., &amp;
+Korneliussen, T. S. (2019). Fast and accurate relatedness estimation from
+high-throughput sequencing data in the presence of inbreeding. GigaScience,
+8(5), giz034. <a href="https://doi.org/10.1093/gigascience/giz034">https://doi.org/10.1093/gigascience/giz034</a> (Relatedness
+estimation)</p>
+<p>IBSrelate: Waples, R. K., Albrechtsen, A., &amp; Moltke, I. (2019). Allele
+frequency-free inference of close familial relationships from genotypes or
+low-depth sequencing data. Molecular Ecology, 28(1), 35–48.
+<a href="https://doi.org/10.1111/mec.14954">https://doi.org/10.1111/mec.14954</a> (Relatedness estimation)</p>
+<p>ANGSD: Korneliussen, T. S., Albrechtsen, A., &amp; Nielsen, R. (2014). ANGSD:
+Analysis of Next Generation Sequencing Data. BMC Bioinformatics, 15(1), Article
+1. <a href="https://doi.org/10.1186/s12859-014-0356-4">https://doi.org/10.1186/s12859-014-0356-4</a> (Depth calculation, genotype
+likelihood estimation, SNP calling, allele frequencies, SFS, diverity and
+neutrality statistics, heterozygosity, $F_{ST}$)</p>
+<p>ngsF-HMM: Vieira, F. G., Albrechtsen, A., &amp; Nielsen, R. (2016). Estimating IBD
+tracts from low coverage NGS data. Bioinformatics, 32(14), 2096–2102.
+<a href="https://doi.org/10.1093/bioinformatics/btw212">https://doi.org/10.1093/bioinformatics/btw212</a> (Inbreeding and runs of
+homozygosity estimation)</p>
+<p>RepeatModeler2: Flynn, J. M., Hubley, R., Goubert, C., Rosen, J., Clark, A. G.,
+Feschotte, C., &amp; Smit, A. F. (2020). RepeatModeler2 for automated genomic
+discovery of transposable element families. Proceedings of the National Academy
+of Sciences, 117(17), 9451–9457. <a href="https://doi.org/10.1073/pnas.1921046117">https://doi.org/10.1073/pnas.1921046117</a>
+(Building repeat library from reference genome)</p>
+<p>RepeatMasker: Smit, A., Hubley, R., &amp; Green, P. (2013). RepeatMasker Open-4.0
+(4.1.2) [Computer software]. <a href="http://www.repeatmasker.org">http://www.repeatmasker.org</a> (Identifying repeat
+regions from repeat library)</p>
+<p>GenMap: Pockrandt, C., Alzamel, M., Iliopoulos, C. S., &amp; Reinert, K. (2020).
+GenMap: Ultra-fast computation of genome mappability. Bioinformatics, 36(12),
+3687–3692. <a href="https://doi.org/10.1093/bioinformatics/btaa222">https://doi.org/10.1093/bioinformatics/btaa222</a> (Estimation of
+per-base mappability scores)</p>
+<p>BEDTools: Quinlan, A. R. &amp; Hall, I. M. (2010). BEDTools: a flexible suite of
+utilities for comparing genomic features. Bioinformatics, 26(6), 841-842.
+<a href="https://doi.org/10.1093/bioinformatics/btq033">https://doi.org/10.1093/bioinformatics/btq033</a> (Transforming and intersecting
+filter files)</p>
 
 
 
@@ -552,7 +780,7 @@ for the currently enabled parts of the pipeline.</p>
     </div>
     
     
-    <script id="__config" type="application/json">{"base": ".", "features": ["search.highlight"], "search": "assets/javascripts/workers/search.6ce7567c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+    <script id="__config" type="application/json">{"base": ".", "features": ["search.highlight", "content.code.annotate"], "search": "assets/javascripts/workers/search.6ce7567c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
       <script src="assets/javascripts/bundle.83f73b43.min.js"></script>

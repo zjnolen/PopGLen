@@ -360,12 +360,6 @@ rule repeatmasker:
         repeatmodmask_container
     params:
         out=lambda w, output: os.path.dirname(output.gff),
-        libpre="-species" if config["analyses"]["repeatmasker"]["dfam_lib"] else "-lib",
-        lib=lambda w, input: (
-            f"'{config['analyses']['repeatmasker']['dfam_lib']}'"
-            if config["analyses"]["repeatmasker"]["dfam_lib"]
-            else input.lib
-        ),
     threads: 5
     resources:
         runtime="720m",
@@ -375,7 +369,7 @@ rule repeatmasker:
         "repmask"
     shell:
         """
-        RepeatMasker -pa 1 {params.libpre} {params.lib} -gff -x \
+        RepeatMasker -pa 1 -lib {input.lib} -gff -x \
             -no_is -dir {params.out} {input.ref} &> {log}
         """
 

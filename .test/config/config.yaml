@@ -120,6 +120,15 @@ baseQ: 30
 params:
   clipoverlap:
     clip_user_provided_bams: true
+  fastp:
+    extra: "-p -g" # don't put --merge or --overlap_len_require here, they're implicit
+    min_overlap_hist: 20
+  bwa_aln:
+    extra: "-l 16500 -n 0.01 -o 2"
+  picard:
+    MarkDuplicates: "--REMOVE_DUPLICATES true --OPTICAL_DUPLICATE_PIXEL_DISTANCE 2500"
+  damageprofiler:
+    profile_modern: false
   genmap:
     K: "100"
     E: "2"
@@ -129,20 +138,11 @@ params:
     bounds: [ 0.5, 1.5 ]
     filt-on-dataset: true
     filt-on-depth-classes: true
-  fastp:
-    extra: "-p -g" # don't put --merge or --overlap_len_require here, they're implicit
-    min_overlap_hist: 20
-  bwa_aln:
-    extra: "-l 16500 -n 0.01 -o 2"
   samtools:
     subsampling_seed: "$RANDOM"
-  picard:
-    MarkDuplicates: "--REMOVE_DUPLICATES true --OPTICAL_DUPLICATE_PIXEL_DISTANCE 2500"
-  damageprofiler:
-    profile_modern: false
   angsd:
     gl_model: 2 # gl_model - 1=SAMtools, 2=GATK, 3=SOAPsnp, 4=SYK
-    maxdepth: 1000 # for depth calc only
+    maxdepth: 100 # for depth calc only
     mindepthind: 1
     minind_dataset: 0.75 # as a proportion of N
     minind_pop: 0.5 # as a proportion of N

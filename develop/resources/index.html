@@ -467,8 +467,8 @@ direct requests of memory when submitting SLURM jobs, instead always allocating
 workflow is to set <code>--default-resources mem_mb="XXXX * threads"</code> when running
 the Snakemake command, replacing <code>XXXX</code> with the RAM available per core on your
 HPC system in MB (in the case of ours, this was 6400). See the
-<a href="https://github.com/zjnolen/PopGLen/tree/v0.4.0/workflow/profiles">profiles</a> in
-the GitHub repository as an example.</p>
+<a href="https://github.com/zjnolen/PopGLen/tree/v0.4.0/profiles">profiles</a> in the
+GitHub repository as an example.</p>
 <p>However, the default resources may not always work, your data may need more
 memory, or longer runtimes, or maybe you even need shorter if your HPC has
 shorter runtime limits than some of the defaults we set (up to 7 days).
@@ -477,7 +477,7 @@ Snakemake makes it easy to alter resources in the command line using the
 in the workflow already.</p>
 <p>This is even better set up in a profile. PopGLen includes a default profile in
 the
-<a href="https://github.com/zjnolen/PopGLen/tree/v0.4.0/workflow/profiles/default">workflow/profiles/default</a>
+<a href="https://github.com/zjnolen/PopGLen/tree/v0.4.0/profiles/default">profiles/default</a>
 folder, which has all the rules already populated with the default resources
 already set. If you have downloaded the workflow via cloning the repository, all
 you need to do is change the values to match your needs (which may require
@@ -487,7 +487,7 @@ the same directory in your deployed workflow, modify as needed and Snakemake
 will automatically pick it up when you run it.</p>
 <p>Here is an example of what it would look like to change the number of threads
 for the rule <code>bwa_index</code> from the default of 1 to a new value of 5:</p>
-<div class="highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">workflow/profiles/default/config.yaml</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<div class="highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">profiles/default/config.yaml</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
 <span class="normal">2</span>
 <span class="normal">3</span>
 <span class="normal">4</span>
@@ -505,7 +505,7 @@ for the rule <code>bwa_index</code> from the default of 1 to a new value of 5:</
 </code></pre></div></td></tr></table></div>
 <p>And if you wanted to update the runtime to give it only a maximum of 1 day and
 add a limit of 2GB for memory:</p>
-<div class="highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">workflow/profiles/default/config.yaml</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">150</span>
+<div class="highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">profiles/default/config.yaml</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">150</span>
 <span class="normal">151</span>
 <span class="normal">152</span>
 <span class="normal">153</span>

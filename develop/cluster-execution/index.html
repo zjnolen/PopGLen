@@ -615,10 +615,10 @@ and start the workflow:</p>
 <div class="highlight"><pre><span></span><code>conda<span class="w"> </span>activate<span class="w"> </span>popglen
 
 <span class="c1"># do a dry run</span>
-snakemake<span class="w"> </span>--profile<span class="w"> </span>profiles/my-cluster<span class="w"> </span>-n
+snakemake<span class="w"> </span>--profile<span class="w"> </span>./profiles/my-cluster<span class="w"> </span>-n
 
 <span class="c1"># do a real run</span>
-snakemake<span class="w"> </span>--profile<span class="w"> </span>profiles/my-cluster
+snakemake<span class="w"> </span>--profile<span class="w"> </span>./profiles/my-cluster
 </code></pre></div>
 <p>Snakemake will then submit jobs from inside the screen. You can disconnect from
 the screen with CTRL-A + D, and safely log out without Snakemake being

@@ -5,7 +5,7 @@
 > submit an issue.
 >
 > If interested in using the pipeline, feel free to check out its current
-> [documentation](https://zjnolen.github.io/PopGLen/v0.4.0).
+> [documentation](https://zjnolen.github.io/PopGLen/v0.4.0/).
 
 This pipeline is aimed at processing sequencing data and calculating population
 genomic statistics within a genotype likelihood framework using a common
@@ -29,7 +29,7 @@ GenErode, nf-core/eager, or your own custom processing).
 ## Documentation
 
 The main documentation for the pipeline is
-[here](https://zjnolen.github.io/PopGLen/v0.4.0), with a broad summary of
+[here](https://zjnolen.github.io/PopGLen/v0.4.0/), with a broad summary of
 features reported in this README.
 
 Included in this documentation is a
@@ -124,6 +124,20 @@ a uniform level with Samtools to account for differences in depth between
 samples.
 
 A workflow report containing outputs from QC and analyses can be generated.
+
+## Snakemake profiles
+
+To make running this workflow easier on systems I have tested it on, I've
+included an example profile for:
+
+- PDC's Dardel System [profiles/dardel](profiles/dardel)
+
+The above should be called with the `--profile` option if used.
+
+There is also a default workflow-specific profile
+([profiles/default](profiles/default)) where resources can be
+modified easily. This is called with the `--workflow-profile` option, but is
+automatically enabled if left in `profiles/default` in the working directory.
 
 ## Acknowledgements
 

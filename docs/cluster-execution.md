@@ -125,10 +125,10 @@ and start the workflow:
 conda activate popglen
 
 # do a dry run
-snakemake --profile profiles/my-cluster -n
+snakemake --profile ./profiles/my-cluster -n
 
 # do a real run
-snakemake --profile profiles/my-cluster
+snakemake --profile ./profiles/my-cluster
 ```
 
 Snakemake will then submit jobs from inside the screen. You can disconnect from

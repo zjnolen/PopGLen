@@ -7,8 +7,8 @@ direct requests of memory when submitting SLURM jobs, instead always allocating
 workflow is to set `--default-resources mem_mb="XXXX * threads"` when running
 the Snakemake command, replacing `XXXX` with the RAM available per core on your
 HPC system in MB (in the case of ours, this was 6400). See the
-[profiles](https://github.com/zjnolen/PopGLen/tree/v0.4.0/workflow/profiles) in
-the GitHub repository as an example.
+[profiles](https://github.com/zjnolen/PopGLen/tree/v0.4.0/profiles) in the
+GitHub repository as an example.
 
 However, the default resources may not always work, your data may need more
 memory, or longer runtimes, or maybe you even need shorter if your HPC has
@@ -19,7 +19,7 @@ in the workflow already.
 
 This is even better set up in a profile. PopGLen includes a default profile in
 the
-[workflow/profiles/default](https://github.com/zjnolen/PopGLen/tree/v0.4.0/workflow/profiles/default)
+[profiles/default](https://github.com/zjnolen/PopGLen/tree/v0.4.0/profiles/default)
 folder, which has all the rules already populated with the default resources
 already set. If you have downloaded the workflow via cloning the repository, all
 you need to do is change the values to match your needs (which may require
@@ -31,7 +31,7 @@ will automatically pick it up when you run it.
 Here is an example of what it would look like to change the number of threads
 for the rule `bwa_index` from the default of 1 to a new value of 5:
 
-```yaml linenums="1" hl_lines="5" title="workflow/profiles/default/config.yaml"
+```yaml linenums="1" hl_lines="5" title="profiles/default/config.yaml"
 set-threads:
   # Reference Prep
   link_ref: 1
@@ -45,7 +45,7 @@ set-threads:
 And if you wanted to update the runtime to give it only a maximum of 1 day and
 add a limit of 2GB for memory:
 
-```yaml linenums="150" hl_lines="5-7" title="workflow/profiles/default/config.yaml"
+```yaml linenums="150" hl_lines="5-7" title="profiles/default/config.yaml"
 set-resources:
 #   # Reference Prep
   link_ref:

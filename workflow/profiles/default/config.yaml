@@ -87,6 +87,7 @@ set-threads:
   ibs_ref_bias_table_html: 1
   # Post-mortem DNA damage
   damageprofiler: "attempt"
+  damageprofiler_userbam: "attempt"
   mapDamage2_rescaling: 1
   dna_damage_multiqc: 1
   # ANGSD input file preparation
@@ -300,6 +301,8 @@ set-resources:
   ibs_ref_bias_table_html:
     runtime: "15m"
   damageprofiler:
+    runtime: "attempt * 60"
+  damageprofiler_userbam:
     runtime: "attempt * 60"
   mapDamage2_rescaling:
     runtime: "1d"

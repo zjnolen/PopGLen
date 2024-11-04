@@ -7,6 +7,8 @@
 > If interested in using the pipeline, feel free to check out its current
 > [documentation](https://zjnolen.github.io/PopGLen/v0.4.0/).
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.14035397.svg)](https://doi.org/10.5281/zenodo.14035397)
+
 This pipeline is aimed at processing sequencing data and calculating population
 genomic statistics within a genotype likelihood framework using a common
 workflow based on ANGSD and related softwares. As a primary use case of genotype

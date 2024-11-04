@@ -83,7 +83,10 @@ plot_bins <- function(frohs, minroh, bins, plotpre) {
   indfroh <- frohs %>% group_by(sample) %>%
     summarize(froh = sum(froh))
   
-  frohs$sample <- factor(frohs$sample, levels = indfroh$sample[order(indfroh$froh)])
+  frohs$sample <- factor(
+    frohs$sample,
+    levels = indfroh$sample[order(indfroh$froh)]
+  )
 
   ggplot(data = frohs, aes(x = sample, y = froh, fill = range)) +
     geom_bar(position="stack", stat="identity") +
@@ -98,7 +101,7 @@ plot_bins <- function(frohs, minroh, bins, plotpre) {
       panel.grid.minor = element_blank()
     )
   
-  ggsave(paste0(plotpre,".froh_bins.svg"), width = 18, height = 6)
+  ggsave(paste0(plotpre,".froh_bins.pdf"), width = 18, height = 6)
 }
 
 # Plot Nroh ~ Cumulative roh length for individuals with rohs
@@ -111,7 +114,7 @@ plot_cumroh_nroh <- function(nroh_cumroh, plotpre) {
     theme_classic() +
     labs(color = "Population")
 
-  ggsave(paste0(plotpre,".cumroh_nroh.svg"), width = 9, height = 7)
+  ggsave(paste0(plotpre,".cumroh_nroh.pdf"), width = 9, height = 7)
 }
 
 
@@ -121,8 +124,14 @@ plot_cumroh_nroh <- function(nroh_cumroh, plotpre) {
 
 aggroh <- aggregate_roh(snakemake@input[["roh"]])
 
-write.table(aggroh, file = paste0(snakemake@params[["outpre"]],".all_roh.bed"), quote = FALSE,
-  sep = "\t", row.names = FALSE, col.names = FALSE)
+write.table(
+  aggroh,
+  file = paste0(snakemake@params[["outpretab"]],".all_roh.bed"),
+  quote = FALSE,
+  sep = "\t",
+  row.names = FALSE,
+  col.names = FALSE
+)
 
 frohs <- froh_bins(
   snakemake@input[["inds"]],
@@ -141,8 +150,20 @@ indfroh <- merge(
   by = "sample"
 )
 
-write.table(indfroh, file = paste0(snakemake@params[["outpre"]],".ind_froh.tsv"), quote = FALSE,
-  sep = "\t", row.names = FALSE, col.names = TRUE)
+names(indfroh)[names(indfroh) == 'Froh'] <- paste0(
+  'Froh>',
+  snakemake@params[["minroh"]],
+  'bp'
+)
+
+write.table(
+  indfroh,
+  file = paste0(snakemake@params[["outpretab"]],".ind_froh.tsv"),
+  quote = FALSE,
+  sep = "\t",
+  row.names = FALSE,
+  col.names = TRUE
+)
 
 cumroh <- nroh_cumroh(
   aggroh,
@@ -154,10 +175,10 @@ plot_bins(
   frohs,
   snakemake@params[["minroh"]],
   snakemake@params[["bins"]],
-  snakemake@params[["outpre"]]
+  snakemake@params[["outpreplot"]]
 )
 
 plot_cumroh_nroh(
   cumroh,
-  snakemake@params[["outpre"]]
+  snakemake@params[["outpreplot"]]
 )

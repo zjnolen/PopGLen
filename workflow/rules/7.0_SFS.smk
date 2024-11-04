@@ -143,7 +143,7 @@ rule realSFS_2dSFS_bootstrap:
         boot=config["params"]["realsfs"]["sfsboot"],
     threads: lambda wildcards, attempt: attempt * 2
     resources:
-        runtime=lambda wildcards, attempt: attempt * 720,
+        runtime="7d",
     shell:
         """
         realSFS {input.saf1} {input.saf2} -fold {params.fold} \

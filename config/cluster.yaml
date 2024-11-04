@@ -1,9 +1,0 @@
-__default__:
-  # complete with SLURM account ID jobs should be run on
-  account: # put cluster job account here
-  
-  # default time for a job if this should be different than cluster default
-  time: 01:00:00
-
-  # directories for slurm logs (inside project directory)
-  output: "slurm/logs/{rule}/{rule}.{wildcards}.out"

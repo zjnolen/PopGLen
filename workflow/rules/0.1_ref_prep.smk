@@ -5,6 +5,8 @@
 
 localrules:
     link_ref,
+    link_anc_ref,
+    samtools_faidx,
     ref_chunking,
 
 
@@ -16,8 +18,10 @@ rule link_ref:
         "results/ref/{ref}/{ref}.fa",
     log:
         "logs/ref/link_ref/{ref}.log",
-    conda:
-        "../envs/shell.yaml"
+    container:
+        shell_container
+    resources:
+        runtime="5m",
     shell:
         """
         ln -sr {input} {output} 2> {log}
@@ -34,8 +38,10 @@ if config["ancestral"]:
             "results/ref/{ref}/{ref}.anc.fa",
         log:
             "logs/ref/link_ref/{ref}.anc.log",
-        conda:
-            "../envs/shell.yaml"
+        container:
+            shell_container
+        resources:
+            runtime="5m",
         shell:
             """
             ln -sr {input} {output} 2> {log}
@@ -58,25 +64,33 @@ rule bwa_index:
     log:
         "logs/ref/bwa_index/{ref}.log",
     resources:
-        runtime=120,
+        runtime="120m",
     benchmark:
         "benchmarks/ref/bwa_index/{ref}.log"
     wrapper:
-        "v2.6.0/bio/bwa/index"
+        "v4.0.0/bio/bwa/index"
 
 
 rule samtools_faidx:
-    """Index reference genome using samtools (fai index used by several tools)"""
+    """
+    Index reference genome using samtools (fai index used by several tools)
+    """
     input:
         "results/ref/{ref}/{prefix}.fa",
     output:
         "results/ref/{ref}/{prefix}.fa.fai",
+    container:
+        samtools_container
     log:
         "logs/ref/samtools_faidx/{ref}/{prefix}.log",
     benchmark:
         "benchmarks/ref/samtools_faidx/{ref}/{prefix}.log"
-    wrapper:
-        "v2.4.0/bio/samtools/faidx"
+    resources:
+        runtime="10m",
+    shell:
+        """
+        samtools faidx {input} 2> {log}
+        """
 
 
 rule ref_chunking:
@@ -87,10 +101,12 @@ rule ref_chunking:
         "results/datasets/{dataset}/filters/chunks/{ref}_chunk{chunk}.rf",
     log:
         "logs/{dataset}/ref/chunking/{ref}_chunk{chunk}.rf",
-    conda:
-        "../envs/shell.yaml"
+    container:
+        shell_container
     params:
         contigs=lambda w: chunks[int(w.chunk) - 1].index.tolist(),
+    resources:
+        runtime="5m",
     shell:
         r"""
         echo {params.contigs} | tr " " "\n" > {output} 2> {log}
@@ -107,5 +123,7 @@ rule picard_dict:
         "logs/ref/picard_dict/{ref}.log",
     benchmark:
         "benchmarks/ref/picard_dict/{ref}.log"
+    resources:
+        runtime="10m",
     wrapper:
-        "v2.4.0/bio/picard/createsequencedictionary"
+        "v4.0.0/bio/picard/createsequencedictionary"

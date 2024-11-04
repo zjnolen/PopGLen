@@ -31,8 +31,8 @@ else
     fi
 fi
 
-tot_tot=$(echo $tot_merged"+"$tot_paired | bc)
-map_tot=$(echo $map_merged"+"$map_paired | bc)
+tot_tot=$(( $tot_merged"+"$tot_paired ))
+map_tot=$(( $map_merged"+"$map_paired ))
 if [ $tot_tot == 0 ]; then
     perc_tot="No reads, mapped or unmapped..."
 else

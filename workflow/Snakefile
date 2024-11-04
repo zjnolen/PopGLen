@@ -13,6 +13,7 @@ include: "rules/2.2_dna_damage.smk"
 include: "rules/3.0_genotype_likelihoods.smk"
 include: "rules/3.1_safs.smk"
 include: "rules/3.2_beagles.smk"
+include: "rules/3.3_mafs.smk"
 include: "rules/4.0_estimate_LD.smk"
 include: "rules/4.1_linkage_pruning.smk"
 include: "rules/4.2_linkage_decay.smk"
@@ -111,10 +112,9 @@ if config["analyses"]["ibs_ref_bias"]:
 
 
 if config["analyses"]["damageprofiler"]:
-    if len(pipebams) > 0:
-        all_outputs.append(
-            "results/datasets/{dataset}/qc/dna-damage-mqc/dna-damage_all.{ref}_mqc.html",
-        )
+    all_outputs.append(
+        "results/datasets/{dataset}/qc/dna-damage-mqc/dna-damage_all.{ref}_mqc.html",
+    )
 
 
 if config["analyses"]["mapdamage_rescale"]:
@@ -140,7 +140,7 @@ if config["analyses"]["estimate_ld"]:
 if config["analyses"]["ld_decay"]:
     all_outputs.extend(
         expand(
-            "results/datasets/{{dataset}}/plots/LD_decay/{{dataset}}.{{ref}}_{population}_{{sites}}-filts.LDdecay.svg",
+            "results/datasets/{{dataset}}/plots/LD_decay/{{dataset}}.{{ref}}_{population}_{{sites}}-filts.LDdecay.pdf",
             population=pop_list + ["all"],
         )
     )
@@ -179,9 +179,14 @@ if config["analyses"]["2dsfs_boot"]:
         )
     )
 
-if config["analyses"]["relatedness"]["ngsrelate"]:
+if config["analyses"]["relatedness"]["ngsrelate_ibsrelate-only"]:
     all_outputs.append(
-        "results/datasets/{dataset}/analyses/kinship/ngsrelate/{dataset}.{ref}_all_{sites}-filts_relate.html"
+        "results/datasets/{dataset}/analyses/kinship/ngsrelate/{dataset}.{ref}_all_{sites}-filts_ibsrelate-nofreq.html"
+    )
+
+if config["analyses"]["relatedness"]["ngsrelate_freqbased"]:
+    all_outputs.append(
+        "results/datasets/{dataset}/analyses/kinship/ngsrelate/{dataset}.{ref}_all_{sites}-filts_ngsrelate-freq.html"
     )
 
 if config["analyses"]["relatedness"]["ibsrelate_sfs"]:
@@ -198,15 +203,15 @@ if config["analyses"]["pca_pcangsd"]:
     if config["excl_pca-admix"]:
         all_outputs.extend(
             [
-                "results/datasets/{dataset}/plots/pca/{dataset}.{ref}_all_excl_pca-admix_{sites}-filts_pc1-2.svg",
-                "results/datasets/{dataset}/plots/pca/{dataset}.{ref}_all_excl_pca-admix_{sites}-filts_pc3-4.svg",
+                "results/datasets/{dataset}/plots/pca/{dataset}.{ref}_all_excl_pca-admix_{sites}-filts_pc1-2.pdf",
+                "results/datasets/{dataset}/plots/pca/{dataset}.{ref}_all_excl_pca-admix_{sites}-filts_pc3-4.pdf",
             ]
         )
     else:
         all_outputs.extend(
             [
-                "results/datasets/{dataset}/plots/pca/{dataset}.{ref}_all_{sites}-filts_pc1-2.svg",
-                "results/datasets/{dataset}/plots/pca/{dataset}.{ref}_all_{sites}-filts_pc3-4.svg",
+                "results/datasets/{dataset}/plots/pca/{dataset}.{ref}_all_{sites}-filts_pc1-2.pdf",
+                "results/datasets/{dataset}/plots/pca/{dataset}.{ref}_all_{sites}-filts_pc3-4.pdf",
             ]
         )
 
@@ -247,15 +252,15 @@ if config["analyses"]["fst_angsd"]["individuals"]:
 if config["analyses"]["heterozygosity_angsd"]:
     all_outputs.extend(
         [
-            "results/datasets/{dataset}/plots/heterozygosity/{dataset}.{ref}_all_{sites}-filts_heterozygosity.populations.svg",
-            "results/datasets/{dataset}/plots/heterozygosity/{dataset}.{ref}_all_{sites}-filts_heterozygosity.individuals.svg",
+            "results/datasets/{dataset}/plots/heterozygosity/{dataset}.{ref}_all_{sites}-filts_heterozygosity.populations.pdf",
+            "results/datasets/{dataset}/plots/heterozygosity/{dataset}.{ref}_all_{sites}-filts_heterozygosity.individuals.pdf",
             "results/datasets/{dataset}/analyses/heterozygosity/{dataset}.{ref}_all_{sites}-filts_heterozygosity.html",
         ]
     )
 
 if config["analyses"]["inbreeding_ngsf-hmm"]:
     all_outputs.append(
-        "results/datasets/{dataset}/plots/inbreeding/{dataset}.{ref}_all_{sites}-filts.ind_froh.tsv"
+        "results/datasets/{dataset}/analyses/ngsF-HMM/{dataset}.{ref}_all_{sites}-filts.ind_froh.html"
     )
 
 if config["analyses"]["admix_ngsadmix"]:
@@ -263,8 +268,9 @@ if config["analyses"]["admix_ngsadmix"]:
         all_outputs.extend(
             expand(
                 [
-                    "results/datasets/{{dataset}}/plots/evaladmix/{{dataset}}.{{ref}}_all_excl_pca-admix_{{sites}}-filts_K{kvalue}_evaladmix.html",
-                    "results/datasets/{{dataset}}/plots/ngsadmix/{{dataset}}.{{ref}}_all_excl_pca-admix_{{sites}}-filts_K{kvalue}.svg",
+                    "results/datasets/{{dataset}}/plots/evaladmix/{{dataset}}.{{ref}}_all_excl_pca-admix_{{sites}}-filts_K{kvalue}_evaladmix.pdf",
+                    "results/datasets/{{dataset}}/plots/ngsadmix/{{dataset}}.{{ref}}_all_excl_pca-admix_{{sites}}-filts.pdf",
+                    "results/datasets/{{dataset}}/analyses/ngsadmix/{{dataset}}.{{ref}}_all_excl_pca-admix_{{sites}}-filts.convergence_summary.html",
                 ],
                 kvalue=config["params"]["ngsadmix"]["kvalues"],
             )
@@ -273,8 +279,9 @@ if config["analyses"]["admix_ngsadmix"]:
         all_outputs.extend(
             expand(
                 [
-                    "results/datasets/{{dataset}}/plots/evaladmix/{{dataset}}.{{ref}}_all_{{sites}}-filts_K{kvalue}_evaladmix.html",
-                    "results/datasets/{{dataset}}/plots/ngsadmix/{{dataset}}.{{ref}}_all_{{sites}}-filts_K{kvalue}.svg",
+                    "results/datasets/{{dataset}}/plots/evaladmix/{{dataset}}.{{ref}}_all_{{sites}}-filts_K{kvalue}_evaladmix.pdf",
+                    "results/datasets/{{dataset}}/plots/ngsadmix/{{dataset}}.{{ref}}_all_{{sites}}-filts.pdf",
+                    "results/datasets/{{dataset}}/analyses/ngsadmix/{{dataset}}.{{ref}}_all_{{sites}}-filts.convergence_summary.html",
                 ],
                 kvalue=config["params"]["ngsadmix"]["kvalues"],
             )
@@ -283,6 +290,15 @@ if config["analyses"]["admix_ngsadmix"]:
 if config["analyses"]["ibs_matrix"]:
     all_outputs.append(
         "results/datasets/{dataset}/analyses/IBS/{dataset}.{ref}_all_{sites}-filts.ibsMat"
+    )
+
+if config["analyses"]["pop_allele_freqs"]:
+    all_outputs.extend(
+        expand(
+            "results/datasets/{{dataset}}/mafs/{{dataset}}.{{ref}}_{population}_{{sites}}-filts.{maj}-maj.mafs.gz",
+            population=pop_list,
+            maj=["pop", "dataset"],
+        )
     )
 
 # Downsampled analyses
@@ -302,7 +318,7 @@ if config["subsample_analyses"]["estimate_ld"]:
 if config["subsample_analyses"]["ld_decay"]:
     all_outputs.extend(
         expand(
-            "results/datasets/{{dataset}}/plots/LD_decay/{{dataset}}.{{ref}}_{population}{dp}_{{sites}}-filts.LDdecay.svg",
+            "results/datasets/{{dataset}}/plots/LD_decay/{{dataset}}.{{ref}}_{population}{dp}_{{sites}}-filts.LDdecay.pdf",
             population=pop_list + ["all"],
             dp=subdp,
         )
@@ -346,10 +362,18 @@ if config["subsample_analyses"]["2dsfs_boot"]:
         )
     )
 
-if config["subsample_analyses"]["relatedness"]["ngsrelate"]:
+if config["subsample_analyses"]["relatedness"]["ngsrelate_ibsrelate-only"]:
     all_outputs.extend(
         expand(
-            "results/datasets/{{dataset}}/analyses/kinship/ngsrelate/{{dataset}}.{{ref}}_all{dp}_{{sites}}-filts_relate.html",
+            "results/datasets/{{dataset}}/analyses/kinship/ngsrelate/{{dataset}}.{{ref}}_all{dp}_{{sites}}-filts_ibsrelate-nofreq.html",
+            dp=subdp,
+        )
+    )
+
+if config["subsample_analyses"]["relatedness"]["ngsrelate_freqbased"]:
+    all_outputs.extend(
+        expand(
+            "results/datasets/{{dataset}}/analyses/kinship/ngsrelate/{{dataset}}.{{ref}}_all{dp}_{{sites}}-filts_ngsrelate-freq.html",
             dp=subdp,
         )
     )
@@ -377,8 +401,8 @@ if config["subsample_analyses"]["pca_pcangsd"]:
         all_outputs.extend(
             expand(
                 [
-                    "results/datasets/{{dataset}}/plots/pca/{{dataset}}.{{ref}}_all_excl_pca-admix{dp}_{{sites}}-filts_pc1-2.svg",
-                    "results/datasets/{{dataset}}/plots/pca/{{dataset}}.{{ref}}_all_excl_pca-admix{dp}_{{sites}}-filts_pc3-4.svg",
+                    "results/datasets/{{dataset}}/plots/pca/{{dataset}}.{{ref}}_all_excl_pca-admix{dp}_{{sites}}-filts_pc1-2.pdf",
+                    "results/datasets/{{dataset}}/plots/pca/{{dataset}}.{{ref}}_all_excl_pca-admix{dp}_{{sites}}-filts_pc3-4.pdf",
                 ],
                 dp=subdp,
             )
@@ -387,8 +411,8 @@ if config["subsample_analyses"]["pca_pcangsd"]:
         all_outputs.extend(
             expand(
                 [
-                    "results/datasets/{{dataset}}/plots/pca/{{dataset}}.{{ref}}_all{dp}_{{sites}}-filts_pc1-2.svg",
-                    "results/datasets/{{dataset}}/plots/pca/{{dataset}}.{{ref}}_all{dp}_{{sites}}-filts_pc3-4.svg",
+                    "results/datasets/{{dataset}}/plots/pca/{{dataset}}.{{ref}}_all{dp}_{{sites}}-filts_pc1-2.pdf",
+                    "results/datasets/{{dataset}}/plots/pca/{{dataset}}.{{ref}}_all{dp}_{{sites}}-filts_pc3-4.pdf",
                 ],
                 dp=subdp,
             )
@@ -441,8 +465,8 @@ if config["subsample_analyses"]["heterozygosity_angsd"]:
     all_outputs.extend(
         expand(
             [
-                "results/datasets/{{dataset}}/plots/heterozygosity/{{dataset}}.{{ref}}_all{dp}_{{sites}}-filts_heterozygosity.populations.svg",
-                "results/datasets/{{dataset}}/plots/heterozygosity/{{dataset}}.{{ref}}_all{dp}_{{sites}}-filts_heterozygosity.individuals.svg",
+                "results/datasets/{{dataset}}/plots/heterozygosity/{{dataset}}.{{ref}}_all{dp}_{{sites}}-filts_heterozygosity.populations.pdf",
+                "results/datasets/{{dataset}}/plots/heterozygosity/{{dataset}}.{{ref}}_all{dp}_{{sites}}-filts_heterozygosity.individuals.pdf",
                 "results/datasets/{{dataset}}/analyses/heterozygosity/{{dataset}}.{{ref}}_all{dp}_{{sites}}-filts_heterozygosity.html",
             ],
             dp=subdp,
@@ -452,7 +476,7 @@ if config["subsample_analyses"]["heterozygosity_angsd"]:
 if config["subsample_analyses"]["inbreeding_ngsf-hmm"]:
     all_outputs.extend(
         expand(
-            "results/datasets/{{dataset}}/plots/inbreeding/{{dataset}}.{{ref}}_all{dp}_{{sites}}-filts.ind_froh.tsv",
+            "results/datasets/{{dataset}}/analyses/ngsF-HMM/{{dataset}}.{{ref}}_all{dp}_{{sites}}-filts.ind_froh.html",
             dp=subdp,
         )
     )
@@ -464,8 +488,9 @@ if config["subsample_analyses"]["admix_ngsadmix"]:
         all_outputs.extend(
             expand(
                 [
-                    "results/datasets/{{dataset}}/plots/evaladmix/{{dataset}}.{{ref}}_all_excl_pca-admix{dp}_{{sites}}-filts_K{kvalue}_evaladmix.html",
-                    "results/datasets/{{dataset}}/plots/ngsadmix/{{dataset}}.{{ref}}_all_excl_pca-admix{dp}_{{sites}}-filts_K{kvalue}.svg",
+                    "results/datasets/{{dataset}}/plots/evaladmix/{{dataset}}.{{ref}}_all_excl_pca-admix{dp}_{{sites}}-filts_K{kvalue}_evaladmix.pdf",
+                    "results/datasets/{{dataset}}/plots/ngsadmix/{{dataset}}.{{ref}}_all_excl_pca-admix{dp}_{{sites}}-filts.pdf",
+                    "results/datasets/{{dataset}}/analyses/ngsadmix/{{dataset}}.{{ref}}_all_excl_pca-admix{dp}_{{sites}}-filts.convergence_summary.html",
                 ],
                 kvalue=config["params"]["ngsadmix"]["kvalues"],
                 dp=subdp,
@@ -475,8 +500,9 @@ if config["subsample_analyses"]["admix_ngsadmix"]:
         all_outputs.extend(
             expand(
                 [
-                    "results/datasets/{{dataset}}/plots/evaladmix/{{dataset}}.{{ref}}_all{dp}_{{sites}}-filts_K{kvalue}_evaladmix.html",
-                    "results/datasets/{{dataset}}/plots/ngsadmix/{{dataset}}.{{ref}}_all{dp}_{{sites}}-filts_K{kvalue}.svg",
+                    "results/datasets/{{dataset}}/plots/evaladmix/{{dataset}}.{{ref}}_all{dp}_{{sites}}-filts_K{kvalue}_evaladmix.pdf",
+                    "results/datasets/{{dataset}}/plots/ngsadmix/{{dataset}}.{{ref}}_all{dp}_{{sites}}-filts.pdf",
+                    "results/datasets/{{dataset}}/analyses/ngsadmix/{{dataset}}.{{ref}}_all{dp}_{{sites}}-filts.convergence_summary.html",
                 ],
                 kvalue=config["params"]["ngsadmix"]["kvalues"],
                 dp=subdp,
@@ -488,6 +514,16 @@ if config["subsample_analyses"]["ibs_matrix"]:
         expand(
             "results/datasets/{{dataset}}/analyses/IBS/{{dataset}}.{{ref}}_all{dp}_{{sites}}-filts.ibsMat",
             dp=subdp,
+        )
+    )
+
+if config["subsample_analyses"]["pop_allele_freqs"]:
+    all_outputs.extend(
+        expand(
+            "results/datasets/{{dataset}}/mafs/{{dataset}}.{{ref}}_{population}{dp}_{{sites}}-filts.{maj}-maj.mafs.gz",
+            population=pop_list,
+            dp=subdp,
+            maj=["pop", "dataset"],
         )
     )
 

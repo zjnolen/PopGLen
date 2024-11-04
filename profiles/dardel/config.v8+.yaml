@@ -1,0 +1,19 @@
+restart-times: 3
+local-cores: 2
+printshellcmds: true
+use-conda: true
+use-singularity: true
+jobs: 999
+keep-going: true
+max-threads: 128
+executor: slurm
+conda-prefix: /cfs/klemming/projects/snic/<compute-storage>/snakemake/conda-share
+singularity-prefix: /cfs/klemming/projects/snic/<compute-storage>/snakemake/singularity-share
+singularity-args: '--tmp-sandbox -B /cfs/klemming'
+default-resources:
+  - "mem_mb=(threads*1700)"
+  - "runtime=60"
+  - "slurm_account=<compute-project>"
+  - "slurm_partition=shared"
+  - "nodes=1"
+  - "tmpdir='/cfs/klemming/scratch/u/user'"

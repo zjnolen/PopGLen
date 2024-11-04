@@ -36,8 +36,57 @@ rule damageprofiler:
         "logs/mapping/damageprofiler/{sample}.{ref}.log",
     benchmark:
         "benchmarks/mapping/damageprofiler/{sample}.{ref}.log"
-    conda:
-        "../envs/damageprofiler.yaml"
+    container:
+        damageprofiler_container
+    params:
+        out=lambda w, output: os.path.dirname(output[0]),
+    threads: lambda wildcards, attempt: attempt
+    resources:
+        runtime=lambda wildcards, attempt: attempt * 60,
+    shell:
+        """
+        damageprofiler -Xmx{resources.mem_mb}m -i {input.bam} -r {input.ref} \
+            -o {params.out} &> {log}
+        """
+
+
+rule damageprofiler_userbam:
+    """
+    Estimates varous metrics related to post-mortem DNA damage. Informative 
+    rather than corrective. Done this time for BAMs provided by user.
+    """
+    input:
+        unpack(get_final_bam),
+        ref="results/ref/{ref}/{ref}.fa",
+    output:
+        multiext(
+            "results/mapping/qc/damageprofiler/{sample}.{ref}.user-processed/",
+            "5pCtoT_freq.txt",
+            "3pGtoA_freq.txt",
+            "Length_plot.pdf",
+            "DamagePlot_five_prime.svg",
+            "DamagePlot.pdf",
+            "DamagePlot_three_prime.svg",
+            "DamageProfiler.log",
+            "lgdistribution.txt",
+            "edit_distance.svg",
+            "edit_distance.pdf",
+            "editDistance.txt",
+            "Length_plot_combined_data.svg",
+            "Length_plot_forward_reverse_separated.svg",
+            "misincorporation.txt",
+            "5p_freq_misincorporations.txt",
+            "3p_freq_misincorporations.txt",
+            "DNA_comp_genome.txt",
+            "DNA_composition_sample.txt",
+            "dmgprof.json",
+        ),
+    log:
+        "logs/mapping/damageprofiler/{sample}.{ref}.user-processed.log",
+    benchmark:
+        "benchmarks/mapping/damageprofiler/{sample}.{ref}.user-processed.log"
+    container:
+        damageprofiler_container
     params:
         out=lambda w, output: os.path.dirname(output[0]),
     threads: lambda wildcards, attempt: attempt
@@ -52,8 +101,8 @@ rule damageprofiler:
 
 rule mapDamage2_rescaling:
     """
-    Estimates various metrics related to post-mortem DNA damage and rescales base 
-    quality scores to correct for damage.
+    Estimates various metrics related to post-mortem DNA damage and rescales
+    base quality scores to correct for damage.
     """
     input:
         bam="results/mapping/bams/{sample}.{ref}.rmdup.realn.clip.bam",
@@ -76,12 +125,14 @@ rule mapDamage2_rescaling:
         extra="--rescale",
     resources:
         runtime=1440,
-        mem_mb=lambda w, attempt: attempt * 6400,
     wrapper:
-        "v2.6.0/bio/mapdamage2"
+        "v4.0.0/bio/mapdamage2"
 
 
 rule dna_damage_multiqc:
+    """
+    Combine DNA damage outputs into MultiQC report
+    """
     input:
         multiqc_input_dnadmg,
     output:
@@ -93,7 +144,14 @@ rule dna_damage_multiqc:
         ),
     log:
         "logs/mapping/dnadamage/{dataset}.{ref}_dnadmg-mqc.log",
+    container:
+        multiqc_container
     params:
         extra="--cl-config \"extra_fn_clean_exts: ['.rmdup']\" ",
-    wrapper:
-        "v3.5.0/bio/multiqc"
+    resources:
+        runtime="1h",
+    shell:
+        """
+        multiqc {params.extra} --no-data-dir \
+            --filename {output} {input} 2> {log}
+        """

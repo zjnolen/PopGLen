@@ -1,9 +1,13 @@
 site_name: PopGLen
 nav:
   - Home: index.md
-  - Getting Started: getting-started.md
+  - Getting started: getting-started.md
   - Configuration: config.md
+  - Config cheat sheet: config-cheat.md
   - Tutorial: tutorial.md
+  - Cluster execution: cluster-execution.md
+  - Setting job resources: resources.md
+  - Output file path overview: outfile-summ.md
 theme:
   name: material
   icon:
@@ -12,7 +16,9 @@ theme:
       note: octicons/tag-16
       question: octicons/question-16
   features:
+    - toc.integrate
     - search.highlight
+    - content.code.annotate
   palette:
     - media: "(prefers-color-scheme)"
       toggle:
@@ -44,5 +50,6 @@ markdown_extensions:
   - pymdownx.details
   - pymdownx.caret
   - pymdownx.tilde
+  - pymdownx.snippets
   - pymdownx.superfences:
       preserve_tabs: true

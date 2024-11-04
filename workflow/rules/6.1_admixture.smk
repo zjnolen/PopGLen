@@ -33,38 +33,83 @@ rule ngsAdmix:
         conv=config["params"]["ngsadmix"]["conv"],
     threads: 4
     resources:
-        runtime=lambda wildcards, attempt: attempt * 2880,
+        runtime="7d",
     script:
         "../scripts/ngsadmix.sh"
 
 
 rule plot_admix:
     """
-    Plot admixture proportions for a given K.
+    Plot admixture proportions across all values of K.
     """
     input:
-        "results/datasets/{dataset}/analyses/ngsadmix/{dataset}.{ref}_{population}{dp}_{sites}-filts_K{kvalue}.qopt",
-        "results/datasets/{dataset}/poplists/{dataset}_{population}{dp}.indiv.list",
+        qopts=expand(
+            "results/datasets/{{dataset}}/analyses/ngsadmix/{{dataset}}.{{ref}}_{{population}}{{dp}}_{{sites}}-filts_K{kvalue}.qopt",
+            kvalue=config["params"]["ngsadmix"]["kvalues"],
+        ),
+        poplist="results/datasets/{dataset}/poplists/{dataset}_{population}{dp}.indiv.list",
+        optwrap=expand(
+            "results/datasets/{{dataset}}/analyses/ngsadmix/{{dataset}}.{{ref}}_{{population}}{{dp}}_{{sites}}-filts_K{kvalue}_optimization_wrapper.log",
+            kvalue=config["params"]["ngsadmix"]["kvalues"],
+        ),
     output:
         report(
-            "results/datasets/{dataset}/plots/ngsadmix/{dataset}.{ref}_{population}{dp}_{sites}-filts_K{kvalue}.svg",
+            "results/datasets/{dataset}/plots/ngsadmix/{dataset}.{ref}_{population}{dp}_{sites}-filts.pdf",
             category="03.2 Admixture",
-            subcategory="NGSadmix",
+            subcategory="1 NGSadmix",
             labels=lambda w: {
                 "Filter": "{sites}",
                 **dp_report(w),
-                "K-value": "{kvalue}",
                 "Type": "Admixture plot",
             },
         ),
+        convsumm="results/datasets/{dataset}/analyses/ngsadmix/{dataset}.{ref}_{population}{dp}_{sites}-filts.convergence_summary.tsv",
     log:
-        "logs/{dataset}/ngsadmix/{dataset}.{ref}_{population}{dp}_{sites}-filts_K{kvalue}_plot.log",
+        "logs/{dataset}/ngsadmix/{dataset}.{ref}_{population}{dp}_{sites}-filts_plot.log",
     benchmark:
-        "benchmarks/{dataset}/ngsadmix/{dataset}.{ref}_{population}{dp}_{sites}-filts_K{kvalue}_plot.log"
-    conda:
-        "../envs/r.yaml"
+        "benchmarks/{dataset}/ngsadmix/{dataset}.{ref}_{population}{dp}_{sites}-filts_plot.log"
+    params:
+        kvals=config["params"]["ngsadmix"]["kvalues"],
+        thresh=config["params"]["ngsadmix"]["thresh"],
+        conv=config["params"]["ngsadmix"]["conv"],
+    container:
+        r_container
+    resources:
+        runtime="1h",
+    group:
+        "plot_admix"
     script:
         "../scripts/plot_admix.R"
+
+
+rule admix_convergence_table:
+    """Produce table convergence summary to add to report"""
+    input:
+        "results/datasets/{dataset}/analyses/ngsadmix/{dataset}.{ref}_{population}{dp}_{sites}-filts.convergence_summary.tsv",
+    output:
+        report(
+            "results/datasets/{dataset}/analyses/ngsadmix/{dataset}.{ref}_{population}{dp}_{sites}-filts.convergence_summary.html",
+            category="03.2 Admixture",
+            labels=lambda w: {
+                "Filter": "{sites}",
+                **dp_report(w),
+                "Type": "Convergence Table",
+            },
+        ),
+    log:
+        "logs/{dataset}/ngsadmix/{dataset}.{ref}_{population}{dp}_{sites}-filts_tsv2html.log",
+    benchmark:
+        "benchmarks/{dataset}/ngsadmix/{dataset}.{ref}_{population}{dp}_{sites}-filts_tsv2html.log"
+    container:
+        r_container
+    shadow:
+        "minimal"
+    resources:
+        runtime="15m",
+    group:
+        "plot_admix"
+    script:
+        "../scripts/tsv2html.R"
 
 
 rule evalAdmix:
@@ -87,6 +132,10 @@ rule evalAdmix:
         "benchmarks/{dataset}/evaladmix/{dataset}.{ref}_{population}{dp}_{sites}-filts_K{kvalue}.log"
     container:
         evaladmix_container
+    resources:
+        runtime="1h",
+    group:
+        "evaladmix"
     shell:
         """
         evalAdmix -beagle {input.beagle} -fname {input.fopt} \
@@ -104,14 +153,14 @@ rule plot_evalAdmix:
         pops="results/datasets/{dataset}/poplists/{dataset}_{population}{dp}.indiv.list",
     output:
         report(
-            "results/datasets/{dataset}/plots/evaladmix/{dataset}.{ref}_{population}{dp}_{sites}-filts_K{kvalue}_evaladmix.html",
+            "results/datasets/{dataset}/plots/evaladmix/{dataset}.{ref}_{population}{dp}_{sites}-filts_K{kvalue}_evaladmix.pdf",
             category="03.2 Admixture",
-            subcategory="evalAdmix",
+            subcategory="2 EvalAdmix",
             labels=lambda w: {
                 "Filter": "{sites}",
                 **dp_report(w),
                 "K-value": "{kvalue}",
-                "Type": "Admix Residuals Plot",
+                "Type": "Admix Corr. Residuals Plot",
             },
         ),
     log:
@@ -120,5 +169,9 @@ rule plot_evalAdmix:
         "benchmarks/{dataset}/evaladmix/{dataset}.{ref}_{population}{dp}_{sites}-filts_K{kvalue}_plot.log"
     container:
         evaladmix_container
+    resources:
+        runtime="15m",
+    group:
+        "evaladmix"
     script:
-        "../scripts/plot_evaladmix.Rmd"
+        "../scripts/plot_evaladmix.R"

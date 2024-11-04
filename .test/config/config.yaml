@@ -55,10 +55,11 @@ analyses:
   ld_decay: true
   pca_pcangsd: true
   admix_ngsadmix: true
-  relatedness: 
-    ngsrelate: true
+  relatedness:
     ibsrelate_ibs: true
     ibsrelate_sfs: true
+    ngsrelate_ibsrelate-only: true
+    ngsrelate_freqbased: true
   1dsfs: true
   1dsfs_boot: true
   2dsfs: true
@@ -70,6 +71,7 @@ analyses:
     individuals: true
   inbreeding_ngsf-hmm: true
   ibs_matrix: true
+  pop_allele_freqs: true
 
 #==================== Downsampling Configuration ======================#
 
@@ -85,9 +87,10 @@ subsample_analyses:
   pca_pcangsd: false
   admix_ngsadmix: true
   relatedness:
-    ngsrelate: true
     ibsrelate_ibs: true
     ibsrelate_sfs: true
+    ngsrelate_ibsrelate-only: true
+    ngsrelate_freqbased: true
   1dsfs: true
   1dsfs_boot: true
   2dsfs: true
@@ -99,6 +102,7 @@ subsample_analyses:
     individuals: true
   inbreeding_ngsf-hmm: true
   ibs_matrix: true
+  pop_allele_freqs: true
 
 #=========================== Filter Sets ==============================#
 
@@ -116,6 +120,15 @@ baseQ: 30
 params:
   clipoverlap:
     clip_user_provided_bams: true
+  fastp:
+    extra: "-p -g" # don't put --merge or --overlap_len_require here, they're implicit
+    min_overlap_hist: 20
+  bwa_aln:
+    extra: "-l 16500 -n 0.01 -o 2"
+  picard:
+    MarkDuplicates: "--REMOVE_DUPLICATES true --OPTICAL_DUPLICATE_PIXEL_DISTANCE 2500"
+  damageprofiler:
+    profile_modern: false
   genmap:
     K: "100"
     E: "2"
@@ -125,20 +138,11 @@ params:
     bounds: [ 0.5, 1.5 ]
     filt-on-dataset: true
     filt-on-depth-classes: true
-  fastp:
-    extra: "-p -g" # don't put --merge or --overlap_len_require here, they're implicit
-    min_overlap_hist: 20
-  bwa_aln:
-    extra: "-l 16500 -n 0.01 -o 2"
   samtools:
     subsampling_seed: "$RANDOM"
-  picard:
-    MarkDuplicates: "--REMOVE_DUPLICATES true --OPTICAL_DUPLICATE_PIXEL_DISTANCE 2500"
-  damageprofiler:
-    profile_modern: false
   angsd:
     gl_model: 2 # gl_model - 1=SAMtools, 2=GATK, 3=SOAPsnp, 4=SYK
-    maxdepth: 1000 # for depth calc only
+    maxdepth: 100 # for depth calc only
     mindepthind: 1
     minind_dataset: 0.75 # as a proportion of N
     minind_pop: 0.5 # as a proportion of N
@@ -147,12 +151,13 @@ params:
     extra_saf: "" # goes to all -doSaf runs
     extra_beagle: "" # goes to all -doGlf 2 runs
     domajorminor: 1 # Currently only compatible with values 1, 2, 4, 5
-    domaf: 1
+    domaf: 1 # Currently only compatible with values 1 & 2
     snp_pval: "1e-6"
     min_maf: -1 # Set -1 to disable
     mindepthind_heterozygosity: 1
   ngsrelate:
-    prune: true
+    ibsrelate-only-extra: ""
+    freqbased-extra: ""
   ngsld:
     max_kb_dist_est-ld: 200
     rnd_sample_est-ld: 0.001
@@ -184,8 +189,8 @@ params:
     kvalues: [1,2,3,4]
     reps: 100
     minreps: 20
-    thresh:
-    conv:
+    thresh: 2
+    conv: 3
     extra: "-maxiter 4000"
   ibs:
     doibs: 1

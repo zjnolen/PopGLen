@@ -21,13 +21,29 @@ configfile: "config/config.yaml"
 
 # Create variables for software containers (for easier version updating)
 
-angsd_container = "docker://zjnolen/angsd:0.940"
-pcangsd_container = "docker://zjnolen/pcangsd:1.10"
-evaladmix_container = "docker://zjnolen/evaladmix:0.961"
-ngsf_hmm_container = "docker://zjnolen/ngsf-hmm:1.1.0"
-ngsrelate_container = "docker://zjnolen/ngsrelate:20220925-ec95c8f"
-ngsld_container = "docker://zjnolen/ngsld:1.2.0-prune_graph"
-
+angsd_container = "docker://quay.io/biocontainers/angsd:0.940--hf5e1c6e_3"
+bamutil_container = "docker://quay.io/biocontainers/bamutil:1.0.15--h43eeafb_5"
+bedops_container = "docker://quay.io/biocontainers/bedops:2.4.41--h9f5acd7_0"
+bedtools_container = "docker://quay.io/biocontainers/bedtools:2.31.1--hf5e1c6e_2"
+damageprofiler_container = (
+    "docker://quay.io/biocontainers/damageprofiler:1.1--hdfd78af_2"
+)
+dedup_container = "docker://quay.io/biocontainers/dedup:0.12.8--hdfd78af_1"
+evaladmix_container = "docker://ghcr.io/zjnolen/evaladmix:0.961"
+genmap_container = "docker://quay.io/biocontainers/genmap:1.3.0--he1b5a44_0"
+multiqc_container = "docker://quay.io/biocontainers/multiqc:1.23--pyhdfd78af_0"
+ngsf_hmm_container = "docker://ghcr.io/zjnolen/ngsf-hmm:1.1.0"
+ngsld_container = "docker://ghcr.io/zjnolen/ngsld:1.2.0"
+ngsrelate_container = "docker://ghcr.io/zjnolen/ngsrelate:20220925-ec95c8f"
+pandas_container = "docker://quay.io/biocontainers/pandas:2.2.1"
+pcangsd_container = "docker://ghcr.io/zjnolen/pcangsd:1.35"
+qualimap_container = "docker://quay.io/biocontainers/qualimap:2.3--hdfd78af_0"
+r_container = "docker://ghcr.io/zjnolen/popglen-r:develop-241016"
+repeatmodmask_container = (
+    "docker://quay.io/biocontainers/repeatmodeler:2.0.5--pl5321hdfd78af_0"
+)
+samtools_container = "docker://quay.io/biocontainers/samtools:1.20--h50ea8bc_1"
+shell_container = "docker://ghcr.io/zjnolen/popglen-shell:0.4.0"
 
 # Define function for genome chunks to break up analysis (for parallelization)
 
@@ -488,15 +504,15 @@ def get_endo_cont_stat(wildcards):
 
 ## Get bedfile for whole genome or filtered genome, to set the denomintor of coverage
 ## calculation
-def get_total_bed(wildcards):
+def get_filter_sum(wildcards):
     if (
         wildcards.prefix
         == f"results/datasets/{wildcards.dataset}/qc/ind_depth/filtered/"
     ):
         if (config["subsample_by"] != "sitefilt") and config["redo_depth_filts"]:
-            return "results/datasets/{dataset}/filters/combined/{dataset}.{ref}{dp}_{group}.bed"
-        return "results/datasets/{dataset}/filters/combined/{dataset}.{ref}_{group}.bed"
-    return "results/ref/{ref}/beds/genome.bed"
+            return "results/datasets/{dataset}/filters/combined/{dataset}.{ref}{dp}_{group}.sum"
+        return "results/datasets/{dataset}/filters/combined/{dataset}.{ref}_{group}.sum"
+    return "results/ref/{ref}/beds/genome.bed.sum"
 
 
 ## Gather sample QC output files for concatenation
@@ -523,14 +539,14 @@ def multiqc_input_qualimap(wildcards):
     if len(pipebams) > 0:
         reports.extend(
             expand(
-                "results/mapping/qc/qualimap/{sample}.{{ref}}/qualimapReport.html",
+                "results/mapping/qc/qualimap/{sample}.{{ref}}",
                 sample=pipebams,
             )
         )
     if len(userbams) > 0:
         reports.extend(
             expand(
-                "results/datasets/{{dataset}}/qc/user-provided-bams/qualimap/{sample}.{{ref}}/qualimapReport.html",
+                "results/datasets/{{dataset}}/qc/user-provided-bams/qualimap/{sample}.{{ref}}",
                 sample=userbams,
             )
         )
@@ -552,6 +568,17 @@ def multiqc_input_dnadmg(wildcards):
                 expand(
                     "results/mapping/qc/damageprofiler/{histsample}.{{ref}}/dmgprof.json",
                     histsample=list(set(pipebams) & samset),
+                )
+            )
+        if len(userbams) > 0:
+            if config["params"]["damageprofiler"]["profile_modern"]:
+                samset = set(samples.index)
+            else:
+                samset = set(samples.index[samples["time"] == "historical"])
+            reports.extend(
+                expand(
+                    "results/mapping/qc/damageprofiler/{histsample}.{{ref}}.user-processed/dmgprof.json",
+                    histsample=list(set(userbams) & samset),
                 )
             )
     if config["analyses"]["mapdamage_rescale"]:
@@ -679,13 +706,10 @@ def get_minind(wildcards):
 
 # Determine if docounts is needed for beagle/maf calculation to keep it from
 # slowing things down when it is not. It is only needed if the major and minor
-# alleles are being inferred from counts (-doMajorMinor 2) or the minor allele
-# frequency is being inferred by counts (-doMaf 8, >8 possible if count
-# inference is combined with other inferences)
-def get_docounts(wildcard):
-    if (int(config["params"]["angsd"]["domajorminor"]) == 2) or (
-        int(config["params"]["angsd"]["domaf"]) >= 8
-    ):
+# alleles are being inferred from counts (-doMajorMinor 2). This would also be
+# needed if using -doMaf 8, but that is not supported currently by the pipeline.
+def get_docounts(wildcards):
+    if str(config["params"]["angsd"]["domajorminor"]) == "2":
         return "-doCounts 1"
     return ""
 
@@ -737,21 +761,6 @@ def get_excl_ind_cols(wildcards):
 
 
 # Kinship
-
-
-## Get beagle file for input to ngsrelate (either pruned or not)
-def get_ngsrelate_input(wildcards):
-    if config["params"]["ngsrelate"]["prune"]:
-        return {
-            "beagle": expand(
-                "results/datasets/{{dataset}}/beagles/pruned/{{dataset}}.{{ref}}_{{population}}{{dp}}_{{sites}}-filts.pruned_maxkbdist-{maxkb}_minr2-{r2}.beagle.gz",
-                maxkb=config["params"]["ngsld"]["max_kb_dist_pruning_dataset"],
-                r2=config["params"]["ngsld"]["pruning_min-weight_dataset"],
-            ),
-        }
-    return {
-        "beagle": "results/datasets/{dataset}/beagles/{dataset}.{ref}_{population}{dp}_{sites}-filts.beagle.gz"
-    }
 
 
 ## Get all possible kinship estimate pairings

@@ -1,0 +1,1458 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="../config/">
+      
+      
+        <link rel="next" href="../tutorial/">
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.43">
+    
+    
+      
+        <title>Config cheat sheet - PopGLen</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.0253249f.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+  
+  
+    
+    
+  
+    
+    
+  
+  
+  <style>:root{--md-admonition-icon--note:url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M1 7.775V2.75C1 1.784 1.784 1 2.75 1h5.025c.464 0 .91.184 1.238.513l6.25 6.25a1.75 1.75 0 0 1 0 2.474l-5.026 5.026a1.75 1.75 0 0 1-2.474 0l-6.25-6.25A1.75 1.75 0 0 1 1 7.775m1.5 0c0 .066.026.13.073.177l6.25 6.25a.25.25 0 0 0 .354 0l5.025-5.025a.25.25 0 0 0 0-.354l-6.25-6.25a.25.25 0 0 0-.177-.073H2.75a.25.25 0 0 0-.25.25ZM6 5a1 1 0 1 1 0 2 1 1 0 0 1 0-2"/></svg>');--md-admonition-icon--question:url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-6.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13M6.92 6.085h.001a.749.749 0 1 1-1.342-.67c.169-.339.436-.701.849-.977C6.845 4.16 7.369 4 8 4a2.76 2.76 0 0 1 1.637.525c.503.377.863.965.863 1.725 0 .448-.115.83-.329 1.15-.205.307-.47.513-.692.662-.109.072-.22.138-.313.195l-.006.004a6 6 0 0 0-.26.16 1 1 0 0 0-.276.245.75.75 0 0 1-1.248-.832c.184-.264.42-.489.692-.661q.154-.1.313-.195l.007-.004c.1-.061.182-.11.258-.161a1 1 0 0 0 .277-.245C8.96 6.514 9 6.427 9 6.25a.61.61 0 0 0-.262-.525A1.27 1.27 0 0 0 8 5.5c-.369 0-.595.09-.74.187a1 1 0 0 0-.34.398M9 11a1 1 0 1 1-2 0 1 1 0 0 1 2 0"/></svg>');}</style>
+
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#configuration-cheat-sheet" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="PopGLen" class="md-header__button md-logo" aria-label="PopGLen" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            PopGLen
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Config cheat sheet
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1M8 13h8v-2H8zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4a5 5 0 0 0 5-5 5 5 0 0 0-5-5"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="black" data-md-color-accent="indigo"  aria-label="Switch to system preference"  type="radio" name="__palette" id="__palette_2">
+    
+      <label class="md-header__button md-icon" title="Switch to system preference" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5M7 15a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/zjnolen/PopGLen" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+  </div>
+  <div class="md-source__repository">
+    zjnolen/PopGLen
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--integrated" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="PopGLen" class="md-nav__button md-logo" aria-label="PopGLen" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    PopGLen
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/zjnolen/PopGLen" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+  </div>
+  <div class="md-source__repository">
+    zjnolen/PopGLen
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../getting-started/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Getting started
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../config/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Configuration
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Config cheat sheet
+  </span>
+  
+
+      </a>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorial/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Tutorial
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cluster-execution/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Cluster execution
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../resources/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Setting job resources
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../outfile-summ/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Output file path overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+<h1 id="configuration-cheat-sheet">Configuration cheat sheet</h1>
+<p>This contains the same information largely as the
+<a href="../config/">configuration docs</a>, but in an interactive <code>config.yaml</code> file. This
+can be helpful if you have your config in front of you and want to check what a
+setting does. Just click the <code>+</code> next to each line to get info on that setting.</p>
+<div class="highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">config/config.yaml</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">  1</span>
+<span class="normal">  2</span>
+<span class="normal">  3</span>
+<span class="normal">  4</span>
+<span class="normal">  5</span>
+<span class="normal">  6</span>
+<span class="normal">  7</span>
+<span class="normal">  8</span>
+<span class="normal">  9</span>
+<span class="normal"> 10</span>
+<span class="normal"> 11</span>
+<span class="normal"> 12</span>
+<span class="normal"> 13</span>
+<span class="normal"> 14</span>
+<span class="normal"> 15</span>
+<span class="normal"> 16</span>
+<span class="normal"> 17</span>
+<span class="normal"> 18</span>
+<span class="normal"> 19</span>
+<span class="normal"> 20</span>
+<span class="normal"> 21</span>
+<span class="normal"> 22</span>
+<span class="normal"> 23</span>
+<span class="normal"> 24</span>
+<span class="normal"> 25</span>
+<span class="normal"> 26</span>
+<span class="normal"> 27</span>
+<span class="normal"> 28</span>
+<span class="normal"> 29</span>
+<span class="normal"> 30</span>
+<span class="normal"> 31</span>
+<span class="normal"> 32</span>
+<span class="normal"> 33</span>
+<span class="normal"> 34</span>
+<span class="normal"> 35</span>
+<span class="normal"> 36</span>
+<span class="normal"> 37</span>
+<span class="normal"> 38</span>
+<span class="normal"> 39</span>
+<span class="normal"> 40</span>
+<span class="normal"> 41</span>
+<span class="normal"> 42</span>
+<span class="normal"> 43</span>
+<span class="normal"> 44</span>
+<span class="normal"> 45</span>
+<span class="normal"> 46</span>
+<span class="normal"> 47</span>
+<span class="normal"> 48</span>
+<span class="normal"> 49</span>
+<span class="normal"> 50</span>
+<span class="normal"> 51</span>
+<span class="normal"> 52</span>
+<span class="normal"> 53</span>
+<span class="normal"> 54</span>
+<span class="normal"> 55</span>
+<span class="normal"> 56</span>
+<span class="normal"> 57</span>
+<span class="normal"> 58</span>
+<span class="normal"> 59</span>
+<span class="normal"> 60</span>
+<span class="normal"> 61</span>
+<span class="normal"> 62</span>
+<span class="normal"> 63</span>
+<span class="normal"> 64</span>
+<span class="normal"> 65</span>
+<span class="normal"> 66</span>
+<span class="normal"> 67</span>
+<span class="normal"> 68</span>
+<span class="normal"> 69</span>
+<span class="normal"> 70</span>
+<span class="normal"> 71</span>
+<span class="normal"> 72</span>
+<span class="normal"> 73</span>
+<span class="normal"> 74</span>
+<span class="normal"> 75</span>
+<span class="normal"> 76</span>
+<span class="normal"> 77</span>
+<span class="normal"> 78</span>
+<span class="normal"> 79</span>
+<span class="normal"> 80</span>
+<span class="normal"> 81</span>
+<span class="normal"> 82</span>
+<span class="normal"> 83</span>
+<span class="normal"> 84</span>
+<span class="normal"> 85</span>
+<span class="normal"> 86</span>
+<span class="normal"> 87</span>
+<span class="normal"> 88</span>
+<span class="normal"> 89</span>
+<span class="normal"> 90</span>
+<span class="normal"> 91</span>
+<span class="normal"> 92</span>
+<span class="normal"> 93</span>
+<span class="normal"> 94</span>
+<span class="normal"> 95</span>
+<span class="normal"> 96</span>
+<span class="normal"> 97</span>
+<span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span>
+<span class="normal">101</span>
+<span class="normal">102</span>
+<span class="normal">103</span>
+<span class="normal">104</span>
+<span class="normal">105</span>
+<span class="normal">106</span>
+<span class="normal">107</span>
+<span class="normal">108</span>
+<span class="normal">109</span>
+<span class="normal">110</span>
+<span class="normal">111</span>
+<span class="normal">112</span>
+<span class="normal">113</span>
+<span class="normal">114</span>
+<span class="normal">115</span>
+<span class="normal">116</span>
+<span class="normal">117</span>
+<span class="normal">118</span>
+<span class="normal">119</span>
+<span class="normal">120</span>
+<span class="normal">121</span>
+<span class="normal">122</span>
+<span class="normal">123</span>
+<span class="normal">124</span>
+<span class="normal">125</span>
+<span class="normal">126</span>
+<span class="normal">127</span>
+<span class="normal">128</span>
+<span class="normal">129</span>
+<span class="normal">130</span>
+<span class="normal">131</span>
+<span class="normal">132</span>
+<span class="normal">133</span>
+<span class="normal">134</span>
+<span class="normal">135</span>
+<span class="normal">136</span>
+<span class="normal">137</span>
+<span class="normal">138</span>
+<span class="normal">139</span>
+<span class="normal">140</span>
+<span class="normal">141</span>
+<span class="normal">142</span>
+<span class="normal">143</span>
+<span class="normal">144</span>
+<span class="normal">145</span>
+<span class="normal">146</span>
+<span class="normal">147</span>
+<span class="normal">148</span>
+<span class="normal">149</span>
+<span class="normal">150</span>
+<span class="normal">151</span>
+<span class="normal">152</span>
+<span class="normal">153</span>
+<span class="normal">154</span>
+<span class="normal">155</span>
+<span class="normal">156</span>
+<span class="normal">157</span>
+<span class="normal">158</span>
+<span class="normal">159</span>
+<span class="normal">160</span>
+<span class="normal">161</span>
+<span class="normal">162</span>
+<span class="normal">163</span>
+<span class="normal">164</span>
+<span class="normal">165</span>
+<span class="normal">166</span>
+<span class="normal">167</span>
+<span class="normal">168</span>
+<span class="normal">169</span>
+<span class="normal">170</span>
+<span class="normal">171</span>
+<span class="normal">172</span>
+<span class="normal">173</span>
+<span class="normal">174</span>
+<span class="normal">175</span>
+<span class="normal">176</span>
+<span class="normal">177</span>
+<span class="normal">178</span>
+<span class="normal">179</span>
+<span class="normal">180</span>
+<span class="normal">181</span>
+<span class="normal">182</span>
+<span class="normal">183</span>
+<span class="normal">184</span>
+<span class="normal">185</span>
+<span class="normal">186</span>
+<span class="normal">187</span>
+<span class="normal">188</span>
+<span class="normal">189</span>
+<span class="normal">190</span>
+<span class="normal">191</span>
+<span class="normal">192</span>
+<span class="normal">193</span>
+<span class="normal">194</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1">#=====================Dataset Configuration============================#</span>
+
+<span class="nt">samples</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">config/samples.tsv</span><span class="w"> </span><span class="c1"># (1)</span>
+
+<span class="nt">units</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">config/units.tsv</span><span class="w"> </span><span class="c1"># (2)</span>
+
+<span class="nt">dataset</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;dataset-name&quot;</span><span class="w"> </span><span class="c1"># (3)</span>
+
+<span class="c1">#===================== Reference Configuration ========================#</span>
+
+<span class="nt">chunk_size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">50000000</span><span class="w"> </span><span class="c1"># (4)</span>
+
+<span class="nt">reference</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;dataset-ref&quot;</span><span class="w"> </span><span class="c1"># (5)</span>
+<span class="w">  </span><span class="nt">fasta</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;resources/ref/reference-genome.fa&quot;</span><span class="w"> </span><span class="c1"># (6)</span>
+<span class="w">  </span><span class="nt">mito</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;mitochondrion&quot;</span><span class="p p-Indicator">]</span><span class="w"> </span><span class="c1"># (7)</span>
+<span class="w">  </span><span class="nt">sex-linked</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;Z&quot;</span><span class="p p-Indicator">]</span><span class="w"> </span><span class="c1"># (8)</span>
+<span class="w">  </span><span class="nt">exclude</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span><span class="w"> </span><span class="c1"># (9)</span>
+<span class="w">  </span><span class="nt">min_size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1000000</span><span class="w"> </span><span class="c1"># (10)</span>
+
+<span class="nt">ancestral</span><span class="p">:</span><span class="w"> </span><span class="c1"># (11)</span>
+
+<span class="c1">#===================== Sample Set Configuration =======================#</span>
+
+<span class="nt">exclude_ind</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span><span class="w"> </span><span class="c1"># (12)</span>
+
+<span class="nt">excl_pca-admix</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span><span class="w"> </span><span class="c1"># (13)</span>
+
+<span class="c1">#====================== Analysis Selection ============================#</span>
+
+<span class="nt">populations</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span><span class="w"> </span><span class="c1"># (14)</span>
+
+<span class="nt">analyses</span><span class="p">:</span>
+<span class="w">  </span><span class="c1"># mapping options</span>
+<span class="w">  </span><span class="nt">mapping</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">historical_only_collapsed</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"> </span><span class="c1"># (15)</span>
+<span class="w">    </span><span class="nt">historical_collapsed_aligner</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;aln&quot;</span><span class="w"> </span><span class="c1"># (16)</span>
+<span class="w">  </span><span class="c1"># sites file filters</span>
+<span class="w">  </span><span class="nt">pileup-mappability</span><span class="p">:</span><span class="w"> </span><span class="c1"># (17)</span>
+<span class="w">  </span><span class="nt">repeatmasker</span><span class="p">:</span><span class="w"> </span><span class="c1"># (18)</span>
+<span class="w">    </span><span class="nt">bed</span><span class="p">:</span><span class="w"> </span><span class="c1"># (19)</span>
+<span class="w">    </span><span class="nt">local_lib</span><span class="p">:</span><span class="w"> </span><span class="c1"># (20)</span>
+<span class="w">    </span><span class="nt">build_lib</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"> </span><span class="c1"># (21)</span>
+<span class="w">  </span><span class="nt">extreme_depth</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"> </span><span class="c1"># (22)</span>
+<span class="w">  </span><span class="nt">dataset_missing_data</span><span class="p">:</span><span class="w"> </span><span class="c1"># (23)</span>
+<span class="w">  </span><span class="nt">population_missing_data</span><span class="p">:</span><span class="w"> </span><span class="c1"># (24)</span>
+<span class="w">  </span><span class="c1"># quality control</span>
+<span class="w">  </span><span class="nt">qualimap</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"> </span><span class="c1"># (25)</span>
+<span class="w">  </span><span class="nt">ibs_ref_bias</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"> </span><span class="c1"># (26)</span>
+<span class="w">  </span><span class="nt">damageprofiler</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"> </span><span class="c1"># (27)</span>
+<span class="w">  </span><span class="nt">mapdamage_rescale</span><span class="p">:</span><span class="w"> </span><span class="c1"># (28)</span>
+<span class="w">  </span><span class="c1"># population genomic analyses</span>
+<span class="w">  </span><span class="nt">estimate_ld</span><span class="p">:</span><span class="w"> </span><span class="c1"># (29)</span>
+<span class="w">  </span><span class="nt">ld_decay</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"> </span><span class="c1"># (30)</span>
+<span class="w">  </span><span class="nt">pca_pcangsd</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"> </span><span class="c1"># (31)</span>
+<span class="w">  </span><span class="nt">admix_ngsadmix</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"> </span><span class="c1"># (32)</span>
+<span class="w">  </span><span class="nt">relatedness</span><span class="p">:</span><span class="w"> </span><span class="c1"># (33)</span>
+<span class="w">    </span><span class="nt">ibsrelate_ibs</span><span class="p">:</span><span class="w"> </span><span class="c1"># (34)</span>
+<span class="w">    </span><span class="nt">ibsrelate_sfs</span><span class="p">:</span><span class="w"> </span><span class="c1"># (35)</span>
+<span class="w">    </span><span class="nt">ngsrelate_ibsrelate-only</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"> </span><span class="c1"># (36)</span>
+<span class="w">    </span><span class="nt">ngsrelate_freqbased</span><span class="p">:</span><span class="w"> </span><span class="c1"># (37)</span>
+<span class="w">  </span><span class="nt">1dsfs</span><span class="p">:</span><span class="w"> </span><span class="c1"># (38)</span>
+<span class="w">  </span><span class="nt">1dsfs_boot</span><span class="p">:</span><span class="w"> </span><span class="c1"># (39)</span>
+<span class="w">  </span><span class="nt">2dsfs</span><span class="p">:</span><span class="w"> </span><span class="c1"># (40)</span>
+<span class="w">  </span><span class="nt">2dsfs_boot</span><span class="p">:</span><span class="w"> </span><span class="c1"># (41)</span>
+<span class="w">  </span><span class="nt">thetas_angsd</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"> </span><span class="c1"># (42)</span>
+<span class="w">  </span><span class="nt">heterozygosity_angsd</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"> </span><span class="c1"># (43)</span>
+<span class="w">  </span><span class="nt">fst_angsd</span><span class="p">:</span><span class="w"> </span><span class="c1"># (44)</span>
+<span class="w">    </span><span class="nt">populations</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"> </span><span class="c1"># (45)</span>
+<span class="w">    </span><span class="nt">individuals</span><span class="p">:</span><span class="w"> </span><span class="c1"># (46)</span>
+<span class="w">  </span><span class="nt">inbreeding_ngsf-hmm</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"> </span><span class="c1"># (47)</span>
+<span class="w">  </span><span class="nt">ibs_matrix</span><span class="p">:</span><span class="w"> </span><span class="c1"># (48)</span>
+<span class="w">  </span><span class="nt">pop_allele_freqs</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"> </span><span class="c1"># (49)</span>
+
+<span class="c1">#==================== Downsampling Configuration ======================#</span>
+
+<span class="nt">subsample_dp</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">4</span><span class="p p-Indicator">]</span><span class="w"> </span><span class="c1"># (50)</span>
+
+<span class="nt">subsample_by</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;sitefilt&quot;</span><span class="w"> </span><span class="c1"># (51) three options: unfilt, mapqbaseq, sitefilt; sitefilt recommended (subsamples bams to `subsample_dp` within filtered regions)</span>
+<span class="nt">redo_depth_filts</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span><span class="w"> </span><span class="c1"># (52) has no effect when `subsample_by` == &quot;sitefilt&quot;</span>
+<span class="nt">drop_samples</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span><span class="w"> </span><span class="c1"># (53) These samples won&#39;t be included in the downsampled dataset</span>
+
+<span class="nt">subsample_analyses</span><span class="p">:</span><span class="w"> </span><span class="c1"># (54)</span>
+<span class="w">  </span><span class="nt">estimate_ld</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">ld_decay</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">pca_pcangsd</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">admix_ngsadmix</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">relatedness</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">ibsrelate_ibs</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">ibsrelate_sfs</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">ngsrelate_ibsrelate-only</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">ngsrelate_freqbased</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">1dsfs</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">1dsfs_boot</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">2dsfs</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">2dsfs_boot</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">thetas_angsd</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">  </span><span class="nt">heterozygosity_angsd</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">  </span><span class="nt">fst_angsd</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">populations</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">    </span><span class="nt">individuals</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">inbreeding_ngsf-hmm</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">  </span><span class="nt">ibs_matrix</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">pop_allele_freqs</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+
+<span class="c1">#=========================== Filter Sets ==============================#</span>
+
+<span class="nt">filter_beds</span><span class="p">:</span><span class="w"> </span><span class="c1">#(55)</span>
+<span class="w">  </span><span class="nt">example</span><span class="p">:</span>
+
+<span class="nt">only_filter_beds</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span><span class="w"> </span><span class="c1"># (56)</span>
+
+<span class="c1">#===================== Software Configuration =========================#</span>
+
+<span class="nt">mapQ</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">30</span><span class="w"> </span><span class="c1"># (57)</span>
+<span class="nt">baseQ</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">20</span><span class="w"> </span><span class="c1"># (58)</span>
+
+<span class="nt">params</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">clipoverlap</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">clip_user_provided_bams</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span><span class="w"> </span><span class="c1"># (59)</span>
+<span class="w">  </span><span class="nt">fastp</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">extra</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;-p</span><span class="nv"> </span><span class="s">-g&quot;</span><span class="w"> </span><span class="c1"># (60) don&#39;t put --merge or --overlap_len_require here, they&#39;re implicit</span>
+<span class="w">    </span><span class="nt">min_overlap_hist</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">30</span><span class="w"> </span><span class="c1"># (61)</span>
+<span class="w">  </span><span class="nt">bwa_aln</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">extra</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;-l</span><span class="nv"> </span><span class="s">16500</span><span class="nv"> </span><span class="s">-n</span><span class="nv"> </span><span class="s">0.01</span><span class="nv"> </span><span class="s">-o</span><span class="nv"> </span><span class="s">2&quot;</span><span class="w"> </span><span class="c1"># (62)</span>
+<span class="w">  </span><span class="nt">picard</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">MarkDuplicates</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;--REMOVE_DUPLICATES</span><span class="nv"> </span><span class="s">true</span><span class="nv"> </span><span class="s">--OPTICAL_DUPLICATE_PIXEL_DISTANCE</span><span class="nv"> </span><span class="s">2500&quot;</span><span class="w"> </span><span class="c1">#(63)</span>
+<span class="w">  </span><span class="nt">damageprofiler</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">profile_modern</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span><span class="w"> </span><span class="c1"># (64)</span>
+<span class="w">  </span><span class="nt">genmap</span><span class="p">:</span><span class="w"> </span><span class="c1"># (65)</span>
+<span class="w">    </span><span class="nt">K</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;30&quot;</span><span class="w"> </span><span class="c1"># (66)</span>
+<span class="w">    </span><span class="nt">E</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;2&quot;</span><span class="w"> </span><span class="c1"># (67)</span>
+<span class="w">    </span><span class="nt">map_thresh</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span><span class="w"> </span><span class="c1"># (68)</span>
+<span class="w">  </span><span class="nt">extreme_depth_filt</span><span class="p">:</span><span class="w"> </span><span class="c1"># (69)</span>
+<span class="w">    </span><span class="nt">method</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;percentile&quot;</span><span class="w"> </span><span class="c1"># (70)</span>
+<span class="w">    </span><span class="nt">bounds</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="w"> </span><span class="nv">0.025</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">0.975</span><span class="w"> </span><span class="p p-Indicator">]</span><span class="w"> </span><span class="c1"># (71)</span>
+<span class="w">    </span><span class="nt">filt-on-dataset</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"> </span><span class="c1"># (72)</span>
+<span class="w">    </span><span class="nt">filt-on-depth-classes</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"> </span><span class="c1"># (73)</span>
+<span class="w">  </span><span class="nt">samtools</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">subsampling_seed</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;$RANDOM&quot;</span><span class="w"> </span><span class="c1"># (74)</span>
+<span class="w">  </span><span class="nt">angsd</span><span class="p">:</span><span class="w"> </span><span class="c1"># (75)</span>
+<span class="w">    </span><span class="nt">gl_model</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span><span class="w"> </span><span class="c1"># (76) gl_model - 1=SAMtools, 2=GATK, 3=SOAPsnp, 4=SYK</span>
+<span class="w">    </span><span class="nt">maxdepth</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">100</span><span class="w"> </span><span class="c1"># (77) for depth calc only</span>
+<span class="w">    </span><span class="nt">mindepthind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span><span class="w"> </span><span class="c1"># (78)</span>
+<span class="w">    </span><span class="nt">minind_dataset</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.75</span><span class="w"> </span><span class="c1"># (79) as a proportion of N</span>
+<span class="w">    </span><span class="nt">minind_pop</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.75</span><span class="w"> </span><span class="c1"># (80) as a proportion of N</span>
+<span class="w">    </span><span class="nt">rmtrans</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"> </span><span class="c1"># (81)</span>
+<span class="w">    </span><span class="nt">extra</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="c1"># (82) goes to all ANGSD runs</span>
+<span class="w">    </span><span class="nt">extra_saf</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="c1"># (83) goes to all -doSaf runs</span>
+<span class="w">    </span><span class="nt">extra_beagle</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="c1"># (84) goes to all -doGlf 2 runs</span>
+<span class="w">    </span><span class="nt">domajorminor</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span><span class="w"> </span><span class="c1"># (85) Currently only compatible with values 1, 2, 4, 5</span>
+<span class="w">    </span><span class="nt">domaf</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span><span class="w"> </span><span class="c1"># (87) Currently only compatible with values 1 &amp; 2</span>
+<span class="w">    </span><span class="nt">snp_pval</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;1e-6&quot;</span><span class="w"> </span><span class="c1"># (86)</span>
+<span class="w">    </span><span class="nt">min_maf</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.05</span><span class="w"> </span><span class="c1"># (88) Set -1 to disable</span>
+<span class="w">    </span><span class="nt">mindepthind_heterozygosity</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span><span class="w"> </span><span class="c1"># (89)</span>
+<span class="w">  </span><span class="nt">ngsld</span><span class="p">:</span><span class="w"> </span><span class="c1"># (90)</span>
+<span class="w">    </span><span class="nt">max_kb_dist_est-ld</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">4000</span><span class="w"> </span><span class="c1"># (91)</span>
+<span class="w">    </span><span class="nt">rnd_sample_est-ld</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.001</span><span class="w"> </span><span class="c1"># (92)</span>
+<span class="w">    </span><span class="nt">max_kb_dist_decay</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">100</span><span class="w"> </span><span class="c1"># (93)</span>
+<span class="w">    </span><span class="nt">rnd_sample_decay</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.01</span><span class="w"> </span><span class="c1"># (94)</span>
+<span class="w">    </span><span class="nt">fit_LDdecay_extra</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;--fit_level</span><span class="nv"> </span><span class="s">1</span><span class="nv"> </span><span class="s">--plot_size</span><span class="nv"> </span><span class="s">3,6</span><span class="nv"> </span><span class="s">--plot_y_lim</span><span class="nv"> </span><span class="s">1&quot;</span><span class="w"> </span><span class="c1"># (95)</span>
+<span class="w">    </span><span class="nt">fit_LDdecay_n_correction</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"> </span><span class="c1"># (96)</span>
+<span class="w">    </span><span class="nt">max_kb_dist_pruning_dataset</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">25</span><span class="w"> </span><span class="c1"># (97) used for PCA, Admix, not ngsF-HMM</span>
+<span class="w">    </span><span class="nt">pruning_min-weight_dataset</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.2</span><span class="w"> </span><span class="c1"># (98) used for PCA, Admix, not ngsF-HMM</span>
+<span class="w">  </span><span class="nt">ngsrelate</span><span class="p">:</span><span class="w"> </span><span class="c1"># (99)</span>
+<span class="w">    </span><span class="nt">ibsrelate-only-extra</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="c1">#(100)</span>
+<span class="w">    </span><span class="nt">freqbased-extra</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="c1"># (101)</span>
+<span class="w">  </span><span class="nt">ngsf-hmm</span><span class="p">:</span><span class="w"> </span><span class="c1"># (102)</span>
+<span class="w">    </span><span class="nt">estimate_in_pops</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"> </span><span class="c1"># (103)</span>
+<span class="w">    </span><span class="nt">prune</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"> </span><span class="c1"># (104)</span>
+<span class="w">    </span><span class="nt">max_kb_dist_pruning_pop</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">25</span><span class="w"> </span><span class="c1"># (105) used only for ngsf-hmm</span>
+<span class="w">    </span><span class="nt">pruning_min-weight_pop</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.4</span><span class="w"> </span><span class="c1"># (106) used only for ngsf-hmm</span>
+<span class="w">    </span><span class="nt">min_roh_length</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">50000</span><span class="w"> </span><span class="c1"># (107)</span>
+<span class="w">    </span><span class="nt">roh_bins</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="w"> </span><span class="nv">100000</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">250000</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">500000</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">1000000</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">2500000</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">5000000</span><span class="w"> </span><span class="p p-Indicator">]</span><span class="w"> </span><span class="c1"># (108) in ascending order, bins are between adjacent values and between min_roh_length and value 1 and the last value and infinity</span>
+<span class="w">  </span><span class="nt">realsfs</span><span class="p">:</span><span class="w"> </span><span class="c1"># (109)</span>
+<span class="w">    </span><span class="nt">fold</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span><span class="w"> </span><span class="c1"># (110) Should only be set to 1, unless ancestral reference is given above</span>
+<span class="w">    </span><span class="nt">sfsboot</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">50</span><span class="w"> </span><span class="c1"># (111)</span>
+<span class="w">  </span><span class="nt">fst</span><span class="p">:</span><span class="w"> </span><span class="c1"># (112)</span>
+<span class="w">    </span><span class="nt">whichFst</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span><span class="w"> </span><span class="c1"># (113)</span>
+<span class="w">    </span><span class="nt">win_size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">25000</span><span class="w"> </span><span class="c1"># (114)</span>
+<span class="w">    </span><span class="nt">win_step</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10000</span><span class="w"> </span><span class="c1"># (115)</span>
+<span class="w">  </span><span class="nt">thetas</span><span class="p">:</span><span class="w"> </span><span class="c1"># (116)</span>
+<span class="w">    </span><span class="nt">win_size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">25000</span><span class="w"> </span><span class="c1"># (117)</span>
+<span class="w">    </span><span class="nt">win_step</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10000</span><span class="w"> </span><span class="c1"># (118)</span>
+<span class="w">    </span><span class="nt">minsites</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1000</span><span class="w"> </span><span class="c1"># (119)</span>
+<span class="w">  </span><span class="nt">ngsadmix</span><span class="p">:</span><span class="w"> </span><span class="c1"># (120)</span>
+<span class="w">    </span><span class="nt">kvalues</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">1</span><span class="p p-Indicator">,</span><span class="nv">2</span><span class="p p-Indicator">,</span><span class="nv">3</span><span class="p p-Indicator">,</span><span class="nv">4</span><span class="p p-Indicator">,</span><span class="nv">5</span><span class="p p-Indicator">]</span><span class="w"> </span><span class="c1"># (121)</span>
+<span class="w">    </span><span class="nt">reps</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">100</span><span class="w"> </span><span class="c1"># (122)</span>
+<span class="w">    </span><span class="nt">minreps</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">20</span><span class="w"> </span><span class="c1"># (123)</span>
+<span class="w">    </span><span class="nt">thresh</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span><span class="w"> </span><span class="c1"># (124)</span>
+<span class="w">    </span><span class="nt">conv</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3</span><span class="w"> </span><span class="c1"># (125)</span>
+<span class="w">    </span><span class="nt">extra</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;-maxiter</span><span class="nv"> </span><span class="s">4000&quot;</span><span class="w"> </span><span class="c1"># (126)</span>
+<span class="w">  </span><span class="nt">ibs</span><span class="p">:</span><span class="w"> </span><span class="c1"># (127)</span>
+<span class="w">    </span><span class="nt">doibs</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span><span class="w"> </span><span class="c1"># (128)</span>
+</code></pre></div></td></tr></table></div>
+<ol>
+<li>An absolute or relative path from the working directory to the <code>samples.tsv</code>
+   file.</li>
+<li>An absolute or relative path from the working directory to the <code>units.tsv</code>
+   file.</li>
+<li>A name for this dataset run - an identifier for a batch of samples to be
+   analysed together with the same configuration.</li>
+<li>A size in bp (integer). Your reference will be analyzed in
+   'chunks' of contigs of this size to parallelize processing. This size should
+   be larger than the largest contig in your genome. A larger number means fewer
+   jobs that run longer. A smaller number means more jobs that run shorter. The
+   best fit will depend on the reference and the compute resources you have
+   available. Leaving this blank will not divide the reference up into chunks.</li>
+<li>A name for your reference genome, will go in the file names and be
+   used to organize the reference filter outputs.</li>
+<li>A path to the reference fasta file (currently only supports
+   uncompressed fasta files).</li>
+<li>Mitochondrial contig name(s), will be removed from analysis. Should
+   be listed as a list of strings within brackets <code>[]</code>.</li>
+<li>Sex-linked contig name(s), will be removed from analysis.
+   Should be listed as a list of strings within brackets <code>[]</code>.</li>
+<li>Additional contig name(s) to exclude from analysis. Should be
+   listed as a list of strings within brackets <code>[]</code>.</li>
+<li>A size in bp (integer). All contigs below this size will be excluded from
+    analysis.</li>
+<li>A path to a fasta file containing the ancestral states in your
+    reference genome. This is optional, and is used to polarize allele
+    frequencies in SAF files to ancestral/derived. If you leave this empty,
+    the reference genome itself will be used as ancestral, and you should be
+    sure the [<code>params</code>] [<code>realSFS</code>] [<code>fold</code>] is set to <code>1</code>. If you put a fasta
+    here, you can set that to <code>0</code>.</li>
+<li>Sample name(s) that will be excluded from the workflow. Should
+    be a list in <code>[]</code>. As an alternative, putting a <code>#</code> in front of the sample
+    in the sample list also will remove it. Mainly used to drop samples with
+    poor quality after initial processing.</li>
+<li>Sample name(s) that will be excluded <em>only</em> from PCA and
+    Admixture analyses. Useful for close relatives that violate the assumptions
+    of these analyses, but that you want in others. Should be a list in <code>[]</code>. If
+    you   want relatives out of all downstream analyses, not just PCA/Admix, put
+    them in <code>exclude_ind</code> instead. Note this will trigger a re-run for
+    relatedness analyses, but you can just disable them now as they've already
+    been run.</li>
+<li>A list of populations found in your sample list to limit
+    population analyses to. Might be useful if you want to perform individual
+    analyses on some samples, but not include them in any population level
+    analyses. Leave blank (<code>[]</code>) if you want population level analyses on all
+    the populations defined in your <code>samples.tsv</code> file.</li>
+<li>Historical samples are expected to have
+    fragmented DNA. For this reason, overlapping (i.e. shorter, usually
+    &lt;270bp) read pairs are collapsed in this workflow for historical samples.
+    Setting this option to <code>true</code> will only map only these collapsed reads,
+    and is recommended to target primarily endogenous content. However, in
+    the event you want to map both the collapsed and uncollapsed reads, you
+    can set this to <code>false</code>. (<code>true</code>/<code>false</code>)</li>
+<li>Aligner used to map collapsed historical
+    sample reads. <code>aln</code> is the recommended for this, but this is here in case
+    you would like to select <code>mem</code> instead. Uncollapsed historical reads
+    will be mapped with <code>mem</code> if <code>historical_only_collapsed</code> is set to
+    <code>false</code>, regardless of what is put here. (<code>aln</code>/<code>mem</code>)</li>
+<li>Filter out sites with low 'pileup mappability', which
+    describes how uniquely fragments of a given size can map to the reference
+    (<code>true</code>/<code>false</code>)</li>
+<li>(NOTE: Only one of the three options should be filled/true)</li>
+<li>Supply a path to a bed file that contains regions with repeats.
+    This is for those who want to filter out repetitive content, but don't
+    need to run Repeatmodeler or masker in the workflow because it has
+    already been done for the genome you're using. Be sure the contig names
+    in the bed file match those in the reference supplied. GFF or other
+    filetypes that work with <code>bedtools subtract</code> may also work, but haven't
+    been tested.</li>
+<li>Filter repeats by supplying a repeat library you have locally
+    (such as ones downloaded for Darwin Tree of Life genomes) and using it to
+    identify repeats with RepeatMasker. Should be file path, not a URL.</li>
+<li>Use RepeatModeler to build a library of repeats from the
+    reference itself, then identify them with RepeatMasker and filter them out
+    (<code>true</code>/<code>false</code>).</li>
+<li>Filter out sites with extremely high or low global
+    sequencing depth. Set the parameters for this filtering in the <code>params</code>
+    section of the yaml. (<code>true</code>/<code>false</code>)</li>
+<li>A floating point value between 0 and 1. Sites with
+    data for fewer than this proportion of individuals across the whole dataset
+    will be filtered out in all analyses using the filtered sites file. (This is
+    only needed if you need to ensure all your analyses are using exactly the
+    same sites, which I find may result in coverage biases in results,
+    especially heterozygosity. Unless you explicitly need to ensure all groups
+    and analyses use the same sites, I would leave this blank, instead using
+    the [<code>params</code>][<code>angsd</code>][<code>minind_dataset</code>] to set a minimum individual
+    threshold for dataset level analyses, allowing analyses to maximize sites
+    per group/sample. This is how most papers do it.)</li>
+<li>A floating point value between 0 and 1. Sites
+    with data for fewer than this proportion of individuals in any population
+    will be filtered out in all populations using the filtered sites file.
+    (This is only needed if you need to ensure all your populations are using
+    exactly the same sites, which I find may result in coverage biases in
+    results, especially heterozygosity. Unless you explicitly need to ensure all
+    groups and analyses use the same sites, I would leave this blank, instead
+    using the [<code>params</code>][<code>angsd</code>][<code>minind_pop</code>] to set a minimum individual
+    threshold for each analyses, allowing analyses to maximize sites per
+    group/sample. This is how most papers do it.)</li>
+<li>Perform Qualimap bamqc on bam files for general quality stats
+    (<code>true</code>/<code>false</code>)</li>
+<li>Enable reference bias calculation. For each sample, one read
+    is randomly sampled at each position and compared to the reference base.
+    These are summarized as the proportion of the genome that is identical by
+    state to the reference for each sample to quantify reference bias. This is
+    done for all filter sets as well as for all sites without site filtering.
+    If transition removal or other arguments are passed to ANGSD, they are
+    included here. (<code>true</code>/<code>false</code>)</li>
+<li>Estimate post-mortem DNA damage on historical samples
+    with Damageprofiler (<code>true</code>/<code>false</code>)</li>
+<li>Rescale base quality scores using MapDamage2 to help
+    account for post-mortem damage in analyses (if you only want to assess
+    damage, use damageprofiler instead, they return the same results)
+    (<code>true</code>/<code>false</code>) <a href="https://ginolhac.github.io/mapDamage/">[docs]</a></li>
+<li>Estimate pairwise linkage disquilibrium between sites with
+    ngsLD for each popualation and the whole dataset. Note, only set this if
+    you want to generate the LD estimates for use in downstream analyses
+    outside this workflow. Other analyses within this workflow that require LD
+    estimates (LD decay/pruning) will function properly regardless of the
+    setting here. (<code>true</code>/<code>false</code>) <a href="https://github.com/fgvieira/ngsLD">[docs]</a></li>
+<li>Use ngsLD to plot LD decay curves for each population and for
+    the dataset as a whole (<code>true</code>/<code>false</code>)
+    <a href="https://github.com/fgvieira/ngsLD">[docs]</a></li>
+<li>Perform Principal Component Analysis with PCAngsd. Currently
+    requires at least 4 samples to finish, as it will by default try to plot
+    PCs1-4. (<code>true</code>/<code>false</code>)
+    <a href="https://popgen.dk/software/index.php/PCAngsd">[docs]</a></li>
+<li>Perform admixture analysis with NGSadmix (<code>true</code>/<code>false</code>)
+    <a href="https://www.popgen.dk/software/index.php/NgsAdmix">[docs]</a></li>
+<li>Relatedness is estimated using two methods: IBSrelate and
+    NgsRelate v2. IBSrelate does not require allele frequencies, which is
+    useful if you do not have sufficient sample size to confidently estimate
+    allele frequencies for your populations. In this pipeline, it is can be run
+    three ways: using the (1) IBS and (2) SFS based methods described in Waples
+    et al. 2019, <em>Mol. Ecol.</em> using ANGSD or (3) using the SFS based method's
+    implementation in NgsRelate v2 (which still does not require allele
+    frequencies). NgsRelate v2 also offers an allele frequency based method,
+    which enables co-inference of inbreeding and relatedness coefficients. If
+    using this method, PopGLen will calculate the allele frequencies for your
+    populations and input them into NgsRelate. These different methods have
+    trade-offs in memory usage and run time in addition to the methodological
+    effects on the estimates themselves. Generally, I recommend starting with
+    NgsRelate, using IBSrelate only (<code>ngsrelate_ibsrelate-only</code>), adding the
+    other approaches as you need them.</li>
+<li>Estimate pairwise relatedness with the IBS based method
+    from. This can use a lot of memory, as it has genotype likelihoods for all
+    sites from all samples loaded into memory, so it is done per 'chunk',
+    which still takes a lot of time and memory. NOTE: For those removing
+    transitions, this method does not include transition removal. All other
+    relatedness methods here do. (<code>true</code>/<code>false</code>)
+    <a href="https://popgen.dk/software/index.php/IBSrelate">[docs]</a></li>
+<li>Estimate pairwise relatedness with the SFS based method.
+    Enabling this can greatly increase the time needed to build the workflow
+    DAG if you have many samples. As a form of this method is implemented in
+    NGSrelate, it may be more efficient to only enable that. (<code>true</code>/<code>false</code>)
+    <a href="https://popgen.dk/software/index.php/IBSrelate">[docs]</a></li>
+<li>Performs the IBSrelate SFS method, but on SNPs
+    only using NgsRelate. Does not need to estimate allele frequencies.
+    (<code>true</code>/<code>false</code>) <a href="https://github.com/ANGSD/NgsRelate">[docs]</a></li>
+<li>Performs the allele frequency based co-inference of
+    relatedness and inbreeding that NgsRelate is primarly intended for. Will
+    estimate allele frequencies per population and use them in the analysis.
+    Also runs the IBSrelate SFS method in NgsRelate. (<code>true</code>/<code>false</code>)
+    <a href="https://github.com/ANGSD/NgsRelate">[docs]</a></li>
+<li>Generates a one dimensional site frequency spectrum for all
+    populations in the sample list. Automatically enabled if <code>thetas_angsd</code> is
+    enabled. (<code>true</code>/<code>false</code>)
+    <a href="https://popgen.dk/angsd/index.php/SFS_Estimation">[docs]</a></li>
+<li>Generates N bootstrap replicates of the 1D site frequency
+    spectrum for each population. N is determined from the <code>sfsboot</code> setting
+    below (<code>true</code>/<code>false</code>)
+    <a href="https://popgen.dk/angsd/index.php/SFS_Estimation">[docs]</a></li>
+<li>Generates a two dimensional site frequency spectrum for all unique
+    populations pairings in the sample list. Automatically enabled if
+    <code>fst_angsd</code> is enabled. (<code>true</code>/<code>false</code>)
+    <a href="https://popgen.dk/angsd/index.php/SFS_Estimation">[docs]</a></li>
+<li>Generates N bootstrap replicates of the 2D site frequency
+    spectrum for each population pair. N is determined from the <code>sfsboot</code>
+    setting below (<code>true</code>/<code>false</code>)
+    <a href="https://popgen.dk/angsd/index.php/SFS_Estimation">[docs]</a></li>
+<li>Estimate nucleotide diversity (pi), Watterson's theta, and
+    Tajima's D for each population in windows across the genome using ANGSD. If
+    polarized to an ancestral reference, additional measures of theta and
+    neutrality statistics in the output will be relevant (see 'Unknown ancestral
+    state (folded sfs)' in the ANGSD docs for more details on this)
+    (<code>true</code>/<code>false</code>)
+    <a href="https://www.popgen.dk/angsd/index.php/Thetas,Tajima,Neutrality_tests">[docs]</a></li>
+<li>Estimate individual genome-wide heterozygosity
+    using ANGSD. Calculates confidence intervals from bootstraps.
+    (<code>true</code>/<code>false</code>)
+    <a href="https://www.popgen.dk/angsd/index.php/Heterozygosity">[docs]</a></li>
+<li>Estimate pairwise <em>F</em><sub>ST</sub> using ANGSD. Set one or both of the
+    below options. Estimates both globally and in windows across the genome.</li>
+<li>Pairwise <em>F</em><sub>ST</sub> is calculated between all possible
+    population pairs (<code>true</code>/<code>false</code>)
+    <a href="https://popgen.dk/angsd/index.php/Fst">[docs]</a></li>
+<li>Pairwise <em>F</em><sub>ST</sub> is calculated between all possible
+    individual pairs. NOTE: This can be really intensive on the DAG building
+    process, so I don't recommend enabling unless you're certain you want
+    this (<code>true</code>/<code>false</code>) <a href="https://popgen.dk/angsd/index.php/Fst">[docs]</a></li>
+<li>Estimates inbreeding coefficients and runs of
+    homozygosity using ngsF-HMM. Inbreeding coefficients are output in both the
+    model based form from ngsF-HMM, as well as converted into <em>F<sub>RoH</sub></em>, which
+    describes the proportion of the genome in runs of homozygosity over a
+    certain length. (<code>true</code>/<code>false</code>)
+    <a href="https://github.com/fgvieira/ngsF-HMM">[docs]</a></li>
+<li>Estimate pairwise identity by state distance between all
+    samples using ANGSD. (<code>true</code>/<code>false</code>)
+    <a href="https://popgen.dk/angsd/index.php/PCA_MDS">[docs]</a></li>
+<li>Estimates population-specific minor allele frequencies
+    for each population in the dataset using ANGSD. Two outputs are generated
+    per population: (1) population-specific minor allele frequencies, where only
+    sites variable in the population are included and the minor allele is set
+    to the minor of the population, and (2) dataset-wide minor allele
+    frequencies, where the minor allele is set to the minor of the entire
+    dataset and includes sites that are fixed within the population if they are
+    variable in the dataset. Alternatively, major alleles can be polarized to
+    the reference or ancestral state in both outputs if <code>domajorminor</code> is set to
+    <code>4</code> or <code>5</code>. <a href="https://popgen.dk/angsd/index.php/Allele_Frequencies">[docs]</a></li>
+<li>A list of mean depths to subsample your reads to. This will be
+    done per sample, and subsample from all the reads. Leaving the list empty
+    disables subsampling. The list can contain multiple depths to subsample to.
+    If a sample already has the same, or lower, depth than this number, it will
+    just be used as is in the analysis. (List <code>[]</code> of integers)</li>
+<li>This determines how the 'full' sequencing depth of a sample
+    is calculated to determine the amount of subsampling needed to reach the
+    target depth. This should be one of three options: (1) <code>"unfilt"</code> will treat
+    the sequencing depth of all (unfiltered) reads and sites as the 'full'
+    depth; (2) <code>"mapqbaseq"</code> will filter out reads that don't pass the
+    configured mapping or base quality, then calculate depth across all sites as
+    the 'full' depth, (3) <code>"sitefilt"</code> will filter reads just as <code>"mapqbaseq"</code>
+    does, but will only calculate the 'full' depth from sites passing the sites
+    filter. As the main goal of subsampling is to make depth uniform for
+    analyses, this latter option is preferred, as it will most accurately bring
+    the depth of the samples to the target depth for analyses.
+    (<code>"unfilt"</code>/<code>"mapqbaseq"</code>/<code>"sitefilt"</code>)</li>
+<li>If <code>subsample_by</code> is set to <code>"unfilt"</code> or <code>"mapqbaseq"</code>,
+    then it would be possible to recaculate extreme depth filters for the
+    subsampled dataset. Enable this to do so, otherwise, the depth filters from
+    the full depth bams will be used. If <code>subsample_by</code> is set to <code>"sitefilt"</code>
+    this will have no effect, as the subsampling is already in reference to a
+    set site list. (<code>true</code>/<code>false</code>)</li>
+<li>When performing depth subsampling, you may want to leave some
+    samples out that you kept in your 'full' dataset. These can be listed here
+    and they will be removed from ALL depth subsampled analyses. A use case for
+    this might be if you have a couple samples that are below your targeted
+    subsample depth, and you don't want to include them. Note that if you
+    configure multiple <code>subsample_dp</code>, these samples will be dropped from all of
+    them. If you need to perform mutliple depth subsamplings with different
+    subsets of samples, its best to run each depth individually. Alternatively,
+    a config file can be made for each subsampled depth, however you may run
+    into issues of file locking blocking both from running at the same time.
+    (list of strings: <code>[]</code>)</li>
+<li>Individually enable analyses to be performed with the
+    subsampled data. These have the same function as described in the
+    [<code>analyses</code>]section above. Enabling here
+    will only run the analysis for the subsampled data, if you want to run it
+    for the full data as well, you need to enable it in the analyses section as
+    well. (<code>true</code>/<code>false</code>)</li>
+<li>
+<p>By default, this workflow will perform all analyses requested in the above
+    section on all sites that pass the filters set in the above section. These
+    outputs will contain <code>allsites-filts</code> in the filename and in the report.
+    However, many times, it is useful to perform an analysis on different
+    subsets of sites, for instance, to compare results for genic vs. intergenic
+    regions, neutral sites, exons vs. introns, etc. Here, users can set an
+    arbitrary number of additional filters using BED files. For each BED file
+    supplied, the contents will be intersected with the sites passing the
+    filters set in the above section, and all analyses will be performed
+    additionally using those sites.</p>
+<p>For instance, given a BED file containing putatively neutral sites, one could
+set the following:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">filter_beds</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">neutral</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;resources/neutral_sites.bed&quot;</span>
+</code></pre></div>
+<p>In this case, for each requested analysis, in addition to the
+<code>allsites-filts</code> output, a <code>neutral-filts</code> (named after the key assigned to
+the BED file in <code>config.yaml</code>) output will also be generated, containing the
+results for sites within the specified BED file that passed any set filters.
+More than one BED file can be set, up to an arbitrary number:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">filter_beds</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">neutral</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;resources/neutral_sites.bed&quot;</span>
+<span class="w">  </span><span class="nt">intergenic</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;resources/intergenic_sites.bed&quot;</span>
+<span class="w">  </span><span class="nt">introns</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;resources/introns.bed&quot;</span>
+</code></pre></div>
+</li>
+<li>
+<p>It may also sometimes be desireable to skip analyses on <code>allsites-filts</code>,
+    say if you are trying to only generate diversity estimates or generate SFS
+    for a set of neutral sites you supply.</p>
+<p>To skip running any analyses for <code>allsites-filts</code> and only perform them for
+the BED files you supply, you can set <code>only_filter_beds: true</code> in the config
+file. This may also be useful in the event you have a set of already
+filtered sites, and want to run the workflow on those, ignoring any of the
+built in filter options by setting them to <code>false</code>.</p>
+</li>
+<li>
+<p>Phred-scaled mapping quality filter. Reads below this threshold will
+    be filtered out. (integer)</p>
+</li>
+<li>Phred-scaled base quality filter. Reads below this threshold will be
+    filtered out. (integer)</li>
+<li>Determines whether overlapping read pairs will
+    be clipped in BAM files supplied by users. This is useful as many variant
+    callers will account for overlapping reads in their processing, but ANGSD
+    will double count overlapping reads. If BAMs were prepped without this in
+    mind, it can be good to apply before running through ANGSD. However, it
+    essentially creates a BAM file of nearly equal size for every sample, so
+    it may be nice to leave it off by applying it to the BAMs you feed into
+    the pipeline. (<code>true</code>/<code>false</code>)</li>
+<li>Additional options to pass to fastp trimming. (string)
+    <a href="https://github.com/OpenGene/fastp">[docs]</a></li>
+<li>Minimum overlap to collapse historical reads. Default
+    in fastp is 30. This effectively overrides the <code>--length_required</code> option
+    if it is larger than that. (INT) <a href="https://github.com/OpenGene/fastp">[docs]</a></li>
+<li>Additional options to pass to bwa aln for mapping of historical
+    sample reads. (string) <a href="https://bio-bwa.sourceforge.net/bwa.shtml">[docs]</a></li>
+<li>Additional options to pass to Picard MarkDuplicates.
+    <code>--REMOVE_DUPLICATES true</code> is recommended. (string)
+    <a href="https://gatk.broadinstitute.org/hc/en-us/articles/360037052812-MarkDuplicates-Picard">[docs]</a></li>
+<li>Enable to run damage profiler on modern samples in
+    addition to historical (<code>true</code>/<code>false</code>)</li>
+<li>Parameters for pileup mappability analysis, see
+    <a href="https://github.com/cpockrandt/genmap/">GenMap's documentation</a> for more
+    details.</li>
+<li>Length of k-mers to calculate mappability for. (integer)</li>
+<li>Allowed mismatches per k-mer. (integer)</li>
+<li>A threshold mappability score. Each site gets an average
+    mappability score taken by averaging the mappability of all K-mers that
+    would overlap it. A score of 1 means all K-mers are uniquely mappable,
+    allowing for <code>E</code> mismatches. This is done via a custom script, and may
+    eventually be replaced by the SNPable method, which is more common.
+    (float, 0-1)</li>
+<li>Parameters for excluding sites based on extreme high
+    and/or low global depth. The final sites list will contain only sites that
+    pass the filters for all categories requested (i.e the whole dataset
+    and/or the depth categories set in <code>samples.tsv</code>).</li>
+<li>Whether you will generate extreme thresholds as a multiple of
+    the median global depth (<code>"median"</code>) or as percentiles of the
+    global depth distribution (<code>"percentile"</code>)</li>
+<li>The bounds of the depth cutoff, defined as a numeric list. For
+    the median method, the values will be multiplied by the median of the
+    distribution to set the thresholds (i.e. <code>[0.5,1.5]</code> would generate
+    a lower threshold at 0.5*median and an upper at 1.5*median). For the
+    percentile method, these define the lower and upper percentiles to filter
+    out (i.e [0.01,0.99] would remove the lower and upper 1% of the depth
+    distributions). (<code>[FLOAT, FLOAT]</code>)</li>
+<li>Whether to perform this filter on the dataset as a
+    whole (may want to set to false if your dataset global depth distribution
+    is multi-modal). (<code>true</code>/<code>false</code>)</li>
+<li>Whether to perform this filter on the depth
+    classes defined in the <code>samples.tsv</code> file. This will generate a global
+    depth distribution for samples in the same category, and perform the
+    filtering on these distributions independently. Then, the sites that pass
+    for all the classes will be included. (<code>true</code>/<code>false</code>)</li>
+<li>Seed to use when subsampling bams to lower depth.
+    <code>"$RANDOM"</code> can be used to set a random seed, or any integer can be used
+    to set a consistent seed. (string or int)
+    <a href="https://www.htslib.org/doc/samtools-view.html">[docs]</a></li>
+<li>General options in ANGSD, relevant doc pages are linked</li>
+<li>Genotype likelihood model to use in calculation
+    (<code>-GL</code> option in ANGSD, <a href="http://www.popgen.dk/angsd/index.php/Genotype_Likelihoods">[docs]</a>)</li>
+<li>When calculating individual depth, sites with depth higher
+    than this will be binned to this value. Should be fine for most to leave
+    at <code>100</code>. (integer, <a href="http://www.popgen.dk/angsd/index.php/Depth">[docs]</a>)</li>
+<li>Individuals with sequencing depth below this value at a
+    position will be treated as having no data at that position by ANGSD.
+    ANGSD defaults to 1 for this. Note that this can be separately set for
+    individual heterozygosity estimates with <code>mindepthind_heterozygosity</code>
+    below. (integer, <code>-setMinDepthInd</code> option in ANGSD (INT)
+    <a href="https://popgen.dk/angsd/index.php/Filters">[docs]</a>)</li>
+<li>Used to fill the <code>-minInd</code> option for any dataset wide
+    ANGSD outputs (like Beagles for PCA/Admix). Should be a floating point
+    value between 0 and 1 describing what proportion of the dataset must have
+    data at a site to include it in the output. (FLOAT)
+    <a href="https://popgen.dk/angsd/index.php/Filters">[docs]</a>)</li>
+<li>Used to fill the <code>-minInd</code> option for any population level
+    ANGSD outputs (like SAFs or Beagles for ngsF-HMM). Should be a floating
+    point value between 0 and 1 describing what proportion of the population
+    must have data at a site to include it in the output. (FLOAT)
+    <a href="https://popgen.dk/angsd/index.php/Filters">[docs]</a>)</li>
+<li>Removes transitions using ANGSD, effectively removing them
+    from downstream analyses. This is useful for removing DNA damage from
+    analyses, and will automatically set the appropriate ANGSD flags (i.e.
+    using
+    <a href="https://www.popgen.dk/angsd/index.php/SFS_Estimation#Brief_Overview"><code>-noTrans 1</code></a>
+    for SAF files and
+    <a href="https://popgen.dk/angsd/index.php/Major_Minor"><code>-rmTrans 1</code></a> for Beagle
+    files.) (<code>true</code>/<code>false</code>)</li>
+<li>Additional options to pass to ANGSD during genotype likelihood
+    calculation at all times. This is primarily useful for adding BAM input
+    filters. Note that <code>--remove_bads</code> and <code>-only_proper_pairs</code> are enabled
+    by default, so they only need to be included if you want to turn them
+    off or explicitly show they are enabled. I've also found that for some
+    datasets, <code>-C 50</code> and <code>-baq 1</code> can create a strong relationship between
+    sample depth and detected diversity, effectively removing the benefits of
+    ANGSD for low/variable depth data. I recommend that these aren't included
+    unless you know you need them. Since the workflow uses BWA to map,
+    <code>-uniqueOnly 1</code> doesn't do anything if your minimum mapping quality is
+    &gt; 0, but you may wish to add it if you're bringing in your own files from
+    another mapper. Mapping and base quality thresholds are also not needed,
+    it will use the ones defined above automatically. If you prefer to correct
+    for historical damage by trimming the ends of reads, this is where you'd
+    want to put <code>-trim INT</code>. (string)
+    (string, <a href="http://www.popgen.dk/angsd/index.php/Input#BAM.2FCRAM">[docs]</a>)</li>
+<li>Same as <code>extra</code>, but only used when making SAF files (used
+    for SFS, thetas, <em>F</em><sub>ST</sub>, IBSrelate (not NgsRelate version),
+    heterozygosity). Doesn't require options already in <code>extra</code> or defined via
+    other params in the YAML (such as <code>notrans</code>, <code>minind</code>, <code>GL</code>, etc.)
+    (string)</li>
+<li>Same as <code>extra</code>, but only used when making Beagle and Maf
+    files (used for PCA, Admix, ngsF-HMM, doIBS, NgsRelate, allele
+    frequencies). Doesn't require options already in <code>extra</code> or defined via
+    other params in the YAML (such as <code>rmtrans</code>, <code>minind</code>, <code>GL</code>, etc.)
+    (string)</li>
+<li>Method for inferring the major and minor alleles. Set to
+    1 to infer from the genotype likelihoods, see
+    <a href="https://www.popgen.dk/angsd/index.php/Major_Minor">documentation</a>
+    for other options. <code>1</code>, <code>2</code>, and <code>4</code> can be set without any additional
+    configuration. <code>5</code> must also have an ancestral reference provided in the
+    config, otherwise it will be the same as <code>4</code>. <code>3</code> is currently not
+    possible, and is used for generating the dataset polarized MAFs. If you
+    have a use for <code>3</code> that PopGLen is suited for, please open an issue and I
+    will look into it. (integer)</li>
+<li>The p-value to use for calling SNPs (float or string)
+    <a href="http://www.popgen.dk/angsd/index.php/SNP_calling">[docs]</a></li>
+<li>Method for inferring minor allele frequencies. Set to <code>1</code> to
+    infer from genotype likelihoods using a known major and minor from the
+    <code>domajorminor</code> setting above. Set to <code>2</code> to assume the minor is unknown.
+    See <a href="http://www.popgen.dk/angsd/index.php/Allele_Frequencies">[docs]</a> for
+    more information. <code>3</code> is possible, and will estimate the frequencies both
+    assuming a known and unknown minor. If you choose this option, you'll get
+    both in the MAF outputs, but only the known will be passed to NgsRelate if
+    you also use that. Other values are currently unsupported in PopGLen.
+    (integer)</li>
+<li>The minimum minor allele frequency required to call a SNP.
+    This is set when generating the Beagle file, so will filter SNPs for
+    PCAngsd, NGSadmix, ngsF-HMM, and NgsRelate. If you would like each tool
+    to handle filtering for maf on its own you can set this to <code>-1</code>
+    (disabled). (float, <a href="http://www.popgen.dk/angsd/index.php/Allele_Frequencies">[docs]</a>)</li>
+<li>When estimating individual heterozygosity,
+    sites with sequencing depth lower than this value will be dropped.
+    (integer, <code>-setMinDepthInd</code> option in ANGSD) (integer)</li>
+<li>Settings for ngsLD <a href="https://github.com/fgvieira/ngsLD">[docs]</a></li>
+<li>For the LD estimates generated when setting
+    <code>estimate_ld: true</code> above, set the maximum distance between sites in kb
+    that LD will be estimated for (<code>--max_kb_dist</code> in ngsLD, integer)</li>
+<li>For the LD estimates generated when setting
+    <code>estimate_ld: true</code> above, randomly sample this proportion of pairwise
+    linkage estimates rather than estimating all (<code>--rnd_sample</code> in ngsLD,
+    float)</li>
+<li>The same as <code>max_kb_dist_est-ld:</code>, but used when
+    estimating LD decay when setting <code>ld_decay: true</code> above (integer)</li>
+<li>The same as <code>rnd_sample_est-ld:</code>, but used when
+    estimating LD decay when setting <code>ld_decay: true</code> above (float)</li>
+<li>Additional plotting arguments to pass to
+    <code>fit_LDdecay.R</code> when estimating LD decay (string)</li>
+<li>When estimating LD decay, should the sample
+    size corrected r<sup>2</sup> model be used? (<code>true</code>/<code>false</code>, <code>true</code> is the
+    equivalent of passing a sample size to <code>fit_LDdecay.R</code> in ngsLD using
+    <code>--n_ind</code>)</li>
+<li>The same as <code>max_kb_dist_est-ld:</code>, but
+    used when linkage pruning SNPs as inputs for PCAngsd and NGSadmix. Pruning
+    is performed on the whole dataset. Any positions above this distance will
+    be assumed to be in linkage equilibrium during the pruning process.
+    (integer)</li>
+<li>The minimum r<sup>2</sup> to assume two positions are
+    in linkage disequilibrium when pruning for PCAngsd and NGSadmix analyses.
+    (float)</li>
+<li>Settings for NGSrelate</li>
+<li>Any extra command line parameters to be passed to
+     NgsRelate when performing an IBSrelate only (no allele frequencies) run.
+     (string)</li>
+<li>Any extra command line parameters to be passed to
+     NgsRelate when performing a standard, allele frequency based, run.
+     (string)</li>
+<li>Settings for ngsF-HMM <a href="https://github.com/fgvieira/ngsF-HMM">[docs]</a></li>
+<li>Set to <code>true</code> to run ngsF-HMM separately for each
+     population in your dataset. Set to <code>false</code> to run for whole dataset at
+     once. ngsF-HMM assumes Hardy-Weinberg Equilibrium (aside from inbreeding)
+     in the input data, so select the option that most reflects this in your
+     data. (<code>true</code>/<code>false</code>)</li>
+<li>Whether or not to prune SNPs for LD before running the analysis.
+     ngsF-HMM assumes independent sites, so it is preferred to set this to
+     <code>true</code> to satisfy that expectation. (<code>true</code>/<code>false</code>)</li>
+<li>The maximum distance between sites in kb
+     that will be treated as in LD when pruning for the ngsF-HMM input. (INT)</li>
+<li>The minimum r<sup>2</sup> to assume two positions are in
+     linkage disequilibrium when pruning for the ngsF-HMM input. Note, that
+     this likely will be substantially higher for individual populations than
+     for the whole dataset, as background LD should be higher when no
+     substructure is present. (float)</li>
+<li>Minimum ROH size in base pairs to include in inbreeding
+     coefficient calculation. Set if short ROH might be considered low
+     confidence for your data. (integer)</li>
+<li>A list of integers that describe the size classes in base
+     pairs you would like to partition the inbreeding coefficient by. This can
+     help visualize how much of the coefficient comes from ROH of certain size
+     classes (and thus, ages). List should be in ascending order and the first
+     entry should be greater than <code>min_roh_length</code>. The first bin will group
+     ROH between <code>min_roh_length</code> and the first entry, subsequent bins will
+     group ROH with sizes between adjacent entries in the list, and the final
+     bin will group all ROH larger than the final entry in the list. (list <code>[]</code>
+     of integers)</li>
+<li>Settings for realSFS</li>
+<li>Whether or not to fold the produced SFS. Set to 1 if you have not
+     provided an ancestral-state reference (0 or 1,
+     <a href="http://www.popgen.dk/angsd/index.php/SFS_Estimation">[docs]</a>)</li>
+<li>Determines number of bootstrap replicates to use when
+     requesting bootstrapped SFS. Is used for both 1dsfs and 2dsfs (this is
+     very easy to separate, open an issue if desired). Automatically used
+     for heterozygosity analysis to calculate confidence intervals. (integer)</li>
+<li>Settings for <em>F</em><sub>ST</sub> calculation in ANGSD</li>
+<li>Determines which <em>F</em><sub>ST</sub> estimator is used by ANGSD. With 0
+     being the default Reynolds 1983 and 1 being the Bhatia-Hudson 2013
+     estimator. The latter is preferable for small or uneven sample sizes
+     (0 or 1, <a href="http://www.popgen.dk/angsd/index.php/Fst">[docs]</a>)</li>
+<li>Window size in bp for sliding window analysis (integer)</li>
+<li>Window step size in bp for sliding window analysis (integer)</li>
+<li>Settings for pi, theta, and Tajima's D estimation</li>
+<li>Window size in bp for sliding window analysis (integer)</li>
+<li>Window step size in bp for sliding window analysis (integer)</li>
+<li>Minimum sites to include window in report plot. This does not
+     remove them from the actual output, just the report plot and averages.</li>
+<li>Settings for admixture analysis with NGSadmix. This analysis is
+     performed for a set of K groupings, and each K has several replicates
+     performed. Replicates will continue until a set of N highest likelihood
+     replicates converge, or the number of replicates reaches an upper threshold
+     set here. Defaults for <code>reps</code>, <code>minreps</code>, <code>thresh</code>, and <code>conv</code> can be left
+     as default for most. Based on method described by
+     <a href="https://doi.org/10.1016/j.cub.2021.01.064">Pečnerová et al. 2021, <em>Curr. Biol.</em></a></li>
+<li>A list of values of K to fit the data to (list <code>[]</code> of
+     integers)</li>
+<li>The maximum number of replicates to perform per K. Default is 100.
+     (integer)</li>
+<li>The minimum number of replicates to perform, even if
+     replicates have converged. Default is 20. (integer)</li>
+<li>The convergence threshold - the top replicates must all be
+     within this value of log-likelihood units to consider the run converged.
+     Default is 2. (integer)</li>
+<li>The number of top replicates to include in convergence
+     assessment. Default is 3. (integer)</li>
+<li>Additional arguments to pass to NGSadmix (for instance,
+     increasing <code>-maxiter</code>). (string,
+     <a href="http://www.popgen.dk/software/index.php/NgsAdmix">[docs]</a>)</li>
+<li>Settings for identity by state calculation with ANGSD</li>
+<li>Whether to use a random (1) or consensus (2) base in IBS
+     distance calculation
+     (<a href="http://www.popgen.dk/angsd/index.php/PCA_MDS">[docs]</a>)</li>
+</ol>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "..", "features": ["toc.integrate", "search.highlight", "content.code.annotate"], "search": "../assets/javascripts/workers/search.6ce7567c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.83f73b43.min.js"></script>
+      
+    
+  </body>
+</html>

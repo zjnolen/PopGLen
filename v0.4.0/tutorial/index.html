@@ -1,0 +1,2429 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="../config-cheat/">
+      
+      
+        <link rel="next" href="../cluster-execution/">
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.43">
+    
+    
+      
+        <title>Tutorial - PopGLen</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.0253249f.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+  
+  
+    
+    
+  
+    
+    
+  
+  
+  <style>:root{--md-admonition-icon--note:url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M1 7.775V2.75C1 1.784 1.784 1 2.75 1h5.025c.464 0 .91.184 1.238.513l6.25 6.25a1.75 1.75 0 0 1 0 2.474l-5.026 5.026a1.75 1.75 0 0 1-2.474 0l-6.25-6.25A1.75 1.75 0 0 1 1 7.775m1.5 0c0 .066.026.13.073.177l6.25 6.25a.25.25 0 0 0 .354 0l5.025-5.025a.25.25 0 0 0 0-.354l-6.25-6.25a.25.25 0 0 0-.177-.073H2.75a.25.25 0 0 0-.25.25ZM6 5a1 1 0 1 1 0 2 1 1 0 0 1 0-2"/></svg>');--md-admonition-icon--question:url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-6.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13M6.92 6.085h.001a.749.749 0 1 1-1.342-.67c.169-.339.436-.701.849-.977C6.845 4.16 7.369 4 8 4a2.76 2.76 0 0 1 1.637.525c.503.377.863.965.863 1.725 0 .448-.115.83-.329 1.15-.205.307-.47.513-.692.662-.109.072-.22.138-.313.195l-.006.004a6 6 0 0 0-.26.16 1 1 0 0 0-.276.245.75.75 0 0 1-1.248-.832c.184-.264.42-.489.692-.661q.154-.1.313-.195l.007-.004c.1-.061.182-.11.258-.161a1 1 0 0 0 .277-.245C8.96 6.514 9 6.427 9 6.25a.61.61 0 0 0-.262-.525A1.27 1.27 0 0 0 8 5.5c-.369 0-.595.09-.74.187a1 1 0 0 0-.34.398M9 11a1 1 0 1 1-2 0 1 1 0 0 1 2 0"/></svg>');}</style>
+
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#tutorial" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="PopGLen" class="md-header__button md-logo" aria-label="PopGLen" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            PopGLen
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Tutorial
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1M8 13h8v-2H8zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4a5 5 0 0 0 5-5 5 5 0 0 0-5-5"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="black" data-md-color-accent="indigo"  aria-label="Switch to system preference"  type="radio" name="__palette" id="__palette_2">
+    
+      <label class="md-header__button md-icon" title="Switch to system preference" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5M7 15a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/zjnolen/PopGLen" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+  </div>
+  <div class="md-source__repository">
+    zjnolen/PopGLen
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--integrated" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="PopGLen" class="md-nav__button md-logo" aria-label="PopGLen" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    PopGLen
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/zjnolen/PopGLen" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+  </div>
+  <div class="md-source__repository">
+    zjnolen/PopGLen
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../getting-started/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Getting started
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../config/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Configuration
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../config-cheat/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Config cheat sheet
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Tutorial
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Tutorial
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#prepping-the-workflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      Prepping the workflow
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#prepping-the-dataset" class="md-nav__link">
+    <span class="md-ellipsis">
+      Prepping the dataset
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#initial-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Initial configuration
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#running-the-pipeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      Running the pipeline
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quick-start-vs-walkthrough" class="md-nav__link">
+    <span class="md-ellipsis">
+      Quick start vs. Walkthrough
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#option-1-quick-start" class="md-nav__link">
+    <span class="md-ellipsis">
+      Option 1: Quick Start
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#option-2-walkthrough" class="md-nav__link">
+    <span class="md-ellipsis">
+      Option 2: Walkthrough
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Option 2: Walkthrough">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#raw-sequence-data-processing-and-quality-control" class="md-nav__link">
+    <span class="md-ellipsis">
+      Raw sequence data processing and quality control
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sites-filters" class="md-nav__link">
+    <span class="md-ellipsis">
+      Sites filters
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#population-genomic-analyses" class="md-nav__link">
+    <span class="md-ellipsis">
+      Population genomic analyses
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Population genomic analyses">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#angsd-settings" class="md-nav__link">
+    <span class="md-ellipsis">
+      ANGSD Settings
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#linkage-disequilibrium" class="md-nav__link">
+    <span class="md-ellipsis">
+      Linkage Disequilibrium
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#principal-component-analysis" class="md-nav__link">
+    <span class="md-ellipsis">
+      Principal Component Analysis
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#relatedness" class="md-nav__link">
+    <span class="md-ellipsis">
+      Relatedness
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#admixture" class="md-nav__link">
+    <span class="md-ellipsis">
+      Admixture
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#site-frequency-spectra-genetic-diversity-and-fst" class="md-nav__link">
+    <span class="md-ellipsis">
+      Site frequency spectra, genetic diversity, and FST
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#inbreeding-and-runs-of-homozygosity" class="md-nav__link">
+    <span class="md-ellipsis">
+      Inbreeding and Runs of Homozygosity
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#identity-by-state-matrix" class="md-nav__link">
+    <span class="md-ellipsis">
+      Identity by state matrix
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#population-specific-allele-frequencies" class="md-nav__link">
+    <span class="md-ellipsis">
+      Population-specific allele frequencies
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#subsampling-sequencing-depth" class="md-nav__link">
+    <span class="md-ellipsis">
+      Subsampling sequencing depth
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#suggested-workflow-batches" class="md-nav__link">
+    <span class="md-ellipsis">
+      Suggested workflow batches
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cluster-execution/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Cluster execution
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../resources/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Setting job resources
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../outfile-summ/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Output file path overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+<h1 id="tutorial">Tutorial</h1>
+<p>This tutorial aims to get users familiar with the general usage of PopGLen by
+walking through a small(ish) dataset. Users can walk through this dataset to get
+familiar with using PopGLen on their server/machine, or can use it as a template
+to follow along with their own data, modifying settings when suitable.</p>
+<p>The tutorial dataset is a subset of the data used in
+<a href="https://doi.org/10.1101/2024.10.07.616612">this manuscript</a> and contains
+sequencing data for 20 <em>Cyaniris semiargus</em> butterfly individuals from southern
+Sweden. These samples all come from the province of Skåne, a region where
+grassland cover has considerably declined over the past century as agriculture
+has intensified. In this tutorial, 10 individuals come from historical samples
+from the entomological collections of the Biological Museum, Lund University,
+half from a locality in western Skåne and the other from a locality in eastern
+Skåne. The other 10 individuals come from modern samples collected in nearby
+localities in 2021, which will allow us to compare genomic metrics over time.
+This is one of the main use cases for PopGLen - a dataset with both modern and
+historical samples, but most of the functionality will be the same if your
+dataset has only modern or only historical samples.</p>
+<p>For reference, I have included a report that utilizes the full data, which can
+be useful to reference to get a better idea of what the results would look like
+with real data. <a href="https://zjnolen.github.io/popglen-tutorial-reports/tutorial-full-data.html">[Full report]</a></p>
+<details class="note">
+<summary>How much of the original data is in the tutorial dataset?</summary>
+<p>To speed up processing times for the purpose of the tutorial, I only
+included ~10Mb across four chromosomes of the <em>Cyaniris semiargus</em>
+reference and enough reads to get 2-5X sequencing depth across that region.
+This is enough to get close to the results from the full genome, but some
+analyses will be more impacted than others. I will mention when this is the
+case, and include the results using the full data alongside the tutorial
+data for comparison.</p>
+</details>
+<h2 id="prepping-the-workflow">Prepping the workflow</h2>
+<p>To run PopGLen, you will need access to Conda/Mamba and Apptainer/Singularity as
+these will be used to run and install the software utilized in the pipeline,
+including Snakemake. Due to the Apptainer/Singularity requirement, this means
+that it will only run on Linux machines. I recommend performing the tutorial on
+the machine you are likely to run your dataset on, rather than testing it on
+your local machine.</p>
+<p>Once you have installed Conda/Mamba and Apptainer/Singularity on your machine,
+you're ready to start setting up the environment for PopGLen to use. We will
+install a simple conda environment with Snakemake, the only dependency needed:</p>
+<div class="highlight"><pre><span></span><code>conda<span class="w"> </span>create<span class="w"> </span>-n<span class="w"> </span>popglen<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-c<span class="w"> </span>conda-forge<span class="w"> </span>-c<span class="w"> </span>bioconda<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span><span class="nv">snakemake</span><span class="o">=</span><span class="m">8</span>.20<span class="w"> </span>snakedeploy
+</code></pre></div>
+<p>Once run, this will install Snakemake and Snakedeploy to the environment
+'popglen', which we will activate to download and run the pipeline:</p>
+<div class="highlight"><pre><span></span><code>conda<span class="w"> </span>activate<span class="w"> </span>popglen
+</code></pre></div>
+<p>Now, create a working directory for your project, deploy the workflow inside:</p>
+<div class="highlight"><pre><span></span><code>snakedeploy<span class="w"> </span>deploy-workflow<span class="w"> </span>https://github.com/zjnolen/PopGLen<span class="w"> </span>.<span class="w"> </span>--tag<span class="w"> </span>v0.4.0
+</code></pre></div>
+<p>This will download a <code>workflow</code> and <code>config</code> folder containing a the workflow
+file and a configuration template. Now we are ready to set up our dataset.</p>
+<h2 id="prepping-the-dataset">Prepping the dataset</h2>
+<p>If you are following along with the tutorial data, please download it
+from Figshare <a href="https://doi.org/10.6084/m9.figshare.27453978.v1">here</a>. You can
+download it in the command line using the following command:</p>
+<div class="highlight"><pre><span></span><code>wget<span class="w"> </span>-O<span class="w"> </span>popglen-tut-data.zip<span class="w"> </span>https://figshare.com/ndownloader/articles/27453978/versions/1
+</code></pre></div>
+<p>This dataset contains three folders: <code>data</code>, <code>config</code>, and <code>resources</code>. These
+contain the raw fastq reads, configuration files, and subset reference genome,
+respectively. Move these three folders into the base of your working directory,
+where we deployed the workflow. You'll be replacing the contents of the <code>config</code>
+folder that was deployed with the workflow with what's in the <code>config</code> in the
+tutorial data.</p>
+<details class="note">
+<summary>Example set up code for tutorial</summary>
+<p>Here is an example of how the tutorial can be deployed, with explicit
+commands.</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># First, create a working dir</span>
+mkdir<span class="w"> </span>popglen-tutorial
+
+<span class="c1"># Change into it</span>
+<span class="nb">cd</span><span class="w"> </span>popglen-tutorial
+
+<span class="c1"># deploy the workflow in here</span>
+snakedeploy<span class="w"> </span>deploy-workflow<span class="w"> </span>https://github.com/zjnolen/PopGLen<span class="w"> </span>.<span class="w"> </span>--tag<span class="w"> </span>v0.4.0
+
+<span class="c1"># download the tutorial data</span>
+wget<span class="w"> </span>-O<span class="w"> </span>popglen-tut-data.zip<span class="w"> </span>https://figshare.com/ndownloader/articles/27453978/versions/1
+
+<span class="c1"># unzip the tutorial data</span>
+unzip<span class="w"> </span>popglen-tut-data.zip
+
+<span class="c1"># move the contents of the tutorial data folder into the working dir</span>
+mv<span class="w"> </span>popglen-tutorial-data/data<span class="w"> </span>popglen-tutorial-data/resources<span class="w"> </span>./
+mv<span class="w"> </span>popglen-tutorial-data/config/*<span class="w"> </span>config/
+
+<span class="c1"># remove the zip file and unzipped folder</span>
+rm<span class="w"> </span>-r<span class="w"> </span>popglen-tutorial-data<span class="w"> </span>popglen-tutorial-data.zip
+</code></pre></div>
+<p>This should get you set up as expected.</p>
+</details>
+<p>Let's take a look at the configuration files in the tutorial data. First, our
+sample list:</p>
+<div class="highlight"><span class="filename">config/samples.tsv</span><pre><span></span><code>sample	population	time	depth
+MZLU153246	ESkane1956	historical	low
+MZLU153247	ESkane1956	historical	low
+MZLU153248	ESkane1956	historical	low
+MZLU153251	ESkane1956	historical	low
+MZLU153250	ESkane1956	historical	low
+MZLU153204	WSkane1951	historical	low
+MZLU153205	WSkane1951	historical	low
+MZLU153206	WSkane1951	historical	low
+MZLU153216	WSkane1951	historical	low
+MZLU153221	WSkane1951	historical	low
+MZLU107458	ESkane2021	modern	high
+MZLU107463	ESkane2021	modern	high
+MZLU107503	ESkane2021	modern	high
+MZLU107504	ESkane2021	modern	high
+MZLU107507	ESkane2021	modern	high
+MZLU107457	WSkane2021	modern	high
+MZLU107460	WSkane2021	modern	high
+MZLU107497	WSkane2021	modern	high
+MZLU107498	WSkane2021	modern	high
+MZLU107500	WSkane2021	modern	high
+</code></pre></div>
+<p>Here, we list all the samples we will use, the population identifiers we will
+group them by, the time period they come from, and the sequencing depth category
+we will assign them to. There is one line per sample, and there can be as many
+or as few population groups as you'd like.</p>
+<p>Time must be 'modern' or 'historical' and decides how samples will be treated
+when modern and historical samples are treated differently. If all your samples
+are modern, you can simply leave all as modern.</p>
+<p>Depth groups samples into depth categories that allow depth filtering to be done
+per category. This can help to ensure that if you have samples with considerable
+differences in depth, your depth filters won't be exclusively acting on the
+upper tail of the distribution driven by high coverage samples and the lower
+tail driven by low coverage samples. You can have as many or as few depth
+categories as you want, with whatever names you would like, but they should not
+use names that also appear in other columns (i.e. use 'low' rather than
+'historical' or 'pop1depth' rather than reusing 'pop1' from the population
+column).</p>
+<p>Now, for the units list, which points to our data files:</p>
+<div class="highlight"><span class="filename">config/units.tsv</span><pre><span></span><code>sample	unit	lib	platform	fq1	fq2
+MZLU107457	AHW5NGDSX2.3	UDP0046	ILLUMINA	data/MZLU107457.R1.sub.fastq.gz	data/MZLU107457.R2.sub.fastq.gz
+MZLU107458	AHW5NGDSX2.3	UDP0047	ILLUMINA	data/MZLU107458.R1.sub.fastq.gz	data/MZLU107458.R2.sub.fastq.gz
+MZLU107460	AHW5NGDSX2.3	UDP0049	ILLUMINA	data/MZLU107460.R1.sub.fastq.gz	data/MZLU107460.R2.sub.fastq.gz
+MZLU107463	AHW5NGDSX2.3	UDP0052	ILLUMINA	data/MZLU107463.R1.sub.fastq.gz	data/MZLU107463.R2.sub.fastq.gz
+MZLU107497	AHW5NGDSX2.3	UDP0084	ILLUMINA	data/MZLU107497.R1.sub.fastq.gz	data/MZLU107497.R2.sub.fastq.gz
+MZLU107498	AHW5NGDSX2.3	UDP0085	ILLUMINA	data/MZLU107498.R1.sub.fastq.gz	data/MZLU107498.R2.sub.fastq.gz
+MZLU107500	AHW5NGDSX2.3	UDP0087	ILLUMINA	data/MZLU107500.R1.sub.fastq.gz	data/MZLU107500.R2.sub.fastq.gz
+MZLU107503	AHW5NGDSX2.3	UDP0090	ILLUMINA	data/MZLU107503.R1.sub.fastq.gz	data/MZLU107503.R2.sub.fastq.gz
+MZLU107504	AHW5NGDSX2.3	UDP0091	ILLUMINA	data/MZLU107504.R1.sub.fastq.gz	data/MZLU107504.R2.sub.fastq.gz
+MZLU107507	AHW5NGDSX2.3	UDP0094	ILLUMINA	data/MZLU107507.R1.sub.fastq.gz	data/MZLU107507.R2.sub.fastq.gz
+MZLU153221	BHVN22DSX2.2	208188	ILLUMINA	data/MZLU153221.R1.sub.fastq.gz	data/MZLU153221.R2.sub.fastq.gz
+MZLU153206	BHVN22DSX2.2	207139	ILLUMINA	data/MZLU153206.R1.sub.fastq.gz	data/MZLU153206.R2.sub.fastq.gz
+MZLU153204	BHVN22DSX2.2	003091	ILLUMINA	data/MZLU153204.R1.sub.fastq.gz	data/MZLU153204.R2.sub.fastq.gz
+MZLU153205	BHVN22DSX2.2	008096	ILLUMINA	data/MZLU153205.R1.sub.fastq.gz	data/MZLU153205.R2.sub.fastq.gz
+MZLU153248	BHVN22DSX2.2	021130	ILLUMINA	data/MZLU153248.R1.sub.fastq.gz	data/MZLU153248.R2.sub.fastq.gz
+MZLU153216	BHVN22DSX2.2	093148	ILLUMINA	data/MZLU153216.R1.sub.fastq.gz	data/MZLU153216.R2.sub.fastq.gz
+MZLU153251	BHVN22DSX2.2	028116	ILLUMINA	data/MZLU153251.R1.sub.fastq.gz	data/MZLU153251.R2.sub.fastq.gz
+MZLU153250	BHVN22DSX2.2	036137	ILLUMINA	data/MZLU153250.R1.sub.fastq.gz	data/MZLU153250.R2.sub.fastq.gz
+MZLU153247	BHVN22DSX2.2	043143	ILLUMINA	data/MZLU153247.R1.sub.fastq.gz	data/MZLU153247.R2.sub.fastq.gz
+MZLU153246	BHVN22DSX2.2	052142	ILLUMINA	data/MZLU153246.R1.sub.fastq.gz	data/MZLU153246.R2.sub.fastq.gz
+</code></pre></div>
+<p>Here, we point to the data for each sample, and assign sequencing metadata. We
+are using FASTQ inputs for this tutorial, so we will fill out (1) the 'unit', an
+identifier for the sequencing lane (here it is the run barcode and lane number),
+(2) the 'lib', an identifier for the library batch the reads come from, (3) the
+'platform', the sequencing platform they were run on, and (4) 'fq1' and 'fq2',
+the paths to the forward and reverse read fastq files (either absolute or
+relative to the working directory). You can have multiple lines per sample if
+you have multiple combinations of sequencing runs and/or libraries per sample,
+and these will be merged at the appropriate steps by the workflow. You can also
+use SRA accession numbers to download the FASTQ data if it is not local by
+replacing the 'fq1' and 'fq2' columns with an 'sra' column and filling it out
+with the accession number. If we were starting with BAM files, we could omit all
+the columns except 'sample', and add one column 'bam' that points to the BAM
+file.</p>
+<p>Now, we are ready for the configuration.</p>
+<h2 id="initial-configuration">Initial configuration</h2>
+<p>The <code>config/config.yaml</code> file included with the tutorial dataset has the basic
+configuration filled out. It contains all the available options for the
+workflow, with some default parameters and most analyses turned off. There is an
+additional file, <code>config/config-full.yaml</code>, that enables all the tutorial
+analyses, allowing the entire tutorial to be run in one Snakemake run. For
+details on all the settings in the config file, please see the
+<a href="../config/">configuration documentation</a>.</p>
+<p>No matter what analyses are to be run, the first two sections of the config are
+required:</p>
+<div class="highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">config/config.yaml</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1">#=====================Dataset Configuration============================#</span>
+
+<span class="nt">samples</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">config/samples.tsv</span>
+
+<span class="nt">units</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">config/units.tsv</span>
+
+<span class="nt">dataset</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;popglen-tutorial&quot;</span>
+
+<span class="c1">#===================== Reference Configuration ========================#</span>
+
+<span class="nt">chunk_size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">12000000</span>
+
+<span class="nt">reference</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;tutorial-ref&quot;</span><span class="w"> </span>
+<span class="w">  </span><span class="nt">fasta</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;resources/ref/ilCyaSemi1.1_tutref.fa&quot;</span>
+<span class="w">  </span><span class="nt">mito</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;mitochondrion&quot;</span><span class="p p-Indicator">]</span>
+<span class="w">  </span><span class="nt">sex-linked</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;Z&quot;</span><span class="p p-Indicator">]</span>
+<span class="w">  </span><span class="nt">exclude</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span>
+<span class="w">  </span><span class="nt">min_size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1000000</span>
+
+<span class="nt">ancestral</span><span class="p">:</span>
+</code></pre></div></td></tr></table></div>
+<p>Here, we set a few important settings:</p>
+<ul>
+<li><code>samples</code> points to the sample list file</li>
+<li><code>units</code> points to the unit list file</li>
+<li><code>dataset</code> gives a name for the dataset run (multiple datasets can be run in
+  the same working dir and reuse generated BAMs and reference resources when
+  possible)</li>
+<li><code>chunk_size</code> sets a size for the genome to be chunked into. This allows for
+  parallelizing over genomic regions where possible, but without running into
+  issues when genomes have a high number of contigs. It should be a value equal
+  to or greater than the largest contig length in your genome. If you have a
+  chromosome level genome, the size of the biggest chromosome is probably best.
+  If you have something less contiguous, it depends on how many jobs you expect
+  to run in parallel. I have mostly worked with 500Mb genomes, setting this to
+  30Mb usually. For the tutorial, we will actually set it to a value larger than
+  the tutorial genome, as it is already rather small, ~10Mb.</li>
+<li><code>reference/name</code> is a name for the reference genome you're mapping/mapped to.
+  It will be included in the output file names of the BAM alignments and many
+  other files.</li>
+<li><code>reference/fasta</code> is the path to the reference genome FASTA. It must be
+  locally available and should not be compressed. (Open an issue of using a
+  compressed reference FASTA is something you'd much prefer and I will look into
+  making it possible.)</li>
+<li><code>reference/mito</code> is a list of any mitochondrial scaffolds. They will be
+  excluded from analyses (future versions may include some mitochondrial
+  analyses). In the tutorial, we drop the sequence called 'mitochondrion'.</li>
+<li><code>reference/sex-linked</code> is a list of any sex linked scaffolds. They will be
+  excluded from analyses (future versions may include ways to analyze these).
+  In the tutorial, we drop the 'Z' chromosome.</li>
+<li><code>reference/exclude</code> is a list of scaffolds to exclude that aren't in any other
+  category of this section. We won't put anything here this time.</li>
+<li><code>reference/min_size</code> is a minimum size required to include a scaffold. If you
+  have many small scaffolds, you can set a threshold to drop them. We only have
+  one small scaffold in the tutorial reference, the mitochondrion, and since it
+  is smaller than the 1Mb we set here, it will be dropped by this setting, even
+  if it wasn't listed in the <code>reference/mito</code> section.</li>
+<li><code>ancestral</code> is a FASTA file containing ancestral states for your reference
+  genome. Several analyses can utilize ancestral states for polarization of the
+  site frequency spectrum, providing derived/ancestral allele counts rather than
+  major/minor. If you have one, you can put it here, but know that analyses that
+  use it will be limited to the sites with data in this sequence. We don't have
+  one, so we won't use it and will 'fold' our site frequency spectra to account
+  for this. The main outputs of the workflow largely are suitable with folded
+  spectra.</li>
+</ul>
+<h2 id="running-the-pipeline">Running the pipeline</h2>
+<p>With these basic configurations complete, the pipeline is ready to run.
+Snakemake allows us to do a dry run with the option <code>-n</code>:</p>
+<div class="highlight"><pre><span></span><code>snakemake<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--use-conda<span class="w"> </span>--use-singularity<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--default-resources<span class="w"> </span><span class="s2">&quot;mem_mb=(threads*1700)&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--cores<span class="w"> </span>&lt;threads&gt;<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-n
+</code></pre></div>
+<p>As this pipeline uses conda environments and singularity containers,
+<code>--use-conda</code> and <code>--use-singularity</code> are always required. <code>--default-resources</code>
+is needed for some rules that require knowledge of memory usage (primarily java
+tools), where we give 1700MB of memory per thread used in each rule. <code>--cores</code>
+is needed for local runs and should be set to the number of cores you'd like to
+give to PopGLen for a local run.</p>
+<div class="admonition note">
+<p class="admonition-title">Running with a job scheduler</p>
+<p>For this tutorial, I have shown the command for a local run. This is good if
+you are running on a machine without a job scheduler or if you want to
+submit the workflow to run inside a single large job on your cluster. The
+latter is probably the best way to run the tutorial, but for large datasets,
+it is likely most efficient to use Snakemake's executor plugins to have it
+submit each job in the workflow as its own job in your scheduler, maximizing
+the parallelization potential across multiple nodes. While the best place
+for how to set this up is the
+<a href="https://snakemake.readthedocs.io/en/stable/executing/cli.html#non-local-execution">Snakemake documentation</a>,
+I have also made a <a href="../cluster-execution/">brief doc</a> on this here.</p>
+</div>
+<p>When we do a dry run, we should see that with the default options, Snakemake
+plans to do only the raw sequence data processing, i.e. adapter trimming,
+collapsing of historical read pairs, mapping to the reference, duplicate
+removal, indel realignment, clipping of overlapping reads for modern samples,
+and indexing of the final processed BAMs.</p>
+<h2 id="quick-start-vs-walkthrough">Quick start vs. Walkthrough</h2>
+<p>I've written the rest of this tutorial with two approaches in mind: a 'quick
+start' and a 'walkthrough'.</p>
+<p>The quick start approach starts with a configuration with all analyses enabled.
+This means Snakemake will run the entire tutorial in a single run, you can then
+examine the outputs to see what can be done using this pipeline. I recommend
+this if you are familiar with a lot of the analyses and with Snakemake and can
+use the configuration documentation yourself to adjust settings for your data.</p>
+<p>The walkthrough approach starts with a configuration with most analyses disabled
+and walks through enabling analyses and running the pipeline piece by piece.
+This may help some who are less familiar with the tools to understand how the
+analyses fit together.</p>
+<p>Regardless of the approach you use for the tutorial, realize that the settings
+in the tutorial may not work as well for other datasets, so look into them and
+update them for your needs when using your own data. Please feel to reach out in
+the issues tracker with questions or to suggest ways the pipeline may be
+improved to suit a greater breadth of datasets.</p>
+<h2 id="option-1-quick-start">Option 1: Quick Start</h2>
+<p>For this, we will perform a whole run using the <code>config/config_full.yaml</code>. Your
+Snakemake command should look something like this for a local run:</p>
+<div class="highlight"><pre><span></span><code>snakemake<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--configfile<span class="w"> </span>config/config_full.yaml<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--use-conda<span class="w"> </span>--use-singularity<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--default-resources<span class="w"> </span><span class="s2">&quot;mem_mb=threads*1700&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--cores<span class="w"> </span>&lt;threads&gt;
+</code></pre></div>
+<p>and should be similar, but with cluster/executor configuration options, if using
+a system with a job scheduler like SLURM. Note the <code>--configfile</code> option, which
+overrides the automatic config path (<code>config/config.yaml</code>) with the one we put
+here. Feel free to do a dry run with <code>-n</code> first to see what the pipeline plans
+to run.</p>
+<details class="question">
+<summary>How long does the tutorial take to run?</summary>
+<p>This will depend on the system it is run on, as both the number of available
+CPUs and the performance of those CPUs will impact the results. I tested it
+in two environments: (1) in an Ubuntu VM on a 2020 Macbook Pro with 8 cores
+and (2) inside a single job on PDC's Dardel cluster with 64 cores (this is
+half of a node on there). On the Macbook it took ~4 hours to complete the
+whole tutorial, while on Dardel it completed in under half an hour. The
+difference is largely from the number of cores available to perform analyses
+in parallel, but also as the performance of individual cores on the Macbook
+is a bit weaker. Note: I didn't include downloading the Singularity
+containers and setting up the conda environments in this estimate.</p>
+</details>
+<p>First, Snakemake solves the directed action graph - the workflow required to get
+from the input files present on the system to the output files requested by our
+configuration. Once solved, the required containers and conda environments are
+set up and the workflow will begin, with outputs from each step flowing into the
+input of the next. Upon completion, we can make a report:</p>
+<div class="highlight"><pre><span></span><code>snakemake<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--configfile<span class="w"> </span>config/config_full.yaml<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--use-conda<span class="w"> </span>--use-singularity<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--report<span class="w"> </span>tutorial_report.html
+</code></pre></div>
+<p>This report contains the main results of all the major analyses, including both
+tables and plots. The actual results can be found in the 'results' folder, which
+contains the folders 'datasets', 'mapping', 'preprocessing', and 'ref', which
+have outputs from the population genomic analyses for different datasets (each
+with a subfolder containing the dataset name, for the tutorial it is just one,
+which we named <code>popglen-tutorial</code> in the config), outputs from the mapping
+process, outputs from the trimming process, and outputs specific to the
+reference (indices, repeat libraries, etc.), respectively.</p>
+<h2 id="option-2-walkthrough">Option 2: Walkthrough</h2>
+<p>It can be useful to run analyses in batches, assess their outputs, and use these
+to inform set up for subsequent analyses. For this walkthrough, we will
+gradually change <code>config/config.yaml</code> to perform analyses, pointing out
+relevant settings in the file as we go. With the first sections matching the
+versions shown in <a href="#initial-configuration">Initial Configuration</a>, we are ready
+to start the walkthrough. In each step, a report will be made with the results.
+These reports are included in this tutorial, so you can just click through them
+if you'd rather not run the tutorial on your end.</p>
+<div class="admonition note">
+<p class="admonition-title">A note on temporary files</p>
+<p>I have flagged several intermediate files in this workflow as temporary so
+that they will be cleaned up when they are no longer needed. While this is
+great when you're all done with them, if you are enabling pieces of the
+workflow at a time as we are in this tutorial, it can lead to intermediate
+files disappearing after some steps and needing to be re-generated when we
+enable other analyses that use them later down the line. While I've tried to
+avoid making most 'keystone' intermediate files (Beagles, SAFs, etc.)
+temporary, it can be good to use the <code>--notemp</code> option in <code>snakemake</code>
+commands, which will keep any files marked as temporary. Then, when you know
+you're done, you can run it again without this option to clean up the
+intermediate files.</p>
+</div>
+<h3 id="raw-sequence-data-processing-and-quality-control">Raw sequence data processing and quality control</h3>
+<details class="note">
+<summary>I already have BAMs for my data, do I need this part?</summary>
+<p>If you already have BAMs this part may still be relevant to you, as it also
+will run some quality control analyses on the BAM files. I recommend quickly
+reading through it to see the QC options. To make the tutorial more similar
+to what processing your data would be like, I've included the BAM files in
+the tutorial dataset, so you can start from there. Just change the
+<code>units.tsv</code> file to look like this:</p>
+<div class="highlight"><span class="filename">config/units.tsv</span><pre><span></span><code>sample	bam
+MZLU107457	data/bams/MZLU107457.tutorial-ref.bam
+MZLU107458	data/bams/MZLU107458.tutorial-ref.bam
+MZLU107460	data/bams/MZLU107460.tutorial-ref.bam
+MZLU107463	data/bams/MZLU107463.tutorial-ref.bam
+MZLU107497	data/bams/MZLU107497.tutorial-ref.bam
+MZLU107498	data/bams/MZLU107498.tutorial-ref.bam
+MZLU107500	data/bams/MZLU107500.tutorial-ref.bam
+MZLU107503	data/bams/MZLU107503.tutorial-ref.bam
+MZLU107504	data/bams/MZLU107504.tutorial-ref.bam
+MZLU107507	data/bams/MZLU107507.tutorial-ref.bam
+MZLU153221	data/bams/MZLU153221.tutorial-ref.bam
+MZLU153206	data/bams/MZLU153206.tutorial-ref.bam
+MZLU153204	data/bams/MZLU153204.tutorial-ref.bam
+MZLU153205	data/bams/MZLU153205.tutorial-ref.bam
+MZLU153248	data/bams/MZLU153248.tutorial-ref.bam
+MZLU153216	data/bams/MZLU153216.tutorial-ref.bam
+MZLU153251	data/bams/MZLU153251.tutorial-ref.bam
+MZLU153250	data/bams/MZLU153250.tutorial-ref.bam
+MZLU153247	data/bams/MZLU153247.tutorial-ref.bam
+MZLU153246	data/bams/MZLU153246.tutorial-ref.bam
+</code></pre></div>
+<p>or, when you run the Snakemake command, you can override the units file
+configuration by adding <code>--config units="config/units_bams.tsv</code>.</p>
+<p>If you use this units list and run this section of the tutorial, no mapping
+will be done, only the QC, so it'll be a lot faster to run this section.</p>
+</details>
+<p>The first stage of the pipeline will be to map the raw reads and perform a few
+quality control analyses. The mapping pipeline roughly looks like this for each
+sample type:</p>
+<p>Modern:</p>
+<ol>
+<li>Quality and adapter trim paired end reads using defaults with fastp</li>
+<li>Map paired end reads for each sample with bwa mem. Do this individually for
+   separate sequencing runs and libraries, then merge with samtools.</li>
+<li>Remove duplicates with Picard MarkDuplicates.</li>
+<li>Realign around insertions/deletions with GATK IndelRealigner.</li>
+<li>Clip overlapping read pairs to avoid double counting reads in ANGSD using
+   bamutil.</li>
+</ol>
+<p>Historical:</p>
+<ol>
+<li>Collapse overlapping paired end reads into single strand with fastp.</li>
+<li>Map collapsed reads to reference with bwa aln.</li>
+<li>Remove duplicates per library with dedup and merge libraries.</li>
+<li>Realign around insertions/deletions with GATK IndelRealigner.</li>
+<li>(Optional, we will not do this for the tutorial) Rescale base quality scores
+   to account for DNA damage with mapdamage2.</li>
+</ol>
+<p>Use the code blocks below to update the appropriate lines in the
+<code>config/config.yaml</code> file to set this run up. Since mapping is always enabled in
+PopGLen if starting from FASTQ, we only have to check some settings for the
+mapping and turn on some QC analyses:</p>
+<div class="highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">config/config.yaml</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nt">analyses</span><span class="p">:</span>
+<span class="w">  </span><span class="c1"># mapping options</span>
+<span class="w">  </span><span class="nt">mapping</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">historical_only_collapsed</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">    </span><span class="nt">historical_collapsed_aligner</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;aln&quot;</span>
+</code></pre></div></td></tr></table></div>
+<div class="highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">config/config.yaml</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="w">  </span><span class="c1"># quality control</span>
+<span class="hll"><span class="w">  </span><span class="nt">qualimap</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</span><span class="hll"><span class="w">  </span><span class="nt">ibs_ref_bias</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</span><span class="hll"><span class="w">  </span><span class="nt">damageprofiler</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</span><span class="w">  </span><span class="nt">mapdamage_rescale</span><span class="p">:</span>
+</code></pre></div></td></tr></table></div>
+<p>The first block describes settings for historical sample mapping and determines
+that we should only map reads with some overlap (i.e. fragments &lt;270bp) and we
+should use bwa aln to align historical reads rather than bwa mem. We will leave
+them this way for the tutorial, but you can change them if needed for your data.</p>
+<p>The next block enables some quality control analyses:</p>
+<ul>
+<li><code>qualimap</code> - a detailed report of mapping statistics</li>
+<li><code>ibs_ref_bias</code> - calculates the average identity state distance to the
+  reference for each sample using a custom script around ANGSD's -doIBS option</li>
+<li><code>damageprofiler</code> - estimate DNA damage on historical samples</li>
+<li><code>mapdamage_rescale</code> - rescale base quality scores for potentially damaged
+  bases in historical samples (adds step to BAM generation)</li>
+</ul>
+<p>We will turn on the first three options to get a good batch of quality control
+options for our data. While we could also use MapDamage to rescale the base
+quality scores of putatively damaged reads, we will handle DNA damage in a
+different way down the line. In this dataset, we find MapDamage correction can
+cause a substantial reference bias in historical samples. For this reason, it
+can be useful to check the results of <code>ibs_ref_bias</code> with and without rescaling
+enabled to determine the effect on your samples. Estimates of mean sequencing
+depth and mapping rates are always enabled in PopGLen, so don't need to be
+turned on.</p>
+<details class="note">
+<summary>Additional sequence processing settings</summary>
+<p>There are several settings available at the end of the configuration file
+for each of the tools in the PopGLen workflow. For the tutorial, these are
+already set to suitable defaults (and these should be suitable for most
+datasets using sequencing data generated by patterned flow cells), but you
+may want to look into them in the <a href="../config/">configuration docs</a> to adapt
+them to your dataset.</p>
+<div class="highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">config/config.yaml</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">118</span>
+<span class="normal">119</span>
+<span class="normal">120</span>
+<span class="normal">121</span>
+<span class="normal">122</span>
+<span class="normal">123</span>
+<span class="normal">124</span>
+<span class="normal">125</span>
+<span class="normal">126</span>
+<span class="normal">127</span>
+<span class="normal">128</span>
+<span class="normal">129</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nt">params</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">clipoverlap</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">clip_user_provided_bams</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">  </span><span class="nt">fastp</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">extra</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;-p</span><span class="nv"> </span><span class="s">-g&quot;</span><span class="w"> </span><span class="c1"># don&#39;t put --merge or --overlap_len_require here, they&#39;re implicit</span>
+<span class="w">    </span><span class="nt">min_overlap_hist</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">30</span>
+<span class="w">  </span><span class="nt">bwa_aln</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">extra</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;-l</span><span class="nv"> </span><span class="s">16500</span><span class="nv"> </span><span class="s">-n</span><span class="nv"> </span><span class="s">0.01</span><span class="nv"> </span><span class="s">-o</span><span class="nv"> </span><span class="s">2&quot;</span>
+<span class="w">  </span><span class="nt">picard</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">MarkDuplicates</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;--REMOVE_DUPLICATES</span><span class="nv"> </span><span class="s">true</span><span class="nv"> </span><span class="s">--OPTICAL_DUPLICATE_PIXEL_DISTANCE</span><span class="nv"> </span><span class="s">2500&quot;</span>
+<span class="w">  </span><span class="nt">damageprofiler</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">profile_modern</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+</code></pre></div></td></tr></table></div>
+</details>
+<p>Now we are ready to run our processing, its best to do a dry run first to make
+sure everything looks good. This run will likely take the longest of all the
+runs we will perform, as it involves all the mapping steps and will do a lot of
+the initial software installs.</p>
+<p>Once the run is complete, the easiest way to look at the results is to generate
+a report:</p>
+<div class="highlight"><pre><span></span><code>snakemake<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--configfile<span class="w"> </span>config/config_full.yaml<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--use-conda<span class="w"> </span>--use-singularity<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--report<span class="w"> </span>tutorial_report.html
+</code></pre></div>
+<p><a href="https://zjnolen.github.io/popglen-tutorial-reports/01_tutorial-mapping-qc.html">Here is an example for the tutorial report</a>
+you should get after running these steps.</p>
+<p>You'll have quite a few QC outputs:</p>
+<ul>
+<li>fastp trimming reports per sample and combined in a multiqc file</li>
+<li>A filtering summary describing how much of genome will be used in downstream
+  analyses (for now, only removing small contigs and non-autosomal chrs)</li>
+<li>A multiqc DNA damage report for the historical samples from DamageProfiler</li>
+<li>A multiqc report of the Qualimap reports for all samples</li>
+<li>A table of endogenous content (mapping rate) and sequencing depth per sample</li>
+<li>Boxplots and tables of the identity by state distance to the reference for
+  all samples in various groupings.</li>
+</ul>
+<p>Explore the report outputs, but remember this is a tutorial dataset, so it may
+not be a great representation of 'good' data. As the first four are basically
+reports from their respective tools, we will only look at the last two.</p>
+<p>First, let's open the section 'Sample depth and endogenous content'. This is a
+searchable, sortable, adjustable table containing sample names and meta-data,
+the mapping rate for collapsed reads, uncollapsed reads, and all reads, as well
+as the mean and standard deviation of sequencing depth calculated three ways.
+Notice that modern samples only have uncollapsed mapping rates and historical
+only have collapsed because of the different processing paths of the sample
+types.</p>
+<p>The three depth metrics are calculated with no filtering
+(<code>allsites-unfilt.depth</code>), with only mapping and base quality filtering
+(<code>allsites-mapq30-baseq30-filt.depth</code>), and with the mapping and base quality
+filters plus the sites filters (<code>allsites-filts.depth</code>). We'll get more into
+these filters in the next section. The main thing to see here is that we can
+have different depths depending on how we calculate it. I tend to care about the
+last one the most, this is the sequencing depth at the sites you will use in
+your analyses.</p>
+<p>Next, let's look at the IBS results. This will help us see if the short fragment
+length of our historical samples has led to reference bias. For this, we will
+open the plot in the '7 Sample IBS to reference (ref bias)' section, looking
+at the one with 'allsites-filts' for the filtering and 'Time' for the grouping:</p>
+<p><img alt="A boxplot comparing hist and mod sample ref bias" src="../images/ref-bias.png" /></p>
+<p>It would appear not, in fact, they are further from the reference. This is
+expected for two reasons: (1) we haven't corrected for DNA damage, so some
+excess differences are expected due to damage and (2) the historical samples are
+more distant in time from the reference than the modern and we will observe the
+genetic drift over that time as differences. This second point will likely
+depend on the sampling of your reference. Either way, we do not see evidence
+that we face reference bias due to the historical samples' small fragment size.</p>
+<details class="question">
+<summary>Is this useful if I only have modern samples?</summary>
+<p>Yes, this can help you determine if there is some potential sources of
+reference bias by population (see the other grouping boxplots), or if some
+samples seem to be especially strange, potentially suggesting that there is
+something off in their underlying data. For instance, a sample with
+considerably lower IBS than the rest may indicate a misidentified species or
+a contaminated sample.</p>
+</details>
+<h3 id="sites-filters">Sites filters</h3>
+<p>When doing analyses, only reads passing the base and mapping quality thresholds
+in the config file can be used, which are set here:</p>
+<div class="highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">config/config.yaml</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">115</span>
+<span class="normal">116</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nt">mapQ</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">30</span>
+<span class="nt">baseQ</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">20</span>
+</code></pre></div></td></tr></table></div>
+<p>By default I've set mapping quality to 30 (representing a 1 in 1000 error rate),
+and base quality to 20 (representing a 1 in 100 error rate), which are common
+cutoffs, but can be adjusted based on what you feel suits your data. If you want
+to investigate the distributions of these scores in your data, consider checking
+the Qualimap reports (I don't believe this is in the MultiQC in the Snakemake
+report, but can be found in the individual sample reports in
+<code>results/mapping/qc/qualimap</code> if you've aligned your data with PopGLen or
+<code>results/datasets/{dataset}/qc/user-provided-bams/qualimap/</code> if you've brought
+your own BAMs).</p>
+<p>An important component of this workflow is the site based filtering. To do this,
+we limit our analyses to a list of 'good sites' determined by a set of filters.
+This filtering scheme was inspired by similar sites based filtering used in
+studies using ANGSD (e.g.
+<a href="https://doi.org/10.1016/j.cub.2021.01.064">Pečnerová et al. 2021, <em>Curr. Biol.</em></a>
+and <a href="https://doi.org/10.1111/mec.16851">Quinn et al. 2023, <em>Mol. Ecol.</em></a>).
+With everything disabled as we have it now, you should already have a sites
+file summarized in the report (under '3 Filtering Summary'), but it will only
+describe the removal of the contigs we specified in the beginning of the config
+file:</p>
+<p><img alt="A table describing filters for the genome" src="../images/site-filt-basic.png" /></p>
+<p>So, how else can we filter? We have a few options that can be enabled:</p>
+<div class="highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">config/config.yaml</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="w">  </span><span class="c1"># sites file filters</span>
+<span class="hll"><span class="w">  </span><span class="nt">pileup-mappability</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</span><span class="w">  </span><span class="nt">repeatmasker</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">bed</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">local_lib</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">build_lib</span><span class="p">:</span>
+<span class="hll"><span class="w">  </span><span class="nt">extreme_depth</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</span><span class="w">  </span><span class="nt">dataset_missing_data</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">population_missing_data</span><span class="p">:</span>
+</code></pre></div></td></tr></table></div>
+<p>The above section of the config file handles enabling of the main filter sets.
+For this tutorial, we will turn on two as shown above:</p>
+<ul>
+<li><code>pileup-mappability</code> uses GenMap to calculate mappability scores for each base
+  and we use a custom script to calculate the average mappability of each site
+  for all overlapping fragments. This helps us to remove sites that are
+  difficult to map to due to being a part of sequences that are frequently
+  repeated.</li>
+<li><code>extreme_depth</code> removes sites that have extremely high or low global
+  sequencing depth across your dataset and/or the depth categories in your
+  sample list.</li>
+</ul>
+<p>In addition to these two filters, there are three others. First, we could filter
+out repeats, with three built-in ways to do this. One is to provide a BED file
+with the coordinates of repeats to be filtered out. The second is to use a local
+repeat library FASTA file to identify repeats with RepeatMasker. The third is to
+use RepeatModeler to build a repeat library de novo from the reference, then use
+RepeatMasker to use that library to identify the repeat regions</p>
+<details class="note">
+<summary>Repeat filter vs mappability filter</summary>
+<p>Generally, the repeat filter and the pileup mappability filter have a lot of
+overlap, so I only enable one usually. In this tutorial, we use the pileup
+mappability filter as it takes less time to run, but for your data you may
+wish to use the repeat based filters. For these, you should use the option
+highest on the list that you have the resources to use. If you have a BED of
+repeats, use that as it will take no time at all. If you only have a repeat
+library, then use the <code>local_lib</code> option. If you don't have anything, then
+you should build your own, but this often can take days. See the
+<a href="../config/">configuration docs</a> for how to set these filters.</p>
+</details>
+<p>The remaining two options allow you to filter out sites based on data
+missingness, removing sites with no usable reads in too many samples in the
+dataset or in any population. I do not recommend using these unless you know you
+need them (i.e. you require identical sites to be used across all analyses).
+Instead, it is better to set the missing data filter in ANGSD as is standard
+practice (and available later in configuration).</p>
+<details class="note">
+<summary>Alternate ways to filter extreme depth</summary>
+<p>We aren't diving into configuring the extreme depth filter, leaving it set
+to keep only positions between 0.5x and 1.5x the global median depth. You
+can customize these multipliers or set percentiles as filters instead. See
+the <a href="../config/">configuration docs</a> for more details on this.</p>
+</details>
+<p>All right, with that set up, let's run the workflow again. You'll see some rules
+are being rerun if you do a dry run. This is because with our new filters,
+calculations made on filtered sites must be redone. Snakemake is good about
+recognizing these changes, and I have tried to ensure that this pipeline is
+compatible with all of them, but please open an issue if you find they are not
+triggering when expected.</p>
+<p>If you make the report again
+(<a href="https://zjnolen.github.io/popglen-tutorial-reports/02_tutorial-site-filts.html">here is an example for this point in the tutorial</a>),
+you'll find that the table under '3 Filtering
+Summary' should look more like this now:</p>
+<p><img alt="A table describing more filters for the genome" src="../images/site-filt-full.png" /></p>
+<p>As you can see, we've added a few lines, pileup mappability, and various depth
+filters. These are all calculated independently across the genome, and you can
+see how much of the genome passes each filter. By far mappability cuts out the
+most, and that's because we have a good bit of the genome being repetitive
+content that we can't reliably map to. Ultimately, we are using ~22% of the
+'genome' for our analyses, but we can be quite confident in our ability to
+genotype that 22%.</p>
+<p>You might also want to take a look at the '6 Sample depth and endogenous
+content' section again. Before, the mean depths for
+<code>allsites-mapq30-baseq30-filt.depth</code> and <code>allsites-filts.depth</code> were quite
+similar. This is because the first applies only the mapping and base quality
+filters and the second applies these, plus the sites filter. Before this step,
+our sites filter barely did anything, but now it removes quite a bit. Now there
+is a slightly larger difference between the two measures, and the depth at our
+filtered sites is on average higher than we get with just the mapping and base
+quality filters. There's also a lower standard deviation, suggesting that we
+have successfully removed repeats that might get really variable mapping rates.</p>
+<details class="note">
+<summary>Can I use my own filters?</summary>
+<p>If you have extra filters you want to add, you can provide them to the
+pipeline in BED or GFF format. These files should contain the sites you
+want included. These are added in the filter sets section of the config:</p>
+<div class="highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">config/config.yaml</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">106</span>
+<span class="normal">107</span>
+<span class="normal">108</span>
+<span class="normal">109</span>
+<span class="normal">110</span>
+<span class="normal">111</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1">#=========================== Filter Sets ==============================#</span>
+
+<span class="nt">filter_beds</span><span class="p">:</span>
+<span class="hll"><span class="w">  </span><span class="nt">neutral</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;resources/neutral_sites.bed&quot;</span>
+</span>
+<span class="nt">only_filter_beds</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+</code></pre></div></td></tr></table></div>
+<p>In this example, we add a BED file containing neutral sites as a filter.
+This is intersected without our any filters used in PopGLen to create a
+filter scheme called <code>neutral-filts</code> in addition to the <code>allsites-filts</code>
+one generated by default and analyses will all be run once for each filter
+scheme. If you enable <code>only_filter_beds</code> and turn off any of the filters in
+PopGLen, you will essentially only use your own filter set. For more info,
+see the <a href="../config/">configuration docs</a> for more details on these settings.</p>
+</details>
+<h3 id="population-genomic-analyses">Population genomic analyses</h3>
+<p>Next, we will enable some population genomic analyses. We will do this slowly,
+enabling a few analyses at a time and looking at results before moving to the
+next.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>I often enable many analyses at once, or group together different analyses.
+See the <a href="#suggested-workflow-batches">section at the end of this tutorial</a>
+for my recommendations on reasonable batches to run your analyses in that
+should get most of your results generated within a couple runs of PopGLen.</p>
+</div>
+<h4 id="angsd-settings">ANGSD Settings</h4>
+<p>As most of these analyses are run with ANGSD or from genotype likelihoods
+generated in ANGSD, we will first take a look at the settings that are going
+to be passed to ANGSD:</p>
+<div class="highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">config/config.yaml</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">141</span>
+<span class="normal">142</span>
+<span class="normal">143</span>
+<span class="normal">144</span>
+<span class="normal">145</span>
+<span class="normal">146</span>
+<span class="normal">147</span>
+<span class="normal">148</span>
+<span class="normal">149</span>
+<span class="normal">150</span>
+<span class="normal">151</span>
+<span class="normal">152</span>
+<span class="normal">153</span>
+<span class="normal">154</span>
+<span class="normal">155</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="w">  </span><span class="nt">angsd</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">gl_model</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span><span class="w"> </span><span class="c1"># gl_model - 1=SAMtools, 2=GATK, 3=SOAPsnp, 4=SYK</span>
+<span class="w">    </span><span class="nt">maxdepth</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">100</span><span class="w"> </span><span class="c1"># for depth calc only</span>
+<span class="w">    </span><span class="nt">mindepthind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="w">    </span><span class="nt">minind_dataset</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.75</span><span class="w"> </span><span class="c1"># as a proportion of N</span>
+<span class="w">    </span><span class="nt">minind_pop</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.75</span><span class="w"> </span><span class="c1"># as a proportion of N</span>
+<span class="hll"><span class="w">    </span><span class="nt">rmtrans</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</span><span class="w">    </span><span class="nt">extra</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="c1"># goes to all ANGSD runs</span>
+<span class="w">    </span><span class="nt">extra_saf</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="c1"># goes to all -doSaf runs</span>
+<span class="w">    </span><span class="nt">extra_beagle</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="c1"># goes to all -doGlf 2 runs</span>
+<span class="w">    </span><span class="nt">domajorminor</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span><span class="w"> </span><span class="c1"># Currently only compatible with values 1, 2, 4, 5</span>
+<span class="w">    </span><span class="nt">domaf</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="w">    </span><span class="nt">snp_pval</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;1e-6&quot;</span>
+<span class="hll"><span class="w">    </span><span class="nt">min_maf</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.05</span><span class="w"> </span><span class="c1"># Set -1 to disable</span>
+</span><span class="w">    </span><span class="nt">mindepthind_heterozygosity</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+</code></pre></div></td></tr></table></div>
+<p>Users familiar with ANGSD will likely be able to determine what these options
+entail:</p>
+<ul>
+<li><code>gl_model</code> corresponds to <code>-GL</code> and sets what model to use to calculate
+  likelihoods. SAMtools and GATK are most popular, I mostly use GATK,
+  <a href="https://popgen.dk/angsd/index.php/Glcomparison">though see ANGSD's docs for a comparison</a>.</li>
+<li><code>maxdepth</code> corresponds to <code>-maxDepth</code> on <code>-doDepth</code> calls, and sets the
+  highest depth histogram bin for single sample depth estimates. The same will
+  be set to this value times the number of samples for global depth calculation.
+  (<a href="https://popgen.dk/angsd/index.php/Depth">ANGSD docs</a>).</li>
+<li><code>mindepthind</code> corresponds to <code>-setMinDepthInd</code> and is applied at all times,
+  setting the minimum depth to include a site for an individual (1 is ANGSD
+  default, <a href="https://popgen.dk/angsd/index.php/Filters">ANGSD docs</a>).</li>
+<li><code>minind_dataset</code> is a proportion that will be multiplied by the number of
+  samples in the dataset and fed to <code>-minInd</code> for analyses that include the
+  whole dataset (i.e. PCA, Admix, IBS matrix). Sites with data for fewer than
+  this proportion of individuals are excluded from these analyses
+  (<a href="https://popgen.dk/angsd/index.php/Filters">docs</a>).</li>
+<li><code>minind_pop</code> is a proportion that will be multiplied by the number of
+  samples in a population fed to <code>-minInd</code> for analyses that include only that
+  population (i.e. thetas, SFS, <em>F</em><sub>ST</sub>, runs of homozygosity). Sites with  data
+  for fewer than this proportion of individuals are excluded from the analysis
+  for that population (<a href="https://popgen.dk/angsd/index.php/Filters">docs</a>).</li>
+<li><code>rmtrans</code> determines whether transitions should be excluded as a means to
+  account for DNA damage in historical samples. This is applied across all
+  analyses using the correct option (<code>-rmTrans</code> for beagle files and <code>-noTrans</code>
+  for saf files,
+  <a href="https://popgen.dk/angsd/index.php/SFS_Estimation">docs for saf</a> and
+  <a href="https://popgen.dk/angsd/index.php/Major_Minor">docs for beagle</a>).</li>
+<li><code>extra*</code> are various extra parameters to pass to ANGSD at all times (<code>extra</code>)
+  or for certain analyses (<code>extra_saf</code> and <code>extra_beagle</code>). This is mostly
+  useful for options like <code>-trim</code> which can help correct for DNA damage or
+  <code>-baq</code> if you want to run baq recalibration on your quality scores. Mapping
+  and base quality filters are automatically added and need not be specified.
+  Leaving these blank is equivalent to ANGSD default filtering as seen
+  <a href="https://www.popgen.dk/angsd/index.php/Input">here</a>. Note that though
+  many studies enable <code>-uniqueOnly 1</code>, it is unneeded here as BWA is used for
+  mapping, which sets multi-mapping reads to a mapping quality of 0.</li>
+</ul>
+<details class="note">
+<summary>A note about the <code>-baq</code> and <code>-C</code> options</summary>
+<p>I have noticed that the commonly used ANGSD options of <code>-baq 1 -C 50</code>
+(which themselves are originally from SAMtools) create a sequencing depth
+bias in my results when I have large differences in depth between samples.
+This has occurred across multiple datasets I've worked containing different
+species. Consider leaving these out, or at least checking that this does not
+apply to your data.</p>
+<p><img alt="A scatter plot showing sequencing depth bias" src="../images/depth-het.png" /></p>
+</details>
+<ul>
+<li><code>domajorminor</code> corresponds to <code>-doMajorMinor</code> and is used to set how major and
+  minor alleles are inferred for relevant analyses
+  (<a href="https://popgen.dk/angsd/index.php/Major_Minor">docs</a>).</li>
+<li><code>domaf</code> correspons to <code>-doMaf</code> and sets how allele frequencies are inferred
+  where relevant (<a href="https://popgen.dk/angsd/index.php/Allele_Frequencies">docs</a>).</li>
+<li><code>snp_pval</code> corresponds to <code>-SNP_pval</code> and sets the p-value threshold for
+  calling a site as a SNP. 1e-6 is commonly used
+  (<a href="https://popgen.dk/angsd/index.php/Allele_Frequencies">docs</a>)</li>
+<li><code>min_maf</code> corresponds to <code>-minMaf</code> and determines the minimum minor allele
+  frequency required to include a SNP in analyses
+  (<a href="https://popgen.dk/angsd/index.php/Allele_Frequencies">docs</a>).</li>
+<li><code>mindepthind_heterozygosity</code> corresponds to <code>-setMinDepthInd</code> but only when
+  estimating individual heterozygosity. This is useful if you only want to
+  consider sites with a certain depth when estimating heterozygosity, which can
+  improve the reliability of estimates.</li>
+</ul>
+<p>Most of this will be kept to our defaults for this tutorial and the defaults are
+meant to match the average settings I've found for studies that utilize ANGSD in
+the ways PopGLen targets. The only changes we make are setting <code>rmtrans</code> to
+<code>true</code>, and <code>min_maf</code> to <code>0.05</code>. The first is to account for post-mortem DNA
+damage expected in our historical samples. For datasets with no historical
+samples or that correct via another method (such as MapDamage or using <code>-trim</code>),
+this can be kept on <code>false</code>. We set a minor allele frequency filter to remove
+low frequency variants from SNP based analyses. Whether you use this filter,
+and what value you set, will depend on your dataset's needs. Just remember that
+this only controls the filtering at SNP calling, and downstream tools may
+filter minor allele frequency as well (for instance, by default, NGSadmix and
+PCAngsd set a MAF filter of 0.05).</p>
+<p>These settings simply get us ready to run analyses, so we've added no new
+analyses. However, if you'd like, you can rerun now and see that some rules
+will be rerun. This is because they now will exclude transitions. This can be
+especially useful to look at in the IBS to reference QC results.</p>
+<h4 id="linkage-disequilibrium">Linkage Disequilibrium</h4>
+<p>First, we will look at linkage disequilibrium, as it can help inform some
+settings down the line, such as sliding window size and linkage pruning
+settings:</p>
+<div class="highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">config/config.yaml</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="w">  </span><span class="c1"># population genomic analyses</span>
+<span class="w">  </span><span class="nt">estimate_ld</span><span class="p">:</span>
+<span class="hll"><span class="w">  </span><span class="nt">ld_decay</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</span></code></pre></div></td></tr></table></div>
+<p>Here, we will enable just the LD decay estimation with ngsLD. This plots a
+decay curve showing how linkage disequilibrium decreases with distance between
+SNPs. We can additionally enable the first option if we want linkage
+disequilibrium estimates for a random sample of the genome.</p>
+<details class="note">
+<summary>ngsLD configuration</summary>
+<p>There are a few parameters for the LD estimation available in the config
+file that we won't dive into here, and I've set the tutorial up to run
+quick rather than get the most robust estimates. Check the
+<a href="../config/">configuration docs for details</a>.</p>
+</details>
+<p>If we run now, genotype likelihoods will be estimated and SNPs called for the
+dataset and per population and handed off to ngsLD to do the LD analyses. Once
+completed, we can make another report
+(<a href="https://zjnolen.github.io/popglen-tutorial-reports/03_tutorial-ld-decay.html">here is an example of the report at this stage</a>).
+Inside you should find plots like below in the '01 Linkage Disequilibrium Decay'
+section:</p>
+<p><img alt="A linkage disequilibrium decay curve" src="../images/ld-decay-all.png" /></p>
+<p><img alt="A linkage disequilibrium decay curve, less steep" src="../images/ld-decay-pop.png" /></p>
+<p>It seems to decay pretty fast in the dataset (top), and a bit slower with
+higher background LD in each population (bottom), which is expected as
+individuals in a population likely are more closely related on average than
+individuals across the dataset, assuming the dataset is not completely
+panmictic. With this knowledge, we might choose a window size of 25kb for our
+window based analyses and consider SNPs as independent after 25kb or below 0.2
+r<sup>2</sup> for the dataset and after 25kb or below 0.4 r<sup>2</sup> for a population when
+pruning. We will look at these when we set up the respective analyses.</p>
+<h4 id="principal-component-analysis">Principal Component Analysis</h4>
+<p>Principal Component Analysis allows us to explore population genetic
+structure. As it assumes independence of sites, we will need to prune our SNP
+data first. The pipeline will use ngsLD and
+<a href="https://github.com/fgvieira/prune_graph">prune_graph</a> to prune the Beagle file
+and then estimate a covariance matrix using PCAngsd and plot the results. To set
+up the run, enable it in your config and make sure the pruning settings are as
+we want for the dataset:</p>
+<div class="highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">config/config.yaml</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="w">  </span><span class="c1"># population genomic analyses</span>
+<span class="w">  </span><span class="nt">estimate_ld</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">ld_decay</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="hll"><span class="w">  </span><span class="nt">pca_pcangsd</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</span></code></pre></div></td></tr></table></div>
+<div class="highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">config/config.yaml</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">159</span>
+<span class="normal">160</span>
+<span class="normal">161</span>
+<span class="normal">162</span>
+<span class="normal">163</span>
+<span class="normal">164</span>
+<span class="normal">165</span>
+<span class="normal">166</span>
+<span class="normal">167</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="w">  </span><span class="nt">ngsld</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">max_kb_dist_est-ld</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">4000</span>
+<span class="w">    </span><span class="nt">rnd_sample_est-ld</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.001</span>
+<span class="w">    </span><span class="nt">max_kb_dist_decay</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">100</span>
+<span class="w">    </span><span class="nt">rnd_sample_decay</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.01</span>
+<span class="w">    </span><span class="nt">fit_LDdecay_extra</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;--fit_level</span><span class="nv"> </span><span class="s">100</span><span class="nv"> </span><span class="s">--fit_boot</span><span class="nv"> </span><span class="s">100</span><span class="nv"> </span><span class="s">--plot_size</span><span class="nv"> </span><span class="s">3,6</span><span class="nv"> </span><span class="s">--plot_data</span><span class="nv"> </span><span class="s">--plot_no_legend</span><span class="nv"> </span><span class="s">--plot_y_lim</span><span class="nv"> </span><span class="s">0.5&quot;</span>
+<span class="w">    </span><span class="nt">fit_LDdecay_n_correction</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="hll"><span class="w">    </span><span class="nt">max_kb_dist_pruning_dataset</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">25</span><span class="w"> </span><span class="c1"># used for PCA, Admix, not ngsF-HMM</span>
+</span><span class="hll"><span class="w">    </span><span class="nt">pruning_min-weight_dataset</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.2</span><span class="w"> </span><span class="c1"># used for PCA, Admix, not ngsF-HMM</span>
+</span></code></pre></div></td></tr></table></div>
+<p>Now, we can run the pipeline again. Notice that we won't have to make the Beagle
+file, it has already been made for the LD analysis. Instead, we will go straight
+to pruning. Once the run is complete, you can make the report
+(<a href="https://zjnolen.github.io/popglen-tutorial-reports/04_tutorial-pca.html">example here</a>),
+and we will have plots of PC1/2 and PC3/4:</p>
+<p><img alt="A PCA showing population structure" src="../images/pca.png" /></p>
+<p>There seems to be some population structure, with the modern Western Skåne
+population standing out the most. However, there is something strange here: two
+samples tightly clustered at the edge of PC1. This can commonly happen when
+there are close relatives in our dataset, and we should have actually checked
+for this first, as genomic PCAs assume there are not. I wanted to illustrate
+what this might look like, but we can easily remove them using our config file.
+First, however, we should identify which samples are related.</p>
+<h4 id="relatedness">Relatedness</h4>
+<p>Two ways to estimate relatedness are currently available in PopGLen, IBSrelate
+(<a href="https://doi.org/10.1111/mec.14954">Waples et al. 2019, <em>Mol. Ecol.</em></a>) and
+NgsRelate v2
+(<a href="https://doi.org/10.1093/gigascience/giz034">Hanghøj et al. 2019, <em>GigaScience</em></a>).
+For IBSrelate, both the IBS-based and SFS-based method implemented in ANGSD are
+available. The SFS-based method can also be run from ngsRelate using SNP data.
+Finally, if population samples are large enough to estimate allele frequencies,
+the allele frequency based method of NgsRelate is also available. You can enable
+as many of these as you want in the following lines, but for the tutorial we
+will perform the SFS-based IBSrelate method as it is implemented in NgsRelate.</p>
+<div class="highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">config/config.yaml</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span>
+<span class="normal">62</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="w">  </span><span class="nt">relatedness</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">ibsrelate_ibs</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">ibsrelate_sfs</span><span class="p">:</span>
+<span class="hll"><span class="w">    </span><span class="nt">ngsrelate_ibsrelate-only</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</span><span class="w">    </span><span class="nt">ngsrelate_freqbased</span><span class="p">:</span>
+</code></pre></div></td></tr></table></div>
+<p>This is a relatively fast way to assess relatedness, and we already have the
+Beagle file ready to do it (currently in parallel processed chunks), so you'll
+see there's really only merging of the chunks and running ngsRelate to be done.</p>
+<p>Let's generate a report
+(<a href="https://zjnolen.github.io/popglen-tutorial-reports/05_tutorial-ngsrelate.html">find an example here</a>)
+and look under '02 Relatedness'. There we will have a table. To find the most
+related individuals, sort it by the KING-kinship coefficient:</p>
+<p><img alt="A table of pairwise sample relatedness" src="../images/relatedness.png" /></p>
+<p>These coefficients are going to be a bit off for some individuals, as we are
+using such a small slice of the actual genome (&lt;1%). However, we are still able
+to see two relatively highly related pairs of individuals. The first are two
+individuals from WSkane1951, the ones that are likely skewing our PCA. If we
+look at the
+<a href="https://zjnolen.github.io/popglen-tutorial-reports/tutorial-full-data.html">report using the full genome data</a>,
+we can see that these are full siblings (expected KING = 0.25), so we are going
+to want to remove one from the PC and Admix analyses. There's also another
+pair with a high coefficient from WSkane2021. These actually are not very
+related (using the full data we see KING = 0.004), but by chance have high IBS
+similarity in this subset of the genome. As that's the data we are using for
+our analyses, we will remove one of them too. We can remove related individuals
+from the PCA and Admix by modifying the following option in the config:</p>
+<div class="highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">config/config.yaml</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1">#===================== Sample Set Configuration =======================#</span>
+
+<span class="nt">exclude_ind</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span>
+
+<span class="hll"><span class="nt">excl_pca-admix</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;MZLU153216&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;MZLU107497&quot;</span><span class="p p-Indicator">]</span>
+</span></code></pre></div></td></tr></table></div>
+<p>Only one individual needs to be removed from each pair of relatives. Let's
+re-run with this configuration to see how the PCA changes. Only the PCA will
+have to be re-run, after the individuals are dropped from the input Beagle file.
+This would generate a plot more like the following
+<a href="https://zjnolen.github.io/popglen-tutorial-reports/06_tutorial-pca-norel.html">[example report]</a>:</p>
+<p><img alt="A PCA illustrating population structure" src="../images/pca-norel.png" /></p>
+<p>In this example we only see weak structure, but this may be due to our tutorial
+dataset having little data to infer this. Looking at the full data helps us see
+things a bit better, and is more what you might expect from a real dataset:</p>
+<p><img alt="PCA using full genome data" src="../images/pca-full.png" /></p>
+<h4 id="admixture">Admixture</h4>
+<p>As a way to more formally look into population clustering, we can use admixture
+analysis, for which we will use NGSadmix. This tool uses the same pruned,
+relative removed Beagle file as PCAngsd. Turn it on with the following option:</p>
+<div class="highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">config/config.yaml</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="w">  </span><span class="c1"># population genomic analyses</span>
+<span class="w">  </span><span class="nt">estimate_ld</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">ld_decay</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">  </span><span class="nt">pca_pcangsd</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="hll"><span class="w">  </span><span class="nt">admix_ngsadmix</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</span></code></pre></div></td></tr></table></div>
+<p>PopGLen uses a custom wrapper to run up to 100 replicates per K of NGSadmix
+(<a href="https://doi.org/10.1534/genetics.113.154138">Skotte et al. 2013; <em>Genetics</em></a>),
+and estimate the best K, using the method described by
+<a href="https://doi.org/10.1016/j.cub.2021.01.064">Pečnerová et al. (2021, <em>Curr. Biol.</em>)</a>.
+In this method, the best K is the highest K in which the three highest
+likelihood replicates converge (&lt;2 log likelihood unit difference by default).
+Additionally, we use EvalAdmix
+(<a href="https://doi.org/10.1111/1755-0998.13171">Garcia-Erill &amp; Albrechtsen; <em>Mol. Ecol. Res.</em></a>)
+to plot the correlation of residuals for each value of K as another means to
+assess fit. Often, limited sampling prevents higher values of K from converging,
+but EvalAdmix may help determine how well a model fits even if sampling limits
+the ability to converge at higher Ks.</p>
+<p>We can set which values of K to run, and customize the convergence criteria in
+the config file, but the settings included are good for this tutorial:</p>
+<div class="highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">config/config.yaml</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">186</span>
+<span class="normal">187</span>
+<span class="normal">188</span>
+<span class="normal">189</span>
+<span class="normal">190</span>
+<span class="normal">191</span>
+<span class="normal">192</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="w">  </span><span class="nt">ngsadmix</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">kvalues</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">1</span><span class="p p-Indicator">,</span><span class="nv">2</span><span class="p p-Indicator">,</span><span class="nv">3</span><span class="p p-Indicator">,</span><span class="nv">4</span><span class="p p-Indicator">,</span><span class="nv">5</span><span class="p p-Indicator">]</span>
+<span class="w">    </span><span class="nt">reps</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">100</span>
+<span class="w">    </span><span class="nt">minreps</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">20</span>
+<span class="w">    </span><span class="nt">thresh</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
+<span class="w">    </span><span class="nt">conv</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3</span>
+<span class="w">    </span><span class="nt">extra</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;-maxiter</span><span class="nv"> </span><span class="s">4000&quot;</span>
+</code></pre></div></td></tr></table></div>
+<details class="question">
+<summary><code>-maxiter 4000</code>?</summary>
+<p>It's good to make sure that your replicate runs are finishing because they
+converge, not because they hit the default maxiter value for NGSadmix. We
+keep it set to 4000 as it will not increase run times for datasets that
+easily converge, but have found it enables replicates to converge more
+reliably for datasets where structure is weak.</p>
+</details>
+<p>If we run again now, we will see that only NGSadmix and EvalAdmix need to run.
+On real data, this can be one of the longest running analyses in PopGLen, so I
+recommend running it in parallel with others, but for the tutorial its fast
+enough to run now. After generating a report for the new run
+(<a href="https://zjnolen.github.io/popglen-tutorial-reports/07_tutorial-admix.html">example here</a>),
+you will find the admixture results from NGSadmix and EvalAdmix under '03.2
+Admixture'. The admixture plots for all values of K will be assembled in a plot
+like the one below:</p>
+<p><img alt="Admixture plots for the populations at K=1-5" src="../images/admix.png" /></p>
+<p>In this plot, the K's for which multiple replicates converged will be in bold.
+This is only K=1 for the tutorial dataset, likely because the population
+structure here is quite weak and this subset of the genome isn't enough to get
+a good estimate of it. We can also check the correlation of residuals estimated
+by EvalAdmix to see how well just one cluster fits the data. In this plot, a
+positive correlation suggests samples/populations have a shared history that is
+not captured in the model and a negative suggest they have a more different
+history than the model suggests.</p>
+<p><img alt="Correlation of residuals for admixture analysis" src="../images/evaladmix.png" /></p>
+<p>These correlations are positive between each population and itself, suggesting
+individuals within populations share more similar backgrounds than currently
+modeled. We also have negative correlations between the two historical
+populations and the modern Western Skåne population, suggesting that they are
+more distinct than currently modeled. Let's take a look at what the admixture
+results are
+<a href="https://zjnolen.github.io/popglen-tutorial-reports/tutorial-full-data.html">when we perform the analysis using the whole genome</a>,
+rather than just the tutorial subset:</p>
+<p><img alt="Admixture analyses using the whole genome" src="../images/admix-full.png" /></p>
+<p>Here we see that the results converge at K = 3, which divides our dataset into
+three clusters, one containing all the historical samples and one each for the
+two modern populations. The correlation of residuals for this K are much closer
+to zero for both samples and populations, suggesting that this model is quite a
+good fit for our data:</p>
+<p><img alt="Correlation of residuals for WG admixture analysis" src="../images/evaladmix-full.png" /></p>
+<p>Take a look at the documenation for
+<a href="https://www.popgen.dk/software/index.php/NgsAdmixv2">NGSadmix</a> and
+<a href="https://popgen.dk/software/index.php/EvalAdmix">EvalAdmix</a> for more information
+on how to use and interpret these tools.</p>
+<h4 id="site-frequency-spectra-genetic-diversity-and-fst">Site frequency spectra, genetic diversity, and <em>F</em><sub>ST</sub></h4>
+<p>Let's try enabling a few things at once, to get an idea of what that's like. In
+this case, there are several metrics that use similar files, so we will work
+with them. To calculate thetas (genetic diversity metrics) and neutrality
+statistics, as well as <em>F</em><sub>ST</sub>, first a SAF file is made for each population,
+containing the site allele frequencies, which is used to make a site frequency
+spectrum, which is used as a prior to estimate theta and <em>F</em><sub>ST</sub> globally and in
+windows. Individual heterozygosity is estimated by making a SAF file for each
+individual, generating a single sample SFS, and using the middle value
+(heterozygous site count) divided by the total number of sites.</p>
+<p>Let's enable these:</p>
+<div class="highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">config/config.yaml</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span>
+<span class="normal">65</span>
+<span class="normal">66</span>
+<span class="normal">67</span>
+<span class="normal">68</span>
+<span class="normal">69</span>
+<span class="normal">70</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="w">  </span><span class="nt">1dsfs</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">1dsfs_boot</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">2dsfs</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">2dsfs_boot</span><span class="p">:</span>
+<span class="hll"><span class="w">  </span><span class="nt">thetas_angsd</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</span><span class="hll"><span class="w">  </span><span class="nt">heterozygosity_angsd</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</span><span class="w">  </span><span class="nt">fst_angsd</span><span class="p">:</span>
+<span class="hll"><span class="w">    </span><span class="nt">populations</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</span><span class="w">    </span><span class="nt">individuals</span><span class="p">:</span>
+</code></pre></div></td></tr></table></div>
+<p>Here, we enable the generation of estimates of Watterson's <em>θ</em>, nucleotide
+diversity (<em>π</em>), and Tajima's <em>D</em> (<code>thetas_angsd</code>), individual heterozygosity
+estimates (<code>heterozygosity_angsd</code>), and <em>F</em><sub>ST</sub> for all population pairs
+(<code>fst_angsd/populations</code>). You might for some reason want to do <em>F</em><sub>ST</sub> for all
+pairs of individuals, so that's an option too, but we won't do it here.</p>
+<p>Notice how I have not enabled any of the SFS options. PopGLen knows the SFS is
+a prerequisite for the latter analyses, so it doesn't need these to be enabled
+to generate it. If you only wanted the SFS and not the other things, you could
+turn these on (and it is a good idea to do so, to ensure that the prior going
+into these analyses looks reasonable). Here, we won't turn them on just as a
+means of illustrating that intermediate files are generated as needed, even if
+not requested. There are also options to generate bootstrapped versions of the
+SFS, which are often used for estimating uncertainty in many demographic
+modeling tools, but we won't go into that in this tutorial. Check the
+<a href="../config/">configuration docs</a> for details on how to set that up.</p>
+<p>When enabling thetas and <em>F</em><sub>ST</sub>, we will generate sliding window and global
+estimates. Let's look into the settings later in the config for this:</p>
+<div class="highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">config/config.yaml</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">178</span>
+<span class="normal">179</span>
+<span class="normal">180</span>
+<span class="normal">181</span>
+<span class="normal">182</span>
+<span class="normal">183</span>
+<span class="normal">184</span>
+<span class="normal">185</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="w">  </span><span class="nt">fst</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">whichFst</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="hll"><span class="w">    </span><span class="nt">win_size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">25000</span>
+</span><span class="w">    </span><span class="nt">win_step</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10000</span>
+<span class="w">  </span><span class="nt">thetas</span><span class="p">:</span>
+<span class="hll"><span class="w">    </span><span class="nt">win_size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">25000</span>
+</span><span class="w">    </span><span class="nt">win_step</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10000</span>
+<span class="w">    </span><span class="nt">minsites</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1000</span>
+</code></pre></div></td></tr></table></div>
+<p>Here, we set a few things. By default we use the Hudson-Bhatia estimator
+(<a href="http://www.genome.org/cgi/doi/10.1101/gr.154831.113">Bhatia et al. 2013; <em>Genome Res.</em></a>)
+to estimate <em>F</em><sub>ST</sub>, as it is more robust to small and uneven sample sizes
+(<a href="https://popgen.dk/angsd/index.php/Fst">equivalent to <code>-whichFst 1</code> in the command</a>.
+<code>-whichFst 0</code> is the ANGSD default). For both <em>F</em><sub>ST</sub> and thetas we set our
+windows to a size of 25kb, with a 10kb step, based on the rather steep LD decay
+we saw in our earlier results. With quick LD decay, large window sizes may
+'smooth' out local signal too much. However, it is useful to explore different
+window sizes, so you can easily change these and rerun the pipeline.</p>
+<p>Thetas have an extra option <code>minsites</code>. This refers to the number of sites a
+window must have data from to be included in the global theta estimates and the
+distribution plots generated for the report. Since global <em>F</em><sub>ST</sub> estimation is
+made by ANGSD, and we only plot that for the report, not the windows, it is not
+needed for the pipeline. The window output from ANGSD remains unaltered for
+both, this setting is just for the reporting by the pipeline.</p>
+<details class="question">
+<summary>What about polarizing to ancestral states?</summary>
+<p>By default, we are assuming no ancestral states are available, but if you
+have them in a reference included in your config, you might want to make an
+additional change in your config to keep the SFS unfolded:</p>
+<div class="highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">config/config.yaml</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">175</span>
+<span class="normal">176</span>
+<span class="normal">177</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="w">  </span><span class="nt">realsfs</span><span class="p">:</span>
+<span class="hll"><span class="w">    </span><span class="nt">fold</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span><span class="w"> </span><span class="c1"># Should only be set to 1, unless ancestral reference is given above</span>
+</span><span class="w">    </span><span class="nt">sfsboot</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">100</span>
+</code></pre></div></td></tr></table></div>
+</details>
+<p>One last thing for this section, since we are enabling heterozygosity, we also
+need to look at how many bootstrap replicates we will do for the SFS. These will
+be used to calculate confidence intervals for the estimates. This can be found
+in the realSFS section of the config:</p>
+<div class="highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">config/config.yaml</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">175</span>
+<span class="normal">176</span>
+<span class="normal">177</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="w">  </span><span class="nt">realsfs</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">fold</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span><span class="w"> </span><span class="c1"># Should only be set to 1, unless ancestral reference is given above</span>
+<span class="hll"><span class="w">    </span><span class="nt">sfsboot</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">50</span>
+</span></code></pre></div></td></tr></table></div>
+<p>While for this you might want a high number (like 300) for the real data to get
+good confidence intervals, we will lower it to 50 here, just to make this run a
+bit faster. Note that currently confidence interval estimation for
+heterozygosity shares a configuration with bootstrap count for 1D and 2D SFS.
+Configuring each of these individually can be relatively simply separated out,
+so please request if desired and I will implement it.</p>
+<p>All right, now lets run it again, this time, quite a few analyses will process
+in parallel. Once done, we can make a report
+(<a href="https://zjnolen.github.io/popglen-tutorial-reports/08_tutorial-thetas.html">example here</a>)
+and you'll find a few new sections: '04.1 Watterson's Theta', '04.2 Nucleotide
+Diversity (Pi)', '04.3 Tajima's D', '04.4 Heterozygosity', and '05 Fst'. For the
+first three, you will get violin plots illustrating the distribution of windowed
+estimates for the given metric in each population:</p>
+<p><img alt="Distributions of genetic diversity and Tajima's D" src="../images/thetas.png" /></p>
+<p>As we can see, the general distributions of nucleotide diversity and Watterson's
+theta are lower in the modern populations than the historical, in line with a
+decline in genetic diversity. We also see that genome-wide estimates of Tajima's
+D are higher in modern populations, suggesting they've been going through a
+population bottleneck as rare variants are becoming less common compared to
+common ones. Note that the general estimates of Tajima's D are negative for all
+populations, which indicates a population expansion. However, this is expected
+for many populations in northern Europe, which expanded out of glacial refugia.
+This highlights how absolute estimates can be misleading, and proper baselines
+must be used to create context, such as the historical populations we use here.</p>
+<p>In addition to the violin plots, you'll get a table for each metric with the
+mean for each population along with 95% confidence intervals estimated from 1000
+bootstrap estimates of the mean, resampling windows with replacement:</p>
+<p><img alt="A table of genetic diversity estimates" src="../images/theta-table.png" /></p>
+<p>Under '04.4 Heterozygosity', we will find some similar files. There will be a
+table with heterozygosity estimates with confidence intervals for each
+individual, this time estimating the intervals from the bootstrapped SFS. Two
+plots are made for heterozygosity - a boxplot of the estimates grouped by
+population and a plot showing individual estimates with confidence intervals:</p>
+<p><img alt="Two plots of individual heterozygosity" src="../images/heterozygosity.png" /></p>
+<p>Finally, under '05 Fst', we will have one plot, a heat map of global <em>F</em><sub>ST</sub>
+estimates between all population pairs. This plots the weighted <em>F</em><sub>ST</sub> estimate
+produced by ANGSD:</p>
+<p><img alt="Genetic differentiation heatmap" src="../images/fst.png" /></p>
+<p>Note that the optimization approach used by ANGSD can sometimes produce <em>F</em><sub>ST</sub>
+estimates below zero, but these are a methodological artifact and should be
+considered equivalent to zero. With that in mind, we can see that the <em>F</em><sub>ST</sub>
+between the historical populations is lower than between the modern, suggesting
+that populations have become more differentiated over the time period. This may
+be simply because they already were isolated and drift has progressed over the
+period, or even sped up due to the smaller population sizes. It can also mean
+that gene flow has become reduced. This possibility is especially likely given
+our clustering analyses and complete lack of differentiation in historical
+populations, suggesting that they were well connected in the past.</p>
+<p>All of these metrics have additionally been performed in windows, which are not
+included in the report, largely as I find the uses for window based versions of
+these estimates are quite diverse and likely better summarized using whatever
+scripts you make yourself. Check the <a href="../outfile-summ/">output file summary</a> for
+information on where you can find these files.</p>
+<details class="note">
+<summary>Impact of sample size on these metrics</summary>
+<p>Genetic diversity, differentiation and neutrality metrics like
+nucleotide diversity, Watterson's theta, <em>F</em><sub>ST</sub>, and Tajima's D can have
+different responses to sample size. Many studies aim for 8+ samples per
+population, but variance in sample size can affect these metrics
+differently. We have tested how close estimates of these metrics can get to
+the estimate produced with 8 individuals at lower sample sizes (see Figure 4
+in
+<a href="https://doi.org/10.1016/j.biocon.2024.110694">Nolen et al. 2024, <em>Biol. Conserv.</em></a>):</p>
+<p><img alt="Deviation expected due to lower sample sizes" src="../images/nrmse.png" /></p>
+<p>Nucleotide diversity is most influenced by common variants, which often can
+be captured at lower sample sizes, so as expected, we found that even just
+two samples captured similar signal to eight. <em>F</em><sub>ST</sub> required closer to 4,
+at least when we used the Bhatia-Hudson estimator. Rare variants are more
+impactful to Watterson's theta and Tajima's D (which measures the deviation
+from the ratio of rare and common variants expected under neutrality). As
+such, the estimates can change considerably with each sample added. We have
+largely utilized repeated subsamples of populations to equivalent size to
+assess the variation in estimates driven by sample size, and code extending
+PopGLen to do this can be found in the above mentioned manuscript. If such
+subsampling would be useful to include natively, or if you have a suggestion
+for an easier way to implement it (currently we just make many replicate
+bamlists, then follow the SAF -&gt; SFS -&gt; Theta/Fst workflow), please make a
+feature or pull request.</p>
+<p>Sample size of course also affects our other analyses, but many of the tools
+used here have documented these effects in their original papers, so are
+best discussed there.</p>
+</details>
+<h4 id="inbreeding-and-runs-of-homozygosity">Inbreeding and Runs of Homozygosity</h4>
+<p>Next up, let's look at estimating inbreeding using identical by descent tracts
+(runs of homozygosity) with ngsF-HMM. This tool uses a model based approach,
+that assumes your samples are in Hardy-Weinberg Equilibrium (except for
+inbreeding). It also assumes independence of sites. So, for our default pathway,
+we call SNPs and prune them per population defined in the sample file. Enabling
+this analysis is a single config line:</p>
+<div class="highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">config/config.yaml</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">71</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="hll"><span class="w">  </span><span class="nt">inbreeding_ngsf-hmm</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</span></code></pre></div></td></tr></table></div>
+<p>Let's also take a look at the settings for the tool in the config file:</p>
+<div class="highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">config/config.yaml</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">168</span>
+<span class="normal">169</span>
+<span class="normal">170</span>
+<span class="normal">171</span>
+<span class="normal">172</span>
+<span class="normal">173</span>
+<span class="normal">174</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="w">  </span><span class="nt">ngsf-hmm</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">estimate_in_pops</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">    </span><span class="nt">prune</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="hll"><span class="w">    </span><span class="nt">max_kb_dist_pruning_pop</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">25</span><span class="w"> </span><span class="c1"># used only for ngsf-hmm</span>
+</span><span class="hll"><span class="w">    </span><span class="nt">pruning_min-weight_pop</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.4</span><span class="w"> </span><span class="c1"># used only for ngsf-hmm</span>
+</span><span class="w">    </span><span class="nt">min_roh_length</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">50000</span>
+<span class="w">    </span><span class="nt">roh_bins</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="w"> </span><span class="nv">100000</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">250000</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">500000</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">1000000</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">2500000</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">5000000</span><span class="w"> </span><span class="p p-Indicator">]</span><span class="w"> </span><span class="c1"># in ascending order, bins are between adjacent values and between min_roh_length and value 1 and the last value and infinity</span>
+</code></pre></div></td></tr></table></div>
+<p>Here, we can toggle whether we want to run the tool for each population (<code>true</code>)
+or for the dataset (<code>false</code>), whether we want to prune, and if so, what settings
+to use for pruning (remember, that background LD is often higher within
+populations, so probably requires a higher min weight than for the dataset or
+pruning may take a very long time or prune away too many sites). We will set
+them to the values we came up with in the LD decay section.</p>
+<p>We also have a few options about runs of homozygosity sizes. ngsF-HMM will
+output a model based value for the inbreeding coefficient per sample. Many
+studies, especially in conservation genomics, calculate the inbreeding
+coefficient as the proportion of the genome in runs of homozygosity greater than
+a certain size (<em>F<sub>RoH</sub></em>). PopGLen will calculate <em>F<sub>RoH</sub></em> for you from the
+tracts inferred by ngsF-HMM while keeping the <em>F</em> estimates from ngsF-HMM in the
+original outputs. <em>F<sub>RoH</sub></em> will be estimated from the runs of homozygosity
+larger than <code>min_roh_length</code> and the autosomal length estimated from the
+reference, excluding any excluded contigs. A plot will be made to show the
+composition of <em>F<sub>RoH</sub></em> by size classes of runs of homozygosity, given as a list
+of integers to <code>roh_bins</code>. This is just for plotting in the report, you still
+get the raw files from ngsF-HMM for downstream analyses. The settings here work
+fine for the tutorial.</p>
+<p>Now, let's give it a run and see what we get
+(<a href="https://zjnolen.github.io/popglen-tutorial-reports/09_tutorial-inbreeding.html">example report</a>).
+Note that we are looking for long runs of homozygosity, yet our tutorial dataset
+is from a tiny subset of the genome. In fact, I've included no continuous
+section of the genome longer than 3Mb, so it will be impossible to find tracts
+longer than this. Still, if you generate a report and check the plots under '06
+Inbreeding' you should see that at least some runs of homozygosity were found:</p>
+<p><img alt="A barplot describing inbreeding coefficients" src="../images/froh.png" /></p>
+<p>This figure shows the total inbreeding coefficient for each individual (total
+height of the bar), grouped by population. This bar is segmented into a
+grayscale gradient, with each shade representing a range of IBD tract lengths.
+These sizes can tell us a bit about the time to the common ancestor of the
+identical by descent segments, so seeing how much of the inbreeding coefficient
+comes from IBD tracts of different sizes can help to understand inbreeding
+patterns in the population, with more recent inbreeding being composed of longer
+tracts, whereas shorter tracts illustrate historical or background inbreeding.
+Since the sizes that matter will depend on the recombination rate of your
+organism, these bins can be customized in the config.</p>
+<p>But this can be a bit hard to see in the tutorial dataset, since we have little
+information to actually estimate these tracts from. Let's take a look at the
+same samples,
+<a href="https://zjnolen.github.io/popglen-tutorial-reports/tutorial-full-data.html">but using the whole genome</a>
+to get a better idea of what we might see in this plot:</p>
+<p><img alt="Inbreeding coefficient barplot" src="../images/froh-full.png" /></p>
+<p>Here, we can see more of the variation in <em>F<sub>RoH</sub></em> across individuals, as well
+as what size classes we estimate contribute to this. We can see that the modern
+populations have individuals with higher inbreeding coefficients than the
+historical, in line with the genetic diversity declines and increases in
+population structure we've already seen. Most of the coefficients come from IBD
+tracts shorter than 1Mb, which likely means that background relatedness has
+just increased, rather than close-kin matings, for which we would see more long
+IBD tracts.</p>
+<p>A second type of plot is available in the report that looks at the relationship
+between the number of runs of homozygosity and their cumulative length. This
+helps to identify individuals that have recent, close-kin inbreeding
+contributing to their inbreeding coefficients, as these individuals will have
+fewer, but longer runs of homozygosity, putting them more towards the bottom
+right of the plot (we will just look at the one for the full data as this plot
+really doesn't show anything in the tutorial subset):</p>
+<p><img alt="Relationship of N RoH with L RoH" src="../images/froh-reg.png" /></p>
+<p>We don't really see this much here, there's quite a linear relationship between
+the number of runs of homozygosity and their cumulative length. This is in line
+with what we saw in the barplot: most of the inbreeding coefficient comes from
+IBD tracts that are relatively short rather than long.</p>
+<h4 id="identity-by-state-matrix">Identity by state matrix</h4>
+<p>Some tools that are popular with low coverage datasets take an identity by state
+matrix as input, such as EEMS
+(<a href="https://doi.org/10.1038/ng.3464">Petkova et al. <em>Nat. Genet.</em></a>). ANGSD has a
+nice <a href="https://popgen.dk/angsd/index.php/PCA_MDS">way to calculate this</a> by
+randomly sampling a base at each position per sample. This is implemented in a
+basic form here, essentially calculating an IBS matrix from SNPs estimated for
+the Beagle file. Enable it with the toggle in the config:</p>
+<div class="highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">config/config.yaml</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">72</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="hll"><span class="w">  </span><span class="nt">ibs_matrix</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</span></code></pre></div></td></tr></table></div>
+<p>You can also change how the state is calculated (the setting of ANGSD's <code>-doIBS</code>
+option). The default is randomly sampling a base (<code>1</code>), but you can also use the
+consensus base (<code>2</code>):</p>
+<div class="highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">config/config.yaml</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">193</span>
+<span class="normal">194</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="w">  </span><span class="nt">ibs</span><span class="p">:</span>
+<span class="hll"><span class="w">    </span><span class="nt">doibs</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+</span></code></pre></div></td></tr></table></div>
+<p>There's no plots here, you just get the matrix in your results folder at
+<code>results/datasets/{dataset}/analyses/IBS/{dataset}.{ref}_{population}{dp}_{sites}-filts.ibsMat</code>
+if you run it. Feel free to give it a try on the tutorial data and see what it
+looks like.</p>
+<h4 id="population-specific-allele-frequencies">Population-specific allele frequencies</h4>
+<p>While the SFS gives us a summary of the allele frequency distribution within
+a population, you may wish to have allele frequencies for each site within each
+population. This can be estimated using ANGSD by enabling the <code>pop_allele_freqs</code>
+option in the config:</p>
+<div class="highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">config/config.yaml</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">73</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="hll"><span class="w">  </span><span class="nt">pop_allele_freqs</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</span></code></pre></div></td></tr></table></div>
+<p>This will generate minor allele frequency counts for each population using the
+<a href="https://www.popgen.dk/angsd/index.php/Allele_Frequencies"><code>-doMaf</code> option in ANGSD</a>.
+This will utilize the ANGSD settings in the config, in particular
+<code>domajorminor</code>, <code>domaf</code>, <code>snp_pval</code>, and <code>min_maf</code>. Enabling this analysis in
+the pipeline generates two files per population, one with the allele frequencies
+for SNPs segregating across the entire dataset and one for SNPs that are
+segregating within the population. Let's enable and run this, then look at
+the following output files. These are long tables, so aren't in the report, and
+we can just compare the first few lines.</p>
+<p>First, let's examine the output for the 2021 western Skåne population, looking
+at the sites that are segregating in the population, allowing the population to
+decide the major allele. This file will have <code>pop-maj</code> towards the end. You can
+see the first few lines with the command:</p>
+<p><code>zcat results/datasets/popglen-tutorial/mafs/popglen-tutorial.tutorial-ref_WSkane2021_allsites-filts.pop-maj.mafs.gz| head -n 5</code></p>
+<div class="highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">results/datasets/popglen-tutorial/mafs/popglen-tutorial.tutorial-ref_WSkane2021_allsites-filts.pop-maj.mafs.gz</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span></pre></div></td><td class="code"><div><pre><span></span><code>chromo  position  major  minor  ref  anc  knownEM  pK-EM         nInd
+1       638       A      C      A    A    0.285317 0.000000e+00  5
+1       713       T      A      T    T    0.137963 9.956036e-12  4
+1       749       G      T      G    G    0.216111 2.936186e-10  5
+1       960       A      T      A    A    0.382065 0.000000e+00  5
+</code></pre></div></td></tr></table></div>
+<p>We have a few columns here, the chromosome, position, major allele, minor
+allele, reference allele, ancestral allele, the allele frequency from the
+optimization process assuming a known major and minor, the p-value for the
+frequency and the number of individuals used to calculate the frequency.</p>
+<p>Now, let's look at the file produced using sites segregating across the dataset,
+allowing the <em>dataset</em> to determine the major allele. This file will have
+<code>dataset-maj</code> at the end and we can look at the first few lines with the
+command:</p>
+<p><code>zcat results/datasets/popglen-tutorial/mafs/popglen-tutorial.tutorial-ref_WSkane2021_allsites-filts.dataset-maj.mafs.gz| head -n 5</code></p>
+<div class="highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">results/datasets/popglen-tutorial/mafs/popglen-tutorial.tutorial-ref_WSkane2021_allsites-filts.dataset-maj.mafs.gz</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span></pre></div></td><td class="code"><div><pre><span></span><code>chromo  position  major  minor  ref  anc  knownEM   nInd
+1       581       C      A      C    C    0.000000  5
+1       593       C      G      C    C    0.000000  5
+1       638       A      C      A    A    0.285317  5
+1       749       G      T      G    G    0.216111  5
+</code></pre></div></td></tr></table></div>
+<p>The columns here are the same as in the previous file, except for a missing
+pK-EM column. This is because we just used the SNPs found in our dataset Beagle
+file, so we didn't actually calculate the SNP p-value. The rows are also
+different. We have two additional SNPs at positions 581 and 593, and we are
+missing the SNP at 713. This is because we are getting frequencies for SNPs
+called across the whole dataset. At position 581 and 593, this population is
+invariable, so we have an allele frequency (<code>knownEM</code>) of 0. In the previous
+file, we had SNPs that were called within the population, so these were not
+included as they were invariable. However, they are variable <em>somewhere</em> in the
+dataset, so they are included here. This means that the <code>dataset-maj</code> files for
+all populations will be exactly the same length, the major and minor allele will
+always be the same, and the allele frequency can range from 0-1. This is likely
+the file you will want for downstream analyses, as it allows direct comparison
+of frequencies at SNPs across your dataset.</p>
+<p>Now, what happened to the SNP at position 713? Well, this was variable in our
+population, but at low frequency: ~0.14 across four samples, which is likely
+just a singleton. If this singleton was the only time the minor allele appeared
+in the dataset, it likely was removed by the minor allele frequency or SNP
+p-value filter when calling SNPs across the dataset. This means that the
+<code>pop-maj</code> files will all be different lengths, and even at the same positions
+may have different major and minor alleles. In this case, the major and minor
+alleles across the dataset and the population are the same, so the frequencies
+at those positions (638 and 749) are also the same. Let's try to find a position
+where they are not the same. The easiest way to do this is to look for positions
+in the <code>dataset-maj</code> where the frequency is higher than 0.5, as these are sites
+where the minor allele <em>across the dataset</em> is the major allele
+<em>within the population</em>. This command should get us there:</p>
+<p><code>zcat results/datasets/popglen-tutorial/mafs/popglen-tutorial.tutorial-ref_WSkane2021_allsites-filts.dataset-maj.mafs.gz | awk '$7&gt;0.6' | head -n 2</code></p>
+<div class="highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">results/datasets/popglen-tutorial/mafs/popglen-tutorial.tutorial-ref_WSkane2021_allsites-filts.dataset-maj.mafs.gz</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code>chromo  position  major  minor  ref  anc  knownEM   nInd
+1       5953      G      C      G    G    0.646212  5
+</code></pre></div></td></tr></table></div>
+<p>Let's see what this SNP looks like in the <code>pop-maj</code> file:</p>
+<p><code>zcat results/datasets/popglen-tutorial/mafs/popglen-tutorial.tutorial-ref_WSkane2021_allsites-filts.pop-maj.mafs.gz | awk '$1=="1" &amp;&amp; $2=="5953"'</code></p>
+<div class="highlight"><pre><span></span><code>1       5953      C      G      G    G    0.353786  3.540612e-11  5
+</code></pre></div>
+<p>Notice that the major and minor are reversed, and the allele frequency is the
+inverse of that in the <code>dataset-maj</code> file. This is because the major and minor
+are defined by the frequency of the population, rather than the dataset.</p>
+<p>Hopefully this clarifies the two different formats you'll get. Most of the time,
+you'll want <code>dataset-maj</code>, as it lets you compare across all your populations
+directly at every SNP. <code>pop-maj</code> may be useful if you have downstream
+applications where you don't need to worry about keeping all the same sites,
+just having some per-site frequencies for a population. For example, the allele
+frequency based relatedness method in NgsRelate only requires
+population-specific allele frequencies to estimate relatedness within
+populations, so we pass it the <code>pop-maj</code> file along with the Beagle file in
+PopGLen.</p>
+<details class="note">
+<summary>Allele frequencies using reference/alternate instead of major/minor</summary>
+<p>If you are used to thinking of your SNPs in terms of reference and alternate
+alleles, and would prefer to polarize your frequencies this way, you can
+simply set <code>domajorminor</code> to <code>4</code> in the config. This will ensure the major
+allele always matches the reference, and the minor will be the inferred
+minor allele, just as it would be in Samtools. This will mean any analyses
+that use Beagle files will also get their input polarized this way, but as
+far as I am aware that won't affect the outcomes, except that you may lose
+some sites if the segregating alleles in the dataset do not include the
+reference allele.</p>
+</details>
+<h3 id="subsampling-sequencing-depth">Subsampling sequencing depth</h3>
+<p>While genotype likelihoods can be very good at handling datasets with variable
+sequencing depth, it may be valuable to check that your results are not
+predominantly driven by sequencing depth variation. This is especially of
+concern for datasets with historical and modern samples where the modern
+'treatment' is expected to be higher depth, or for studies combining genomic
+data from multiple sources.</p>
+<p>PopGLen allows you to rerun any of the included analyses after subsampling the
+BAM files to a lower sequencing depth with the following section of the config:</p>
+<div class="highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">config/config.yaml</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 75</span>
+<span class="normal"> 76</span>
+<span class="normal"> 77</span>
+<span class="normal"> 78</span>
+<span class="normal"> 79</span>
+<span class="normal"> 80</span>
+<span class="normal"> 81</span>
+<span class="normal"> 82</span>
+<span class="normal"> 83</span>
+<span class="normal"> 84</span>
+<span class="normal"> 85</span>
+<span class="normal"> 86</span>
+<span class="normal"> 87</span>
+<span class="normal"> 88</span>
+<span class="normal"> 89</span>
+<span class="normal"> 90</span>
+<span class="normal"> 91</span>
+<span class="normal"> 92</span>
+<span class="normal"> 93</span>
+<span class="normal"> 94</span>
+<span class="normal"> 95</span>
+<span class="normal"> 96</span>
+<span class="normal"> 97</span>
+<span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span>
+<span class="normal">101</span>
+<span class="normal">102</span>
+<span class="normal">103</span>
+<span class="normal">104</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1">#==================== Downsampling Configuration ======================#</span>
+
+<span class="nt">subsample_dp</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span>
+
+<span class="nt">subsample_by</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;sitefilt&quot;</span><span class="w"> </span><span class="c1"># three options: unfilt, mapqbaseq, sitefilt; sitefilt recommended (subsamples bams to `subsample_dp` within filtered regions)</span>
+<span class="nt">redo_depth_filts</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span><span class="w"> </span><span class="c1"># has no effect when `subsample_by` == &quot;sitefilt&quot;</span>
+<span class="nt">drop_samples</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span><span class="w"> </span><span class="c1"># These samples won&#39;t be included in the downsampled dataset</span>
+
+<span class="nt">subsample_analyses</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">estimate_ld</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">ld_decay</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">pca_pcangsd</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">admix_ngsadmix</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">relatedness</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">ibsrelate_ibs</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">ibsrelate_sfs</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">ngsrelate_ibsrelate-only</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">ngsrelate_freqbased</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">1dsfs</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">1dsfs_boot</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">2dsfs</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">2dsfs_boot</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">thetas_angsd</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">heterozygosity_angsd</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">fst_angsd</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">populations</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">individuals</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">inbreeding_ngsf-hmm</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">ibs_matrix</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">pop_allele_freqs</span><span class="p">:</span>
+</code></pre></div></td></tr></table></div>
+<p>Here, you can give any number of mean sequencing depths to subsample to as a
+list of integers to <code>subsample_dp</code>. Then, enable any analyses you want to
+perform at subsampled depth. So, say we want to rerun our PCA and thetas with
+all samples subsampled to 3X mean sequencing depth (a bit higher than our
+lowest depth samples in this dataset), we would set it up like this:</p>
+<div class="highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">config/config.yaml</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 75</span>
+<span class="normal"> 76</span>
+<span class="normal"> 77</span>
+<span class="normal"> 78</span>
+<span class="normal"> 79</span>
+<span class="normal"> 80</span>
+<span class="normal"> 81</span>
+<span class="normal"> 82</span>
+<span class="normal"> 83</span>
+<span class="normal"> 84</span>
+<span class="normal"> 85</span>
+<span class="normal"> 86</span>
+<span class="normal"> 87</span>
+<span class="normal"> 88</span>
+<span class="normal"> 89</span>
+<span class="normal"> 90</span>
+<span class="normal"> 91</span>
+<span class="normal"> 92</span>
+<span class="normal"> 93</span>
+<span class="normal"> 94</span>
+<span class="normal"> 95</span>
+<span class="normal"> 96</span>
+<span class="normal"> 97</span>
+<span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span>
+<span class="normal">101</span>
+<span class="normal">102</span>
+<span class="normal">103</span>
+<span class="normal">104</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1">#==================== Downsampling Configuration ======================#</span>
+
+<span class="hll"><span class="nt">subsample_dp</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">3</span><span class="p p-Indicator">]</span>
+</span>
+<span class="nt">subsample_by</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;sitefilt&quot;</span><span class="w"> </span><span class="c1"># three options: unfilt, mapqbaseq, sitefilt; sitefilt recommended (subsamples bams to `subsample_dp` within filtered regions)</span>
+<span class="nt">redo_depth_filts</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span><span class="w"> </span><span class="c1"># has no effect when `subsample_by` == &quot;sitefilt&quot;</span>
+<span class="nt">drop_samples</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span><span class="w"> </span><span class="c1"># These samples won&#39;t be included in the downsampled dataset</span>
+
+<span class="nt">subsample_analyses</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">estimate_ld</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">ld_decay</span><span class="p">:</span>
+<span class="hll"><span class="w">  </span><span class="nt">pca_pcangsd</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</span><span class="w">  </span><span class="nt">admix_ngsadmix</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">relatedness</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">ibsrelate_ibs</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">ibsrelate_sfs</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">ngsrelate_ibsrelate-only</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">ngsrelate_freqbased</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">1dsfs</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">1dsfs_boot</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">2dsfs</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">2dsfs_boot</span><span class="p">:</span>
+<span class="hll"><span class="w">  </span><span class="nt">thetas_angsd</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</span><span class="w">  </span><span class="nt">heterozygosity_angsd</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">fst_angsd</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">populations</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">individuals</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">inbreeding_ngsf-hmm</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">ibs_matrix</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">pop_allele_freqs</span><span class="p">:</span>
+</code></pre></div></td></tr></table></div>
+<p>If you would like, you can run this and see what happens. Several analyses will
+run run, but these aren't re-runs, rather they are new version of the analyses
+using BAM files subsampled to 3X filtered mean sequencing depth.</p>
+<p>If we generate the report and look at the QC tables for sequencing depth, we
+will see a new one for '3X' which is the QC for our new subsampled BAM files,
+you'll see that in the <code>allsites-filts.depth</code> column, we have a mean depth of ~3
+for all samples, except those already lower than 3X, so the subsampling worked
+well. The other mean depth estimates are not uniform across samples and aren't
+3. In order to ensure the sequencing depth is the same in the actual analyses,
+we use the mean sequencing depth only at sites passing our filter to determine
+how to subsample. If we used the other measures of depth that include regions
+outside the filtered sites file, we would get uniform depth in those measures,
+but not at the filtered sites, which means depth would still vary in the actual
+analyses. This is still possible to do, and is what the <code>subsample_by</code> option
+selects, so check the <a href="../config/">configuration documentation</a> if you're
+interested in that.</p>
+<h2 id="suggested-workflow-batches">Suggested workflow batches</h2>
+<p>This tutorial has done two approaches that are a bit extreme - one is to run
+everything all at once, the other is to run each analysis almost one by one. If
+you do the first, you risk running some analyses before you know that your
+samples or settings are good. If you do the second one, you still get a lot of
+benefits from PopGLen (single file configuration, automated reproducible flow
+of inputs and outputs, software management), but will have to manually start it
+up several times.</p>
+<p>Likely, you will want something in between - check the results at key points
+that minimize the number of runs you'll do. When I do projects, I tend to follow
+this working path with PopGLen:</p>
+<ol>
+<li>Run all mapping and main QC. Determine if any samples need to be dropped
+   based on quality or some other concern and drop them if so. Also turn on my
+   expected filter sets and see if the filtered proportion of the genome makes
+   sense (I usually use ~30% of the butterfly genome, removing repeats, keeping
+   only complete autosomal chromosomes, and removing extreme depth). Usually,
+   the amount I use is not a whole lot lower than the amount left over after
+   repeat removal, if it is, the reference may be too distant to map well to.</li>
+<li>If I am not confident in my LD pruning settings, I run the LD decay analysis.
+   In this run I can also turn on anything that doesn't involve LD pruning, even
+   window based analyses as they are quick to rerun if their settings change. If
+   I already feel my LD pruning settings will be good enough (usually from
+   previous work), I might skip this batch. This is also a good point to do a
+   relatedness check to find out if any individuals should be removed from the
+   PCA and Admix, as those require pruning, but the relatedness methods do not.</li>
+<li>Next, using the LD results I set my pruning setting and run everything else.</li>
+<li>Run analyses at subsampled depth if desired.</li>
+</ol>
+<p>If all goes well, nothing will need to be modified and you can start working on
+your analyses downstream of PopGLen. Your config, samples, and units files
+together make a reproducible record of your analyses, allowing everything to be
+reproduced using your input data. If you want to change any settings or samples,
+you can simply update the configs and re-run, what needs to be updated will get
+updated.</p>
+<p>If PopGLen will form a large part of your workflow, I recommend using it as a
+module in the way we did with Snakedeploy in this tutorial. This allows you to
+add rules to the Snakefile for your downstream analyses. This makes it
+relatively easy to share your code with a manuscript in a way that will enable
+reproducing all steps. You can check out repositories for two papers I have used
+early versions of PopGLen for
+<a href="https://github.com/zjnolen/polyommatini-landcover-diversity">zjnolen/polyommatini-landcover-diversity</a>
+and
+<a href="https://github.com/zjnolen/polyommatini-temporal-genomics">zjnolen/polyommatini-temporal-genomics</a>
+for ideas on how to do this.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "..", "features": ["toc.integrate", "search.highlight", "content.code.annotate"], "search": "../assets/javascripts/workers/search.6ce7567c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.83f73b43.min.js"></script>
+      
+    
+  </body>
+</html>

@@ -87,8 +87,7 @@ when you start with raw sequencing data or with processed BAM files.
   [fgvieira/prune_graph](https://github.com/fgvieira/prune_graph)
 - PCA with PCAngsd[^12]
 - Admixture with NGSAdmix[^13]
-- Relatedness using IBSrelate[^14] (via ANGSD or NgsRelate[^15], allele freq.
-  based NgsRelate methods not currently implemented)
+- Relatedness using IBSrelate[^14] or NgsRelate[^15]
 - 1D and 2D Site frequency spectrum production with ANGSD[^16], bootstrap SFS
   can additionally be generated.
 - Diversity and statistics per population (Watterson's theta, pairwise

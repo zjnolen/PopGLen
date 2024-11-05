@@ -48,7 +48,7 @@ install a simple conda environment with Snakemake, the only dependency needed:
 ``` bash
 conda create -n popglen \
     -c conda-forge -c bioconda \
-    snakemake=8.20 snakedeploy
+    snakemake=8.25.0 snakedeploy
 ```
 
 Once run, this will install Snakemake and Snakedeploy to the environment

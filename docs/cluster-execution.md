@@ -17,7 +17,7 @@ along with the snakemake-executor-plugin-slurm installed:
 conda create \
     -n popglen \
     -c conda-forge -c bioconda \
-    snakemake=8.20 \
+    snakemake=8.25.0 \
     snakemake-executor-plugin-slurm
 
 conda activate popglen

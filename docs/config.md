@@ -90,7 +90,7 @@ A `units.tsv` where only BAMs are provided might look like this:
 `config.yaml` contains the configuration for the workflow, this is where you
 will put what analyses, filters, and options you want. Below I describe the
 configuration options. The `config.yaml`
-[distributed in the workflow repository](https://github.com/zjnolen/PopGLen/tree/v0.4.0/config)
+[distributed in the workflow repository](https://github.com/zjnolen/PopGLen/tree/v0.4.1/config)
 serves as a template and includes some 'default' parameters that may be good
 starting points for many users. If `--configfile` is not specified in the
 Snakemake command, the workflow will default to the file at

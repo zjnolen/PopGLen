@@ -5,7 +5,7 @@
 > submit an issue.
 >
 > If interested in using the pipeline, feel free to check out its current
-> [documentation](https://zjnolen.github.io/PopGLen/v0.4.0/).
+> [documentation](https://zjnolen.github.io/PopGLen/v0.4.1/).
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.14035397.svg)](https://doi.org/10.5281/zenodo.14035397)
 
@@ -31,11 +31,11 @@ GenErode, nf-core/eager, or your own custom processing).
 ## Documentation
 
 The main documentation for the pipeline is
-[here](https://zjnolen.github.io/PopGLen/v0.4.0/), with a broad summary of
+[here](https://zjnolen.github.io/PopGLen/v0.4.1/), with a broad summary of
 features reported in this README.
 
 Included in this documentation is a
-[tutorial](https://zjnolen.github.io/PopGLen/v0.4.0/tutorial/) which you can
+[tutorial](https://zjnolen.github.io/PopGLen/v0.4.1/tutorial/) which you can
 perform to become familiar with using PopGLen.
 
 ## Features

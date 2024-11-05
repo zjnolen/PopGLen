@@ -71,7 +71,7 @@ cd /path/to/work-dir
 And deploy the workflow, using the tag for the version you want to deploy:
 
 ```bash
-snakedeploy deploy-workflow https://github.com/zjnolen/PopGLen . --tag v0.4.0
+snakedeploy deploy-workflow https://github.com/zjnolen/PopGLen . --tag v0.4.1
 ```
 
 This will generate a simple Snakefile in a `workflow` folder that loads the
@@ -97,7 +97,7 @@ Move into the working directory (`PopGLen` or `work-dir-name` if you changed it)
 and checkout the version you would like to use:
 
 ```bash
-git checkout v0.4.0
+git checkout v0.4.1
 ```
 
 This can also be used to checkout specific branches or commits.

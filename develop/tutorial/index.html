@@ -733,14 +733,14 @@ you're ready to start setting up the environment for PopGLen to use. We will
 install a simple conda environment with Snakemake, the only dependency needed:</p>
 <div class="highlight"><pre><span></span><code>conda<span class="w"> </span>create<span class="w"> </span>-n<span class="w"> </span>popglen<span class="w"> </span><span class="se">\</span>
 <span class="w">    </span>-c<span class="w"> </span>conda-forge<span class="w"> </span>-c<span class="w"> </span>bioconda<span class="w"> </span><span class="se">\</span>
-<span class="w">    </span><span class="nv">snakemake</span><span class="o">=</span><span class="m">8</span>.20<span class="w"> </span>snakedeploy
+<span class="w">    </span><span class="nv">snakemake</span><span class="o">=</span><span class="m">8</span>.25.0<span class="w"> </span>snakedeploy
 </code></pre></div>
 <p>Once run, this will install Snakemake and Snakedeploy to the environment
 'popglen', which we will activate to download and run the pipeline:</p>
 <div class="highlight"><pre><span></span><code>conda<span class="w"> </span>activate<span class="w"> </span>popglen
 </code></pre></div>
 <p>Now, create a working directory for your project, deploy the workflow inside:</p>
-<div class="highlight"><pre><span></span><code>snakedeploy<span class="w"> </span>deploy-workflow<span class="w"> </span>https://github.com/zjnolen/PopGLen<span class="w"> </span>.<span class="w"> </span>--tag<span class="w"> </span>v0.4.0
+<div class="highlight"><pre><span></span><code>snakedeploy<span class="w"> </span>deploy-workflow<span class="w"> </span>https://github.com/zjnolen/PopGLen<span class="w"> </span>.<span class="w"> </span>--tag<span class="w"> </span>v0.4.1
 </code></pre></div>
 <p>This will download a <code>workflow</code> and <code>config</code> folder containing a the workflow
 file and a configuration template. Now we are ready to set up our dataset.</p>
@@ -767,7 +767,7 @@ mkdir<span class="w"> </span>popglen-tutorial
 <span class="nb">cd</span><span class="w"> </span>popglen-tutorial
 
 <span class="c1"># deploy the workflow in here</span>
-snakedeploy<span class="w"> </span>deploy-workflow<span class="w"> </span>https://github.com/zjnolen/PopGLen<span class="w"> </span>.<span class="w"> </span>--tag<span class="w"> </span>v0.4.0
+snakedeploy<span class="w"> </span>deploy-workflow<span class="w"> </span>https://github.com/zjnolen/PopGLen<span class="w"> </span>.<span class="w"> </span>--tag<span class="w"> </span>v0.4.1
 
 <span class="c1"># download the tutorial data</span>
 wget<span class="w"> </span>-O<span class="w"> </span>popglen-tut-data.zip<span class="w"> </span>https://figshare.com/ndownloader/articles/27453978/versions/1

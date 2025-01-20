@@ -54,7 +54,7 @@ def chunkify(reference_fasta, chunk_size):
     with open(reference_fasta, "r") as fasta_in:
         for header, seq in itertools.groupby(fasta_in, lambda x: x.startswith(">")):
             if header:
-                contig = next(seq).strip(">").strip()
+                contig = next(seq).strip(">").strip().split(maxsplit=1)[0]
             seq_length = len("".join(seq).replace("\n", ""))
             if seq_length > 0:
                 contigs = contigs + [[contig, seq_length]]

@@ -108,8 +108,8 @@ it in action. These two methods actually produce quite similar results with the
 tutorial dataset (though the axis of PC2 is inverted, as its direction is
 arbitrary):
 
-| PCAngsd covariance matrix | ANGSD doCov covariance matrix |
-|------------------------------------|------------------------------------|
+| PCAngsd covariance matrix | ANGSD -doCov covar matrix |
+|---------------------------|---------------------------|
 |![pcangsd pca](images/pca-norel.png)|![docov pca](images/pca-docov.png)|
 
 Extending workflows like this allows you to use PopGLen as a base for your

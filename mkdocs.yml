@@ -7,6 +7,7 @@ nav:
   - Tutorial: tutorial.md
   - Cluster execution: cluster-execution.md
   - Setting job resources: resources.md
+  - Extending PopGLen: extending-workflows.md
   - Output file path overview: outfile-summ.md
 theme:
   name: material

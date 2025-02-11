@@ -24,7 +24,8 @@ detailed [configuration](config.md) summary, a [tutorial](tutorial.md) to walk
 users through running all analyses in the pipeline, as well as more specialized
 documentation describing how to
 [configure the pipeline to run on a HPC cluster](cluster-execution.md), how to
-[modify the requested resources for jobs](resources.md), and the
+[modify the requested resources for jobs](resources.md), how to
+[extend the workflow with additional rules](extending-workflows.md), and the
 [file paths for all major output files](outfile-summ.md) for reference.
 
 ??? question "Questions? Feature requests? Just ask!"
@@ -174,7 +175,7 @@ low-depth sequencing data. Molecular Ecology, 28(1), 35–48.
 
 ANGSD: Korneliussen, T. S., Albrechtsen, A., & Nielsen, R. (2014). ANGSD:
 Analysis of Next Generation Sequencing Data. BMC Bioinformatics, 15(1), Article
-1. <https://doi.org/10.1186/s12859-014-0356-4> (Depth calculation, genotype
+\1. <https://doi.org/10.1186/s12859-014-0356-4> (Depth calculation, genotype
 likelihood estimation, SNP calling, allele frequencies, SFS, diverity and
 neutrality statistics, heterozygosity, $F_{ST}$)
 

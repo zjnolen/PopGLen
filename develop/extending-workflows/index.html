@@ -505,82 +505,107 @@ with one produced using a covariance matrix from single read sampling using
 ANGSD. This should only really add one step, estimating the covariance matrix
 in ANGSD instead of PCAngsd. We start with a bare bones Snakefile that imports
 PopGLen as a module:</p>
-<p>```py title="workflow/Snakefile" linenums="1"from snakemake.utils import min_version</p>
-<p>min_version("6.10.0")</p>
-<p>configfile: "config/config.yaml"</p>
-<h1 id="declare-httpsgithubcomzjnolenpopglen-as-a-module">declare https://github.com/zjnolen/PopGLen as a module</h1>
-<p>module popglen:
-    snakefile:
-        github("zjnolen/PopGLen", path="workflow/Snakefile", tag="v0.4.1")
-    config:
-        config</p>
-<h1 id="use-all-rules-from-httpsgithubcomzjnolenpopglen">use all rules from https://github.com/zjnolen/PopGLen</h1>
-<p>use rule * from popglen
-<div class="highlight"><pre><span></span><code>As is, it will run PopGLen as described in the documentation. To utilize a
+<div class="highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">workflow/Snakefile</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">snakemake.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">min_version</span>
+
+
+<span class="n">min_version</span><span class="p">(</span><span class="s2">&quot;6.10.0&quot;</span><span class="p">)</span>
+
+
+<span class="n">configfile</span><span class="p">:</span> <span class="s2">&quot;config/config.yaml&quot;</span>
+
+
+<span class="c1"># declare https://github.com/zjnolen/PopGLen as a module</span>
+<span class="n">module</span> <span class="n">popglen</span><span class="p">:</span>
+    <span class="n">snakefile</span><span class="p">:</span>
+        <span class="n">github</span><span class="p">(</span><span class="s2">&quot;zjnolen/PopGLen&quot;</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="s2">&quot;workflow/Snakefile&quot;</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="s2">&quot;v0.4.1&quot;</span><span class="p">)</span>
+    <span class="n">config</span><span class="p">:</span>
+        <span class="n">config</span>
+
+
+<span class="c1"># use all rules from https://github.com/zjnolen/PopGLen</span>
+<span class="n">use</span> <span class="n">rule</span> <span class="o">*</span> <span class="kn">from</span><span class="w"> </span><span class="nn">popglen</span>
+</code></pre></div></td></tr></table></div>
+<p>As is, it will run PopGLen as described in the documentation. To utilize a
 covariance matrix estimated by something other than PCAngsd when generating the
 PCA, we need to do two things: (1) add a rule to generate the covariance matrix
 with the other tool and (2) overwrite the input for the rule that runs the
-principal component analysis with this new covariance matrix.
-
-We will do this by adding the code block below to the end of the Snakefile. It
-first defines a rule, `angsd_doCov`, which generates the covariance matrix. This
-is very similar to the `angsd_doIBS` rule already in PopGLen, so much of that
+principal component analysis with this new covariance matrix.</p>
+<p>We will do this by adding the code block below to the end of the Snakefile. It
+first defines a rule, <code>angsd_doCov</code>, which generates the covariance matrix. This
+is very similar to the <code>angsd_doIBS</code> rule already in PopGLen, so much of that
 rule can be repurposed into this one. After we add the rule, we then simply
-tell Snakemake that when it imports the rule `plot_pca` from PopGLen, it
-should use this covariance matrix made by `angsd_doCov` instead of the one from
-PCAngsd defined by default.
-
-```py title=&quot;workflow/Snakefile linenums=&quot;21&quot;
-# Add a rule which estimates the covariance matrix, but from single read
-# sampling in ANGSD rather than genotype likelihoods in PCAngsd
+tell Snakemake that when it imports the rule <code>plot_pca</code> from PopGLen, it
+should use this covariance matrix made by <code>angsd_doCov</code> instead of the one from
+PCAngsd defined by default.</p>
+<div class="highlight"><span class="filename">workflow/Snakefile linenums=</span><pre><span></span><code><span class="c1"># Add a rule which estimates the covariance matrix, but from single read</span>
+<span class="c1"># sampling in ANGSD rather than genotype likelihoods in PCAngsd</span>
 
 
-rule angsd_doCov:
-    &quot;&quot;&quot;
-    Estimates covariance matrix for all individuals.
-    &quot;&quot;&quot;
-    input:
-        bamlist=&quot;results/datasets/{dataset}/bamlists/{dataset}.{ref}_{population}{dp}.bamlist&quot;,
-        bams=popglen.get_bamlist_bams,
-        bais=popglen.get_bamlist_bais,
-        sites=&quot;results/datasets/{dataset}/filters/snps/{dataset}.{ref}_{population}{dp}_{sites}-filts_snps.sites&quot;,
-        idx=&quot;results/datasets/{dataset}/filters/snps/{dataset}.{ref}_{population}{dp}_{sites}-filts_snps.sites.idx&quot;,
-    output:
-        ibs=temp(&quot;results/datasets/{dataset}/analyses/covar/{dataset}.{ref}_{population}{dp}_{sites}-filts.ibs.gz&quot;),
-        covmat=&quot;results/datasets/{dataset}/analyses/covar/{dataset}.{ref}_{population}{dp}_{sites}-filts.covMat&quot;,
-        arg=&quot;results/datasets/{dataset}/analyses/covar/{dataset}.{ref}_{population}{dp}_{sites}-filts.arg&quot;,
-    container:
-        popglen.angsd_container
-    params:
-        mapQ=config[&quot;mapQ&quot;],
-        baseQ=config[&quot;baseQ&quot;],
-        trans=popglen.get_trans,
-        out=lambda w, output: os.path.splitext(output.arg)[0],
-    threads: 2
-    resources:
-        runtime=&quot;1d&quot;,
-    shell:
-        &quot;&quot;&quot;
-        angsd -doIBS 1 -doCov 1 -bam {input.bamlist} -nThreads {threads} \
-            -doCounts 1 -minMapQ {params.mapQ} -minQ {params.baseQ} \
-            -sites {input.sites} -rmTrans {params.trans} -doMajorMinor 3 \
-            -out {params.out}
-        &quot;&quot;&quot;
+<span class="n">rule</span> <span class="n">angsd_doCov</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Estimates covariance matrix for all individuals.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="nb">input</span><span class="p">:</span>
+        <span class="n">bamlist</span><span class="o">=</span><span class="s2">&quot;results/datasets/</span><span class="si">{dataset}</span><span class="s2">/bamlists/</span><span class="si">{dataset}</span><span class="s2">.</span><span class="si">{ref}</span><span class="s2">_</span><span class="si">{population}{dp}</span><span class="s2">.bamlist&quot;</span><span class="p">,</span>
+        <span class="n">bams</span><span class="o">=</span><span class="n">popglen</span><span class="o">.</span><span class="n">get_bamlist_bams</span><span class="p">,</span>
+        <span class="n">bais</span><span class="o">=</span><span class="n">popglen</span><span class="o">.</span><span class="n">get_bamlist_bais</span><span class="p">,</span>
+        <span class="n">sites</span><span class="o">=</span><span class="s2">&quot;results/datasets/</span><span class="si">{dataset}</span><span class="s2">/filters/snps/</span><span class="si">{dataset}</span><span class="s2">.</span><span class="si">{ref}</span><span class="s2">_</span><span class="si">{population}{dp}</span><span class="s2">_</span><span class="si">{sites}</span><span class="s2">-filts_snps.sites&quot;</span><span class="p">,</span>
+        <span class="n">idx</span><span class="o">=</span><span class="s2">&quot;results/datasets/</span><span class="si">{dataset}</span><span class="s2">/filters/snps/</span><span class="si">{dataset}</span><span class="s2">.</span><span class="si">{ref}</span><span class="s2">_</span><span class="si">{population}{dp}</span><span class="s2">_</span><span class="si">{sites}</span><span class="s2">-filts_snps.sites.idx&quot;</span><span class="p">,</span>
+    <span class="n">output</span><span class="p">:</span>
+        <span class="n">ibs</span><span class="o">=</span><span class="n">temp</span><span class="p">(</span><span class="s2">&quot;results/datasets/</span><span class="si">{dataset}</span><span class="s2">/analyses/covar/</span><span class="si">{dataset}</span><span class="s2">.</span><span class="si">{ref}</span><span class="s2">_</span><span class="si">{population}{dp}</span><span class="s2">_</span><span class="si">{sites}</span><span class="s2">-filts.ibs.gz&quot;</span><span class="p">),</span>
+        <span class="n">covmat</span><span class="o">=</span><span class="s2">&quot;results/datasets/</span><span class="si">{dataset}</span><span class="s2">/analyses/covar/</span><span class="si">{dataset}</span><span class="s2">.</span><span class="si">{ref}</span><span class="s2">_</span><span class="si">{population}{dp}</span><span class="s2">_</span><span class="si">{sites}</span><span class="s2">-filts.covMat&quot;</span><span class="p">,</span>
+        <span class="n">arg</span><span class="o">=</span><span class="s2">&quot;results/datasets/</span><span class="si">{dataset}</span><span class="s2">/analyses/covar/</span><span class="si">{dataset}</span><span class="s2">.</span><span class="si">{ref}</span><span class="s2">_</span><span class="si">{population}{dp}</span><span class="s2">_</span><span class="si">{sites}</span><span class="s2">-filts.arg&quot;</span><span class="p">,</span>
+    <span class="n">container</span><span class="p">:</span>
+        <span class="n">popglen</span><span class="o">.</span><span class="n">angsd_container</span>
+    <span class="n">params</span><span class="p">:</span>
+        <span class="n">mapQ</span><span class="o">=</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;mapQ&quot;</span><span class="p">],</span>
+        <span class="n">baseQ</span><span class="o">=</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;baseQ&quot;</span><span class="p">],</span>
+        <span class="n">trans</span><span class="o">=</span><span class="n">popglen</span><span class="o">.</span><span class="n">get_trans</span><span class="p">,</span>
+        <span class="n">out</span><span class="o">=</span><span class="k">lambda</span> <span class="n">w</span><span class="p">,</span> <span class="n">output</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">output</span><span class="o">.</span><span class="n">arg</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span>
+    <span class="n">threads</span><span class="p">:</span> <span class="mi">2</span>
+    <span class="n">resources</span><span class="p">:</span>
+        <span class="n">runtime</span><span class="o">=</span><span class="s2">&quot;1d&quot;</span><span class="p">,</span>
+    <span class="n">shell</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        angsd -doIBS 1 -doCov 1 -bam {input.bamlist} -nThreads {threads} \</span>
+<span class="sd">            -doCounts 1 -minMapQ {params.mapQ} -minQ {params.baseQ} \</span>
+<span class="sd">            -sites {input.sites} -rmTrans {params.trans} -doMajorMinor 3 \</span>
+<span class="sd">            -out {params.out}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
 
 
-# Update plot_pca rule to use the covariance matrix from angsd_doCov rather than
-# from PCAngsd
+<span class="c1"># Update plot_pca rule to use the covariance matrix from angsd_doCov rather than</span>
+<span class="c1"># from PCAngsd</span>
 
 
-use rule plot_pca from popglen as plot_pca with:
-    input:
-        &quot;results/datasets/{dataset}/analyses/covar/{dataset}.{ref}_{population}{dp}_{sites}-filts.covMat&quot;,
-        &quot;results/datasets/{dataset}/poplists/{dataset}_{population}{dp}.indiv.list&quot;,
-</code></pre></div></p>
-<p>For a substitution like this, this is the only changes we need to make.
+<span class="n">use</span> <span class="n">rule</span> <span class="n">plot_pca</span> <span class="kn">from</span><span class="w"> </span><span class="nn">popglen</span> <span class="k">as</span> <span class="n">plot_pca</span> <span class="k">with</span><span class="p">:</span>
+    <span class="nb">input</span><span class="p">:</span>
+        <span class="s2">&quot;results/datasets/</span><span class="si">{dataset}</span><span class="s2">/analyses/covar/</span><span class="si">{dataset}</span><span class="s2">.</span><span class="si">{ref}</span><span class="s2">_</span><span class="si">{population}{dp}</span><span class="s2">_</span><span class="si">{sites}</span><span class="s2">-filts.covMat&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;results/datasets/</span><span class="si">{dataset}</span><span class="s2">/poplists/</span><span class="si">{dataset}</span><span class="s2">_</span><span class="si">{population}{dp}</span><span class="s2">.indiv.list&quot;</span><span class="p">,</span>
+</code></pre></div>
+<p>For a substitution like this, these are the only changes we need to make.
 You can try running this Snakefile using the <a href="../tutorial/">tutorial</a> data to see
 it in action. These two methods actually produce quite similar results with the
-tutorial dataset:</p>
+tutorial dataset (though the axis of PC2 is inverted, as its direction is
+arbitrary):</p>
 <table>
 <thead>
 <tr>

@@ -9,10 +9,10 @@
       
       
       
-        <link rel="prev" href="../cluster-execution/">
+        <link rel="prev" href="../resources/">
       
       
-        <link rel="next" href="../extending-workflows/">
+        <link rel="next" href="../outfile-summ/">
       
       
       <link rel="icon" href="../assets/images/favicon.png">
@@ -20,7 +20,7 @@
     
     
       
-        <title>Setting job resources - PopGLen</title>
+        <title>Extending PopGLen - PopGLen</title>
       
     
     
@@ -83,7 +83,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#altering-resource-usage" class="md-skip">
+        <a href="#extending-or-modifying-analyses-in-popglen" class="md-skip">
           Skip to content
         </a>
       
@@ -123,7 +123,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Setting job resources
+              Extending PopGLen
             
           </span>
         </div>
@@ -401,6 +401,27 @@
       
   
   
+  
+  
+    <li class="md-nav__item">
+      <a href="../resources/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Setting job resources
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
     
   
   
@@ -417,34 +438,13 @@
         
   
   <span class="md-ellipsis">
-    Setting job resources
-    
-  </span>
-  
-
-      </a>
-      
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../extending-workflows/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
     Extending PopGLen
     
   </span>
   
 
       </a>
+      
     </li>
   
 
@@ -489,87 +489,117 @@
   
 
 
-<h1 id="altering-resource-usage">Altering resource usage</h1>
-<p>This workflow sets a default number of threads and runtime for each rule. Memory
-is not set per rule as development took place on clusters that did not allow
-direct requests of memory when submitting SLURM jobs, instead always allocating
-6.4GB RAM per core for each job. The easiest way to get up and running with this
-workflow is to set <code>--default-resources mem_mb="XXXX * threads"</code> when running
-the Snakemake command, replacing <code>XXXX</code> with the RAM available per core on your
-HPC system in MB (in the case of ours, this was 6400). See the
-<a href="https://github.com/zjnolen/PopGLen/tree/v0.4.1/profiles">profiles</a> in the
-GitHub repository as an example.</p>
-<p>However, the default resources may not always work, your data may need more
-memory, or longer runtimes, or maybe you even need shorter if your HPC has
-shorter runtime limits than some of the defaults we set (up to 7 days).
-Snakemake makes it easy to alter resources in the command line using the
-<code>--set-resources</code> and <code>--set-threads</code> options, which will override anything set
-in the workflow already.</p>
-<p>This is even better set up in a profile. PopGLen includes a default profile in
-the
-<a href="https://github.com/zjnolen/PopGLen/tree/v0.4.1/profiles/default">profiles/default</a>
-folder, which has all the rules already populated with the default resources
-already set. If you have downloaded the workflow via cloning the repository, all
-you need to do is change the values to match your needs (which may require
-adding an additional resource option, like <code>mem_mb</code>). If you have downloaded via
-Snakedeploy, just download the config file from the main repository, place it in
-the same directory in your deployed workflow, modify as needed and Snakemake
-will automatically pick it up when you run it.</p>
-<p>Here is an example of what it would look like to change the number of threads
-for the rule <code>bwa_index</code> from the default of 1 to a new value of 5:</p>
-<div class="highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">profiles/default/config.yaml</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
-<span class="normal">2</span>
-<span class="normal">3</span>
-<span class="normal">4</span>
-<span class="normal">5</span>
-<span class="normal">6</span>
-<span class="normal">7</span>
-<span class="normal">8</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nt">set-threads</span><span class="p">:</span>
-<span class="w">  </span><span class="c1"># Reference Prep</span>
-<span class="w">  </span><span class="nt">link_ref</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
-<span class="w">  </span><span class="nt">link_anc_ref</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
-<span class="hll"><span class="w">  </span><span class="nt">bwa_index</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span>
-</span><span class="w">  </span><span class="nt">samtools_faidx</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
-<span class="w">  </span><span class="nt">ref_chunking</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
-<span class="w">  </span><span class="nt">picard_dict</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
-</code></pre></div></td></tr></table></div>
-<p>And if you wanted to update the runtime to give it only a maximum of 1 day and
-add a limit of 2GB for memory:</p>
-<div class="highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">profiles/default/config.yaml</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">150</span>
-<span class="normal">151</span>
-<span class="normal">152</span>
-<span class="normal">153</span>
-<span class="normal">154</span>
-<span class="normal">155</span>
-<span class="normal">156</span>
-<span class="normal">157</span>
-<span class="normal">158</span>
-<span class="normal">159</span>
-<span class="normal">160</span>
-<span class="normal">161</span>
-<span class="normal">162</span>
-<span class="normal">163</span>
-<span class="normal">164</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nt">set-resources</span><span class="p">:</span>
-<span class="c1">#   # Reference Prep</span>
-<span class="w">  </span><span class="nt">link_ref</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">runtime</span><span class="p">:</span>
-<span class="hll"><span class="w">  </span><span class="nt">link_anc_ref</span><span class="p">:</span>
-</span><span class="hll"><span class="w">    </span><span class="nt">runtime</span><span class="p">:</span>
-</span><span class="hll"><span class="w">  </span><span class="nt">bwa_index</span><span class="p">:</span>
-</span><span class="w">    </span><span class="nt">runtime</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;1d&quot;</span>
-<span class="w">    </span><span class="nt">mem_mb</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2048</span>
-<span class="w">  </span><span class="nt">samtools_faidx</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">runtime</span><span class="p">:</span>
-<span class="w">  </span><span class="nt">ref_chunking</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">runtime</span><span class="p">:</span>
-<span class="w">  </span><span class="nt">picard_dict</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">runtime</span><span class="p">:</span>
-</code></pre></div></td></tr></table></div>
-<p>You can also use the term 'attempt' in these definitions, which allow you to
-scale the resources with the number of attempts a rule has made, automatically
-increasing threads, runtime, or memory with each attempt. This is already done
-for several rules in the config, largely to automatically request more memory
-due to OOM errors.</p>
+<h1 id="extending-or-modifying-analyses-in-popglen">Extending or modifying analyses in PopGLen</h1>
+<p>Using PopGLen as a Snakemake module makes it easy to incorporate extensions to
+it in the Snakefile, enabling cusomization of the workflow. This means that you
+can extend upon the workflow with your own rules that use PopGLen outputs as
+their input, keeping the project as one contained workflow that can be easily
+reproduced. This functionality could also allow for replacement of some of
+PopGLen's analyses with alternative options, such as estimating the covariance
+matrix for PCA with single read sampling in ANGSD rather than the likelihood
+based approach of PCAngsd. Most of this is covered in Snakemake's documentation
+on <a href="https://snakemake.readthedocs.io/en/stable/snakefiles/modularization.html">modularization</a>,
+and all methods described there should be compatible with PopGLen.</p>
+<p>As an example, we will replace the PCA produced using PCAngsd in PopGLen
+with one produced using a covariance matrix from single read sampling using
+ANGSD. This should only really add one step, estimating the covariance matrix
+in ANGSD instead of PCAngsd. We start with a bare bones Snakefile that imports
+PopGLen as a module:</p>
+<p>```py title="workflow/Snakefile" linenums="1"from snakemake.utils import min_version</p>
+<p>min_version("6.10.0")</p>
+<p>configfile: "config/config.yaml"</p>
+<h1 id="declare-httpsgithubcomzjnolenpopglen-as-a-module">declare https://github.com/zjnolen/PopGLen as a module</h1>
+<p>module popglen:
+    snakefile:
+        github("zjnolen/PopGLen", path="workflow/Snakefile", tag="v0.4.1")
+    config:
+        config</p>
+<h1 id="use-all-rules-from-httpsgithubcomzjnolenpopglen">use all rules from https://github.com/zjnolen/PopGLen</h1>
+<p>use rule * from popglen
+<div class="highlight"><pre><span></span><code>As is, it will run PopGLen as described in the documentation. To utilize a
+covariance matrix estimated by something other than PCAngsd when generating the
+PCA, we need to do two things: (1) add a rule to generate the covariance matrix
+with the other tool and (2) overwrite the input for the rule that runs the
+principal component analysis with this new covariance matrix.
+
+We will do this by adding the code block below to the end of the Snakefile. It
+first defines a rule, `angsd_doCov`, which generates the covariance matrix. This
+is very similar to the `angsd_doIBS` rule already in PopGLen, so much of that
+rule can be repurposed into this one. After we add the rule, we then simply
+tell Snakemake that when it imports the rule `plot_pca` from PopGLen, it
+should use this covariance matrix made by `angsd_doCov` instead of the one from
+PCAngsd defined by default.
+
+```py title=&quot;workflow/Snakefile linenums=&quot;21&quot;
+# Add a rule which estimates the covariance matrix, but from single read
+# sampling in ANGSD rather than genotype likelihoods in PCAngsd
+
+
+rule angsd_doCov:
+    &quot;&quot;&quot;
+    Estimates covariance matrix for all individuals.
+    &quot;&quot;&quot;
+    input:
+        bamlist=&quot;results/datasets/{dataset}/bamlists/{dataset}.{ref}_{population}{dp}.bamlist&quot;,
+        bams=popglen.get_bamlist_bams,
+        bais=popglen.get_bamlist_bais,
+        sites=&quot;results/datasets/{dataset}/filters/snps/{dataset}.{ref}_{population}{dp}_{sites}-filts_snps.sites&quot;,
+        idx=&quot;results/datasets/{dataset}/filters/snps/{dataset}.{ref}_{population}{dp}_{sites}-filts_snps.sites.idx&quot;,
+    output:
+        ibs=temp(&quot;results/datasets/{dataset}/analyses/covar/{dataset}.{ref}_{population}{dp}_{sites}-filts.ibs.gz&quot;),
+        covmat=&quot;results/datasets/{dataset}/analyses/covar/{dataset}.{ref}_{population}{dp}_{sites}-filts.covMat&quot;,
+        arg=&quot;results/datasets/{dataset}/analyses/covar/{dataset}.{ref}_{population}{dp}_{sites}-filts.arg&quot;,
+    container:
+        popglen.angsd_container
+    params:
+        mapQ=config[&quot;mapQ&quot;],
+        baseQ=config[&quot;baseQ&quot;],
+        trans=popglen.get_trans,
+        out=lambda w, output: os.path.splitext(output.arg)[0],
+    threads: 2
+    resources:
+        runtime=&quot;1d&quot;,
+    shell:
+        &quot;&quot;&quot;
+        angsd -doIBS 1 -doCov 1 -bam {input.bamlist} -nThreads {threads} \
+            -doCounts 1 -minMapQ {params.mapQ} -minQ {params.baseQ} \
+            -sites {input.sites} -rmTrans {params.trans} -doMajorMinor 3 \
+            -out {params.out}
+        &quot;&quot;&quot;
+
+
+# Update plot_pca rule to use the covariance matrix from angsd_doCov rather than
+# from PCAngsd
+
+
+use rule plot_pca from popglen as plot_pca with:
+    input:
+        &quot;results/datasets/{dataset}/analyses/covar/{dataset}.{ref}_{population}{dp}_{sites}-filts.covMat&quot;,
+        &quot;results/datasets/{dataset}/poplists/{dataset}_{population}{dp}.indiv.list&quot;,
+</code></pre></div></p>
+<p>For a substitution like this, this is the only changes we need to make.
+You can try running this Snakefile using the <a href="../tutorial/">tutorial</a> data to see
+it in action. These two methods actually produce quite similar results with the
+tutorial dataset:</p>
+<table>
+<thead>
+<tr>
+<th>PCAngsd covariance matrix</th>
+<th>ANGSD doCov covariance matrix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><img alt="pcangsd pca" src="../images/pca-norel.png" /></td>
+<td><img alt="docov pca" src="../images/pca-docov.png" /></td>
+</tr>
+</tbody>
+</table>
+<p>Extending workflows like this allows you to use PopGLen as a base for your
+project, adding additional analyses as you need them. If you have an analysis
+(or alternative tool for an analysis) that you feel suits PopGLen (i.e. is
+suited for low-coverage population genomics), but is not yet implemented, please
+feel free to open an issue and request its addition.</p>
 
 
 

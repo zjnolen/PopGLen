@@ -17,7 +17,8 @@ ANGSD. This should only really add one step, estimating the covariance matrix
 in ANGSD instead of PCAngsd. We start with a bare bones Snakefile that imports
 PopGLen as a module:
 
-```py title="workflow/Snakefile" linenums="1"from snakemake.utils import min_version
+```py title="workflow/Snakefile" linenums="1"
+from snakemake.utils import min_version
 
 
 min_version("6.10.0")
@@ -101,13 +102,14 @@ use rule plot_pca from popglen as plot_pca with:
 
 ```
 
-For a substitution like this, this is the only changes we need to make.
+For a substitution like this, these are the only changes we need to make.
 You can try running this Snakefile using the [tutorial](tutorial.md) data to see
 it in action. These two methods actually produce quite similar results with the
-tutorial dataset:
+tutorial dataset (though the axis of PC2 is inverted, as its direction is
+arbitrary):
 
 | PCAngsd covariance matrix | ANGSD doCov covariance matrix |
-|---------------------------|-------------------------------|
+|------------------------------------|------------------------------------|
 |![pcangsd pca](images/pca-norel.png)|![docov pca](images/pca-docov.png)|
 
 Extending workflows like this allows you to use PopGLen as a base for your

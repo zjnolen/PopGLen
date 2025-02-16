@@ -121,7 +121,8 @@ params:
   clipoverlap:
     clip_user_provided_bams: true
   fastp:
-    extra: "-p -g" # don't put --merge or --overlap_len_require here, they're implicit
+    merged_extra: "-p -g" # don't put --merge or --overlap_len_require here, they're implicit
+    paired_extra: "-p -g"
     min_overlap_hist: 20
   bwa_aln:
     extra: "-l 16500 -n 0.01 -o 2"

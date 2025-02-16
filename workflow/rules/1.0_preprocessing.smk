@@ -50,7 +50,7 @@ rule fastp_mergedout:
     benchmark:
         "benchmarks/preprocessing/fastp/{sample}_{unit}_{lib}.merged.log"
     params:
-        extra=lambda w: config["params"]["fastp"]["extra"]
+        extra=lambda w: config["params"]["fastp"]["merged_extra"]
         + f" --merge --overlap_len_require {config['params']['fastp']['min_overlap_hist']}",
     threads: lambda wildcards, attempt: attempt * 2
     resources:
@@ -87,7 +87,7 @@ rule fastp_pairedout:
     benchmark:
         "benchmarks/preprocessing/fastp/{sample}_{unit}_{lib}.paired.log"
     params:
-        extra=lambda w: config["params"]["fastp"]["extra"],
+        extra=lambda w: config["params"]["fastp"]["paired_extra"],
     threads: lambda wildcards, attempt: attempt * 2
     resources:
         runtime=lambda wildcards, attempt: attempt * 480,

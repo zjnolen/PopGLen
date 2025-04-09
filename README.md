@@ -5,7 +5,8 @@
 > submit an issue.
 >
 > If interested in using the pipeline, feel free to check out its current
-> [documentation](https://zjnolen.github.io/PopGLen/v0.4.1/).
+> [documentation](https://zjnolen.github.io/PopGLen/v0.4.1/) and
+> [publication](https://doi.org/10.1093/bioinformatics/btaf105).
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.13384124.svg)](https://doi.org/10.5281/zenodo.13384124)
 
@@ -150,6 +151,17 @@ Computing (SNIC) at UPPMAX partially funded by the Swedish Research Council
 through grant agreements no. 2022-06725 and no. 2018-05973. This pipeline was
 developed on the following small compute projects: SNIC 2022/22-427,
 NAISS 2023/22-600, and NAISS 2024/22-996.
+
+## Citation
+
+Nolen ZJ, PopGLen—a Snakemake pipeline for performing population genomic
+analyses using genotype likelihood-based methods, Bioinformatics, Volume
+41, Issue 3, March 2025, btaf105,
+<https://doi.org/10.1093/bioinformatics/btaf105>
+
+Additionally, please ensure you cite the relevant tools for the analyses
+you perform using this workflow. Several of these are described in the
+references section below.
 
 ## References
 

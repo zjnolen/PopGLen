@@ -1,0 +1,16 @@
+cff-version: 1.2.0
+message: "If you use this workflow, please cite it as below."
+preferred-citation:
+  type: article
+  authors:
+  - family-names: "Nolen"
+    given-names: "Zachary J."
+    orcid: "https://orcid.org/0000-0001-8146-8016"
+  doi: "10.1093/bioinformatics/btaf105"
+  journal: "Bioinformatics"
+  title: "PopGLen—a Snakemake pipeline for performing population genomic analyses using genotype likelihood-based methods"
+  volume: 41
+  issue: 3
+  year: 2025
+  month: 3
+  start: "btaf105"

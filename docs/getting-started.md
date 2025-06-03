@@ -67,8 +67,9 @@ conda activate snakemake
     retrieve their code inside the submitted job, requiring network access when
     deployed as a module. If this is your configuration, you should clone the
     repository instead (see Option 2 below). Note this will also affect rules in
-    Snakemake wrappers, so see the [cluster configuration docs](cluster.md) for
-    more information on usage on clusters with this configuration.
+    Snakemake wrappers, so see the
+    [cluster configuration docs](cluster-execution.md) for more information on
+    usage on clusters with this configuration.
 
 Make your working directory:
 

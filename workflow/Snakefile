@@ -57,7 +57,7 @@ wildcard_constraints:
         [i for i in samples.index.tolist()]
         + [i for i in samples.population.values.tolist()]
     ),
-    dp=".{0}|.dp[1-9][0-9]*",
+    dp=".{0}|[.]dp[0-9]+([.][0-9]+)?",
     chunk="[0-9]+",
     sites="|".join(filters),
 

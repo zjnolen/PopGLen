@@ -678,6 +678,16 @@ def depth_file(wildcards):
         return "results/datasets/{dataset}/qc/ind_depth/filtered/{dataset}.{ref}_{sample}_allsites-filts.depth.sum"
 
 
+# Determine if reads less than minimum mapping quality will be included in the
+# subsamled bams. Only include these if subsampling is done based on mapq/baseq
+# filtered depth or sites file filtered depth (which also filts by mapq/baseq)
+def bam_subsample_mapq(wildcards):
+    if config["subsample_by"] in ["mapqbaseq", "sitefilt"]:
+        mapq = config["mapQ"]
+        return f"-q {mapq}"
+    return ""
+
+
 # Choose to use an ancestral reference if present, otherwise use main reference
 def get_anc_ref(wildcards):
     if config["ancestral"]:

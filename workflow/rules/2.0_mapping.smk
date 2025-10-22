@@ -396,6 +396,7 @@ rule samtools_subsample:
     params:
         dp=lambda w: w.dp.replace(".dp", ""),
         seed=config["params"]["samtools"]["subsampling_seed"],
+        mapq=bam_subsample_mapq,
     resources:
         runtime=lambda wildcards, attempt: attempt * 720,
     shell:
@@ -406,7 +407,7 @@ rule samtools_subsample:
 
         if [ `awk 'BEGIN {{print ('$prop' <= 1.0)}}'` = 1 ]; then
             propdec=$(echo $prop | awk -F "." '{{print $2}}')
-            samtools view -h -F 4 -q 30 -@ {threads} -u {input.bam} |
+            samtools view -h -F 4 {params.mapq} -@ {threads} -u {input.bam} |
                 samtools view -h -s {params.seed}.${{propdec}} -@ {threads} -b \
                 > {output.bam} 2> {log}
             samtools index {output.bam} 2>> {log}

@@ -1,0 +1,699 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="../resources/">
+      
+      
+        <link rel="next" href="../outfile-summ/">
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.22">
+    
+    
+      
+        <title>Extending PopGLen - PopGLen</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.84d31ad4.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+  
+  
+    
+      
+      
+    
+  
+    
+      
+      
+    
+  
+  
+  <style>:root{--md-admonition-icon--note:url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2016%2016%22%3E%3Cpath%20d%3D%22M1%207.775V2.75C1%201.784%201.784%201%202.75%201h5.025c.464%200%20.91.184%201.238.513l6.25%206.25a1.75%201.75%200%200%201%200%202.474l-5.026%205.026a1.75%201.75%200%200%201-2.474%200l-6.25-6.25A1.75%201.75%200%200%201%201%207.775m1.5%200c0%20.066.026.13.073.177l6.25%206.25a.25.25%200%200%200%20.354%200l5.025-5.025a.25.25%200%200%200%200-.354l-6.25-6.25a.25.25%200%200%200-.177-.073H2.75a.25.25%200%200%200-.25.25ZM6%205a1%201%200%201%201%200%202%201%201%200%200%201%200-2%22/%3E%3C/svg%3E');--md-admonition-icon--question:url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2016%2016%22%3E%3Cpath%20d%3D%22M0%208a8%208%200%201%201%2016%200A8%208%200%200%201%200%208m8-6.5a6.5%206.5%200%201%200%200%2013%206.5%206.5%200%200%200%200-13M6.92%206.085h.001a.749.749%200%201%201-1.342-.67c.169-.339.436-.701.849-.977C6.845%204.16%207.369%204%208%204a2.76%202.76%200%200%201%201.637.525c.503.377.863.965.863%201.725%200%20.448-.115.83-.329%201.15-.205.307-.47.513-.692.662-.109.072-.22.138-.313.195l-.006.004a6%206%200%200%200-.26.16%201%201%200%200%200-.276.245.75.75%200%200%201-1.248-.832c.184-.264.42-.489.692-.661q.154-.1.313-.195l.007-.004c.1-.061.182-.11.258-.161a1%201%200%200%200%20.277-.245C8.96%206.514%209%206.427%209%206.25a.61.61%200%200%200-.262-.525A1.27%201.27%200%200%200%208%205.5c-.369%200-.595.09-.74.187a1%201%200%200%200-.34.398M9%2011a1%201%200%201%201-2%200%201%201%200%200%201%202%200%22/%3E%3C/svg%3E');}</style>
+
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#extending-or-modifying-analyses-in-popglen" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="PopGLen" class="md-header__button md-logo" aria-label="PopGLen" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            PopGLen
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Extending PopGLen
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1M8 13h8v-2H8zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4a5 5 0 0 0 5-5 5 5 0 0 0-5-5"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="black" data-md-color-accent="indigo"  aria-label="Switch to system preference"  type="radio" name="__palette" id="__palette_2">
+    
+      <label class="md-header__button md-icon" title="Switch to system preference" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5M7 15a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/zjnolen/PopGLen" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+  </div>
+  <div class="md-source__repository">
+    zjnolen/PopGLen
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--integrated" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="PopGLen" class="md-nav__button md-logo" aria-label="PopGLen" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    PopGLen
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/zjnolen/PopGLen" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+  </div>
+  <div class="md-source__repository">
+    zjnolen/PopGLen
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Home
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../getting-started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Getting started
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../config/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Configuration
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../config-cheat/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Config cheat sheet
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorial/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Tutorial
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cluster-execution/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Cluster execution
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../resources/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Setting job resources
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    Extending PopGLen
+    
+  </span>
+  
+
+      </a>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../outfile-summ/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Output file path overview
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="extending-or-modifying-analyses-in-popglen">Extending or modifying analyses in PopGLen</h1>
+<p>Using PopGLen as a Snakemake module makes it easy to incorporate extensions to
+it in the Snakefile, enabling cusomization of the workflow. This means that you
+can extend upon the workflow with your own rules that use PopGLen outputs as
+their input, keeping the project as one contained workflow that can be easily
+reproduced. This functionality could also allow for replacement of some of
+PopGLen's analyses with alternative options, such as estimating the covariance
+matrix for PCA with single read sampling in ANGSD rather than the likelihood
+based approach of PCAngsd. Most of this is covered in Snakemake's documentation
+on <a href="https://snakemake.readthedocs.io/en/stable/snakefiles/modularization.html">modularization</a>,
+and all methods described there should be compatible with PopGLen.</p>
+<p>As an example, we will replace the PCA produced using PCAngsd in PopGLen
+with one produced using a covariance matrix from single read sampling using
+ANGSD. This should only really add one step, estimating the covariance matrix
+in ANGSD instead of PCAngsd. We start with a bare bones Snakefile that imports
+PopGLen as a module:</p>
+<div class="highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">workflow/Snakefile</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">snakemake.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">min_version</span>
+
+
+<span class="n">min_version</span><span class="p">(</span><span class="s2">&quot;6.10.0&quot;</span><span class="p">)</span>
+
+
+<span class="n">configfile</span><span class="p">:</span> <span class="s2">&quot;config/config.yaml&quot;</span>
+
+
+<span class="c1"># declare https://github.com/zjnolen/PopGLen as a module</span>
+<span class="n">module</span> <span class="n">popglen</span><span class="p">:</span>
+    <span class="n">snakefile</span><span class="p">:</span>
+        <span class="n">github</span><span class="p">(</span><span class="s2">&quot;zjnolen/PopGLen&quot;</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="s2">&quot;workflow/Snakefile&quot;</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="s2">&quot;v0.4.1&quot;</span><span class="p">)</span>
+    <span class="n">config</span><span class="p">:</span>
+        <span class="n">config</span>
+
+
+<span class="c1"># use all rules from https://github.com/zjnolen/PopGLen</span>
+<span class="n">use</span> <span class="n">rule</span> <span class="o">*</span> <span class="kn">from</span><span class="w"> </span><span class="nn">popglen</span>
+</code></pre></div></td></tr></table></div>
+<p>As is, it will run PopGLen as described in the documentation. To utilize a
+covariance matrix estimated by something other than PCAngsd when generating the
+PCA, we need to do two things: (1) add a rule to generate the covariance matrix
+with the other tool and (2) overwrite the input for the rule that runs the
+principal component analysis with this new covariance matrix.</p>
+<p>We will do this by adding the code block below to the end of the Snakefile. It
+first defines a rule, <code>angsd_doCov</code>, which generates the covariance matrix. This
+is very similar to the <code>angsd_doIBS</code> rule already in PopGLen, so much of that
+rule can be repurposed into this one. After we add the rule, we then simply
+tell Snakemake that when it imports the rule <code>plot_pca</code> from PopGLen, it
+should use this covariance matrix made by <code>angsd_doCov</code> instead of the one from
+PCAngsd defined by default.</p>
+<div class="highlight"><span class="filename">workflow/Snakefile linenums=</span><pre><span></span><code><span class="c1"># Add a rule which estimates the covariance matrix, but from single read</span>
+<span class="c1"># sampling in ANGSD rather than genotype likelihoods in PCAngsd</span>
+
+
+<span class="n">rule</span> <span class="n">angsd_doCov</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Estimates covariance matrix for all individuals.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="nb">input</span><span class="p">:</span>
+        <span class="n">bamlist</span><span class="o">=</span><span class="s2">&quot;results/datasets/</span><span class="si">{dataset}</span><span class="s2">/bamlists/</span><span class="si">{dataset}</span><span class="s2">.</span><span class="si">{ref}</span><span class="s2">_</span><span class="si">{population}{dp}</span><span class="s2">.bamlist&quot;</span><span class="p">,</span>
+        <span class="n">bams</span><span class="o">=</span><span class="n">popglen</span><span class="o">.</span><span class="n">get_bamlist_bams</span><span class="p">,</span>
+        <span class="n">bais</span><span class="o">=</span><span class="n">popglen</span><span class="o">.</span><span class="n">get_bamlist_bais</span><span class="p">,</span>
+        <span class="n">sites</span><span class="o">=</span><span class="s2">&quot;results/datasets/</span><span class="si">{dataset}</span><span class="s2">/filters/snps/</span><span class="si">{dataset}</span><span class="s2">.</span><span class="si">{ref}</span><span class="s2">_</span><span class="si">{population}{dp}</span><span class="s2">_</span><span class="si">{sites}</span><span class="s2">-filts_snps.sites&quot;</span><span class="p">,</span>
+        <span class="n">idx</span><span class="o">=</span><span class="s2">&quot;results/datasets/</span><span class="si">{dataset}</span><span class="s2">/filters/snps/</span><span class="si">{dataset}</span><span class="s2">.</span><span class="si">{ref}</span><span class="s2">_</span><span class="si">{population}{dp}</span><span class="s2">_</span><span class="si">{sites}</span><span class="s2">-filts_snps.sites.idx&quot;</span><span class="p">,</span>
+    <span class="n">output</span><span class="p">:</span>
+        <span class="n">ibs</span><span class="o">=</span><span class="n">temp</span><span class="p">(</span><span class="s2">&quot;results/datasets/</span><span class="si">{dataset}</span><span class="s2">/analyses/covar/</span><span class="si">{dataset}</span><span class="s2">.</span><span class="si">{ref}</span><span class="s2">_</span><span class="si">{population}{dp}</span><span class="s2">_</span><span class="si">{sites}</span><span class="s2">-filts.ibs.gz&quot;</span><span class="p">),</span>
+        <span class="n">covmat</span><span class="o">=</span><span class="s2">&quot;results/datasets/</span><span class="si">{dataset}</span><span class="s2">/analyses/covar/</span><span class="si">{dataset}</span><span class="s2">.</span><span class="si">{ref}</span><span class="s2">_</span><span class="si">{population}{dp}</span><span class="s2">_</span><span class="si">{sites}</span><span class="s2">-filts.covMat&quot;</span><span class="p">,</span>
+        <span class="n">arg</span><span class="o">=</span><span class="s2">&quot;results/datasets/</span><span class="si">{dataset}</span><span class="s2">/analyses/covar/</span><span class="si">{dataset}</span><span class="s2">.</span><span class="si">{ref}</span><span class="s2">_</span><span class="si">{population}{dp}</span><span class="s2">_</span><span class="si">{sites}</span><span class="s2">-filts.arg&quot;</span><span class="p">,</span>
+    <span class="n">container</span><span class="p">:</span>
+        <span class="n">popglen</span><span class="o">.</span><span class="n">angsd_container</span>
+    <span class="n">params</span><span class="p">:</span>
+        <span class="n">mapQ</span><span class="o">=</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;mapQ&quot;</span><span class="p">],</span>
+        <span class="n">baseQ</span><span class="o">=</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;baseQ&quot;</span><span class="p">],</span>
+        <span class="n">trans</span><span class="o">=</span><span class="n">popglen</span><span class="o">.</span><span class="n">get_trans</span><span class="p">,</span>
+        <span class="n">out</span><span class="o">=</span><span class="k">lambda</span> <span class="n">w</span><span class="p">,</span> <span class="n">output</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">output</span><span class="o">.</span><span class="n">arg</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span>
+    <span class="n">threads</span><span class="p">:</span> <span class="mi">2</span>
+    <span class="n">resources</span><span class="p">:</span>
+        <span class="n">runtime</span><span class="o">=</span><span class="s2">&quot;1d&quot;</span><span class="p">,</span>
+    <span class="n">shell</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        angsd -doIBS 1 -doCov 1 -bam {input.bamlist} -nThreads {threads} \</span>
+<span class="sd">            -doCounts 1 -minMapQ {params.mapQ} -minQ {params.baseQ} \</span>
+<span class="sd">            -sites {input.sites} -rmTrans {params.trans} -doMajorMinor 3 \</span>
+<span class="sd">            -out {params.out}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+
+<span class="c1"># Update plot_pca rule to use the covariance matrix from angsd_doCov rather than</span>
+<span class="c1"># from PCAngsd</span>
+
+
+<span class="n">use</span> <span class="n">rule</span> <span class="n">plot_pca</span> <span class="kn">from</span><span class="w"> </span><span class="nn">popglen</span> <span class="k">as</span> <span class="n">plot_pca</span> <span class="k">with</span><span class="p">:</span>
+    <span class="nb">input</span><span class="p">:</span>
+        <span class="s2">&quot;results/datasets/</span><span class="si">{dataset}</span><span class="s2">/analyses/covar/</span><span class="si">{dataset}</span><span class="s2">.</span><span class="si">{ref}</span><span class="s2">_</span><span class="si">{population}{dp}</span><span class="s2">_</span><span class="si">{sites}</span><span class="s2">-filts.covMat&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;results/datasets/</span><span class="si">{dataset}</span><span class="s2">/poplists/</span><span class="si">{dataset}</span><span class="s2">_</span><span class="si">{population}{dp}</span><span class="s2">.indiv.list&quot;</span><span class="p">,</span>
+</code></pre></div>
+<p>For a substitution like this, these are the only changes we need to make.
+You can try running this Snakefile using the <a href="../tutorial/">tutorial</a> data to see
+it in action. These two methods actually produce quite similar results with the
+tutorial dataset (though the axis of PC2 is inverted, as its direction is
+arbitrary):</p>
+<table>
+<thead>
+<tr>
+<th>PCAngsd covariance matrix</th>
+<th>ANGSD -doCov covar matrix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><img alt="pcangsd pca" src="../images/pca-norel.png" /></td>
+<td><img alt="docov pca" src="../images/pca-docov.png" /></td>
+</tr>
+</tbody>
+</table>
+<p>Extending workflows like this allows you to use PopGLen as a base for your
+project, adding additional analyses as you need them. If you have an analysis
+(or alternative tool for an analysis) that you feel suits PopGLen (i.e. is
+suited for low-coverage population genomics), but is not yet implemented, please
+feel free to open an issue and request its addition.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "..", "features": ["toc.integrate", "search.highlight", "content.code.annotate"], "search": "../assets/javascripts/workers/search.973d3a69.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.f55a23d4.min.js"></script>
+      
+    
+  </body>
+</html>

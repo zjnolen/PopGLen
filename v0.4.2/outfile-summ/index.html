@@ -1,0 +1,1440 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="../extending-workflows/">
+      
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.22">
+    
+    
+      
+        <title>Output file path overview - PopGLen</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.84d31ad4.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+  
+  
+    
+      
+      
+    
+  
+    
+      
+      
+    
+  
+  
+  <style>:root{--md-admonition-icon--note:url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2016%2016%22%3E%3Cpath%20d%3D%22M1%207.775V2.75C1%201.784%201.784%201%202.75%201h5.025c.464%200%20.91.184%201.238.513l6.25%206.25a1.75%201.75%200%200%201%200%202.474l-5.026%205.026a1.75%201.75%200%200%201-2.474%200l-6.25-6.25A1.75%201.75%200%200%201%201%207.775m1.5%200c0%20.066.026.13.073.177l6.25%206.25a.25.25%200%200%200%20.354%200l5.025-5.025a.25.25%200%200%200%200-.354l-6.25-6.25a.25.25%200%200%200-.177-.073H2.75a.25.25%200%200%200-.25.25ZM6%205a1%201%200%201%201%200%202%201%201%200%200%201%200-2%22/%3E%3C/svg%3E');--md-admonition-icon--question:url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2016%2016%22%3E%3Cpath%20d%3D%22M0%208a8%208%200%201%201%2016%200A8%208%200%200%201%200%208m8-6.5a6.5%206.5%200%201%200%200%2013%206.5%206.5%200%200%200%200-13M6.92%206.085h.001a.749.749%200%201%201-1.342-.67c.169-.339.436-.701.849-.977C6.845%204.16%207.369%204%208%204a2.76%202.76%200%200%201%201.637.525c.503.377.863.965.863%201.725%200%20.448-.115.83-.329%201.15-.205.307-.47.513-.692.662-.109.072-.22.138-.313.195l-.006.004a6%206%200%200%200-.26.16%201%201%200%200%200-.276.245.75.75%200%200%201-1.248-.832c.184-.264.42-.489.692-.661q.154-.1.313-.195l.007-.004c.1-.061.182-.11.258-.161a1%201%200%200%200%20.277-.245C8.96%206.514%209%206.427%209%206.25a.61.61%200%200%200-.262-.525A1.27%201.27%200%200%200%208%205.5c-.369%200-.595.09-.74.187a1%201%200%200%200-.34.398M9%2011a1%201%200%201%201-2%200%201%201%200%200%201%202%200%22/%3E%3C/svg%3E');}</style>
+
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#output-files" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="PopGLen" class="md-header__button md-logo" aria-label="PopGLen" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            PopGLen
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Output file path overview
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1M8 13h8v-2H8zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4a5 5 0 0 0 5-5 5 5 0 0 0-5-5"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="black" data-md-color-accent="indigo"  aria-label="Switch to system preference"  type="radio" name="__palette" id="__palette_2">
+    
+      <label class="md-header__button md-icon" title="Switch to system preference" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5M7 15a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/zjnolen/PopGLen" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+  </div>
+  <div class="md-source__repository">
+    zjnolen/PopGLen
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--integrated" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="PopGLen" class="md-nav__button md-logo" aria-label="PopGLen" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    PopGLen
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/zjnolen/PopGLen" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+  </div>
+  <div class="md-source__repository">
+    zjnolen/PopGLen
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Home
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../getting-started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Getting started
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../config/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Configuration
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../config-cheat/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Config cheat sheet
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorial/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Tutorial
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cluster-execution/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Cluster execution
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../resources/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Setting job resources
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../extending-workflows/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Extending PopGLen
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    Output file path overview
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    Output file path overview
+    
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#mapping" class="md-nav__link">
+    <span class="md-ellipsis">
+      Mapping
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Mapping">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#trimmedcollapsed-reads" class="md-nav__link">
+    <span class="md-ellipsis">
+      Trimmed/Collapsed reads
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Trimmed/Collapsed reads">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#trimmed-reads-uncollapsed-temp" class="md-nav__link">
+    <span class="md-ellipsis">
+      Trimmed reads (uncollapsed, temp)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#collapsed-reads-temp" class="md-nav__link">
+    <span class="md-ellipsis">
+      Collapsed reads (temp)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#processed-alignments" class="md-nav__link">
+    <span class="md-ellipsis">
+      Processed alignments
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Processed alignments">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bam-files" class="md-nav__link">
+    <span class="md-ellipsis">
+      BAM files
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bam-files-mapdamage-rescaled" class="md-nav__link">
+    <span class="md-ellipsis">
+      BAM files (MapDamage rescaled)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#subsampled-bam-files" class="md-nav__link">
+    <span class="md-ellipsis">
+      Subsampled BAM files
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quality-control" class="md-nav__link">
+    <span class="md-ellipsis">
+      Quality control
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Quality control">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fastp-reports" class="md-nav__link">
+    <span class="md-ellipsis">
+      fastp reports
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#picard-markduplicates-metrics" class="md-nav__link">
+    <span class="md-ellipsis">
+      Picard MarkDuplicates metrics
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dedup-duplicate-removal-metrics" class="md-nav__link">
+    <span class="md-ellipsis">
+      Dedup duplicate removal metrics
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bamutil-overlap-clipping-metrics" class="md-nav__link">
+    <span class="md-ellipsis">
+      Bamutil overlap clipping metrics
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#samtools-flagstat-for-raw-alignments-pre-duplicate-removal" class="md-nav__link">
+    <span class="md-ellipsis">
+      Samtools flagstat for raw alignments (pre-duplicate removal)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#qualimap-reports" class="md-nav__link">
+    <span class="md-ellipsis">
+      Qualimap reports
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mean-and-st-dev-depth-mapping-rates" class="md-nav__link">
+    <span class="md-ellipsis">
+      Mean and st. dev. depth, mapping rates
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#identity-by-state-distance-to-reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      Identity by state distance to reference
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dna-damage" class="md-nav__link">
+    <span class="md-ellipsis">
+      DNA damage
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#filtering" class="md-nav__link">
+    <span class="md-ellipsis">
+      Filtering
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Filtering">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#reference-links-and-indices" class="md-nav__link">
+    <span class="md-ellipsis">
+      Reference links and indices
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#reference-chunk-region-files" class="md-nav__link">
+    <span class="md-ellipsis">
+      Reference 'chunk' region files
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Reference &#39;chunk&#39; region files">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#mappability" class="md-nav__link">
+    <span class="md-ellipsis">
+      Mappability
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Mappability">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#genmap-mappability-scores" class="md-nav__link">
+    <span class="md-ellipsis">
+      Genmap mappability scores
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pileup-mappability-scores" class="md-nav__link">
+    <span class="md-ellipsis">
+      Pileup mappability scores
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pileup-mappability-filter-bed" class="md-nav__link">
+    <span class="md-ellipsis">
+      Pileup mappability filter BED
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#repeats" class="md-nav__link">
+    <span class="md-ellipsis">
+      Repeats
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Repeats">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#repeat-library-generated-in-pipeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      Repeat library generated in pipeline
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#identified-repeats-either-from-provided-or-generated-library" class="md-nav__link">
+    <span class="md-ellipsis">
+      Identified repeats (either from provided or generated library)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#repeat-filter-bed" class="md-nav__link">
+    <span class="md-ellipsis">
+      Repeat filter BED
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#combined-filter-bed" class="md-nav__link">
+    <span class="md-ellipsis">
+      Combined filter BED
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#genotype-likelihood-analyses" class="md-nav__link">
+    <span class="md-ellipsis">
+      Genotype likelihood analyses
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Genotype likelihood analyses">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#gl-files" class="md-nav__link">
+    <span class="md-ellipsis">
+      GL files
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="GL files">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#beagles" class="md-nav__link">
+    <span class="md-ellipsis">
+      Beagles
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#safs" class="md-nav__link">
+    <span class="md-ellipsis">
+      SAFs
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#linkage-disequilibrium" class="md-nav__link">
+    <span class="md-ellipsis">
+      Linkage disequilibrium
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Linkage disequilibrium">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ld-estimates" class="md-nav__link">
+    <span class="md-ellipsis">
+      LD estimates
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#relatedness-tables" class="md-nav__link">
+    <span class="md-ellipsis">
+      Relatedness tables
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Relatedness tables">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ibsrelate-sfs-based" class="md-nav__link">
+    <span class="md-ellipsis">
+      IBSrelate (SFS-based)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ibsrelate-ibs-based" class="md-nav__link">
+    <span class="md-ellipsis">
+      IBSrelate (IBS-based)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ibsrelate-ngsrelate-implementation" class="md-nav__link">
+    <span class="md-ellipsis">
+      IBSrelate (NgsRelate implementation)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ngsrelate-allele-frequency-based" class="md-nav__link">
+    <span class="md-ellipsis">
+      NgsRelate (allele frequency-based)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#principal-component-analysis" class="md-nav__link">
+    <span class="md-ellipsis">
+      Principal component analysis
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Principal component analysis">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#covariance-matrix" class="md-nav__link">
+    <span class="md-ellipsis">
+      Covariance matrix
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#admixture" class="md-nav__link">
+    <span class="md-ellipsis">
+      Admixture
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Admixture">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ngsadmix-outputs" class="md-nav__link">
+    <span class="md-ellipsis">
+      NGSadmix outputs
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#evaladmix-correlation-of-residuals" class="md-nav__link">
+    <span class="md-ellipsis">
+      EvalAdmix correlation of residuals
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#site-frequency-spectrum-sfs" class="md-nav__link">
+    <span class="md-ellipsis">
+      Site frequency spectrum (SFS)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Site frequency spectrum (SFS)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#one-populationone-sample" class="md-nav__link">
+    <span class="md-ellipsis">
+      One population/one sample
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#two-populationtwo-sample" class="md-nav__link">
+    <span class="md-ellipsis">
+      Two population/two sample
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#theta-and-neutrality-statistics-nucleotide-diversity-wattersons-theta-tajimas-d" class="md-nav__link">
+    <span class="md-ellipsis">
+      Theta and neutrality statistics (nucleotide diversity, Watterson's theta, Tajima's D)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Theta and neutrality statistics (nucleotide diversity, Watterson&#39;s theta, Tajima&#39;s D)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#windowed-theta-estimates" class="md-nav__link">
+    <span class="md-ellipsis">
+      Windowed theta estimates
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mean-and-confidence-intervals" class="md-nav__link">
+    <span class="md-ellipsis">
+      Mean and confidence intervals
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#genetic-differentiation-fst" class="md-nav__link">
+    <span class="md-ellipsis">
+      Genetic differentiation (FST)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Genetic differentiation (FST)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#windowed-fst-estimates" class="md-nav__link">
+    <span class="md-ellipsis">
+      Windowed FST estimates
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#global-estimates" class="md-nav__link">
+    <span class="md-ellipsis">
+      Global estimates
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#individual-heterozygosity-table" class="md-nav__link">
+    <span class="md-ellipsis">
+      Individual heterozygosity table
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#inbreeding" class="md-nav__link">
+    <span class="md-ellipsis">
+      Inbreeding
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Inbreeding">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ngsf-hmm-model-based-inbreeding-coefficients" class="md-nav__link">
+    <span class="md-ellipsis">
+      ngsF-HMM model based inbreeding coefficients
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ibd-segments-runs-of-homozygosity" class="md-nav__link">
+    <span class="md-ellipsis">
+      IBD segments (runs of homozygosity)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#froh-table" class="md-nav__link">
+    <span class="md-ellipsis">
+      FRoH table
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#identity-by-state-matrix" class="md-nav__link">
+    <span class="md-ellipsis">
+      Identity by state matrix
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#population-specific-allele-frequencies" class="md-nav__link">
+    <span class="md-ellipsis">
+      Population specific allele frequencies
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="output-files">Output files</h1>
+<p>Here is a brief overview of the file paths for output files. Files marked with
+<em>temp</em> are flagged as temporary and will be deleted when they are no longer
+needed by the workflow. Paths have wildcards in their names, indicated by <code>{}</code>.
+Some of these wildcards include:</p>
+<ul>
+<li><code>{dataset}</code> - The dataset name defined in the config file</li>
+<li><code>{ref}</code> - The reference genome name defined in the config file</li>
+<li><code>{sample}</code> - Sample names as written in the sample list</li>
+<li><code>{population}</code> - Population names as written in the sample list, but also
+  including depth groupings in some rare cases</li>
+<li><code>{unit}</code> - The sequencing unit (usually flow cell barcode + sequencing lane)
+  of the sequencing reads</li>
+<li><code>{lib}</code> - The sequencing library the sequencing reads come from</li>
+<li><code>{dp}</code> - The subsampled sequencing depth, if enabled. The full depth results
+  will have this wildcard empty in the path.</li>
+<li><code>{sites}</code> - The filter set used to produce the result. If no user provided
+  filters are given, this will always be <code>allsites</code>. If user provided filters
+  are in the config, it will use the name given to the BED file.</li>
+</ul>
+<h2 id="mapping">Mapping</h2>
+<h3 id="trimmedcollapsed-reads">Trimmed/Collapsed reads</h3>
+<h4 id="trimmed-reads-uncollapsed-temp">Trimmed reads (uncollapsed, <em>temp</em>)</h4>
+<p><code>results/preprocessing/fastp/{sample}_{unit}_{lib}.{read}.paired.fastq.gz</code></p>
+<h4 id="collapsed-reads-temp">Collapsed reads (<em>temp</em>)</h4>
+<p><code>results/preprocessing/fastp/{sample}_{unit}_{lib}.merged.fastq.gz</code></p>
+<h3 id="processed-alignments">Processed alignments</h3>
+<h4 id="bam-files">BAM files</h4>
+<p><code>results/mapping/bams/{sample}.{ref}.rmdup.realn.clip.bam</code> (also symlinked to
+<code>results/datasets/{dataset}/bams/{sample}.{ref}.bam</code>)</p>
+<h4 id="bam-files-mapdamage-rescaled">BAM files (MapDamage rescaled)</h4>
+<p><code>results/mapping/bams/{sample}.{ref}.rmdup.realn.clip.rescaled.bam</code> (also
+symlinked to <code>results/datasets/{dataset}/bams/{sample}.{ref}.bam</code> when enabled)</p>
+<h4 id="subsampled-bam-files">Subsampled BAM files</h4>
+<p><code>results/datasets/{dataset}/bams/{sample}.{ref}{dp}.bam</code></p>
+<h2 id="quality-control">Quality control</h2>
+<h3 id="fastp-reports">fastp reports</h3>
+<p><code>results/preprocessing/qc/fastp/{sample}_{unit}_{lib}_merged.html</code> (collapsed
+reads)</p>
+<p><code>results/preprocessing/qc/fastp/{sample}_{unit}_{lib}_paired.html</code>
+(trimmed, i.e. uncollapsed, reads)</p>
+<h3 id="picard-markduplicates-metrics">Picard MarkDuplicates metrics</h3>
+<p><code>results/mapping/qc/mark_duplicates/{sample}.{ref}.picard.metrics</code></p>
+<h3 id="dedup-duplicate-removal-metrics">Dedup duplicate removal metrics</h3>
+<p><code>results/mapping/qc/dedup/{sample}_{lib}.{ref}.dedup.json</code></p>
+<h3 id="bamutil-overlap-clipping-metrics">Bamutil overlap clipping metrics</h3>
+<p><code>results/mapping/qc/bamutil_clipoverlap/{sample}.{ref}.rmdup.realn.clipoverlap.stat</code></p>
+<h3 id="samtools-flagstat-for-raw-alignments-pre-duplicate-removal">Samtools flagstat for raw alignments (pre-duplicate removal)</h3>
+<p><code>results/mapping/mapped/{sample}_{library}.{ref}.merged.flagstat</code> (collapsed
+reads)</p>
+<p><code>results/mapping/mapped/{sample}.{ref}.paired.flagstat</code> (trimmed, i.e.
+uncollapsed, reads)</p>
+<h3 id="qualimap-reports">Qualimap reports</h3>
+<p><code>results/mapping/qc/qualimap/{sample}.{ref}/qualimapReport.html</code> (BAMs
+processed by PopGLen),</p>
+<p><code>results/datasets/{dataset}/qc/user-provided-bams/qualimap/{sample}.{ref}/qualimapReport.html</code>
+(BAMs brought by user),</p>
+<p><code>results/datasets/{dataset}/qc/qualimap/qualimap_all.{ref}_mqc.html</code> (MultiQC)</p>
+<h3 id="mean-and-st-dev-depth-mapping-rates">Mean and st. dev. depth, mapping rates</h3>
+<p><code>results/datasets/{dataset}/qc/{dataset}.{ref}_all{dp}.sampleqc.tsv</code></p>
+<h3 id="identity-by-state-distance-to-reference">Identity by state distance to reference</h3>
+<p><code>results/datasets/{dataset}/qc/ibs_refbias/{dataset}.{ref}_{population}{dp}_{filts}.refibs.tsv</code>
+(here <code>{filts}</code> refers to either unfiltered, or with one of the sites filters)</p>
+<p><code>results/datasets/{dataset}/plots/ibs_refbias/{dataset}.{ref}_all{dp}_{filts}.{grouping}.pdf</code> (plots)</p>
+<h3 id="dna-damage">DNA damage</h3>
+<p><code>results/mapping/qc/damageprofiler/{sample}.{ref}</code> (DamageProfiler)</p>
+<p><code>results/mapping/qc/mapdamage/{sample}.{ref}</code> (MapDamage 2)</p>
+<p><code>results/datasets/{dataset}/qc/dna-damage-mqc/dna-damage_all.{ref}_mqc.html</code>
+(MultiQC)</p>
+<h2 id="filtering">Filtering</h2>
+<h3 id="reference-links-and-indices">Reference links and indices</h3>
+<p><code>results/ref/{ref}/{ref}.fa</code> (symlink to provided referenceindices are built off
+this symlink)</p>
+<p><code>results/ref/{ref}/{ref}.anc.fa</code> (symlink to provided ancestral state reference,
+if provided in config)</p>
+<h3 id="reference-chunk-region-files">Reference 'chunk' region files</h3>
+<p><code>results/datasets/{dataset}/filters/chunks/{ref}_chunk{chunk}.rf</code> (where
+<code>{chunk}</code> is the chunk number)</p>
+<h4 id="mappability">Mappability</h4>
+<h5 id="genmap-mappability-scores">Genmap mappability scores</h5>
+<p><code>results/ref/{ref}/genmap/map/{ref}_k{k}_e{e}.bedgraph</code></p>
+<h5 id="pileup-mappability-scores">Pileup mappability scores</h5>
+<p><code>results/ref/{ref}/genmap/pileup/{ref}_pileup_mappability_k{k}_e{e}.bed</code></p>
+<h5 id="pileup-mappability-filter-bed">Pileup mappability filter BED</h5>
+<p><code>results/datasets/{dataset}/filters/pileupmap/{ref}_k{k}_e{e}_{thresh}.bed</code></p>
+<h4 id="repeats">Repeats</h4>
+<h5 id="repeat-library-generated-in-pipeline">Repeat library generated in pipeline</h5>
+<p><code>results/ref/{ref}/repeatmodeler/{ref}-families.fa</code></p>
+<h5 id="identified-repeats-either-from-provided-or-generated-library">Identified repeats (either from provided or generated library)</h5>
+<p><code>results/ref/{ref}/repeatmasker/{ref}.fa.out.gff</code></p>
+<h5 id="repeat-filter-bed">Repeat filter BED</h5>
+<p><code>results/ref/{ref}/repeatmasker/{ref}.fa.out.bed</code></p>
+<h4 id="combined-filter-bed">Combined filter BED</h4>
+<p><code>results/datasets/{dataset}/filters/combined/{dataset}.{ref}{dp}_allsites-filts.bed</code></p>
+<p><code>results/datasets/{dataset}/filters/combined/{dataset}.{ref}{dp}_{sites}-filts.bed</code>
+(when user provides additional filter BEDs. <code>{sites}</code> will be the name in the
+config of the filter BED)</p>
+<h2 id="genotype-likelihood-analyses">Genotype likelihood analyses</h2>
+<h3 id="gl-files">GL files</h3>
+<h4 id="beagles">Beagles</h4>
+<p><code>results/datasets/{dataset}/beagles/{dataset}.{ref}_{population}{dp}_{sites}-filts.beagle.gz</code></p>
+<h4 id="safs">SAFs</h4>
+<p><code>results/datasets/{dataset}/safs/{dataset}.{ref}_{population}{dp}_{sites}-filts.saf.idx</code></p>
+<p><code>results/datasets/{dataset}/safs/{dataset}.{ref}_{population}{dp}_{sites}-filts.saf.pos.gz</code></p>
+<p><code>results/datasets/{dataset}/safs/{dataset}.{ref}_{population}{dp}_{sites}-filts.saf.gz</code></p>
+<p>(for the above files, <code>{population}</code> can also be from samples for 1 sample SAF)</p>
+<h3 id="linkage-disequilibrium">Linkage disequilibrium</h3>
+<h4 id="ld-estimates">LD estimates</h4>
+<p><code>results/datasets/{dataset}/analyses/ngsLD/{dataset}.{ref}_{population}{dp}_{sites}-filts.ld_maxkbdist-{maxkb}_rndsample-{rndsmp}.gz</code>
+(where <code>{maxkb}</code> is the max distance between SNPs in kilobases and <code>{rndsnp}</code> is
+the proportion of SNPs to sample for the LD calculation)</p>
+<h4 id="relatedness-tables">Relatedness tables</h4>
+<h5 id="ibsrelate-sfs-based">IBSrelate (SFS-based)</h5>
+<p><code>results/datasets/{dataset}/analyses/kinship/ibsrelate_sfs/{dataset}.{ref}_all{dp}_{sites}-filts.kinship</code></p>
+<h5 id="ibsrelate-ibs-based">IBSrelate (IBS-based)</h5>
+<p><code>results/datasets/{dataset}/analyses/kinship/ibsrelate_ibs/{dataset}.{ref}_all{dp}_{sites}-filts.kinship</code></p>
+<h5 id="ibsrelate-ngsrelate-implementation">IBSrelate (NgsRelate implementation)</h5>
+<p><code>results/datasets/{dataset}/analyses/kinship/ngsrelate/{dataset}.{ref}_all{dp}_{sites}-filts_ibsrelate-nofreq.tsv</code></p>
+<h5 id="ngsrelate-allele-frequency-based">NgsRelate (allele frequency-based)</h5>
+<p><code>results/datasets/{dataset}/analyses/kinship/ngsrelate/{dataset}.{ref}_all{dp}_{sites}-filts_ngsrelate-freq.tsv</code></p>
+<h4 id="principal-component-analysis">Principal component analysis</h4>
+<h5 id="covariance-matrix">Covariance matrix</h5>
+<p>(for these, <code>{population}</code> is either <code>all</code> or <code>all_excl_pca-admix</code> depending on
+if relatives were removed)</p>
+<p><code>results/datasets/{dataset}/analyses/pcangsd/{dataset}.{ref}_{population}{dp}_{sites}-filts.cov</code></p>
+<h4 id="admixture">Admixture</h4>
+<h5 id="ngsadmix-outputs">NGSadmix outputs</h5>
+<p>(for these, <code>{population}</code> is either <code>all</code> or <code>all_excl_pca-admix</code> depending on
+if relatives were removed)</p>
+<p><code>results/datasets/{dataset}/analyses/ngsadmix/{dataset}.{ref}_{population}{dp}_{sites}-filts_K{kvalue}.qopt</code></p>
+<p><code>results/datasets/{dataset}/analyses/ngsadmix/{dataset}.{ref}_{population}{dp}_{sites}-filts_K{kvalue}.fopt.gz</code></p>
+<p><code>results/datasets/{dataset}/analyses/ngsadmix/{dataset}.{ref}_{population}{dp}_{sites}-filts_K{kvalue}_optimization_wrapper.log</code>
+(this logs the replicate number, seed, and log-likelihood of the replicate
+NGSadmix runs for each value of K)</p>
+<h5 id="evaladmix-correlation-of-residuals">EvalAdmix correlation of residuals</h5>
+<p>(for these, <code>{population}</code> is either <code>all</code> or <code>all_excl_pca-admix</code> depending on
+if relatives were removed)</p>
+<p><code>results/datasets/{dataset}/analyses/ngsadmix/{dataset}.{ref}_{population}{dp}_{sites}-filts_K{kvalue}.corres</code></p>
+<h4 id="site-frequency-spectrum-sfs">Site frequency spectrum (SFS)</h4>
+<h5 id="one-populationone-sample">One population/one sample</h5>
+<p><code>results/datasets/{dataset}/analyses/sfs/{dataset}.{ref}_{population}{dp}_{sites}-filts.sfs</code></p>
+<p><code>results/datasets/{dataset}/analyses/sfs/{dataset}.{ref}_{population}{dp}_{sites}-filts.boot.sfs</code>
+(bootstrapped)</p>
+<h5 id="two-populationtwo-sample">Two population/two sample</h5>
+<p><code>results/datasets/{dataset}/analyses/sfs/{dataset}.{ref}_{population1}-{population2}{dp}_{sites}-filts.sfs</code></p>
+<p><code>results/datasets/{dataset}/analyses/sfs/{dataset}.{ref}_{population1}-{population2}{dp}_{sites}-filts.boot.sfs</code>
+(bootstrapped)</p>
+<h4 id="theta-and-neutrality-statistics-nucleotide-diversity-wattersons-theta-tajimas-d">Theta and neutrality statistics (nucleotide diversity, Watterson's theta, Tajima's D)</h4>
+<h5 id="windowed-theta-estimates">Windowed theta estimates</h5>
+<p><code>results/datasets/{dataset}/analyses/thetas/{dataset}.{ref}_{population}{dp}_{sites}-filts.thetaWindows.{win}_{step}.pestPG</code></p>
+<h5 id="mean-and-confidence-intervals">Mean and confidence intervals</h5>
+<p><code>results/datasets/{dataset}/analyses/thetas/{dataset}.{ref}_all{dp}_{sites}-filts.window_{win}_{step}.{stat}.mean.tsv</code>
+(where <code>{stat}</code> is <code>pi</code>, <code>watterson</code>, or <code>tajima</code>)</p>
+<h4 id="genetic-differentiation-fst">Genetic differentiation (<em>F</em><sub>ST</sub>)</h4>
+<h5 id="windowed-fst-estimates">Windowed <em>F</em><sub>ST</sub> estimates</h5>
+<p><code>results/datasets/{dataset}/analyses/fst/{dataset}.{ref}_{population1}-{population2}{dp}_{sites}-filts.fst.window_{win}_{step}.tsv</code></p>
+<h5 id="global-estimates">Global estimates</h5>
+<p><code>results/datasets/{dataset}/analyses/fst/{dataset}.{ref}_{unit}pairs{dp}_{sites}-filts.fst.global.tsv</code>
+(where <code>{unit}</code> is either <code>pop</code> or <code>ind</code>, depending on whether <em>F</em><sub>ST</sub> was
+requested between populations or individuals)</p>
+<h4 id="individual-heterozygosity-table">Individual heterozygosity table</h4>
+<p><code>results/datasets/{dataset}/analyses/heterozygosity/{dataset}.{ref}_all{dp}_{sites}-filts_heterozygosity.tsv</code></p>
+<h4 id="inbreeding">Inbreeding</h4>
+<h5 id="ngsf-hmm-model-based-inbreeding-coefficients">ngsF-HMM model based inbreeding coefficients</h5>
+<p><code>results/datasets/{dataset}/analyses/ngsF-HMM/{dataset}.{ref}_{population}{dp}_{sites}-filts.indF</code></p>
+<h5 id="ibd-segments-runs-of-homozygosity">IBD segments (runs of homozygosity)</h5>
+<p><code>results/datasets/{dataset}/analyses/ngsF-HMM/{dataset}.{ref}_{population}{dp}_{sites}-filts.roh</code>
+(raw)</p>
+<p><code>results/datasets/{dataset}/analyses/ngsF-HMM/{dataset}.{ref}_all{dp}_{sites}-filts.all_roh.bed</code>
+(after filtering out runs less than minimum length in configuration file)</p>
+<h5 id="froh-table"><em>F<sub>RoH</sub></em> table</h5>
+<p><code>results/datasets/{dataset}/analyses/ngsF-HMM/{dataset}.{ref}_all{dp}_{sites}-filts.ind_froh.tsv</code></p>
+<h4 id="identity-by-state-matrix">Identity by state matrix</h4>
+<p><code>results/datasets/{dataset}/analyses/IBS/{dataset}.{ref}_all{dp}_{sites}-filts.ibsMat</code></p>
+<h4 id="population-specific-allele-frequencies">Population specific allele frequencies</h4>
+<p><code>results/datasets/{dataset}/mafs/{dataset}.{ref}_{population}{dp}_{sites}-filts.pop-maj.mafs.gz</code>
+(sites segregating in population, major/minor polarized to population freqs
+unless using <code>-doMajorMinor 4</code> or <code>5</code>)</p>
+<p><code>results/datasets/{dataset}/mafs/{dataset}.{ref}_{population}{dp}_{sites}-filts.dataset-maj.mafs.gz</code>
+(sites segregating in dataset, including invariant in population, major/minor
+polarized to dataset wide frequencies unless using <code>-doMajorMinor 4</code> or <code>5</code>)</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "..", "features": ["toc.integrate", "search.highlight", "content.code.annotate"], "search": "../assets/javascripts/workers/search.973d3a69.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.f55a23d4.min.js"></script>
+      
+    
+  </body>
+</html>

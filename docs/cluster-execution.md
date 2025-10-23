@@ -142,3 +142,21 @@ screen -r project-name
 and see how far it has gotten (or if it fails and you need to change something).
 
 When you're done with a screen, you can kill it with CTRL-A + K.
+
+## Notes for clusters where worker nodes have no network access
+
+When workflows are deployed as modules, the code is often stored remotely. As
+Snakemake retrieves the code for external script rules during the running job,
+this will cause an error if the worker nodes do not have network access. To
+resolve this, clone the repository locally and use that clone as the working
+directory or point to the local copy for the module, rather than using a module
+pointing to the GitHub, as is the default if deployed with Snakedeploy.
+
+This same issue applies to wrappers, and will cause an error even if the
+repository is cloned locally. This can be resolved by cloning the
+[Snakemake wrappers repository](https://github.com/snakemake/snakemake-wrappers)
+locally, checking out the appropriate version (for PopGLen, this is v0.4.0),
+and pointing to that local copy with the `--wrapper-prefix` option in the
+Snakemake command. See
+[this issue](https://github.com/zjnolen/PopGLen/issues/59) for more information
+on this situation.

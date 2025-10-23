@@ -61,6 +61,16 @@ conda activate snakemake
 
 ### Option 1. Deploying with Snakedeploy
 
+!!! warning "Warning for clusters where worker nodes have no network access."
+    If you will use a job queue on a cluster where worker nodes have no network
+    access, Snakedeploy will not work properly, as rules with external scripts
+    retrieve their code inside the submitted job, requiring network access when
+    deployed as a module. If this is your configuration, you should clone the
+    repository instead (see Option 2 below). Note this will also affect rules in
+    Snakemake wrappers, so see the
+    [cluster configuration docs](cluster-execution.md) for more information on
+    usage on clusters with this configuration.
+
 Make your working directory:
 
 ```bash
@@ -105,4 +115,4 @@ This can also be used to checkout specific branches or commits.
 ## Configuring the workflow
 
 Now you are ready to configure the workflow, see the documentation for that
-[here](config.md).
+[in the configuration section](config.md).

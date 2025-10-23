@@ -75,7 +75,7 @@ analyses:
 
 #==================== Downsampling Configuration ======================#
 
-subsample_dp: [3, 2]
+subsample_dp: [2.99, 2]
 
 subsample_by: "sitefilt" # three options: unfilt, mapqbaseq, sitefilt; sitefilt recommended (subsamples bams to `subsample_dp` within filtered regions)
 redo_depth_filts: false # has no effect when `subsample_by` == "sitefilt"

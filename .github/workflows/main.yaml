@@ -59,10 +59,9 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
     - name: Set up conda environment and singularity
-      uses: mamba-org/setup-micromamba@v1
+      uses: mamba-org/setup-micromamba@v2
       with:
         environment-file: environment.yaml
-        micromamba-version: '1.5.9-0'
     - name: Test workflow
       shell: bash -l {0}
       run: |

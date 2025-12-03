@@ -18,7 +18,7 @@ def prune_beagle(beagle, pos):
     beagle_df.columns = beagle_df.iloc[0]
     beagle_df = beagle_df.drop(0)
     with open(pos, "r") as f:
-        pos_list = [i.replace(":", "_") for i in f.read().splitlines()]
+        pos_list = ["_".join(i.rsplit(":", 1)) for i in f.read().splitlines()]
     pruned_beagle_df = beagle_df[beagle_df.iloc[:, 0].isin(pos_list)]
     if len(pruned_beagle_df.index) != len(pos_list):
         raise ValueError(

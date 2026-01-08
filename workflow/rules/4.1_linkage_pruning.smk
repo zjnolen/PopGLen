@@ -39,37 +39,18 @@ rule prune_chunk_beagle:
         beagle="results/datasets/{dataset}/beagles/chunks/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.beagle.gz",
         sites="results/datasets/{dataset}/beagles/pruned/ngsLD/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.pruned_maxkbdist-{maxkb}_minr2-{r2}.sites",
     output:
-        prunedgz="results/datasets/{dataset}/beagles/pruned/chunks/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.pruned_maxkbdist-{maxkb}_minr2-{r2}.beagle.gz",
+        beagle="results/datasets/{dataset}/beagles/pruned/chunks/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.pruned_maxkbdist-{maxkb}_minr2-{r2}.beagle.gz",
     log:
         "logs/{dataset}/ngsLD/prune_beagle/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.pruned_maxkbdist-{maxkb}_minr2-{r2}.log",
     benchmark:
         "benchmarks/{dataset}/ngsLD/prune_beagle/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.pruned_maxkbdist-{maxkb}_minr2-{r2}.log"
     container:
-        shell_container
-    shadow:
-        "minimal"
+        pandas_container
     threads: lambda wildcards, attempt: attempt
-    params:
-        pruned="results/datasets/{dataset}/beagles/pruned/chunks/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.pruned_maxkbdist-{maxkb}_minr2-{r2}.beagle",
     resources:
-        runtime="6h",
-    shell:
-        r"""
-        (set +o pipefail;
-        zcat {input.beagle} | head -n 1 > {params.pruned}
-        
-        join -t $'\t' <(sort -k1,1 <(sed 's/:/_/g' {input.sites})) \
-            <(zcat {input.beagle} | sort -k1,1) | sed 's/_/\t/' | sort -k1,1 -k2,2n | \
-            sed 's/\t/_/' >> {params.pruned}
-
-        gzip -c {params.pruned} > {output.prunedgz}
-
-        Nsites=$(cat {input.sites} | wc -l | awk '{{print $1+1}}')
-        NsitesB=$(zcat {output.prunedgz} | wc -l)
-
-        echo "Sites searched for: $Nsites"
-        echo "Sites in pruned beagle: $NsitesB") &> {log}
-        """
+        runtime="3h",
+    script:
+        "../scripts/prune_beagle.py"
 
 
 rule merge_pruned_beagles:

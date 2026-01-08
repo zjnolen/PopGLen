@@ -170,11 +170,15 @@ Required configuration of the reference.
   sure the [`params`] [`realSFS`] [`fold`] is set to `1`. If you put a fasta
   here, you can set that to `0`.
 
-Reference genomes should be uncompressed, and contig names should be clear and
-concise. Alphanumeric characters, as well as `.` in contig names have been
-tested to work so far, other symbols have not been tested thoroughly. If you
-find issues with certain characters, please report them as a bug in the
-pipeline.
+Reference genomes should be uncompressed and contig names should be clear and
+concise. Alphanumeric characters, `.`, `_`, and `|` have been tested to work so
+far, other symbols have not been tested thoroughly. Avoid `:` in contig names,
+as this character is incompatible with the `-r` and `-rf` options in ANGSD that
+the workflow uses to parallelize over genomic regions. Any text after the first
+whitespace will be excluded from the contig name. Together, this means that most
+NCBI and ENA assemblies should work fine without modification beyond extracting
+if compressed. If you find issues with any characters, please report them as a
+bug in the pipeline.
 
 Potentially the ability to use bgzipped genomes will be added, I just need to
 check that it works with all underlying tools. Currently, it will for sure not

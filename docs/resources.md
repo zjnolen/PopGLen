@@ -7,7 +7,7 @@ direct requests of memory when submitting SLURM jobs, instead always allocating
 workflow is to set `--default-resources mem_mb="XXXX * threads"` when running
 the Snakemake command, replacing `XXXX` with the RAM available per core on your
 HPC system in MB (in the case of ours, this was 6400). See the
-[profiles](https://github.com/zjnolen/PopGLen/tree/v0.4.1/profiles) in the
+[profiles](https://github.com/zjnolen/PopGLen/tree/v0.4.3/profiles) in the
 GitHub repository as an example.
 
 However, the default resources may not always work, your data may need more
@@ -19,14 +19,11 @@ in the workflow already.
 
 This is even better set up in a profile. PopGLen includes a default profile in
 the
-[profiles/default](https://github.com/zjnolen/PopGLen/tree/v0.4.1/profiles/default)
+[profiles/default](https://github.com/zjnolen/PopGLen/tree/v0.4.3/profiles/default)
 folder, which has all the rules already populated with the default resources
-already set. If you have downloaded the workflow via cloning the repository, all
-you need to do is change the values to match your needs (which may require
-adding an additional resource option, like `mem_mb`). If you have downloaded via
-Snakedeploy, just download the config file from the main repository, place it in
-the same directory in your deployed workflow, modify as needed and Snakemake
-will automatically pick it up when you run it.
+already set. This profile is downloaded whether you cloned the repository or
+used Snakedeploy, so all you need to do is change the values to match your needs
+(which may require adding an additional resource option, like `mem_mb`).
 
 Here is an example of what it would look like to change the number of threads
 for the rule `bwa_index` from the default of 1 to a new value of 5:

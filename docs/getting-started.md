@@ -47,8 +47,9 @@ conda create -c conda-forge -c bioconda --name popglen snakemake snakedeploy
 ```
 
 If you already have a Snakemake environment, you can use that instead. Snakemake
-versions >=8 are likely to work, but most testing is on 8.20. If you intend to
-use a job queuing system with the pipeline, be sure to install the appropriate
+versions 8 and 9 both work, but testing at publication was on 8.20. If you
+intend to use a job queuing system with the pipeline, be sure to install the
+appropriate
 [executor plugin](https://snakemake.github.io/snakemake-plugin-catalog/). Most
 of the testing has been with `snakemake-executor-plugin-slurm`, which can be
 installed in the environment you are running Snakemake from.
@@ -81,7 +82,7 @@ cd /path/to/work-dir
 And deploy the workflow, using the tag for the version you want to deploy:
 
 ```bash
-snakedeploy deploy-workflow https://github.com/zjnolen/PopGLen . --tag v0.4.1
+snakedeploy deploy-workflow https://github.com/zjnolen/PopGLen . --tag v0.4.3
 ```
 
 This will generate a simple Snakefile in a `workflow` folder that loads the
@@ -107,7 +108,7 @@ Move into the working directory (`PopGLen` or `work-dir-name` if you changed it)
 and checkout the version you would like to use:
 
 ```bash
-git checkout v0.4.1
+git checkout v0.4.3
 ```
 
 This can also be used to checkout specific branches or commits.

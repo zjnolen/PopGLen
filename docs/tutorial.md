@@ -61,7 +61,7 @@ conda activate popglen
 Now, create a working directory for your project, deploy the workflow inside:
 
 ``` bash
-snakedeploy deploy-workflow https://github.com/zjnolen/PopGLen . --tag v0.4.1
+snakedeploy deploy-workflow https://github.com/zjnolen/PopGLen . --tag v0.4.3
 ```
 
 This will download a `workflow` and `config` folder containing a the workflow
@@ -96,7 +96,7 @@ tutorial data.
     cd popglen-tutorial
     
     # deploy the workflow in here
-    snakedeploy deploy-workflow https://github.com/zjnolen/PopGLen . --tag v0.4.1
+    snakedeploy deploy-workflow https://github.com/zjnolen/PopGLen . --tag v0.4.3
 
     # download the tutorial data
     wget -O popglen-tut-data.zip https://figshare.com/ndownloader/articles/27453978/versions/1

@@ -30,7 +30,7 @@ configfile: "config/config.yaml"
 # declare https://github.com/zjnolen/PopGLen as a module
 module popglen:
     snakefile:
-        github("zjnolen/PopGLen", path="workflow/Snakefile", tag="v0.4.1")
+        github("zjnolen/PopGLen", path="workflow/Snakefile", tag="v0.4.3")
     config:
         config
 

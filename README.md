@@ -2,10 +2,14 @@
 
 > With v0.4.0, the pipeline is ready for use and all planned components have
 > been added in. If you would like to suggest a feature or report a bug, please
-> submit an issue.
+> submit an issue. I recommend using the latest release when starting a new
+> project with this pipeline. If you have already started a project and want to
+> update to a later pipeline version, please check the release notes. Fixes and
+> updates may trigger re-runs of some parts of the workflow or require updates
+> to the config file and will be mentioned in the release notes.
 >
 > If interested in using the pipeline, feel free to check out its current
-> [documentation](https://zjnolen.github.io/PopGLen/v0.4.1/) and
+> [documentation](https://zjnolen.github.io/PopGLen/v0.4.3/) and
 > [publication](https://doi.org/10.1093/bioinformatics/btaf105).
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.13384124.svg)](https://doi.org/10.5281/zenodo.13384124)
@@ -32,11 +36,11 @@ GenErode, nf-core/eager, or your own custom processing).
 ## Documentation
 
 The main documentation for the pipeline is
-[here](https://zjnolen.github.io/PopGLen/v0.4.1/), with a broad summary of
+[here](https://zjnolen.github.io/PopGLen/v0.4.3/), with a broad summary of
 features reported in this README.
 
 Included in this documentation is a
-[tutorial](https://zjnolen.github.io/PopGLen/v0.4.1/tutorial/) which you can
+[tutorial](https://zjnolen.github.io/PopGLen/v0.4.3/tutorial/) which you can
 perform to become familiar with using PopGLen.
 
 ## Features

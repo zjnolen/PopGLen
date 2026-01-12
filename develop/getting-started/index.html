@@ -15,8 +15,11 @@
         <link rel="next" href="../config/">
       
       
+        
+      
+      
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.14">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
     
     
       
@@ -24,18 +27,22 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.342714a4.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
       
         
-        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
       
       
   
   
     
+      
+      
     
   
     
+      
+      
     
   
   
@@ -61,7 +68,6 @@
     
       
 
-    
     
     
   </head>
@@ -286,9 +292,14 @@
   
   
   <span class="md-ellipsis">
+    
+  
     Home
+  
+
     
   </span>
+  
   
 
       </a>
@@ -317,9 +328,14 @@
   
   
   <span class="md-ellipsis">
+    
+  
     Getting started
+  
+
     
   </span>
+  
   
 
           <span class="md-nav__icon md-icon"></span>
@@ -330,9 +346,14 @@
   
   
   <span class="md-ellipsis">
+    
+  
     Getting started
+  
+
     
   </span>
+  
   
 
       </a>
@@ -355,7 +376,9 @@
         <li class="md-nav__item">
   <a href="#tutorial" class="md-nav__link">
     <span class="md-ellipsis">
-      Tutorial
+      
+        Tutorial
+      
     </span>
   </a>
   
@@ -364,7 +387,9 @@
         <li class="md-nav__item">
   <a href="#requirements" class="md-nav__link">
     <span class="md-ellipsis">
-      Requirements
+      
+        Requirements
+      
     </span>
   </a>
   
@@ -373,7 +398,9 @@
         <li class="md-nav__item">
   <a href="#deploying-the-workflow" class="md-nav__link">
     <span class="md-ellipsis">
-      Deploying the workflow
+      
+        Deploying the workflow
+      
     </span>
   </a>
   
@@ -383,7 +410,9 @@
           <li class="md-nav__item">
   <a href="#preparing-the-environment" class="md-nav__link">
     <span class="md-ellipsis">
-      Preparing the environment
+      
+        Preparing the environment
+      
     </span>
   </a>
   
@@ -392,7 +421,9 @@
           <li class="md-nav__item">
   <a href="#option-1-deploying-with-snakedeploy" class="md-nav__link">
     <span class="md-ellipsis">
-      Option 1. Deploying with Snakedeploy
+      
+        Option 1. Deploying with Snakedeploy
+      
     </span>
   </a>
   
@@ -401,7 +432,9 @@
           <li class="md-nav__item">
   <a href="#option-2-cloning-from-github" class="md-nav__link">
     <span class="md-ellipsis">
-      Option 2. Cloning from GitHub
+      
+        Option 2. Cloning from GitHub
+      
     </span>
   </a>
   
@@ -415,7 +448,9 @@
         <li class="md-nav__item">
   <a href="#configuring-the-workflow" class="md-nav__link">
     <span class="md-ellipsis">
-      Configuring the workflow
+      
+        Configuring the workflow
+      
     </span>
   </a>
   
@@ -441,9 +476,14 @@
   
   
   <span class="md-ellipsis">
+    
+  
     Configuration
+  
+
     
   </span>
+  
   
 
       </a>
@@ -463,9 +503,14 @@
   
   
   <span class="md-ellipsis">
+    
+  
     Config cheat sheet
+  
+
     
   </span>
+  
   
 
       </a>
@@ -485,9 +530,14 @@
   
   
   <span class="md-ellipsis">
+    
+  
     Tutorial
+  
+
     
   </span>
+  
   
 
       </a>
@@ -507,9 +557,14 @@
   
   
   <span class="md-ellipsis">
+    
+  
     Cluster execution
+  
+
     
   </span>
+  
   
 
       </a>
@@ -529,9 +584,14 @@
   
   
   <span class="md-ellipsis">
+    
+  
     Setting job resources
+  
+
     
   </span>
+  
   
 
       </a>
@@ -551,9 +611,14 @@
   
   
   <span class="md-ellipsis">
+    
+  
     Extending PopGLen
+  
+
     
   </span>
+  
   
 
       </a>
@@ -573,9 +638,14 @@
   
   
   <span class="md-ellipsis">
+    
+  
     Output file path overview
+  
+
     
   </span>
+  
   
 
       </a>
@@ -593,6 +663,7 @@
           
           
             <div class="md-content" data-md-component="content">
+              
               <article class="md-content__inner md-typeset">
                 
                   
@@ -638,8 +709,9 @@ to deploy that way:</p>
 <div class="highlight"><pre><span></span><code>conda<span class="w"> </span>create<span class="w"> </span>-c<span class="w"> </span>conda-forge<span class="w"> </span>-c<span class="w"> </span>bioconda<span class="w"> </span>--name<span class="w"> </span>popglen<span class="w"> </span>snakemake<span class="w"> </span>snakedeploy
 </code></pre></div>
 <p>If you already have a Snakemake environment, you can use that instead. Snakemake
-versions &gt;=8 are likely to work, but most testing is on 8.20. If you intend to
-use a job queuing system with the pipeline, be sure to install the appropriate
+versions 8 and 9 both work, but testing at publication was on 8.20. If you
+intend to use a job queuing system with the pipeline, be sure to install the
+appropriate
 <a href="https://snakemake.github.io/snakemake-plugin-catalog/">executor plugin</a>. Most
 of the testing has been with <code>snakemake-executor-plugin-slurm</code>, which can be
 installed in the environment you are running Snakemake from.</p>
@@ -663,7 +735,7 @@ usage on clusters with this configuration.</p>
 <span class="nb">cd</span><span class="w"> </span>/path/to/work-dir
 </code></pre></div>
 <p>And deploy the workflow, using the tag for the version you want to deploy:</p>
-<div class="highlight"><pre><span></span><code>snakedeploy<span class="w"> </span>deploy-workflow<span class="w"> </span>https://github.com/zjnolen/PopGLen<span class="w"> </span>.<span class="w"> </span>--tag<span class="w"> </span>v0.4.1
+<div class="highlight"><pre><span></span><code>snakedeploy<span class="w"> </span>deploy-workflow<span class="w"> </span>https://github.com/zjnolen/PopGLen<span class="w"> </span>.<span class="w"> </span>--tag<span class="w"> </span>v0.4.3
 </code></pre></div>
 <p>This will generate a simple Snakefile in a <code>workflow</code> folder that loads the
 pipeline as a module. It will also download the template <code>config.yaml</code>,
@@ -678,7 +750,7 @@ clone the GitHub repo:</p>
 </code></pre></div>
 <p>Move into the working directory (<code>PopGLen</code> or <code>work-dir-name</code> if you changed it)
 and checkout the version you would like to use:</p>
-<div class="highlight"><pre><span></span><code>git<span class="w"> </span>checkout<span class="w"> </span>v0.4.1
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>checkout<span class="w"> </span>v0.4.3
 </code></pre></div>
 <p>This can also be used to checkout specific branches or commits.</p>
 <h2 id="configuring-the-workflow">Configuring the workflow</h2>
@@ -732,10 +804,11 @@ and checkout the version you would like to use:</p>
     
     
       
-      <script id="__config" type="application/json">{"base": "..", "features": ["toc.integrate", "search.highlight", "content.code.annotate"], "search": "../assets/javascripts/workers/search.d50fe291.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["toc.integrate", "search.highlight", "content.code.annotate"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../assets/javascripts/bundle.13a4f30d.min.js"></script>
+      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
       
     
   </body>

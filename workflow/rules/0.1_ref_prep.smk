@@ -109,7 +109,7 @@ rule ref_chunking:
         runtime="5m",
     shell:
         r"""
-        echo {params.contigs} | tr " " "\n" > {output} 2> {log}
+        echo "{params.contigs}" | tr " " "\n" > {output} 2> {log}
         """
 
 

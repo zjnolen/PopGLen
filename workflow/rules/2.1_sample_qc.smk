@@ -162,7 +162,7 @@ rule compile_endo_cont:
     shell:
         """
         (printf "sample\tperc.collapsed.map\tperc.uncollapsed.map\tperc.total.map\n" > {output}
-        cat {input} >> {output}) 2> {log}
+        echo {input} | xargs cat >> {output}) 2> {log}
         """
 
 

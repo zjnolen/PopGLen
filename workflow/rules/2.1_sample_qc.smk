@@ -156,14 +156,16 @@ rule compile_endo_cont:
     benchmark:
         "benchmarks/datasets/{dataset}/qc/endogenous_content/{dataset}.{ref}_{population}{dp}_compile-endocont.log"
     container:
-        shell_container
-    resources:
-        runtime="15m",
-    shell:
-        """
-        (printf "sample\tperc.collapsed.map\tperc.uncollapsed.map\tperc.total.map\n" > {output}
-        echo {input} | xargs cat >> {output}) 2> {log}
-        """
+        pandas_container
+    params:
+        header=[
+            "sample",
+            "perc.collapsed.map",
+            "perc.uncollapsed.map",
+            "perc.total.map",
+        ],
+    script:
+        "../scripts/concat_files.py"
 
 
 rule ind_unfiltered_depth:

@@ -113,23 +113,22 @@ rule aggregate_fst_global:
     input:
         unpack(get_fst),
     output:
-        glob="results/datasets/{dataset}/analyses/fst/{dataset}.{ref}_{unit}pairs{dp}_{sites}-filts.fst.{scale}.tsv",
+        "results/datasets/{dataset}/analyses/fst/{dataset}.{ref}_{unit}pairs{dp}_{sites}-filts.fst.{scale}.tsv",
     log:
         "logs/{dataset}/realSFS/fst/aggregate/{dataset}.{ref}_{unit}pairs{dp}_{sites}-filts.{scale}.log",
     benchmark:
         "benchmarks/{dataset}/realSFS/fst/aggregate/{dataset}.{ref}_{unit}pairs{dp}_{sites}-filts.{scale}.log"
     container:
-        shell_container
+        pandas_container
     wildcard_constraints:
         unit="ind|pop",
         scale="global",
     resources:
         runtime="1h",
-    shell:
-        """
-        (printf "pop1\tpop2\tunweight.fst\tweight.fst\n" > {output.glob}
-        cat {input} >> {output.glob}) 2> {log}
-        """
+    params:
+        header=["pop1", "pop2", "unweight.fst", "weight.fst"],
+    script:
+        "../scripts/concat_files.py"
 
 
 rule aggregate_fst_window:
@@ -139,26 +138,31 @@ rule aggregate_fst_window:
     input:
         unpack(get_fst),
     output:
-        window="results/datasets/{dataset}/analyses/fst/{dataset}.{ref}_{unit}pairs{dp}_{sites}-filts.fst.{scale}_{win}_{step}.tsv",
+        "results/datasets/{dataset}/analyses/fst/{dataset}.{ref}_{unit}pairs{dp}_{sites}-filts.fst.{scale}_{win}_{step}.tsv",
     log:
         "logs/{dataset}/realSFS/fst/aggregate/{dataset}.{ref}_{unit}pairs{dp}_{sites}-filts.{scale}_{win}_{step}.log",
     benchmark:
         "benchmarks/{dataset}/realSFS/fst/aggregate/{dataset}.{ref}_{unit}pairs{dp}_{sites}-filts.{scale}_{win}_{step}.log"
     container:
-        shell_container
+        pandas_container
     wildcard_constraints:
         unit="ind|pop",
         scale="window",
     resources:
         runtime="1h",
-    shell:
-        """
-        (printf "pop1\tpop2\twindow\tchr\twindow_center\tNsites\tweight.fst\n" \
-            > {output.window}
-        for i in {input}; do
-            tail -n +2 $i >> {output.window}
-        done) 2> {log}
-        """
+    params:
+        header=[
+            "pop1",
+            "pop2",
+            "window",
+            "chr",
+            "window_center",
+            "Nsites",
+            "weight.fst",
+        ],
+        input_has_header=True,
+    script:
+        "../scripts/concat_files.py"
 
 
 rule plot_fst:

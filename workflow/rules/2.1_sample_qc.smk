@@ -308,17 +308,12 @@ rule merge_ind_depth:
     Combine depth summaries for all individuals
     """
     input:
-        depth=lambda w: expand(
-            "{{prefix}}{{dataset}}.{{ref}}_{sample}{{dp}}_{{group}}.depthSample",
-            sample=get_popfile_inds(w),
-        ),
-        summary=lambda w: expand(
+        lambda w: expand(
             "{{prefix}}{{dataset}}.{{ref}}_{sample}{{dp}}_{{group}}.depth.sum",
             sample=get_popfile_inds(w),
         ),
     output:
-        dep="{prefix}{dataset}.{ref}_{population}{dp}_{group}.depth",
-        sum="{prefix}{dataset}.{ref}_{population}{dp}_{group}.depth.sum",
+        "{prefix}{dataset}.{ref}_{population}{dp}_{group}.depth.sum",
     wildcard_constraints:
         population="all",
     log:
@@ -326,16 +321,17 @@ rule merge_ind_depth:
     benchmark:
         "benchmarks/merge_depth/{prefix}{dataset}.{ref}_{population}{dp}_{group}.log"
     container:
-        shell_container
+        pandas_container
     resources:
         runtime="15m",
-    shell:
-        """
-        (cat {input.depth} > {output.dep}
-        printf "sample\t{wildcards.group}.depth.mean\t{wildcards.group}.depth.stdev\n" \
-            > {output.sum}
-        cat {input.summary} >> {output.sum}) 2> {log}
-        """
+    params:
+        header=[
+            "sample",
+            "{group}.depth.mean",
+            "{group}.depth.stdev",
+        ],
+    script:
+        "../scripts/concat_files.py"
 
 
 rule combine_sample_qc:
@@ -514,7 +510,7 @@ rule merge_ibs_ref_bias:
             population=get_popfile_inds(w),
         ),
     output:
-        ibs=temp(
+        temp(
             "results/datasets/{dataset}/qc/ibs_refbias/{dataset}.{ref}_{population}{dp}_{filts}.refibs.merged.tsv"
         ),
     log:
@@ -522,16 +518,15 @@ rule merge_ibs_ref_bias:
     benchmark:
         "benchmarks/{dataset}/angsd/ibs_ref_bias/{dataset}.{ref}_{population}{dp}_{filts}_merge.log"
     container:
-        shell_container
+        pandas_container
     resources:
         runtime="15m",
     group:
         "combine_ibsrefbias"
-    shell:
-        r"""
-        printf "sample\tibs.to.ref\n" > {output}
-        cat {input} >> {output}
-        """
+    params:
+        header=["sample", "ibs.to.ref"],
+    script:
+        "../scripts/concat_files.py"
 
 
 rule plot_ibs_ref_bias:

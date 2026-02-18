@@ -18,18 +18,13 @@ rule angsd_makeBamlist:
     log:
         "logs/datasets/{dataset}/bamlists/{dataset}.{ref}_{population}{dp}.log",
     container:
-        shell_container
+        pandas_container
     params:
         sampord=lambda w, input: f"{input.bams}",
     resources:
         runtime="15m",
-    shell:
-        """
-        (
-        echo "BAM order: {params.sampord}" > {log}
-        readlink -f {input.bams} > {output} 2>> {log}
-        truncate -s -1 {output}) 2>> {log}
-        """
+    script:
+        "../scripts/make_bamlist.py"
 
 
 rule popfile:

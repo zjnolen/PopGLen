@@ -71,9 +71,8 @@ jobs:
         sudo apt update
         sudo apt install -y apptainer-suid
         conda config --set channel_priority strict
-        mkdir -p temp
-        workdir=$(pwd -P)
-        export TMPDIR=$workdir/temp
+        mkdir -p .test/temp
+        export TMPDIR=$PWD/.test/temp
         snakemake --directory .test --configfile .test/config/config.yaml --config samples=config/samples_testSRA.tsv --sdm conda apptainer --show-failed-logs --cores 2 --conda-cleanup-pkgs cache --default-resources mem_mb=1000 --until fastp_mergedout
         snakemake --directory .test --configfile .test/config/config.yaml --sdm conda apptainer --show-failed-logs --cores 2 --conda-cleanup-pkgs cache --default-resources mem_mb=1000
     - name: Test report

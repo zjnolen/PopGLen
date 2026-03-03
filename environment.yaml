@@ -1,3 +1,9 @@
+# This is a suggested environment for the workflow, but you can use your own
+# snakemake installation, a separate one for popglen is not required. Snakemake
+# v8 and v9 both are working and each rule will be run in its own environment,
+# so the environment used to run snakemake does not affect the outputs of the
+# workflow.
+
 name: popglen
 
 channels:
@@ -6,5 +12,5 @@ channels:
 
 dependencies:
   # core packages for workflow
-  - snakemake =8.25.0
+  - snakemake >=8.25
   - python =3.12

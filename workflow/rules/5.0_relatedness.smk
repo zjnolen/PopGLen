@@ -46,16 +46,15 @@ rule compile_kinship_stats_sfs:
     benchmark:
         "benchmarks/{dataset}/kinship/ibsrelate_sfs/{dataset}.{ref}_all{dp}_{sites}-filts_compile-stats.log"
     container:
-        shell_container
+        pandas_container
     resources:
         runtime="15m",
     group:
         "sfs-ibsrelate"
-    shell:
-        """
-        (printf "ind1\tind2\tR0\tR1\tKING\n" > {output}
-        cat {input} >> {output}) 2> {log}
-        """
+    params:
+        header=["ind1", "ind2", "R0", "R1", "KING"],
+    script:
+        "../scripts/concat_files.py"
 
 
 rule doGlf1_ibsrelate:

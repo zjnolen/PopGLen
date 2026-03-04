@@ -6,5 +6,5 @@ channels:
 
 dependencies:
   # core packages for workflow
-  - snakemake =8.25.0
+  - snakemake >=8.25
   - python =3.12

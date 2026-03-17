@@ -1,4 +1,11 @@
 cff-version: 1.2.0
+title: "PopGLen—a Snakemake pipeline for performing population genomic analyses using genotype likelihood-based methods"
+authors:
+- family-names: "Nolen"
+  given-names: "Zachary J."
+  orcid: "https://orcid.org/0000-0001-8146-8016"
+license: "GPL-3.0"
+type: software
 message: "If you use this workflow, please cite it as below."
 preferred-citation:
   type: article

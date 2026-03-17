@@ -69,7 +69,7 @@ analyses:
   fst_angsd:
     populations: true
     individuals: true
-  inbreeding_ngsf-hmm: true
+  inbreeding_ngsf-hmm: false
   ibs_matrix: true
   pop_allele_freqs: true
 
@@ -100,7 +100,7 @@ subsample_analyses:
   fst_angsd:
     populations: true
     individuals: true
-  inbreeding_ngsf-hmm: true
+  inbreeding_ngsf-hmm: false
   ibs_matrix: true
   pop_allele_freqs: true
 

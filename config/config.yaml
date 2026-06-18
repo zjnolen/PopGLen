@@ -12,11 +12,11 @@ chunk_size: 50000000
 
 reference:
   name: "ref-name" 
-  fasta: "path/to/ref.fa"
-  mito: ["mitochondrion"]
-  sex-linked: ["Z"]
+  fasta: ".test/data/ref/testref.fa"
+  mito: []
+  sex-linked: []
   exclude: []
-  min_size: 1000000
+  min_size:
 
 ancestral:
 
@@ -40,37 +40,37 @@ analyses:
   repeatmasker:
     bed:
     local_lib:
-    build_lib:
-  extreme_depth:
+    build_lib: true
+  extreme_depth: true
   dataset_missing_data:
   population_missing_data:
   # quality control
   qualimap:
-  ibs_ref_bias:
+  ibs_ref_bias: true
   damageprofiler:
   mapdamage_rescale:
   # population genomic analyses
   estimate_ld:
   ld_decay:
-  pca_pcangsd:
-  admix_ngsadmix:
+  pca_pcangsd: true
+  admix_ngsadmix: true
   relatedness:
     ibsrelate_ibs:
     ibsrelate_sfs:
-    ngsrelate_ibsrelate-only:
+    ngsrelate_ibsrelate-only: true
     ngsrelate_freqbased:
-  1dsfs:
+  1dsfs: true
   1dsfs_boot:
-  2dsfs:
+  2dsfs: true
   2dsfs_boot:
-  thetas_angsd:
-  heterozygosity_angsd:
+  thetas_angsd: true
+  heterozygosity_angsd: true
   fst_angsd:
-    populations:
+    populations: true
     individuals:
-  inbreeding_ngsf-hmm:
-  ibs_matrix:
-  pop_allele_freqs:
+  inbreeding_ngsf-hmm: true
+  ibs_matrix: true
+  pop_allele_freqs: true
 
 #==================== Downsampling Configuration ======================#
 

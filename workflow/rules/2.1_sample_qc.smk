@@ -54,7 +54,7 @@ rule qualimap:
     shell:
         """
         qualimap bamqc -bam {input.bam} --java-mem-size={resources.mem_mb}M \
-            -outdir {output.fold} 2> {log}
+            -outdir {output.fold} &> {log}
         """
 
 
@@ -80,8 +80,10 @@ rule qualimap_userprovided:
         runtime="6h",
     shell:
         """
+        unset DISPLAY
+
         qualimap bamqc -bam {input.bam} --java-mem-size={resources.mem_mb}M \
-            -outdir {output.fold} 2> {log}
+            -outdir {output.fold} &> {log}
         """
 
 

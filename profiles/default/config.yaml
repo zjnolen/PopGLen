@@ -195,7 +195,7 @@ set-resources:
   repeat_builddatabase:
     runtime: "1h"
   repeatmodeler:
-    runtime: "3d" # potentially very long running, so consider setting to your cluster limit minus 1h (for grouping with database building)
+    runtime: "71h" # potentially very long running, so consider setting to your cluster limit minus 1h (for grouping with database building)
   repeatmasker:
     runtime: "12h"
   repeat_sum:

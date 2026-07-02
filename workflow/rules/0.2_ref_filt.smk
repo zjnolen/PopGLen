@@ -333,7 +333,7 @@ rule repeatmodeler:
         ref="{ref}",
     threads: 10
     resources:
-        runtime="3d",
+        runtime="71h",
     shadow:
         "minimal"
     group:

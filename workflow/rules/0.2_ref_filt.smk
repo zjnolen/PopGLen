@@ -151,9 +151,8 @@ rule genmap_index:
         "benchmarks/ref/genmap/index/{ref}.log"
     container:
         genmap_container
-    threads: lambda wildcards, attempt: attempt
     resources:
-        runtime="60m",
+        runtime="1h",
     group:
         "genmap"
     shell:
@@ -181,9 +180,8 @@ rule genmap_map:
         genmap_container
     params:
         out=lambda w, output: os.path.splitext(output.bed)[0],
-    threads: lambda wildcards, attempt: attempt
     resources:
-        runtime=lambda wildcards, attempt: attempt * 360,
+        runtime="6h",
     group:
         "genmap"
     shell:
@@ -335,7 +333,7 @@ rule repeatmodeler:
         ref="{ref}",
     threads: 10
     resources:
-        runtime="7d",
+        runtime="71h",
     shadow:
         "minimal"
     group:
@@ -362,7 +360,7 @@ rule repeatmasker:
         out=lambda w, output: os.path.dirname(output.gff),
     threads: 5
     resources:
-        runtime="720m",
+        runtime="12h",
     shadow:
         "shallow"
     group:
@@ -438,9 +436,8 @@ if config["analyses"]["extreme_depth"]:
             mapQ=config["mapQ"],
             baseQ=config["baseQ"],
             out=lambda w, output: os.path.splitext(output.arg)[0],
-        threads: lambda wildcards, attempt: attempt * 2
         resources:
-            runtime=lambda wildcards, attempt: attempt * 720,
+            runtime="12h",
         shell:
             """
             (nInd=$(cat {input.bamlist} | wc -l | awk '{{print $1+1}}')
@@ -504,9 +501,8 @@ if config["analyses"]["extreme_depth"]:
             lower=config["params"]["extreme_depth_filt"]["bounds"][0],
             upper=config["params"]["extreme_depth_filt"]["bounds"][1],
             method=config["params"]["extreme_depth_filt"]["method"],
-        threads: lambda wildcards, attempt: attempt * 2
         resources:
-            runtime="1h",
+            runtime="30m",
         group:
             "depth_bed"
         script:
@@ -531,9 +527,8 @@ if config["analyses"]["extreme_depth"]:
             "benchmarks/{dataset}/filters/depth/bed/{dataset}.{ref}_{population}{dp}.log"
         container:
             bedtools_container
-        threads: lambda wildcards, attempt: attempt
         resources:
-            runtime="1h",
+            runtime="1d",
         group:
             "depth_bed"
         shell:
@@ -588,9 +583,8 @@ rule angsd_missdata:
         mapQ=config["mapQ"],
         baseQ=config["baseQ"],
         out=lambda w, output: os.path.splitext(output.arg)[0],
-    threads: lambda wildcards, attempt: attempt * 2
     resources:
-        runtime=lambda wildcards, attempt: attempt * 360,
+        runtime="6h",
     shell:
         """
         (minInd=$(echo {params.nind} \
@@ -668,7 +662,6 @@ rule combine_beds:
         "benchmarks/{dataset}/filters/combine/{dataset}.{ref}{dp}_combine_beds.log"
     container:
         bedtools_container
-    threads: lambda wildcards, attempt: attempt * 2
     resources:
         runtime="4h",
     shell:
@@ -725,7 +718,6 @@ rule user_sites:
         "benchmarks/{dataset}/filters/user_sites/{dataset}.{ref}{dp}_{sites}-filt.log"
     container:
         bedtools_container
-    threads: lambda wildcards, attempt: attempt * 2
     resources:
         runtime="4h",
     shell:

@@ -25,9 +25,9 @@ rule realSFS_1dSFS:
         "benchmarks/{dataset}/realSFS/1dSFS/{dataset}.{ref}_{population}{dp}_{sites}-filts.log"
     params:
         fold=config["params"]["realsfs"]["fold"],
-    threads: lambda wildcards, attempt: attempt * 2
+    threads: 4
     resources:
-        runtime=lambda wildcards, attempt: attempt * 720,
+        runtime="1d",
     shell:
         """
         realSFS {input.saf} -fold {params.fold} -P {threads} \
@@ -60,9 +60,9 @@ rule realSFS_1dSFS_bootstrap:
     params:
         fold=config["params"]["realsfs"]["fold"],
         boot=config["params"]["realsfs"]["sfsboot"],
-    threads: lambda wildcards, attempt: attempt * 2
+    threads: 4
     resources:
-        runtime="7d",
+        runtime="3d",
     shell:
         """
         realSFS {input.saf} -fold {params.fold} -P {threads} \
@@ -100,9 +100,9 @@ rule realSFS_2dSFS:
         "benchmarks/{dataset}/realSFS/2dSFS/{dataset}.{ref}_{population1}-{population2}{dp}_{sites}-filts.log"
     params:
         fold=config["params"]["realsfs"]["fold"],
-    threads: lambda wildcards, attempt: attempt * 2
+    threads: 4
     resources:
-        runtime=lambda wildcards, attempt: attempt * 720,
+        runtime="12h",
     shell:
         """
         realSFS {input.saf1} {input.saf2} -fold {params.fold} \
@@ -141,9 +141,9 @@ rule realSFS_2dSFS_bootstrap:
     params:
         fold=config["params"]["realsfs"]["fold"],
         boot=config["params"]["realsfs"]["sfsboot"],
-    threads: lambda wildcards, attempt: attempt * 2
+    threads: 4
     resources:
-        runtime="7d",
+        runtime="3d",
     shell:
         """
         realSFS {input.saf1} {input.saf2} -fold {params.fold} \

@@ -50,8 +50,7 @@ rule angsd_doSaf_pop:
         mininddp=config["params"]["angsd"]["mindepthind"],
         out=lambda w, output: os.path.splitext(output.arg)[0],
     resources:
-        runtime=lambda wildcards, attempt: attempt * 180,
-    threads: lambda wildcards, attempt: attempt * 2
+        runtime="6h",
     shell:
         """
         angsd -doSaf 1 -bam {input.bam} -GL {params.gl_model} -ref {input.ref} \
@@ -102,7 +101,7 @@ rule realSFS_catsaf:
     params:
         out=lambda w, output: output[0].removesuffix(".saf.idx"),
     resources:
-        runtime=lambda wildcards, attempt: attempt * 60,
+        runtime="1h",
     shell:
         """
         realSFS cat {input.safs} -P 1 -outnames {params.out} 2> {log}

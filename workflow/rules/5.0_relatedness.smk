@@ -87,8 +87,7 @@ rule doGlf1_ibsrelate:
         baseQ=config["baseQ"],
         out=lambda w, output: os.path.splitext(output.arg)[0],
     resources:
-        runtime=lambda wildcards, attempt: attempt * 360,
-    threads: lambda wildcards, attempt: attempt * 2
+        runtime="6h",
     shell:
         """
         angsd -doGlf 1 -bam {input.bam} -GL {params.gl_model} -ref {input.ref} \
@@ -117,8 +116,7 @@ rule ibsrelate:
         maxsites=config["chunk_size"],
         out=lambda w, output: os.path.splitext(output[0])[0],
     resources:
-        runtime="7d",
-    threads: lambda wildcards, attempt: attempt * 10
+        runtime="3d",
     shell:
         """
         ibs -glf {input} -model 0 -nInd {params.nind} -allpairs 1 \
@@ -203,11 +201,10 @@ rule ngsrelate_ibsrelate_only:
         "logs/{dataset}/kinship/ngsrelate/{dataset}.{ref}_{population}{dp}_{sites}-filts.ibsrelate-nofreq.log",
     container:
         ngsrelate_container
-    threads: lambda wildcards, attempt: attempt * 4
     params:
         nind=get_nind,
     resources:
-        runtime=lambda wildcards, attempt: attempt * 360,
+        runtime="6h",
     shell:
         r"""
         (nsites=$(zcat {input.beagle} | tail -n +2 | wc -l)
@@ -240,11 +237,10 @@ rule ngsrelate_freqbased:
         "logs/{dataset}/kinship/ngsrelate/{dataset}.{ref}_{population}{dp}_{sites}-filts.log",
     container:
         ngsrelate_container
-    threads: lambda wildcards, attempt: attempt * 4
     params:
         nind=get_nind,
     resources:
-        runtime=lambda wildcards, attempt: attempt * 360,
+        runtime="6h",
     shell:
         r"""
         (nsites=$(zcat {input.beagle} | tail -n +2 | wc -l)

@@ -46,9 +46,8 @@ rule prune_chunk_beagle:
         "benchmarks/{dataset}/ngsLD/prune_beagle/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.pruned_maxkbdist-{maxkb}_minr2-{r2}.log"
     container:
         pandas_container
-    threads: lambda wildcards, attempt: attempt
     resources:
-        runtime="3h",
+        runtime="12",
     script:
         "../scripts/prune_beagle.py"
 

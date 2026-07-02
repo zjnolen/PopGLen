@@ -27,11 +27,11 @@ rule ngsLD_estLD:
         "benchmarks/{dataset}/ngsLD/estLD/{path}/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.ld_maxkbdist-{maxkb}_rndsample-{rndsmp}.log"
     container:
         ngsld_container
-    threads: lambda wildcards, attempt: attempt
+    threads: 4
     wildcard_constraints:
         path="beagles/pruned/ngsLD|analyses/ngsLD/chunks",
     resources:
-        runtime=lambda wildcards, attempt: attempt * 720,
+        runtime="12h",
     shell:
         r"""
         (zcat {input.beagle} | awk '{{print $1}}' | sed 's/\(.*\)_/\1\t/' \

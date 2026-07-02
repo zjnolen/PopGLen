@@ -35,8 +35,9 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Linting
-      uses: snakemake/snakemake-github-action@v1
+      uses: snakemake/snakemake-github-action@v2
       with:
+        directory: "."
         snakefile: "workflow/Snakefile"
         args: "--lint"
 

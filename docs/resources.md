@@ -62,6 +62,4 @@ set-resources:
 
 You can also use the term 'attempt' in these definitions, which allow you to
 scale the resources with the number of attempts a rule has made, automatically
-increasing threads, runtime, or memory with each attempt. This is already done
-for several rules in the config, largely to automatically request more memory
-due to OOM errors.
+increasing threads, runtime, or memory with each attempt.

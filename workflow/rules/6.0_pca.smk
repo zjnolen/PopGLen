@@ -3,8 +3,8 @@
 
 rule remove_excl_pca_admix:
     """
-    Excludes requested individuals from beagle file only for PCA and Admix. This is 
-    largely to exclude close relatives from these analyses (where they can impact 
+    Excludes requested individuals from beagle file only for PCA and Admix. This is
+    largely to exclude close relatives from these analyses (where they can impact
     results), while allowing them in all other analyses.
     """
     input:
@@ -51,7 +51,7 @@ rule pca_pcangsd:
         pcangsd_container
     params:
         prefix=lambda w, output: os.path.splitext(output.cov)[0],
-    threads: lambda wildcards, attempt: attempt
+    threads: 2
     resources:
         runtime="4h",
     group:
@@ -87,7 +87,7 @@ rule plot_pca:
     container:
         r_container
     resources:
-        runtime="15m",
+        runtime="1h",
     group:
         "pca"
     script:

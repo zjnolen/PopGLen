@@ -3,8 +3,8 @@
 
 rule ngsAdmix:
     """
-    Performs individual admixture analyses for a given K, performing several replicates 
-    and preserving the replicate with the highest likelihood. After $minreps, 
+    Performs individual admixture analyses for a given K, performing several replicates
+    and preserving the replicate with the highest likelihood. After $minreps,
     convergence is assessed and replicates cease when convergence is reached or $reps
     replicates have been performed.
     """
@@ -33,7 +33,7 @@ rule ngsAdmix:
         conv=config["params"]["ngsadmix"]["conv"],
     threads: 4
     resources:
-        runtime="7d",
+        runtime="3d",
     script:
         "../scripts/ngsadmix.sh"
 

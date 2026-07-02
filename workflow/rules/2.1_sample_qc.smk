@@ -194,9 +194,8 @@ rule ind_unfiltered_depth:
     params:
         out=lambda w, output: os.path.splitext(output.arg)[0],
         maxdepth=config["params"]["angsd"]["maxdepth"],
-    threads: lambda wildcards, attempt: attempt
     resources:
-        runtime=lambda wildcards, attempt: attempt * 120,
+        runtime="2h",
     shell:
         """
         angsd -doDepth 1 -doCounts 1 -maxDepth {params.maxdepth} \
@@ -231,9 +230,8 @@ rule ind_mapQ_baseQ_depth:
         out=lambda w, output: os.path.splitext(output.arg)[0],
         extra=config["params"]["angsd"]["extra"],
         maxdepth=config["params"]["angsd"]["maxdepth"],
-    threads: lambda wildcards, attempt: attempt
     resources:
-        runtime=lambda wildcards, attempt: attempt * 120,
+        runtime="2h",
     shell:
         """
         angsd -doDepth 1 -doCounts 1 -maxDepth {params.maxdepth} \
@@ -271,9 +269,8 @@ rule ind_filtered_depth:
         baseQ=config["baseQ"],
         out=lambda w, output: os.path.splitext(output.arg)[0],
         maxdepth=config["params"]["angsd"]["maxdepth"],
-    threads: lambda wildcards, attempt: attempt
     resources:
-        runtime=lambda wildcards, attempt: attempt * 60,
+        runtime="1h",
     shell:
         """
         angsd -doDepth 1 -doCounts 1 -maxDepth {params.maxdepth} \
@@ -298,9 +295,8 @@ rule summarize_ind_depth:
         "benchmarks/summarize_ind_depth/{prefix}{dataset}.{ref}_{sample}{dp}_{group}.log"
     container:
         r_container
-    threads: lambda wildcards, attempt: attempt
     resources:
-        runtime="1h",
+        runtime="15m",
     script:
         "../scripts/calc_depth.R"
 
@@ -432,9 +428,8 @@ rule ibs_ref_bias_nofilts:
         mapQ=config["mapQ"],
         baseQ=config["baseQ"],
         out=lambda w, output: os.path.splitext(output.arg)[0],
-    threads: lambda wildcards, attempt: attempt
     resources:
-        runtime=lambda wildcards, attempt: attempt * 720,
+        runtime="12h",
     shell:
         r"""
         (angsd -doIBS 1 -bam {input.bam} -ref {input.ref} -nThreads {threads} \
@@ -485,9 +480,8 @@ rule ibs_ref_bias_filts:
         mapQ=config["mapQ"],
         baseQ=config["baseQ"],
         out=lambda w, output: os.path.splitext(output.arg)[0],
-    threads: lambda wildcards, attempt: attempt
     resources:
-        runtime=lambda wildcards, attempt: attempt * 720,
+        runtime="12h",
     shell:
         r"""
         (angsd -doIBS 1 -bam {input.bam} -ref {input.ref} -nThreads {threads} \

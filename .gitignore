@@ -23,7 +23,7 @@ config/samples_*.tsv
 Vagrantfile
 # ignore reports folder and test report
 reports
-.tests/report.html
+.test/report.html
 # ignore dev containers for vscode
 .devcontainer
 # ignore benchmarks

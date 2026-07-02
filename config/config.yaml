@@ -11,8 +11,8 @@ dataset: "dataset-name"
 chunk_size: 50000000
 
 reference:
-  name: "ref-name" 
-  fasta: ".test/data/ref/testref.fa"
+  name: "ref-name"
+  fasta: ".tests/data/ref/testref.fa"
   mito: []
   sex-linked: []
   exclude: []

@@ -554,28 +554,33 @@
 
 
 <h1 id="altering-resource-usage">Altering resource usage</h1>
-<p>This workflow sets a default number of threads and runtime for each rule. Memory
-is not set per rule as development took place on clusters that did not allow
-direct requests of memory when submitting SLURM jobs, instead always allocating
-6.4GB RAM per core for each job. The easiest way to get up and running with this
-workflow is to set <code>--default-resources mem_mb="XXXX * threads"</code> when running
-the Snakemake command, replacing <code>XXXX</code> with the RAM available per core on your
-HPC system in MB (in the case of ours, this was 6400). See the
-<a href="https://github.com/zjnolen/PopGLen/tree/v0.4.3/profiles">profiles</a> in the
-GitHub repository as an example.</p>
-<p>However, the default resources may not always work, your data may need more
+<p>This workflow sets a default number of threads and runtime for each rule. These
+defaults are set both in the rules themselves and given in the default workflow
+profile found in <code>profiles/default/config.yaml</code>. Memory is not set per rule as
+development took place on clusters that did not allow direct requests of memory
+when submitting SLURM jobs, instead always allocating 6.4GB RAM per core for each
+job. The easiest way to get up and running with this workflow is to set
+<code>--default-resources mem_mb="XXXX * threads"</code> when running the Snakemake command,
+replacing <code>XXXX</code> with the RAM available per core on your HPC system in MB (in
+the case of ours, this was 6400). See the
+<a href="https://github.com/zjnolen/PopGLen/tree/v0.4.3/profiles">profiles</a> in the GitHub
+repository as an example.</p>
+<p>The default resources may not always work, your data may need more
 memory, or longer runtimes, or maybe you even need shorter if your HPC has
-shorter runtime limits than some of the defaults we set (up to 7 days).
+shorter runtime limits than some of the defaults we set (up to 3 days).
 Snakemake makes it easy to alter resources in the command line using the
 <code>--set-resources</code> and <code>--set-threads</code> options, which will override anything set
 in the workflow already.</p>
-<p>This is even better set up in a profile. PopGLen includes a default profile in
-the
-<a href="https://github.com/zjnolen/PopGLen/tree/v0.4.3/profiles/default">profiles/default</a>
-folder, which has all the rules already populated with the default resources
-already set. This profile is downloaded whether you cloned the repository or
-used Snakedeploy, so all you need to do is change the values to match your needs
-(which may require adding an additional resource option, like <code>mem_mb</code>).</p>
+<p>Instead of using command line arguments to change the resources, you can also
+edit the default workflow profile or replace it using <code>--workflow-profile</code>
+(in addition to any global profiles you set with <code>--profile</code>). You can find the
+default profile to edit or use as a template in
+<a href="https://github.com/zjnolen/PopGLen/tree/v0.4.3/profiles/default">profiles/default</a>.
+It is important to remember that for Snakemake, command line arguments take precedence
+over the workflow profile (<code>--workflow-profile</code>), which takes precedence over the
+global profile (<code>--profile</code>). So, if you plan to edit resources, do it in the command
+line or a <code>--workflow-profile</code>, as the default workflow profile will overwrite any 
+resources set in <code>--profile</code>.</p>
 <p>Here is an example of what it would look like to change the number of threads
 for the rule <code>bwa_index</code> from the default of 1 to a new value of 5:</p>
 <div class="highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">profiles/default/config.yaml</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
@@ -611,20 +616,20 @@ add a limit of 2GB for memory:</p>
 <span class="normal">162</span>
 <span class="normal">163</span>
 <span class="normal">164</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nt">set-resources</span><span class="p">:</span>
-<span class="c1">#   # Reference Prep</span>
+<span class="w">  </span><span class="c1"># Reference Prep</span>
 <span class="w">  </span><span class="nt">link_ref</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">runtime</span><span class="p">:</span>
-<span class="hll"><span class="w">  </span><span class="nt">link_anc_ref</span><span class="p">:</span>
-</span><span class="hll"><span class="w">    </span><span class="nt">runtime</span><span class="p">:</span>
-</span><span class="hll"><span class="w">  </span><span class="nt">bwa_index</span><span class="p">:</span>
-</span><span class="w">    </span><span class="nt">runtime</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;1d&quot;</span>
-<span class="w">    </span><span class="nt">mem_mb</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2048</span>
-<span class="w">  </span><span class="nt">samtools_faidx</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">runtime</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">runtime</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;5m&quot;</span>
+<span class="w">  </span><span class="nt">link_anc_ref</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">runtime</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;5m&quot;</span>
+<span class="hll"><span class="w">  </span><span class="nt">bwa_index</span><span class="p">:</span>
+</span><span class="hll"><span class="w">    </span><span class="nt">runtime</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;1d&quot;</span>
+</span><span class="hll"><span class="w">    </span><span class="nt">mem_mb</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2048</span>
+</span><span class="w">  </span><span class="nt">samtools_faidx</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">runtime</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;1h&quot;</span>
 <span class="w">  </span><span class="nt">ref_chunking</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">runtime</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">runtime</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;5m&quot;</span>
 <span class="w">  </span><span class="nt">picard_dict</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">runtime</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">runtime</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;10m&quot;</span>
 </code></pre></div></td></tr></table></div>
 <p>You can also use the term 'attempt' in these definitions, which allow you to
 scale the resources with the number of attempts a rule has made, automatically

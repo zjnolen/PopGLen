@@ -163,6 +163,7 @@ params:
     rnd_sample_decay: 0.001
     fit_LDdecay_extra: "--fit_level 100 --fit_boot 100 --plot_size 3,6 --plot_data --plot_no_legend --plot_y_lim 1"
     fit_LDdecay_n_correction: true
+    prune_method: "window" # set to either "window" (default, faster, likely retains fewer SNPs) or "graph" (using fgvieira/prune_graph)
     max_kb_dist_pruning_dataset: 50 # used for PCA, Admix, NGSrelate, not ngsF-HMM
     pruning_min-weight_dataset: 0.1 # used for PCA, Admix, NGSrelate, not ngsF-HMM
   ngsf-hmm:

@@ -1,5 +1,5 @@
 repos:
   - repo: https://github.com/snakemake/snakefmt
-    rev: v0.10.2 # Replace by any tag/version ≥v0.6.0 : https://github.com/snakemake/snakefmt/releases
+    rev: v2.0.3 # Replace by any tag/version ≥v0.6.0 : https://github.com/snakemake/snakefmt/releases
     hooks:
       - id: snakefmt

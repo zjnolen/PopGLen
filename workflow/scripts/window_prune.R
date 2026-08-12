@@ -15,22 +15,30 @@ pos_file <- snakemake@input[["pos"]]
 out_list <- snakemake@output[["sites"]]
 r2_thresh <- snakemake@params[["r2"]]
 
-ld <- fread(ld_table, sep = "\t", header = FALSE)
+if (file.size(ld_table) == 0) {
 
-maxr2s <- df %>%
-  group_by(V2) %>%
-  summarize(maxr2 = max(V7))
+  file.create(out_list)
 
-linked_snps <- maxr2s[maxr2s$maxr2 > r2_thresh, 1]
+} else {
 
-pos <- fread(pos_file, sep = "\t", header = FALSE)
+  ld <- fread(ld_table, sep = "\t", header = FALSE)
 
-pos <- paste(pos$V1, pos$V2, sep = ":")
+  maxr2s <- df %>%
+    group_by(V2) %>%
+    summarize(maxr2 = max(V7))
 
-unlinked_snps <- pos[!pos %in% linked_snps]
+  linked_snps <- maxr2s[maxr2s$maxr2 > r2_thresh, 1]
 
-write.table(
-  unlinked_snps[, 2],
-  file = out_list,
-  quote = FALSE, row.names = FALSE, col.names = FALSE
-)
+  pos <- fread(pos_file, sep = "\t", header = FALSE)
+
+  pos <- paste(pos$V1, pos$V2, sep = ":")
+
+  unlinked_snps <- pos[!pos %in% linked_snps]
+
+  write.table(
+    unlinked_snps[, 2],
+    file = out_list,
+    quote = FALSE, row.names = FALSE, col.names = FALSE
+  )
+
+}

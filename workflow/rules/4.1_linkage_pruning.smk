@@ -51,7 +51,7 @@ elif config["params"]["ngsld"]["prune_method"] == "window":
         benchmark:
             "benchmarks/{dataset}/ngsLD/prune_sites/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts_maxkbdist-{maxkb}_minr2-{r2}.log"
         container:
-            r_container
+            window_pruning_container
         threads: 4
         resources:
             runtime="6h",

@@ -6,4 +6,4 @@
 # reruns.
 
 [tool.snakefmt]
-format_shell = true
+format_shell = false

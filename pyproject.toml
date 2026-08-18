@@ -1,0 +1,9 @@
+# most of this workflow was written before shfmt was added to snakefmt,
+# so my shell blocks aren't all formatted to its rules. Blocking shfmt
+# for now to avoid it making cosmetic changes that will trigger needless
+# reruns. Would rather make changes like this in a big release so that
+# folks needing bug fixes and the like don't end up needlessly triggering
+# reruns.
+
+[tool.snakefmt]
+format_shell = false

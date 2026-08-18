@@ -44,6 +44,7 @@ repeatmodmask_container = (
 )
 samtools_container = "docker://quay.io/biocontainers/samtools:1.20--h50ea8bc_1"
 shell_container = "docker://ghcr.io/zjnolen/popglen-shell:0.4.0"
+window_pruning_container = "docker://ghcr.io/zjnolen/popglen-window-pruning:develop"
 
 # Define function for genome chunks to break up analysis (for parallelization)
 

@@ -23,7 +23,7 @@ if (file.size(ld_table) == 0) {
 
   ld <- fread(ld_table, sep = "\t", header = FALSE)
 
-  maxr2s <- df %>%
+  maxr2s <- ld %>%
     group_by(V2) %>%
     summarize(maxr2 = max(V7))
 

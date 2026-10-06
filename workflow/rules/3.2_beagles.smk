@@ -44,9 +44,8 @@ rule angsd_doGlf2:
         minind=get_minind,
         mininddp=config["params"]["angsd"]["mindepthind"],
         out=lambda w, output: os.path.splitext(output.arg)[0],
-    threads: lambda wildcards, attempt: attempt
     resources:
-        runtime=lambda wildcards, attempt: attempt * 720,
+        runtime="12h",
     shell:
         """
         angsd -doGlf 2 -bam {input.bam} -GL {params.gl_model} -ref {input.ref} \
@@ -123,7 +122,7 @@ rule merge_maf:
 
 rule snpset:
     """
-    Extracts SNP coordinates from maf file to get a list of variable sites in the 
+    Extracts SNP coordinates from maf file to get a list of variable sites in the
     dataset.
     """
     input:

@@ -67,9 +67,8 @@ rule angsd_doMaf:
         minind=get_minind,
         mininddp=config["params"]["angsd"]["mindepthind"],
         out=lambda w, output: os.path.splitext(output.arg)[0],
-    threads: lambda wildcards, attempt: attempt
     resources:
-        runtime=lambda wildcards, attempt: attempt * 720,
+        runtime="12h",
     shell:
         """
         angsd -bam {input.bam} -GL {params.gl_model} -ref {input.ref} \

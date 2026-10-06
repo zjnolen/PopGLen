@@ -52,7 +52,6 @@ rule fit_LD_decay:
         "benchmarks/{dataset}/ngsLD/fit_LD_decay/{dataset}.{ref}_{population}{dp}_{sites}-filts.log"
     container:
         ngsld_container
-    threads: lambda w, attempt: attempt
     resources:
         runtime="8h",
     params:

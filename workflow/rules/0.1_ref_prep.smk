@@ -5,7 +5,6 @@
 
 localrules:
     link_ref,
-    link_anc_ref,
     samtools_faidx,
     ref_chunking,
 
@@ -40,6 +39,7 @@ if config["ancestral"]:
             "logs/ref/link_ref/{ref}.anc.log",
         container:
             shell_container
+        localrule: True
         resources:
             runtime="5m",
         shell:
@@ -64,7 +64,7 @@ rule bwa_index:
     log:
         "logs/ref/bwa_index/{ref}.log",
     resources:
-        runtime="120m",
+        runtime="2h",
     benchmark:
         "benchmarks/ref/bwa_index/{ref}.log"
     wrapper:
@@ -86,7 +86,7 @@ rule samtools_faidx:
     benchmark:
         "benchmarks/ref/samtools_faidx/{ref}/{prefix}.log"
     resources:
-        runtime="10m",
+        runtime="1h",
     shell:
         """
         samtools faidx {input} 2> {log}

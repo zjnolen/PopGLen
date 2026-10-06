@@ -3,7 +3,7 @@
 
 rule damageprofiler:
     """
-    Estimates varous metrics related to post-mortem DNA damage. Informative 
+    Estimates varous metrics related to post-mortem DNA damage. Informative
     rather than corrective.
     """
     input:
@@ -40,9 +40,8 @@ rule damageprofiler:
         damageprofiler_container
     params:
         out=lambda w, output: os.path.dirname(output[0]),
-    threads: lambda wildcards, attempt: attempt
     resources:
-        runtime=lambda wildcards, attempt: attempt * 60,
+        runtime="1h",
     shell:
         """
         damageprofiler -Xmx{resources.mem_mb}m -i {input.bam} -r {input.ref} \
@@ -52,7 +51,7 @@ rule damageprofiler:
 
 rule damageprofiler_userbam:
     """
-    Estimates varous metrics related to post-mortem DNA damage. Informative 
+    Estimates varous metrics related to post-mortem DNA damage. Informative
     rather than corrective. Done this time for BAMs provided by user.
     """
     input:
@@ -89,9 +88,8 @@ rule damageprofiler_userbam:
         damageprofiler_container
     params:
         out=lambda w, output: os.path.dirname(output[0]),
-    threads: lambda wildcards, attempt: attempt
     resources:
-        runtime=lambda wildcards, attempt: attempt * 60,
+        runtime="1h",
     shell:
         """
         damageprofiler -Xmx{resources.mem_mb}m -i {input.bam} -r {input.ref} \
@@ -124,7 +122,7 @@ rule mapDamage2_rescaling:
     params:
         extra="--rescale",
     resources:
-        runtime=1440,
+        runtime="1d",
     wrapper:
         "v4.0.0/bio/mapdamage2"
 

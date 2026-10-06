@@ -19,7 +19,7 @@
       
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
@@ -27,7 +27,7 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
       
         
         <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -757,17 +757,17 @@ setting does. Just click the <code>+</code> next to each line to get info on tha
 
 <span class="nt">units</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">config/units.tsv</span><span class="w"> </span><span class="c1"># (2)</span>
 
-<span class="nt">dataset</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;dataset-name&quot;</span><span class="w"> </span><span class="c1"># (3)</span>
+<span class="nt">dataset</span><span class="p">:</span><span class="w"> </span><span class="s">"dataset-name"</span><span class="w"> </span><span class="c1"># (3)</span>
 
 <span class="c1">#===================== Reference Configuration ========================#</span>
 
 <span class="nt">chunk_size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">50000000</span><span class="w"> </span><span class="c1"># (4)</span>
 
 <span class="nt">reference</span><span class="p">:</span>
-<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;dataset-ref&quot;</span><span class="w"> </span><span class="c1"># (5)</span>
-<span class="w">  </span><span class="nt">fasta</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;resources/ref/reference-genome.fa&quot;</span><span class="w"> </span><span class="c1"># (6)</span>
-<span class="w">  </span><span class="nt">mito</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;mitochondrion&quot;</span><span class="p p-Indicator">]</span><span class="w"> </span><span class="c1"># (7)</span>
-<span class="w">  </span><span class="nt">sex-linked</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;Z&quot;</span><span class="p p-Indicator">]</span><span class="w"> </span><span class="c1"># (8)</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s">"dataset-ref"</span><span class="w"> </span><span class="c1"># (5)</span>
+<span class="w">  </span><span class="nt">fasta</span><span class="p">:</span><span class="w"> </span><span class="s">"resources/ref/reference-genome.fa"</span><span class="w"> </span><span class="c1"># (6)</span>
+<span class="w">  </span><span class="nt">mito</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">"mitochondrion"</span><span class="p p-Indicator">]</span><span class="w"> </span><span class="c1"># (7)</span>
+<span class="w">  </span><span class="nt">sex-linked</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">"Z"</span><span class="p p-Indicator">]</span><span class="w"> </span><span class="c1"># (8)</span>
 <span class="w">  </span><span class="nt">exclude</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span><span class="w"> </span><span class="c1"># (9)</span>
 <span class="w">  </span><span class="nt">min_size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1000000</span><span class="w"> </span><span class="c1"># (10)</span>
 
@@ -787,7 +787,7 @@ setting does. Just click the <code>+</code> next to each line to get info on tha
 <span class="w">  </span><span class="c1"># mapping options</span>
 <span class="w">  </span><span class="nt">mapping</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">historical_only_collapsed</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"> </span><span class="c1"># (15)</span>
-<span class="w">    </span><span class="nt">historical_collapsed_aligner</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;aln&quot;</span><span class="w"> </span><span class="c1"># (16)</span>
+<span class="w">    </span><span class="nt">historical_collapsed_aligner</span><span class="p">:</span><span class="w"> </span><span class="s">"aln"</span><span class="w"> </span><span class="c1"># (16)</span>
 <span class="w">  </span><span class="c1"># sites file filters</span>
 <span class="w">  </span><span class="nt">pileup-mappability</span><span class="p">:</span><span class="w"> </span><span class="c1"># (17)</span>
 <span class="w">  </span><span class="nt">repeatmasker</span><span class="p">:</span><span class="w"> </span><span class="c1"># (18)</span>
@@ -829,9 +829,9 @@ setting does. Just click the <code>+</code> next to each line to get info on tha
 
 <span class="nt">subsample_dp</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">4</span><span class="p p-Indicator">]</span><span class="w"> </span><span class="c1"># (50)</span>
 
-<span class="nt">subsample_by</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;sitefilt&quot;</span><span class="w"> </span><span class="c1"># (51) three options: unfilt, mapqbaseq, sitefilt; sitefilt recommended (subsamples bams to `subsample_dp` within filtered regions)</span>
-<span class="nt">redo_depth_filts</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span><span class="w"> </span><span class="c1"># (52) has no effect when `subsample_by` == &quot;sitefilt&quot;</span>
-<span class="nt">drop_samples</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span><span class="w"> </span><span class="c1"># (53) These samples won&#39;t be included in the downsampled dataset</span>
+<span class="nt">subsample_by</span><span class="p">:</span><span class="w"> </span><span class="s">"sitefilt"</span><span class="w"> </span><span class="c1"># (51) three options: unfilt, mapqbaseq, sitefilt; sitefilt recommended (subsamples bams to `subsample_dp` within filtered regions)</span>
+<span class="nt">redo_depth_filts</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span><span class="w"> </span><span class="c1"># (52) has no effect when `subsample_by` == "sitefilt"</span>
+<span class="nt">drop_samples</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span><span class="w"> </span><span class="c1"># (53) These samples won't be included in the downsampled dataset</span>
 
 <span class="nt">subsample_analyses</span><span class="p">:</span><span class="w"> </span><span class="c1"># (54)</span>
 <span class="w">  </span><span class="nt">estimate_ld</span><span class="p">:</span>
@@ -872,25 +872,25 @@ setting does. Just click the <code>+</code> next to each line to get info on tha
 <span class="w">  </span><span class="nt">clipoverlap</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">clip_user_provided_bams</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span><span class="w"> </span><span class="c1"># (59)</span>
 <span class="w">  </span><span class="nt">fastp</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">extra</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;-p</span><span class="nv"> </span><span class="s">-g&quot;</span><span class="w"> </span><span class="c1"># (60) don&#39;t put --merge or --overlap_len_require here, they&#39;re implicit</span>
+<span class="w">    </span><span class="nt">extra</span><span class="p">:</span><span class="w"> </span><span class="s">"-p</span><span class="nv"> </span><span class="s">-g"</span><span class="w"> </span><span class="c1"># (60) don't put --merge or --overlap_len_require here, they're implicit</span>
 <span class="w">    </span><span class="nt">min_overlap_hist</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">30</span><span class="w"> </span><span class="c1"># (61)</span>
 <span class="w">  </span><span class="nt">bwa_aln</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">extra</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;-l</span><span class="nv"> </span><span class="s">16500</span><span class="nv"> </span><span class="s">-n</span><span class="nv"> </span><span class="s">0.01</span><span class="nv"> </span><span class="s">-o</span><span class="nv"> </span><span class="s">2&quot;</span><span class="w"> </span><span class="c1"># (62)</span>
+<span class="w">    </span><span class="nt">extra</span><span class="p">:</span><span class="w"> </span><span class="s">"-l</span><span class="nv"> </span><span class="s">16500</span><span class="nv"> </span><span class="s">-n</span><span class="nv"> </span><span class="s">0.01</span><span class="nv"> </span><span class="s">-o</span><span class="nv"> </span><span class="s">2"</span><span class="w"> </span><span class="c1"># (62)</span>
 <span class="w">  </span><span class="nt">picard</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">MarkDuplicates</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;--REMOVE_DUPLICATES</span><span class="nv"> </span><span class="s">true</span><span class="nv"> </span><span class="s">--OPTICAL_DUPLICATE_PIXEL_DISTANCE</span><span class="nv"> </span><span class="s">2500&quot;</span><span class="w"> </span><span class="c1">#(63)</span>
+<span class="w">    </span><span class="nt">MarkDuplicates</span><span class="p">:</span><span class="w"> </span><span class="s">"--REMOVE_DUPLICATES</span><span class="nv"> </span><span class="s">true</span><span class="nv"> </span><span class="s">--OPTICAL_DUPLICATE_PIXEL_DISTANCE</span><span class="nv"> </span><span class="s">2500"</span><span class="w"> </span><span class="c1">#(63)</span>
 <span class="w">  </span><span class="nt">damageprofiler</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">profile_modern</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span><span class="w"> </span><span class="c1"># (64)</span>
 <span class="w">  </span><span class="nt">genmap</span><span class="p">:</span><span class="w"> </span><span class="c1"># (65)</span>
-<span class="w">    </span><span class="nt">K</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;30&quot;</span><span class="w"> </span><span class="c1"># (66)</span>
-<span class="w">    </span><span class="nt">E</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;2&quot;</span><span class="w"> </span><span class="c1"># (67)</span>
+<span class="w">    </span><span class="nt">K</span><span class="p">:</span><span class="w"> </span><span class="s">"30"</span><span class="w"> </span><span class="c1"># (66)</span>
+<span class="w">    </span><span class="nt">E</span><span class="p">:</span><span class="w"> </span><span class="s">"2"</span><span class="w"> </span><span class="c1"># (67)</span>
 <span class="w">    </span><span class="nt">map_thresh</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span><span class="w"> </span><span class="c1"># (68)</span>
 <span class="w">  </span><span class="nt">extreme_depth_filt</span><span class="p">:</span><span class="w"> </span><span class="c1"># (69)</span>
-<span class="w">    </span><span class="nt">method</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;percentile&quot;</span><span class="w"> </span><span class="c1"># (70)</span>
+<span class="w">    </span><span class="nt">method</span><span class="p">:</span><span class="w"> </span><span class="s">"percentile"</span><span class="w"> </span><span class="c1"># (70)</span>
 <span class="w">    </span><span class="nt">bounds</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="w"> </span><span class="nv">0.025</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">0.975</span><span class="w"> </span><span class="p p-Indicator">]</span><span class="w"> </span><span class="c1"># (71)</span>
 <span class="w">    </span><span class="nt">filt-on-dataset</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"> </span><span class="c1"># (72)</span>
 <span class="w">    </span><span class="nt">filt-on-depth-classes</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"> </span><span class="c1"># (73)</span>
 <span class="w">  </span><span class="nt">samtools</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">subsampling_seed</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;$RANDOM&quot;</span><span class="w"> </span><span class="c1"># (74)</span>
+<span class="w">    </span><span class="nt">subsampling_seed</span><span class="p">:</span><span class="w"> </span><span class="s">"$RANDOM"</span><span class="w"> </span><span class="c1"># (74)</span>
 <span class="w">  </span><span class="nt">angsd</span><span class="p">:</span><span class="w"> </span><span class="c1"># (75)</span>
 <span class="w">    </span><span class="nt">gl_model</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span><span class="w"> </span><span class="c1"># (76) gl_model - 1=SAMtools, 2=GATK, 3=SOAPsnp, 4=SYK</span>
 <span class="w">    </span><span class="nt">maxdepth</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">100</span><span class="w"> </span><span class="c1"># (77) for depth calc only</span>
@@ -898,12 +898,12 @@ setting does. Just click the <code>+</code> next to each line to get info on tha
 <span class="w">    </span><span class="nt">minind_dataset</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.75</span><span class="w"> </span><span class="c1"># (79) as a proportion of N</span>
 <span class="w">    </span><span class="nt">minind_pop</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.75</span><span class="w"> </span><span class="c1"># (80) as a proportion of N</span>
 <span class="w">    </span><span class="nt">rmtrans</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"> </span><span class="c1"># (81)</span>
-<span class="w">    </span><span class="nt">extra</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="c1"># (82) goes to all ANGSD runs</span>
-<span class="w">    </span><span class="nt">extra_saf</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="c1"># (83) goes to all -doSaf runs</span>
-<span class="w">    </span><span class="nt">extra_beagle</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="c1"># (84) goes to all -doGlf 2 runs</span>
+<span class="w">    </span><span class="nt">extra</span><span class="p">:</span><span class="w"> </span><span class="s">""</span><span class="w"> </span><span class="c1"># (82) goes to all ANGSD runs</span>
+<span class="w">    </span><span class="nt">extra_saf</span><span class="p">:</span><span class="w"> </span><span class="s">""</span><span class="w"> </span><span class="c1"># (83) goes to all -doSaf runs</span>
+<span class="w">    </span><span class="nt">extra_beagle</span><span class="p">:</span><span class="w"> </span><span class="s">""</span><span class="w"> </span><span class="c1"># (84) goes to all -doGlf 2 runs</span>
 <span class="w">    </span><span class="nt">domajorminor</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span><span class="w"> </span><span class="c1"># (85) Currently only compatible with values 1, 2, 4, 5</span>
 <span class="w">    </span><span class="nt">domaf</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span><span class="w"> </span><span class="c1"># (87) Currently only compatible with values 1 &amp; 2</span>
-<span class="w">    </span><span class="nt">snp_pval</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;1e-6&quot;</span><span class="w"> </span><span class="c1"># (86)</span>
+<span class="w">    </span><span class="nt">snp_pval</span><span class="p">:</span><span class="w"> </span><span class="s">"1e-6"</span><span class="w"> </span><span class="c1"># (86)</span>
 <span class="w">    </span><span class="nt">min_maf</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.05</span><span class="w"> </span><span class="c1"># (88) Set -1 to disable</span>
 <span class="w">    </span><span class="nt">mindepthind_heterozygosity</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span><span class="w"> </span><span class="c1"># (89)</span>
 <span class="w">  </span><span class="nt">ngsld</span><span class="p">:</span><span class="w"> </span><span class="c1"># (90)</span>
@@ -911,13 +911,13 @@ setting does. Just click the <code>+</code> next to each line to get info on tha
 <span class="w">    </span><span class="nt">rnd_sample_est-ld</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.001</span><span class="w"> </span><span class="c1"># (92)</span>
 <span class="w">    </span><span class="nt">max_kb_dist_decay</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">100</span><span class="w"> </span><span class="c1"># (93)</span>
 <span class="w">    </span><span class="nt">rnd_sample_decay</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.01</span><span class="w"> </span><span class="c1"># (94)</span>
-<span class="w">    </span><span class="nt">fit_LDdecay_extra</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;--fit_level</span><span class="nv"> </span><span class="s">1</span><span class="nv"> </span><span class="s">--plot_size</span><span class="nv"> </span><span class="s">3,6</span><span class="nv"> </span><span class="s">--plot_y_lim</span><span class="nv"> </span><span class="s">1&quot;</span><span class="w"> </span><span class="c1"># (95)</span>
+<span class="w">    </span><span class="nt">fit_LDdecay_extra</span><span class="p">:</span><span class="w"> </span><span class="s">"--fit_level</span><span class="nv"> </span><span class="s">1</span><span class="nv"> </span><span class="s">--plot_size</span><span class="nv"> </span><span class="s">3,6</span><span class="nv"> </span><span class="s">--plot_y_lim</span><span class="nv"> </span><span class="s">1"</span><span class="w"> </span><span class="c1"># (95)</span>
 <span class="w">    </span><span class="nt">fit_LDdecay_n_correction</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"> </span><span class="c1"># (96)</span>
 <span class="w">    </span><span class="nt">max_kb_dist_pruning_dataset</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">25</span><span class="w"> </span><span class="c1"># (97) used for PCA, Admix, not ngsF-HMM</span>
 <span class="w">    </span><span class="nt">pruning_min-weight_dataset</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.2</span><span class="w"> </span><span class="c1"># (98) used for PCA, Admix, not ngsF-HMM</span>
 <span class="w">  </span><span class="nt">ngsrelate</span><span class="p">:</span><span class="w"> </span><span class="c1"># (99)</span>
-<span class="w">    </span><span class="nt">ibsrelate-only-extra</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="c1">#(100)</span>
-<span class="w">    </span><span class="nt">freqbased-extra</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="c1"># (101)</span>
+<span class="w">    </span><span class="nt">ibsrelate-only-extra</span><span class="p">:</span><span class="w"> </span><span class="s">""</span><span class="w"> </span><span class="c1">#(100)</span>
+<span class="w">    </span><span class="nt">freqbased-extra</span><span class="p">:</span><span class="w"> </span><span class="s">""</span><span class="w"> </span><span class="c1"># (101)</span>
 <span class="w">  </span><span class="nt">ngsf-hmm</span><span class="p">:</span><span class="w"> </span><span class="c1"># (102)</span>
 <span class="w">    </span><span class="nt">estimate_in_pops</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"> </span><span class="c1"># (103)</span>
 <span class="w">    </span><span class="nt">prune</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"> </span><span class="c1"># (104)</span>
@@ -942,7 +942,7 @@ setting does. Just click the <code>+</code> next to each line to get info on tha
 <span class="w">    </span><span class="nt">minreps</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">20</span><span class="w"> </span><span class="c1"># (123)</span>
 <span class="w">    </span><span class="nt">thresh</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span><span class="w"> </span><span class="c1"># (124)</span>
 <span class="w">    </span><span class="nt">conv</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3</span><span class="w"> </span><span class="c1"># (125)</span>
-<span class="w">    </span><span class="nt">extra</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;-maxiter</span><span class="nv"> </span><span class="s">4000&quot;</span><span class="w"> </span><span class="c1"># (126)</span>
+<span class="w">    </span><span class="nt">extra</span><span class="p">:</span><span class="w"> </span><span class="s">"-maxiter</span><span class="nv"> </span><span class="s">4000"</span><span class="w"> </span><span class="c1"># (126)</span>
 <span class="w">  </span><span class="nt">ibs</span><span class="p">:</span><span class="w"> </span><span class="c1"># (127)</span>
 <span class="w">    </span><span class="nt">doibs</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span><span class="w"> </span><span class="c1"># (128)</span>
 </code></pre></div></td></tr></table></div>
@@ -1219,7 +1219,7 @@ setting does. Just click the <code>+</code> next to each line to get info on tha
 <p>For instance, given a BED file containing putatively neutral sites, one could
 set the following:</p>
 <div class="highlight"><pre><span></span><code><span class="nt">filter_beds</span><span class="p">:</span>
-<span class="w">  </span><span class="nt">neutral</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;resources/neutral_sites.bed&quot;</span>
+<span class="w">  </span><span class="nt">neutral</span><span class="p">:</span><span class="w"> </span><span class="s">"resources/neutral_sites.bed"</span>
 </code></pre></div>
 <p>In this case, for each requested analysis, in addition to the
 <code>allsites-filts</code> output, a <code>neutral-filts</code> (named after the key assigned to
@@ -1227,9 +1227,9 @@ the BED file in <code>config.yaml</code>) output will also be generated, contain
 results for sites within the specified BED file that passed any set filters.
 More than one BED file can be set, up to an arbitrary number:</p>
 <div class="highlight"><pre><span></span><code><span class="nt">filter_beds</span><span class="p">:</span>
-<span class="w">  </span><span class="nt">neutral</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;resources/neutral_sites.bed&quot;</span>
-<span class="w">  </span><span class="nt">intergenic</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;resources/intergenic_sites.bed&quot;</span>
-<span class="w">  </span><span class="nt">introns</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;resources/introns.bed&quot;</span>
+<span class="w">  </span><span class="nt">neutral</span><span class="p">:</span><span class="w"> </span><span class="s">"resources/neutral_sites.bed"</span>
+<span class="w">  </span><span class="nt">intergenic</span><span class="p">:</span><span class="w"> </span><span class="s">"resources/intergenic_sites.bed"</span>
+<span class="w">  </span><span class="nt">introns</span><span class="p">:</span><span class="w"> </span><span class="s">"resources/introns.bed"</span>
 </code></pre></div>
 </li>
 <li>
@@ -1548,7 +1548,7 @@ built in filter options by setting them to <code>false</code>.</p>
       <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["toc.integrate", "search.highlight", "content.code.annotate"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
       
     
   </body>

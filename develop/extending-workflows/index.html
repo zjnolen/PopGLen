@@ -19,7 +19,7 @@
       
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
@@ -27,7 +27,7 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
       
         
         <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -590,16 +590,16 @@ PopGLen as a module:</p>
 <span class="normal">19</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">snakemake.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">min_version</span>
 
 
-<span class="n">min_version</span><span class="p">(</span><span class="s2">&quot;6.10.0&quot;</span><span class="p">)</span>
+<span class="n">min_version</span><span class="p">(</span><span class="s2">"6.10.0"</span><span class="p">)</span>
 
 
-<span class="n">configfile</span><span class="p">:</span> <span class="s2">&quot;config/config.yaml&quot;</span>
+<span class="n">configfile</span><span class="p">:</span> <span class="s2">"config/config.yaml"</span>
 
 
 <span class="c1"># declare https://github.com/zjnolen/PopGLen as a module</span>
 <span class="n">module</span> <span class="n">popglen</span><span class="p">:</span>
     <span class="n">snakefile</span><span class="p">:</span>
-        <span class="n">github</span><span class="p">(</span><span class="s2">&quot;zjnolen/PopGLen&quot;</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="s2">&quot;workflow/Snakefile&quot;</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="s2">&quot;v0.4.3&quot;</span><span class="p">)</span>
+        <span class="n">github</span><span class="p">(</span><span class="s2">"zjnolen/PopGLen"</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="s2">"workflow/Snakefile"</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="s2">"v0.4.3"</span><span class="p">)</span>
     <span class="n">config</span><span class="p">:</span>
         <span class="n">config</span>
 
@@ -624,36 +624,36 @@ PCAngsd defined by default.</p>
 
 
 <span class="n">rule</span> <span class="n">angsd_doCov</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Estimates covariance matrix for all individuals.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="nb">input</span><span class="p">:</span>
-        <span class="n">bamlist</span><span class="o">=</span><span class="s2">&quot;results/datasets/</span><span class="si">{dataset}</span><span class="s2">/bamlists/</span><span class="si">{dataset}</span><span class="s2">.</span><span class="si">{ref}</span><span class="s2">_</span><span class="si">{population}{dp}</span><span class="s2">.bamlist&quot;</span><span class="p">,</span>
+        <span class="n">bamlist</span><span class="o">=</span><span class="s2">"results/datasets/</span><span class="si">{dataset}</span><span class="s2">/bamlists/</span><span class="si">{dataset}</span><span class="s2">.</span><span class="si">{ref}</span><span class="s2">_</span><span class="si">{population}{dp}</span><span class="s2">.bamlist"</span><span class="p">,</span>
         <span class="n">bams</span><span class="o">=</span><span class="n">popglen</span><span class="o">.</span><span class="n">get_bamlist_bams</span><span class="p">,</span>
         <span class="n">bais</span><span class="o">=</span><span class="n">popglen</span><span class="o">.</span><span class="n">get_bamlist_bais</span><span class="p">,</span>
-        <span class="n">sites</span><span class="o">=</span><span class="s2">&quot;results/datasets/</span><span class="si">{dataset}</span><span class="s2">/filters/snps/</span><span class="si">{dataset}</span><span class="s2">.</span><span class="si">{ref}</span><span class="s2">_</span><span class="si">{population}{dp}</span><span class="s2">_</span><span class="si">{sites}</span><span class="s2">-filts_snps.sites&quot;</span><span class="p">,</span>
-        <span class="n">idx</span><span class="o">=</span><span class="s2">&quot;results/datasets/</span><span class="si">{dataset}</span><span class="s2">/filters/snps/</span><span class="si">{dataset}</span><span class="s2">.</span><span class="si">{ref}</span><span class="s2">_</span><span class="si">{population}{dp}</span><span class="s2">_</span><span class="si">{sites}</span><span class="s2">-filts_snps.sites.idx&quot;</span><span class="p">,</span>
+        <span class="n">sites</span><span class="o">=</span><span class="s2">"results/datasets/</span><span class="si">{dataset}</span><span class="s2">/filters/snps/</span><span class="si">{dataset}</span><span class="s2">.</span><span class="si">{ref}</span><span class="s2">_</span><span class="si">{population}{dp}</span><span class="s2">_</span><span class="si">{sites}</span><span class="s2">-filts_snps.sites"</span><span class="p">,</span>
+        <span class="n">idx</span><span class="o">=</span><span class="s2">"results/datasets/</span><span class="si">{dataset}</span><span class="s2">/filters/snps/</span><span class="si">{dataset}</span><span class="s2">.</span><span class="si">{ref}</span><span class="s2">_</span><span class="si">{population}{dp}</span><span class="s2">_</span><span class="si">{sites}</span><span class="s2">-filts_snps.sites.idx"</span><span class="p">,</span>
     <span class="n">output</span><span class="p">:</span>
-        <span class="n">ibs</span><span class="o">=</span><span class="n">temp</span><span class="p">(</span><span class="s2">&quot;results/datasets/</span><span class="si">{dataset}</span><span class="s2">/analyses/covar/</span><span class="si">{dataset}</span><span class="s2">.</span><span class="si">{ref}</span><span class="s2">_</span><span class="si">{population}{dp}</span><span class="s2">_</span><span class="si">{sites}</span><span class="s2">-filts.ibs.gz&quot;</span><span class="p">),</span>
-        <span class="n">covmat</span><span class="o">=</span><span class="s2">&quot;results/datasets/</span><span class="si">{dataset}</span><span class="s2">/analyses/covar/</span><span class="si">{dataset}</span><span class="s2">.</span><span class="si">{ref}</span><span class="s2">_</span><span class="si">{population}{dp}</span><span class="s2">_</span><span class="si">{sites}</span><span class="s2">-filts.covMat&quot;</span><span class="p">,</span>
-        <span class="n">arg</span><span class="o">=</span><span class="s2">&quot;results/datasets/</span><span class="si">{dataset}</span><span class="s2">/analyses/covar/</span><span class="si">{dataset}</span><span class="s2">.</span><span class="si">{ref}</span><span class="s2">_</span><span class="si">{population}{dp}</span><span class="s2">_</span><span class="si">{sites}</span><span class="s2">-filts.arg&quot;</span><span class="p">,</span>
+        <span class="n">ibs</span><span class="o">=</span><span class="n">temp</span><span class="p">(</span><span class="s2">"results/datasets/</span><span class="si">{dataset}</span><span class="s2">/analyses/covar/</span><span class="si">{dataset}</span><span class="s2">.</span><span class="si">{ref}</span><span class="s2">_</span><span class="si">{population}{dp}</span><span class="s2">_</span><span class="si">{sites}</span><span class="s2">-filts.ibs.gz"</span><span class="p">),</span>
+        <span class="n">covmat</span><span class="o">=</span><span class="s2">"results/datasets/</span><span class="si">{dataset}</span><span class="s2">/analyses/covar/</span><span class="si">{dataset}</span><span class="s2">.</span><span class="si">{ref}</span><span class="s2">_</span><span class="si">{population}{dp}</span><span class="s2">_</span><span class="si">{sites}</span><span class="s2">-filts.covMat"</span><span class="p">,</span>
+        <span class="n">arg</span><span class="o">=</span><span class="s2">"results/datasets/</span><span class="si">{dataset}</span><span class="s2">/analyses/covar/</span><span class="si">{dataset}</span><span class="s2">.</span><span class="si">{ref}</span><span class="s2">_</span><span class="si">{population}{dp}</span><span class="s2">_</span><span class="si">{sites}</span><span class="s2">-filts.arg"</span><span class="p">,</span>
     <span class="n">container</span><span class="p">:</span>
         <span class="n">popglen</span><span class="o">.</span><span class="n">angsd_container</span>
     <span class="n">params</span><span class="p">:</span>
-        <span class="n">mapQ</span><span class="o">=</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;mapQ&quot;</span><span class="p">],</span>
-        <span class="n">baseQ</span><span class="o">=</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;baseQ&quot;</span><span class="p">],</span>
+        <span class="n">mapQ</span><span class="o">=</span><span class="n">config</span><span class="p">[</span><span class="s2">"mapQ"</span><span class="p">],</span>
+        <span class="n">baseQ</span><span class="o">=</span><span class="n">config</span><span class="p">[</span><span class="s2">"baseQ"</span><span class="p">],</span>
         <span class="n">trans</span><span class="o">=</span><span class="n">popglen</span><span class="o">.</span><span class="n">get_trans</span><span class="p">,</span>
         <span class="n">out</span><span class="o">=</span><span class="k">lambda</span> <span class="n">w</span><span class="p">,</span> <span class="n">output</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">output</span><span class="o">.</span><span class="n">arg</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span>
     <span class="n">threads</span><span class="p">:</span> <span class="mi">2</span>
     <span class="n">resources</span><span class="p">:</span>
-        <span class="n">runtime</span><span class="o">=</span><span class="s2">&quot;1d&quot;</span><span class="p">,</span>
+        <span class="n">runtime</span><span class="o">=</span><span class="s2">"1d"</span><span class="p">,</span>
     <span class="n">shell</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        angsd -doIBS 1 -doCov 1 -bam {input.bamlist} -nThreads {threads} \</span>
 <span class="sd">            -doCounts 1 -minMapQ {params.mapQ} -minQ {params.baseQ} \</span>
 <span class="sd">            -sites {input.sites} -rmTrans {params.trans} -doMajorMinor 3 \</span>
 <span class="sd">            -out {params.out}</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
 
 <span class="c1"># Update plot_pca rule to use the covariance matrix from angsd_doCov rather than</span>
@@ -662,8 +662,8 @@ PCAngsd defined by default.</p>
 
 <span class="n">use</span> <span class="n">rule</span> <span class="n">plot_pca</span> <span class="kn">from</span><span class="w"> </span><span class="nn">popglen</span> <span class="k">as</span> <span class="n">plot_pca</span> <span class="k">with</span><span class="p">:</span>
     <span class="nb">input</span><span class="p">:</span>
-        <span class="s2">&quot;results/datasets/</span><span class="si">{dataset}</span><span class="s2">/analyses/covar/</span><span class="si">{dataset}</span><span class="s2">.</span><span class="si">{ref}</span><span class="s2">_</span><span class="si">{population}{dp}</span><span class="s2">_</span><span class="si">{sites}</span><span class="s2">-filts.covMat&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;results/datasets/</span><span class="si">{dataset}</span><span class="s2">/poplists/</span><span class="si">{dataset}</span><span class="s2">_</span><span class="si">{population}{dp}</span><span class="s2">.indiv.list&quot;</span><span class="p">,</span>
+        <span class="s2">"results/datasets/</span><span class="si">{dataset}</span><span class="s2">/analyses/covar/</span><span class="si">{dataset}</span><span class="s2">.</span><span class="si">{ref}</span><span class="s2">_</span><span class="si">{population}{dp}</span><span class="s2">_</span><span class="si">{sites}</span><span class="s2">-filts.covMat"</span><span class="p">,</span>
+        <span class="s2">"results/datasets/</span><span class="si">{dataset}</span><span class="s2">/poplists/</span><span class="si">{dataset}</span><span class="s2">_</span><span class="si">{population}{dp}</span><span class="s2">.indiv.list"</span><span class="p">,</span>
 </code></pre></div>
 <p>For a substitution like this, these are the only changes we need to make.
 You can try running this Snakefile using the <a href="../tutorial/">tutorial</a> data to see
@@ -741,7 +741,7 @@ feel free to open an issue and request its addition.</p>
       <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["toc.integrate", "search.highlight", "content.code.annotate"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
       
     
   </body>

@@ -13,7 +13,7 @@ bamlist = snakemake.output[0]
 
 print(f"BAM order: {snakemake.params.sampord}", file=sys.stderr)
 
-abs_paths = "\n".join([os.path.realpath(b) for b in inputs])
+abs_paths = "\n".join([os.path.abspath(b) for b in inputs])
 
 with open(bamlist, "w") as f:
     f.write(abs_paths)

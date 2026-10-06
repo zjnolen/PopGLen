@@ -2,33 +2,69 @@
 # a list of positions in linkage equilibrium, i.e. independent SNPs.
 
 
-rule ngsLD_prune_sites:
-    """
-    Prunes SNPs to produce a list of SNPs in linkage equilibrium.
-    """
-    input:
-        ld="results/datasets/{dataset}/beagles/pruned/ngsLD/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.ld_maxkbdist-{maxkb}_rndsample-1.gz",
-    output:
-        sites="results/datasets/{dataset}/beagles/pruned/ngsLD/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.pruned_maxkbdist-{maxkb}_minr2-{r2}.sites",
-    log:
-        "logs/{dataset}/ngsLD/prune_sites/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts_maxkbdist-{maxkb}_minr2-{r2}.log",
-    benchmark:
-        "benchmarks/{dataset}/ngsLD/prune_sites/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts_maxkbdist-{maxkb}_minr2-{r2}.log"
-    container:
-        ngsld_container
-    threads: 4
-    resources:
-        runtime="1d",
-    shell:
+if config["params"]["ngsld"]["prune_method"] == "graph":
+
+    rule ngsLD_prune_sites_graph:
         """
-        if [ -s {input.ld} ]; then
-            zcat {input.ld} | prune_graph --weight-field 'column_7' \
-                --weight-filter 'column_3 <= {wildcards.maxkb}000 && column_7 >= {wildcards.r2}' \
-                --verbose --n-threads {threads} --out {output.sites}
-        else
-            > {output.sites}
-        fi 2> {log}
+        Prunes SNPs to produce a list of SNPs in linkage equilibrium. Uses a graph based
+        approach to drop 'heaviest' SNPs first. From fgvieira/prune_graph
         """
+        input:
+            ld="results/datasets/{dataset}/beagles/pruned/ngsLD/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.ld_maxkbdist-{maxkb}_rndsample-1.gz",
+        output:
+            sites="results/datasets/{dataset}/beagles/pruned/ngsLD/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.pruned_maxkbdist-{maxkb}_minr2-{r2}.sites",
+        log:
+            "logs/{dataset}/ngsLD/prune_sites/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts_maxkbdist-{maxkb}_minr2-{r2}.log",
+        benchmark:
+            "benchmarks/{dataset}/ngsLD/prune_sites/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts_maxkbdist-{maxkb}_minr2-{r2}.log"
+        container:
+            ngsld_container
+        threads: 4
+        resources:
+            runtime="1d",
+        shell:
+            """
+            if [ -s {input.ld} ]; then
+                zcat {input.ld} | prune_graph --weight-field 'column_7' \
+                    --weight-filter 'column_3 <= {wildcards.maxkb}000 && column_7 >= {wildcards.r2}' \
+                    --verbose --n-threads {threads} --out {output.sites}
+            else
+                > {output.sites}
+            fi 2> {log}
+            """
+
+elif config["params"]["ngsld"]["prune_method"] == "window":
+
+    rule ngsLD_prune_sites_windows:
+        """
+        Prunes SNPs to produce a list of SNPs in linkage equilibrium. Uses a sliding window,
+        dropping SNPs that have an r2 higher than a certain threshold with any upstream SNPs
+        that fall in the window. Based on bcftools +prune
+        """
+        input:
+            ld="results/datasets/{dataset}/beagles/pruned/ngsLD/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.ld_maxkbdist-{maxkb}_rndsample-1.gz",
+            pos="results/datasets/{dataset}/beagles/pruned/ngsLD/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.ld_maxkbdist-{maxkb}_rndsample-1.pos",
+        output:
+            sites="results/datasets/{dataset}/beagles/pruned/ngsLD/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts.pruned_maxkbdist-{maxkb}_minr2-{r2}.sites",
+        log:
+            "logs/{dataset}/ngsLD/prune_sites/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts_maxkbdist-{maxkb}_minr2-{r2}.log",
+        benchmark:
+            "benchmarks/{dataset}/ngsLD/prune_sites/{dataset}.{ref}_{population}{dp}_chunk{chunk}_{sites}-filts_maxkbdist-{maxkb}_minr2-{r2}.log"
+        container:
+            window_pruning_container
+        threads: 4
+        resources:
+            runtime="6h",
+        script:
+            "../scripts/window_prune.R"
+
+else:
+    raise ValueError(
+        f"Config invalid - params > ngsld > prune_method "
+        f"({str(config["params"]["ngsld"]["prune_method"])}) should be either "
+        f"'window' (default) or 'graph'. Please set the config to one of these "
+        f"values."
+    )
 
 
 rule prune_chunk_beagle:
